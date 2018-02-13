@@ -112,11 +112,11 @@ exports.goToUrl = async (req, res, next) => {
   if (url.user) {
     await createVisit({
       browser,
-      country,
+      country: country || 'Unknown',
       domain,
       id: url.id,
       os,
-      referrer,
+      referrer: referrer || 'Direct',
     });
   }
   return res.redirect(url.target);
