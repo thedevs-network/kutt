@@ -43,7 +43,7 @@
 ## Setup
 You need to have [Node.js](https://nodejs.org/) and [Neo4j](https://neo4j.com/) installed on your system.
 
-1. Clone this repository on [downlaod zip](https://github.com/thedevs-network/kutt/archive/master.zip).
+1. Clone this repository or [download zip](https://github.com/thedevs-network/kutt/archive/master.zip).
 2. Copy `config.example.js` to `config.js` in both server and client folders and fill them properly.
 3. Install dependencies: `npm install`.
 4. Start Neo4j database.
