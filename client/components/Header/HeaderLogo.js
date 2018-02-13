@@ -40,7 +40,7 @@ const HeaderLogo = props => {
   return (
     <LogoImage>
       <a href="/" title="Homepage" onClick={goTo}>
-        <img src="/images/logo.svg" alt="Kutt.it" />
+        <img src="/images/logo.svg" alt="" />
         Kutt.it
       </a>
     </LogoImage>

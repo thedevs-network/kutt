@@ -43,12 +43,12 @@ class AppDocument extends Document {
           <meta property="og:url" content="https://kutt.it" />
           <meta property="og:type" content="website" />
           <meta property="og:title" content="Kutt.it" />
-          <meta property="og:image" content="https://kutt.it/card.png" />
+          <meta property="og:image" content="https://kutt.it/images/card.png" />
           <meta property="og:description" content="Free Modern URL Shortener" />
           <meta name="twitter:url" content="https://kutt.it" />
           <meta name="twitter:title" content="Kutt.it" />
           <meta name="twitter:description" content="Free Modern URL Shortener" />
-          <meta name="twitter:image" content="https://kutt.it/card.png" />
+          <meta name="twitter:image" content="https://kutt.it/images/card.png" />
 
           {this.props.styleTags}
 
