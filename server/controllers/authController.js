@@ -19,8 +19,12 @@ const {
 /* Read email template */
 const resetEmailTemplatePath = path.join(__dirname, '../mail/template-reset.html');
 const verifyEmailTemplatePath = path.join(__dirname, '../mail/template-verify.html');
-const resetEmailTemplate = fs.readFileSync(resetEmailTemplatePath, { encoding: 'utf-8' });
-const verifyEmailTemplate = fs.readFileSync(verifyEmailTemplatePath, { encoding: 'utf-8' });
+const resetEmailTemplate = fs
+  .readFileSync(resetEmailTemplatePath, { encoding: 'utf-8' })
+  .replace(/{{domain}}/gm, config.DEFAULT_DOMAIN);
+const verifyEmailTemplate = fs
+  .readFileSync(verifyEmailTemplatePath, { encoding: 'utf-8' })
+  .replace(/{{domain}}/gm, config.DEFAULT_DOMAIN);
 
 /* Function to generate JWT */
 const signToken = user =>
@@ -88,12 +92,8 @@ exports.signup = async (req, res) => {
     from: config.MAIL_USER,
     to: newUser.email,
     subject: 'Verify your account',
-    text: verifyMailText
-      .replace('{{verification}}', newUser.verificationToken)
-      .replace('{{domain}}', config.DEFAULT_DOMAIN),
-    html: verifyEmailTemplate
-      .replace('{{verification}}', newUser.verificationToken)
-      .replace('{{domain}}', config.DEFAULT_DOMAIN),
+    text: verifyMailText.replace('{{verification}}', newUser.verificationToken),
+    html: verifyEmailTemplate.replace('{{verification}}', newUser.verificationToken),
   });
   if (mail.accepted.length) {
     return res.status(201).json({ email, message: 'Verification email has been sent.' });
