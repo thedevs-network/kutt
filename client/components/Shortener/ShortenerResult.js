@@ -50,7 +50,7 @@ const ShortenerResult = ({ copyHandler, isCopied, loading, url }) =>
     <Wrapper>
       {isCopied && <CopyMessage>Copied to clipboard.</CopyMessage>}
       <CopyToClipboard text={url.list[0].shortUrl} onCopy={copyHandler}>
-        <Url>{url.list[0].shortUrl.replace(/^https?:\/\//, '')}</Url>
+        <Url>{url.list[0].shortUrl.replace(/^http?:\/\//, '')}</Url>
       </CopyToClipboard>
       <CopyToClipboard text={url.list[0].shortUrl} onCopy={copyHandler}>
         <Button icon="copy">Copy</Button>
