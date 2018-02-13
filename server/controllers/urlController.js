@@ -83,7 +83,7 @@ exports.goToUrl = async (req, res, next) => {
   const [browser = 'Other'] = browsersList.filter(filterInBrowser(agent));
   const [os = 'Other'] = osList.filter(filterInOs(agent));
   const referrer = req.header('Referer') && URL.parse(req.header('Referer')).hostname;
-  const location = geoip.lookup(req.ip);
+  const location = geoip.lookup(req.realIp);
   const country = location && location.country;
   const urls = await findUrl({ id, domain });
   if (!urls && !urls.length) return next();

@@ -67,7 +67,7 @@ exports.recaptcha = async (req, res, next) => {
       params: {
         secret: config.RECAPTCHA_SECRET_KEY,
         response: req.body.reCaptchaToken,
-        remoteip: req.ip,
+        remoteip: req.realIp,
       },
     });
     if (!isReCaptchaValid.data.success) {

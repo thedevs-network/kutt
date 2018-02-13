@@ -59,7 +59,7 @@ app.prepare().then(() => {
   server.use(express.static('static'));
 
   server.use((req, res, next) => {
-    req.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || '';
+    req.realIp = req.headers['x-real-ip'] || req.connection.remoteAddress || '';
     return next();
   });
 
