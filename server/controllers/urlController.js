@@ -9,6 +9,7 @@ const {
   findUrl,
   getStats,
   getUrls,
+  getUrlsWithIp,
   getCustomDomain,
   setCustomDomain,
   deleteCustomDomain,
@@ -34,7 +35,7 @@ const preservedUrls = [
 
 exports.preservedUrls = preservedUrls;
 
-exports.urlShortener = async ({ body, user }, res) => {
+exports.urlShortener = async ({ body, ip, user }, res) => {
   if (!body.target) return res.status(400).json({ error: 'No target has been provided.' });
   if (body.target.length > 1024) {
     return res.status(400).json({ error: 'Maximum URL length is 1024.' });
@@ -44,6 +45,12 @@ exports.urlShortener = async ({ body, user }, res) => {
   const target = URL.parse(body.target).protocol ? body.target : `http://${body.target}`;
   if (body.password && body.password.length > 64) {
     return res.status(400).json({ error: 'Maximum password length is 64.' });
+  }
+  const urlsWithIp = await getUrlsWithIp({ ip });
+  if (urlsWithIp && urlsWithIp.length > 200) {
+    return res
+      .status(400)
+      .json({ error: 'Too much requests! You can request again after one day.' });
   }
   if (user && body.customurl) {
     if (!/^[a-zA-Z1-9-_]+$/g.test(body.customurl.trim())) {
@@ -64,7 +71,7 @@ exports.urlShortener = async ({ body, user }, res) => {
       }
     }
   }
-  const url = await createShortUrl({ ...body, target, user });
+  const url = await createShortUrl({ ...body, ip, target, user });
   return res.json(url);
 };
 

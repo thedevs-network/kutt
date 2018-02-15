@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const passport = require('passport');
 const JWT = require('jsonwebtoken');
-const axios = require('axios');
 const config = require('../config');
 const transporter = require('../mail/mail');
 const { resetMailText, verifyMailText } = require('../mail/text');
@@ -54,28 +53,6 @@ exports.authLocal = authenticate('local', 'Login email and/or password are wrong
 exports.authJwt = authenticate('jwt', 'Unauthorized.');
 exports.authJwtLoose = authenticate('jwt', 'Unauthorized.', false);
 exports.authApikey = authenticate('localapikey', 'API key is not correct.', false);
-
-/* reCaptcha controller */
-exports.recaptcha = async (req, res, next) => {
-  if (!req.user) {
-    const isReCaptchaValid = await axios({
-      method: 'post',
-      url: 'https://www.google.com/recaptcha/api/siteverify',
-      headers: {
-        'Content-type': 'application/x-www-form-urlencoded',
-      },
-      params: {
-        secret: config.RECAPTCHA_SECRET_KEY,
-        response: req.body.reCaptchaToken,
-        remoteip: req.realIp,
-      },
-    });
-    if (!isReCaptchaValid.data.success) {
-      return res.status(401).json({ error: 'reCAPTCHA is not valid. Try again.' });
-    }
-  }
-  return next();
-};
 
 exports.signup = async (req, res) => {
   const { email, password } = req.body;

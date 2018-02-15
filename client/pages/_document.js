@@ -52,7 +52,6 @@ class AppDocument extends Document {
 
           {this.props.styleTags}
 
-          <script src="https://www.google.com/recaptcha/api.js?render=explicit" />
           <script src="/analytics.js" />
         </Head>
         <body style={style}>

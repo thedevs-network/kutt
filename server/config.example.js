@@ -13,12 +13,6 @@ module.exports = {
   JWT_SECRET: 'securekey',
 
   /*
-    reCaptcha secret key
-    Create one in https://www.google.com/recaptcha/intro/
-  */
-  RECAPTCHA_SECRET_KEY: '',
-
-  /*
     Your email host details to use to send verification emails.
     More info on http://nodemailer.com/
   */

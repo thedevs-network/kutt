@@ -21,7 +21,10 @@ const getUTCDate = (dateString = Date.now()) => {
 const generateId = () =>
   generate('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890', 6);
 
-const queryNewUrl = 'CREATE (l:URL { id: $id, target: $target, createdAt: $createdAt }) RETURN l';
+const queryNewUrl =
+  'CREATE (l:URL { id: $id, target: $target, createdAt: $createdAt }) ' +
+  'MERGE (i:IP { ip: $ip })' +
+  'CREATE (l)-[:WITH_IP]->(i) RETURN l';
 
 const queryNewUserUrl = (domain, password) =>
   'MATCH (u:USER { email: $email })' +
@@ -29,6 +32,8 @@ const queryNewUserUrl = (domain, password) =>
   `${password ? ', password: $password' : ''} })` +
   'CREATE (u)-[:CREATED]->(l)' +
   `${domain ? 'MERGE (l)-[:USES]->(:DOMAIN { name: $domain })' : ''}` +
+  'MERGE (i:IP { ip: $ip })' +
+  'CREATE (l)-[:WITH_IP]->(i)' +
   'RETURN l';
 
 exports.createShortUrl = params =>
@@ -44,6 +49,7 @@ exports.createShortUrl = params =>
           domain: params.user && params.user.domain,
           email: params.user && params.user.email,
           id: (params.user && params.customurl) || generateId(),
+          ip: params.ip,
           password: hash || '',
           target: params.target,
         })
@@ -166,6 +172,28 @@ exports.getUrls = ({ user, options }) =>
             config.DEFAULT_DOMAIN}/${record.get('l').properties.id}`,
         }));
         resolve({ list: urls, countAll });
+      })
+      .catch(reject);
+  });
+
+exports.getUrlsWithIp = ({ ip }) =>
+  new Promise((resolve, reject) => {
+    const session = driver.session();
+    session
+      .readTransaction(tx =>
+        tx.run('MATCH (i:IP { ip: $ip })<-[:WITH_IP]-(l:URL) RETURN l', {
+          ip,
+        })
+      )
+      .then(({ records }) => {
+        session.close();
+        const now = new Date();
+        const urls =
+          records.length &&
+          records
+            .map(record => record.get('l').properties.createdAt)
+            .filter(item => isAfter(item, subDays(now, 7)));
+        resolve(urls);
       })
       .catch(reject);
   });
