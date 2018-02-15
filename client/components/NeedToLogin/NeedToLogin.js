@@ -78,7 +78,7 @@ const NeedToLogin = () => (
       </Title>
       <Link href="/login" prefetch>
         <a href="/login" title="login / signup">
-          <Button>Login / sign up</Button>
+          <Button>Login / Sign up</Button>
         </a>
       </Link>
     </TitleWrapper>

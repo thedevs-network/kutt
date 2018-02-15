@@ -30,7 +30,7 @@ const HeaderMenu = props => {
   const login = !props.auth.isAuthenticated && (
     <HeaderMenuItem>
       <a href="/login" title="login / signup" onClick={goTo}>
-        <Button>Login / sign up</Button>
+        <Button>Login / Sign up</Button>
       </a>
     </HeaderMenuItem>
   );
