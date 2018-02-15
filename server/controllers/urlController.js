@@ -9,7 +9,7 @@ const {
   findUrl,
   getStats,
   getUrls,
-  getUrlsWithIp,
+  // getUrlsWithIp,
   getCustomDomain,
   setCustomDomain,
   deleteCustomDomain,
