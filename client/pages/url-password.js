@@ -96,7 +96,7 @@ class UrlPasswordPage extends Component {
       <BodyWrapper>
         <Title>Enter the password to access the URL.</Title>
         <Form onSubmit={this.requestUrl}>
-          <TextInput placeholder="Password" onChange={this.updatePassword} small />
+          <TextInput type="password" placeholder="Password" onChange={this.updatePassword} small />
           <Button type="submit" icon={this.state.loading ? 'loader' : ''}>
             Go
           </Button>
