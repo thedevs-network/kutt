@@ -51,7 +51,7 @@ You need to have [Node.js](https://nodejs.org/) and [Neo4j](https://neo4j.com/) 
 6. Run for production: `npm run build` then `npm start`.
 
 ## API
-In additional to website, you can use these APIs to create, delete and get URLs.
+In additional to the website, you can use these APIs to create, delete and get URLs.
 
 ### Types
 
@@ -66,11 +66,11 @@ URL {
 }
 ```
 
-In order to use these APIs you need to generate an API key from settings. Don not ever put this key in the client side of your app or anywhere that is exposed to others.
+In order to use these APIs you need to generate an API key from settings. Do not ever put this key in the client side of your app or anywhere that is exposed to others.
 
 All API requests and responses are in JSON format.
 
-Include API key as `apikey` in the body of all below requests. Available API URLs with body parameters:
+Include the API key as `apikey` in the body of all below requests. Available API URLs with body parameters:
 
 **Get shortened URLs list:**
 ```
@@ -106,6 +106,6 @@ Body
 ## Contributing
 Pull requests are welcome. You'll probably find lots of improvements to be made.
 
-Open issues for feadback, needed features, reporting bugs or discussing ideas.
+Open issues for feedback, needed features, reporting bugs or discussing ideas.
 
 Special thanks to [Thomas](https://github.com/trgwii) and [Muthu](https://github.com/MKRhere). Logo design by [Muthu](https://github.com/MKRhere)
