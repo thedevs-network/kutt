@@ -46,12 +46,12 @@ exports.urlShortener = async ({ body, ip, user }, res) => {
   if (body.password && body.password.length > 64) {
     return res.status(400).json({ error: 'Maximum password length is 64.' });
   }
-  const urlsWithIp = await getUrlsWithIp({ ip });
-  if (urlsWithIp && urlsWithIp.length > 200) {
-    return res
-      .status(400)
-      .json({ error: 'Too much requests! You can request again after one day.' });
-  }
+  // const urlsWithIp = await getUrlsWithIp({ ip });
+  // if (urlsWithIp && urlsWithIp.length > 200) {
+  //   return res
+  //     .status(400)
+  //     .json({ error: 'Too much requests! You can request again after one day.' });
+  // }
   if (user && body.customurl) {
     if (!/^[a-zA-Z1-9-_]+$/g.test(body.customurl.trim())) {
       return res.status(400).json({ error: 'Custom URL is not valid.' });
