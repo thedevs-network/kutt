@@ -6,7 +6,9 @@ import styled from 'styled-components';
 import ShortenerResult from './ShortenerResult';
 import ShortenerTitle from './ShortenerTitle';
 import ShortenerInput from './ShortenerInput';
+import ShortenerCaptcha from './ShortenerCaptcha';
 import { createShortUrl, setShortenerFormError } from '../../actions';
+import showRecaptcha from '../../helpers/recaptcha';
 import { fadeIn } from '../../helpers/animations';
 
 const Wrapper = styled.div`
@@ -48,6 +50,10 @@ class Shortener extends Component {
     this.copyHandler = this.copyHandler.bind(this);
   }
 
+  componentDidMount() {
+    showRecaptcha();
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     const { isAuthenticated, shortenerError, shortenerLoading, url: { isShortened } } = this.props;
     return (
@@ -67,13 +73,20 @@ class Shortener extends Component {
       target: originalUrl,
       customurl: customurlInput,
       password: pwd,
+      'g-recaptcha-input': recaptcha,
     } = shortenerForm.elements;
     const target = originalUrl.value.trim();
     const customurl = customurlInput && customurlInput.value.trim();
     const password = pwd && pwd.value;
+    const reCaptchaToken = !isAuthenticated && recaptcha && recaptcha.value;
+    if (!isAuthenticated && !reCaptchaToken) {
+      window.grecaptcha.reset();
+      return this.props.setShortenerFormError('reCAPTCHA is not valid. Try again.');
+    }
     const options = isAuthenticated && { customurl, password };
     shortenerForm.reset();
-    return this.props.createShortUrl({ target, ...options });
+    if (!isAuthenticated && recaptcha) window.grecaptcha.reset();
+    return this.props.createShortUrl({ target, reCaptchaToken, ...options });
   }
 
   copyHandler() {
@@ -105,6 +118,7 @@ class Shortener extends Component {
           handleSubmit={this.handleSubmit}
           setShortenerFormError={this.props.setShortenerFormError}
         />
+        {!isAuthenticated && <ShortenerCaptcha />}
       </Wrapper>
     );
   }

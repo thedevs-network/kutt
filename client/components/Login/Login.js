@@ -11,6 +11,8 @@ import TextInput from '../TextInput';
 import Button from '../Button';
 import Error from '../Error';
 import { loginUser, showAuthError, signupUser, showPageLoading } from '../../actions';
+import showRecaptcha from '../../helpers/recaptcha';
+import config from '../../config';
 
 const Wrapper = styled.div`
   flex: 0 0 auto;
@@ -59,6 +61,11 @@ const ForgetPassLink = styled.a`
   }
 `;
 
+const Recaptcha = styled.div`
+  display: block;
+  margin: 0 0 32px 0;
+`;
+
 class Login extends Component {
   constructor() {
     super();
@@ -66,6 +73,10 @@ class Login extends Component {
     this.loginHandler = this.loginHandler.bind(this);
     this.signupHandler = this.signupHandler.bind(this);
     this.goTo = this.goTo.bind(this);
+  }
+
+  componentDidMount() {
+    showRecaptcha();
   }
 
   goTo(e) {
@@ -81,14 +92,20 @@ class Login extends Component {
     const form = document.getElementById('login-form');
     const { value: email } = form.elements.email;
     const { value: password } = form.elements.password;
+    const { value: reCaptchaToken } = form.elements['g-recaptcha-input'];
     if (!email) return showError('Email address must not be empty.');
     if (!emailValidator.validate(email)) return showError('Email address is not valid.');
     if (password.trim().length < 8) {
       return showError('Password must be at least 8 chars long.');
     }
+    if (!reCaptchaToken) {
+      window.grecaptcha.reset();
+      return showError('reCAPTCHA is not valid. Try again.');
+    }
+    window.grecaptcha.reset();
     return type === 'login'
-      ? this.props.login({ email, password })
-      : this.props.signup({ email, password });
+      ? this.props.login({ email, password, reCaptchaToken })
+      : this.props.signup({ email, password, reCaptchaToken });
   }
 
   loginHandler(e) {
@@ -116,6 +133,13 @@ class Login extends Component {
             <TextInput type="email" name="email" id="email" autoFocus />
             <LoginInputLabel htmlFor="password">Password (min chars: 8)</LoginInputLabel>
             <TextInput type="password" name="password" id="password" />
+            <Recaptcha
+              id="g-recaptcha"
+              className="g-recaptcha"
+              data-sitekey={config.RECAPTCHA_SITE_KEY}
+              data-callback="recaptchaCallback"
+            />
+            <input type="hidden" id="g-recaptcha-input" name="g-recaptcha-input" />
             <ForgetPassLink href="/reset-password" title="Forget password" onClick={this.goTo}>
               Forgot your password?
             </ForgetPassLink>

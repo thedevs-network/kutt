@@ -89,8 +89,21 @@ app.prepare().then(() => {
   );
 
   /* User and authentication */
-  server.post('/api/auth/signup', validationCriterias, validateBody, catchErrors(auth.signup));
-  server.post('/api/auth/login', validationCriterias, validateBody, auth.authLocal, auth.login);
+  server.post(
+    '/api/auth/signup',
+    validationCriterias,
+    validateBody,
+    catchErrors(auth.recaptcha),
+    catchErrors(auth.signup)
+  );
+  server.post(
+    '/api/auth/login',
+    validationCriterias,
+    validateBody,
+    catchErrors(auth.recaptcha),
+    auth.authLocal,
+    auth.login
+  );
   server.post('/api/auth/renew', auth.authJwt, auth.renew);
   server.post('/api/auth/changepassword', auth.authJwt, catchErrors(auth.changePassword));
   server.post('/api/auth/generateapikey', auth.authJwt, catchErrors(auth.generateApiKey));
@@ -98,7 +111,13 @@ app.prepare().then(() => {
   server.post('/api/auth/usersettings', auth.authJwt, auth.userSettings);
 
   /* URL shortener */
-  server.post('/api/url/submit', auth.authApikey, auth.authJwtLoose, catchErrors(url.urlShortener));
+  server.post(
+    '/api/url/submit',
+    auth.authApikey,
+    auth.authJwtLoose,
+    catchErrors(auth.recaptcha),
+    catchErrors(url.urlShortener)
+  );
   server.post('/api/url/deleteurl', auth.authApikey, auth.authJwt, catchErrors(url.deleteUrl));
   server.post('/api/url/geturls', auth.authApikey, auth.authJwt, catchErrors(url.getUrls));
   server.post('/api/url/customdomain', auth.authJwt, catchErrors(url.setCustomDomain));

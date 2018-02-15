@@ -58,6 +58,7 @@ const ShortenerInput = ({ isAuthenticated, handleSubmit, setShortenerFormError }
     <Submit onClick={handleSubmit}>
       <Icon src="/images/send.svg" />
     </Submit>
+    <input type="hidden" id="g-recaptcha-input" name="g-recaptcha-input" />
     <Error type="shortener" />
     <ShortenerOptions
       isAuthenticated={isAuthenticated}
