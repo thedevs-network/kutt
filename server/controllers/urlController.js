@@ -69,7 +69,7 @@ exports.urlShortener = async ({ body, user }, res) => {
 };
 
 const browsersList = ['IE', 'Firefox', 'Chrome', 'Opera', 'Safari', 'Edge'];
-const osList = ['Windows', 'Mac Os X', 'Linux', 'Chrom OS', 'Android', 'iOS'];
+const osList = ['Windows', 'Mac Os X', 'Linux', 'Chrome OS', 'Android', 'iOS'];
 const filterInBrowser = agent => item =>
   agent.family.toLowerCase().includes(item.toLocaleLowerCase());
 const filterInOs = agent => item =>

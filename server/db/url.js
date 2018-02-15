@@ -273,7 +273,7 @@ const initialStats = {
     Windows: 0,
     'Mac Os X': 0,
     Linux: 0,
-    'Chrom OS': 0,
+    'Chrome OS': 0,
     Android: 0,
     iOS: 0,
     Other: 0,
