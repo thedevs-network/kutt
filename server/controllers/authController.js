@@ -156,11 +156,11 @@ exports.requestPasswordReset = async ({ body: { email } }, res) => {
     to: user.email,
     subject: 'Reset your password',
     text: resetMailText
-      .replace('{{resetpassword}}', user.resetPasswordToken)
-      .replace('{{domain}}', config.DEFAULT_DOMAIN),
+      .replace(/{{resetpassword}}/gm, user.resetPasswordToken)
+      .replace(/{{domain}}/gm, config.DEFAULT_DOMAIN),
     html: resetEmailTemplate
-      .replace('{{resetpassword}}', user.resetPasswordToken)
-      .replace('{{domain}}', config.DEFAULT_DOMAIN),
+      .replace(/{{resetpassword}}/gm, user.resetPasswordToken)
+      .replace(/{{domain}}/gm, config.DEFAULT_DOMAIN),
   });
   if (mail.accepted.length) {
     return res.status(200).json({ email, message: 'Reset password email has been sent.' });
