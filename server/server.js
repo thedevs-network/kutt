@@ -89,21 +89,8 @@ app.prepare().then(() => {
   );
 
   /* User and authentication */
-  server.post(
-    '/api/auth/signup',
-    validationCriterias,
-    validateBody,
-    catchErrors(auth.recaptcha),
-    catchErrors(auth.signup)
-  );
-  server.post(
-    '/api/auth/login',
-    validationCriterias,
-    validateBody,
-    catchErrors(auth.recaptcha),
-    auth.authLocal,
-    auth.login
-  );
+  server.post('/api/auth/signup', validationCriterias, validateBody, catchErrors(auth.signup));
+  server.post('/api/auth/login', validationCriterias, validateBody, auth.authLocal, auth.login);
   server.post('/api/auth/renew', auth.authJwt, auth.renew);
   server.post('/api/auth/changepassword', auth.authJwt, catchErrors(auth.changePassword));
   server.post('/api/auth/generateapikey', auth.authJwt, catchErrors(auth.generateApiKey));

@@ -13,7 +13,7 @@ module.exports = {
   JWT_SECRET: 'securekey',
 
   /*
-    reCaptcha secret key
+    Invisible reCaptcha secret key
     Create one in https://www.google.com/recaptcha/intro/
   */
   RECAPTCHA_SECRET_KEY: '',

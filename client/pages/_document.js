@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 import React from 'react';
 import Document, { Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
@@ -52,7 +53,13 @@ class AppDocument extends Document {
 
           {this.props.styleTags}
 
-          <script src="https://www.google.com/recaptcha/api.js?render=explicit" />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `window.recaptchaCallback = function() { window.isCaptchaReady = true; }`,
+            }}
+          />
+
+          <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer />
           <script src="/analytics.js" />
         </Head>
         <body style={style}>

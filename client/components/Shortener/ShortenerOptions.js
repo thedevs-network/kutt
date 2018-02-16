@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import Checkbox from '../Checkbox';
 import TextInput from '../TextInput';
 import { fadeIn } from '../../helpers/animations';
@@ -15,23 +15,9 @@ const Wrapper = styled.div`
   justify-content: flex-start;
   z-index: 2;
 
-  ${({ isAuthenticated }) =>
-    !isAuthenticated &&
-    css`
-      top: 180px;
-    `};
-
   @media only screen and (max-width: 448px) {
     top: 56px;
   }
-
-  ${({ isAuthenticated }) =>
-    !isAuthenticated &&
-    css`
-      @media only screen and (max-width: 448px) {
-        top: 156px;
-      }
-    `};
 `;
 
 const CheckboxWrapper = styled.div`

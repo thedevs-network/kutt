@@ -9,17 +9,15 @@ const addUrl = payload => ({ type: types.ADD_URL, payload });
 const listUrls = payload => ({ type: types.LIST_URLS, payload });
 const updateUrlList = payload => ({ type: types.UPDATE_URL_LIST, payload });
 const deleteUrl = payload => ({ type: types.DELETE_URL, payload });
-const showShortenerLoading = () => ({ type: types.SHORTENER_LOADING });
+export const showShortenerLoading = () => ({ type: types.SHORTENER_LOADING });
 const showTableLoading = () => ({ type: types.TABLE_LOADING });
 export const setShortenerFormError = payload => ({ type: types.SHORTENER_ERROR, payload });
 
-export const createShortUrl = params => dispatch => {
-  dispatch(showShortenerLoading());
-  return axios
+export const createShortUrl = params => dispatch =>
+  axios
     .post('/api/url/submit', params, { headers: { Authorization: cookie.get('token') } })
     .then(({ data }) => dispatch(addUrl(data)))
     .catch(({ response }) => dispatch(setShortenerFormError(response.data.error)));
-};
 
 export const getUrlsList = params => (dispatch, getState) => {
   if (params) dispatch(updateUrlList(params));

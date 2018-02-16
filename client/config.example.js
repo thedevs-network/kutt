@@ -1,6 +1,6 @@
 module.exports = {
   /*
-    reCaptcha site key
+    Invisible reCaptcha site key
     Create one in https://www.google.com/recaptcha/intro/
   */
   RECAPTCHA_SITE_KEY: '',
