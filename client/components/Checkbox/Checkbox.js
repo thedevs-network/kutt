@@ -6,7 +6,15 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin: 24px 32px 24px 0;
+  margin: 24px 16px 24px;
+
+  :first-child {
+    margin-left: 0;
+  }
+
+  :last-child {
+    margin-right: 0;
+  }
 `;
 
 const Box = styled.span`

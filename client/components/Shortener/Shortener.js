@@ -12,7 +12,7 @@ import { fadeIn } from '../../helpers/animations';
 const Wrapper = styled.div`
   position: relative;
   width: 800px;
-  max-width: 100%;
+  max-width: 98%;
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;

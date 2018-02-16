@@ -16,12 +16,17 @@ const Wrapper = styled.div`
   z-index: 2;
 
   @media only screen and (max-width: 448px) {
+    width: 100%;
     top: 56px;
   }
 `;
 
 const CheckboxWrapper = styled.div`
   display: flex;
+
+  @media only screen and (max-width: 448px) {
+    justify-content: center;
+  }
 `;
 
 const InputWrapper = styled.div`

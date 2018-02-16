@@ -23,7 +23,7 @@ import {
 const Wrapper = styled.div`
   poistion: relative;
   width: 600px;
-  max-width: 97%;
+  max-width: 90%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
