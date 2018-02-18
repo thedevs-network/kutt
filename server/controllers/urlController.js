@@ -3,6 +3,7 @@ const URL = require('url');
 const useragent = require('useragent');
 const geoip = require('geoip-lite');
 const bcrypt = require('bcryptjs');
+const axios = require('axios');
 const {
   createShortUrl,
   createVisit,
@@ -63,6 +64,26 @@ exports.urlShortener = async ({ body, user }, res) => {
         return res.status(400).json({ error: 'Custom URL is already in use.' });
       }
     }
+  }
+  const isMalware = await axios.post(
+    `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${
+      config.GOOGLE_SAFE_BROWSING_KEY
+    }`,
+    {
+      client: {
+        clientId: config.DEFAULT_DOMAIN.toLowerCase().replace('.', ''),
+        clientVersion: '1.0.0',
+      },
+      threatInfo: {
+        threatTypes: ['MALWARE', 'SOCIAL_ENGINEERING'],
+        platformTypes: ['WINDOWS'],
+        threatEntryTypes: ['URL'],
+        threatEntries: [{ url: body.target }],
+      },
+    }
+  );
+  if (isMalware.data && isMalware.data.matches) {
+    return res.status(400).json({ error: 'Malware detected!' });
   }
   const url = await createShortUrl({ ...body, target, user });
   return res.json(url);

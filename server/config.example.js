@@ -18,6 +18,12 @@ module.exports = {
   */
   RECAPTCHA_SECRET_KEY: '',
 
+  /* 
+    Google Cloud API to prevent from users from submitting malware URLs.
+    Get it from https://developers.google.com/safe-browsing/v4/get-started
+  */
+  GOOGLE_SAFE_BROWSING_KEY: '',
+
   /*
     Your email host details to use to send verification emails.
     More info on http://nodemailer.com/
