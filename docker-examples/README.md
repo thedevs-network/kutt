@@ -19,6 +19,8 @@ module.exports = {
 }
 ```
 
+No docker-relevant modifications are necessary for client/config.js. However, you will still need to configure this as part of the standard kutt setup. 
+
 ### Neo4j in a container
 
 You can run neo4j in a container and link it to the kutt container in Docker. 
