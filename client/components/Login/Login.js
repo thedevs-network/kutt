@@ -59,6 +59,11 @@ const ForgetPassLink = styled.a`
   }
 `;
 
+const HANDLER_TYPES = {
+  LOGIN: 'LOGIN',
+  SIGN_UP: 'SIGN_UP',
+};
+
 class Login extends Component {
   constructor() {
     super();
@@ -75,30 +80,51 @@ class Login extends Component {
     Router.push(path);
   }
 
-  authHandler(type) {
-    const { loading, showError } = this.props;
-    if (loading.login || loading.signup) return null;
+  getFormValues() {
     const form = document.getElementById('login-form');
     const { value: email } = form.elements.email;
     const { value: password } = form.elements.password;
-    if (!email) return showError('Email address must not be empty.');
-    if (!emailValidator.validate(email)) return showError('Email address is not valid.');
-    if (password.trim().length < 8) {
-      return showError('Password must be at least 8 chars long.');
+
+    return {
+      email,
+      password,
     }
-    return type === 'login'
-      ? this.props.login({ email, password })
-      : this.props.signup({ email, password });
+  }
+
+  validateForm({ email, password }) {
+      if (!email) return 'Email address must not be empty.';
+      if (!emailValidator.validate(email)) return 'Email address is not valid.';
+      if (password.trim().length < 8) {
+          return 'Password must be at least 8 chars long.';
+      }
+
+      return null;
+  }
+
+  authHandler(type) {
+    const { loading } = this.props;
+    if (loading.login || loading.signup) return null;
+
+    const formValues = this.getFormValues();
+
+    const errorMsg = this.validateForm(formValues);
+    if (errorMsg) {
+      return this.props.showError(errorMsg);
+    }
+
+    return type === HANDLER_TYPES.LOGIN
+      ? this.props.login(formValues)
+      : this.props.signup(formValues);
   }
 
   loginHandler(e) {
     e.preventDefault();
-    this.authHandler('login');
+    this.authHandler(HANDLER_TYPES.LOGIN);
   }
 
   signupHandler(e) {
     e.preventDefault();
-    this.authHandler('signup');
+    this.authHandler(HANDLER_TYPES.SIGN_UP);
   }
 
   render() {

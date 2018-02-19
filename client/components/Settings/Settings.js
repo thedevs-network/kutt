@@ -69,6 +69,8 @@ const Wrapper = styled.div`
   }
 `;
 
+const ERROR_ALIVE_TIME = 1500;
+
 class Settings extends Component {
   constructor() {
     super();
@@ -109,23 +111,59 @@ class Settings extends Component {
     this.setState({ showModal: false });
   }
 
-  changePassword(e) {
-    e.preventDefault();
+  componentWillUnmount() {
+    if (this.hideErrorTimeoutId) {
+      clearTimeout(this.hideErrorTimeoutId);
+    }
+  }
+
+  showError = (message) => {
+    this.setState({
+      passwordError: message
+    }, () => {
+      this.hideErrorTimeoutId = setTimeout(this.hideError, ERROR_ALIVE_TIME);
+    });
+  };
+
+  hideError = () => {
+    this.setState({
+        passwordError: '',
+    });
+  };
+
+  getFormValues(e) {
     const form = e.target;
     const password = form.elements.password.value;
-    if (password.length < 8) {
-      return this.setState({ passwordError: 'Password must be at least 8 chars long.' }, () => {
-        setTimeout(() => {
-          this.setState({
-            passwordError: '',
-          });
-        }, 1500);
-      });
+
+    return {
+      password,
     }
+  }
+
+  validateForm({ password }) {
+    if (password.length < 8) {
+        return 'Password must be at least 8 chars long.';
+    }
+
+    return null;
+  }
+
+  changePassword(e) {
+    e.preventDefault();
+
+    const formValues = this.getFormValues(e);
+
+    const errorMsg = this.validateForm(formValues);
+    if (errorMsg) {
+      return this.showError(errorMsg);
+    }
+
     return axios
       .post(
         '/api/auth/changepassword',
-        { password },
+        {
+          password: formValues.password,
+        },
         { headers: { Authorization: cookie.get('token') } }
       )
       .then(res =>
@@ -136,15 +174,9 @@ class Settings extends Component {
           form.reset();
         })
       )
-      .catch(err =>
-        this.setState({ passwordError: err.response.data.error }, () => {
-          setTimeout(() => {
-            this.setState({
-              passwordError: '',
-            });
-          }, 1500);
-        })
-      );
+      .catch(err => {
+        this.showError(err.response.data.error);
+      });
   }
 
   render() {
