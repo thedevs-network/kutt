@@ -64,6 +64,8 @@ const HANDLER_TYPES = {
   SIGN_UP: 'SIGN_UP',
 };
 
+/* eslint class-methods-use-this: ["error", { "exceptMethods": ["validateForm", "getFormValues"] }] */
+
 class Login extends Component {
   constructor() {
     super();
@@ -71,13 +73,6 @@ class Login extends Component {
     this.loginHandler = this.loginHandler.bind(this);
     this.signupHandler = this.signupHandler.bind(this);
     this.goTo = this.goTo.bind(this);
-  }
-
-  goTo(e) {
-    e.preventDefault();
-    const path = e.currentTarget.getAttribute('href');
-    this.props.showPageLoading();
-    Router.push(path);
   }
 
   getFormValues() {
@@ -88,17 +83,24 @@ class Login extends Component {
     return {
       email,
       password,
-    }
+    };
+  }
+
+  goTo(e) {
+    e.preventDefault();
+    const path = e.currentTarget.getAttribute('href');
+    this.props.showPageLoading();
+    Router.push(path);
   }
 
   validateForm({ email, password }) {
-      if (!email) return 'Email address must not be empty.';
-      if (!emailValidator.validate(email)) return 'Email address is not valid.';
-      if (password.trim().length < 8) {
-          return 'Password must be at least 8 chars long.';
-      }
+    if (!email) return 'Email address must not be empty.';
+    if (!emailValidator.validate(email)) return 'Email address is not valid.';
+    if (password.trim().length < 8) {
+      return 'Password must be at least 8 chars long.';
+    }
 
-      return null;
+    return null;
   }
 
   authHandler(type) {

@@ -71,6 +71,8 @@ const Wrapper = styled.div`
 
 const ERROR_ALIVE_TIME = 1500;
 
+/* eslint class-methods-use-this: ["error", { "exceptMethods": ["getFormValues", "validateForm"] }] */
+
 class Settings extends Component {
   constructor() {
     super();
@@ -84,11 +86,36 @@ class Settings extends Component {
     this.showModal = this.showModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.changePassword = this.changePassword.bind(this);
+    this.showError = this.showError.bind(this);
+    this.hideError = this.hideError.bind(this);
   }
 
   componentDidMount() {
     if (!this.props.auth.isAuthenticated) Router.push('/login');
     this.props.getUserSettings();
+  }
+
+  componentWillUnmount() {
+    if (this.hideErrorTimeoutId) {
+      clearTimeout(this.hideErrorTimeoutId);
+    }
+  }
+
+  getFormValues(e) {
+    const form = e.target;
+    const password = form.elements.password.value;
+
+    return {
+      password,
+    };
+  }
+
+  validateForm({ password }) {
+    if (password.length < 8) {
+      return 'Password must be at least 8 chars long.';
+    }
+
+    return null;
   }
 
   handleCustomDomain(e) {
@@ -111,41 +138,21 @@ class Settings extends Component {
     this.setState({ showModal: false });
   }
 
-  componentWillUnmount() {
-    if (this.hideErrorTimeoutId) {
-      clearTimeout(this.hideErrorTimeoutId);
-    }
+  showError(message) {
+    this.setState(
+      {
+        passwordError: message,
+      },
+      () => {
+        this.hideErrorTimeoutId = setTimeout(this.hideError, ERROR_ALIVE_TIME);
+      }
+    );
   }
 
-  showError = (message) => {
+  hideError() {
     this.setState({
-      passwordError: message
-    }, () => {
-      this.hideErrorTimeoutId = setTimeout(this.hideError, ERROR_ALIVE_TIME);
+      passwordError: '',
     });
-  };
-
-  hideError = () => {
-    this.setState({
-        passwordError: '',
-    });
-  };
-
-  getFormValues(e) {
-    const form = e.target;
-    const password = form.elements.password.value;
-
-    return {
-      password,
-    }
-  }
-
-  validateForm({ password }) {
-    if (password.length < 8) {
-        return 'Password must be at least 8 chars long.';
-    }
-
-    return null;
   }
 
   changePassword(e) {
@@ -171,6 +178,8 @@ class Settings extends Component {
           setTimeout(() => {
             this.setState({ passwordMessage: '' });
           }, 1500);
+
+          const form = e.target;
           form.reset();
         })
       )

@@ -38,6 +38,8 @@ const ResultWrapper = styled.div`
   }
 `;
 
+/* eslint class-methods-use-this: ["error", { "exceptMethods": ["getFormValues", "resetForm"] }] */
+
 class Shortener extends Component {
   constructor() {
     super();
@@ -62,16 +64,16 @@ class Shortener extends Component {
   getFormValues() {
     const shortenerForm = document.getElementById('shortenerform');
     const {
-        target: originalUrlInput,
-        customurl: customurlInput,
-        password: passwordInput,
+      target: originalUrlInput,
+      customurl: customurlInput,
+      password: passwordInput,
     } = shortenerForm.elements;
 
     return {
       target: originalUrlInput && originalUrlInput.value.trim(),
       customurl: customurlInput && customurlInput.value.trim(),
       password: passwordInput && passwordInput.value.trim(),
-    }
+    };
   }
 
   resetForm() {
