@@ -50,6 +50,8 @@ You need to have [Node.js](https://nodejs.org/) and [Neo4j](https://neo4j.com/) 
 5. Run for development: `npm run dev`.
 6. Run for production: `npm run build` then `npm start`.
 
+**Docker:** You can use Docker to run the app. Read [docker-examples](/docker-examples) for more info.
+
 ## API
 In additional to the website, you can use these APIs to create, delete and get URLs.
 
