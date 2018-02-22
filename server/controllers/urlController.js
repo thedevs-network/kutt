@@ -42,7 +42,8 @@ exports.urlShortener = async ({ body, user }, res) => {
   }
   const isValidUrl = urlRegex({ exact: true, strict: false }).test(body.target);
   if (!isValidUrl) return res.status(400).json({ error: 'URL is not valid.' });
-  const target = URL.parse(body.target).protocol ? body.target : `http://${body.target}`;
+  const hasProtocol = /^https?/.test(URL.parse(body.target).protocol);
+  const target = hasProtocol ? body.target : `http://${body.target}`;
   if (body.password && body.password.length > 64) {
     return res.status(400).json({ error: 'Maximum password length is 64.' });
   }
