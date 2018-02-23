@@ -58,7 +58,7 @@ const SettingsApi = ({ apikey, generateKey, loader }) => (
     <h3>API</h3>
     <p>
       In additional to this website, you can use the API to create, delete and get shortend URLs. If
-      {"you're"} not familiar with API, {"don't"} generate the key. DO NOT share this key on the
+      {" you're"} not familiar with API, {"don't"} generate the key. DO NOT share this key on the
       client side of your website.
     </p>
     <ApiKeyWrapper apikey={apikey}>
