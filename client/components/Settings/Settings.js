@@ -69,6 +69,10 @@ const Wrapper = styled.div`
   }
 `;
 
+const ERROR_ALIVE_TIME = 1500;
+
+/* eslint class-methods-use-this: ["error", { "exceptMethods": ["getFormValues", "validateForm"] }] */
+
 class Settings extends Component {
   constructor() {
     super();
@@ -82,11 +86,36 @@ class Settings extends Component {
     this.showModal = this.showModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.changePassword = this.changePassword.bind(this);
+    this.showError = this.showError.bind(this);
+    this.hideError = this.hideError.bind(this);
   }
 
   componentDidMount() {
     if (!this.props.auth.isAuthenticated) Router.push('/login');
     this.props.getUserSettings();
+  }
+
+  componentWillUnmount() {
+    if (this.hideErrorTimeoutId) {
+      clearTimeout(this.hideErrorTimeoutId);
+    }
+  }
+
+  getFormValues(e) {
+    const form = e.target;
+    const password = form.elements.password.value;
+
+    return {
+      password,
+    };
+  }
+
+  validateForm({ password }) {
+    if (password.length < 8) {
+      return 'Password must be at least 8 chars long.';
+    }
+
+    return null;
   }
 
   handleCustomDomain(e) {
@@ -109,23 +138,39 @@ class Settings extends Component {
     this.setState({ showModal: false });
   }
 
+  showError(message) {
+    this.setState(
+      {
+        passwordError: message,
+      },
+      () => {
+        this.hideErrorTimeoutId = setTimeout(this.hideError, ERROR_ALIVE_TIME);
+      }
+    );
+  }
+
+  hideError() {
+    this.setState({
+      passwordError: '',
+    });
+  }
+
   changePassword(e) {
     e.preventDefault();
-    const form = e.target;
-    const password = form.elements.password.value;
-    if (password.length < 8) {
-      return this.setState({ passwordError: 'Password must be at least 8 chars long.' }, () => {
-        setTimeout(() => {
-          this.setState({
-            passwordError: '',
-          });
-        }, 1500);
-      });
+
+    const formValues = this.getFormValues(e);
+
+    const errorMsg = this.validateForm(formValues);
+    if (errorMsg) {
+      return this.showError(errorMsg);
     }
+
     return axios
       .post(
         '/api/auth/changepassword',
-        { password },
+        {
+          password: formValues.password,
+        },
         { headers: { Authorization: cookie.get('token') } }
       )
       .then(res =>
@@ -133,18 +178,14 @@ class Settings extends Component {
           setTimeout(() => {
             this.setState({ passwordMessage: '' });
           }, 1500);
+
+          const form = e.target;
           form.reset();
         })
       )
-      .catch(err =>
-        this.setState({ passwordError: err.response.data.error }, () => {
-          setTimeout(() => {
-            this.setState({
-              passwordError: '',
-            });
-          }, 1500);
-        })
-      );
+      .catch(err => {
+        this.showError(err.response.data.error);
+      });
   }
 
   render() {

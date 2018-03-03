@@ -38,6 +38,8 @@ const ResultWrapper = styled.div`
   }
 `;
 
+/* eslint class-methods-use-this: ["error", { "exceptMethods": ["getFormValues", "resetForm"] }] */
+
 class Shortener extends Component {
   constructor() {
     super();
@@ -59,22 +61,37 @@ class Shortener extends Component {
     );
   }
 
-  handleSubmit(e) {
-    e.preventDefault();
-    const { isAuthenticated } = this.props;
-    this.props.showShortenerLoading();
+  getFormValues() {
     const shortenerForm = document.getElementById('shortenerform');
     const {
-      target: originalUrl,
+      target: originalUrlInput,
       customurl: customurlInput,
-      password: pwd,
+      password: passwordInput,
     } = shortenerForm.elements;
-    const target = originalUrl.value.trim();
-    const customurl = customurlInput && customurlInput.value.trim();
-    const password = pwd && pwd.value;
-    const options = isAuthenticated && { customurl, password };
+
+    return {
+      target: originalUrlInput && originalUrlInput.value.trim(),
+      customurl: customurlInput && customurlInput.value.trim(),
+      password: passwordInput && passwordInput.value.trim(),
+    };
+  }
+
+  resetForm() {
+    const shortenerForm = document.getElementById('shortenerform');
+
     shortenerForm.reset();
-    if (!isAuthenticated) {
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+
+    this.props.showShortenerLoading();
+
+    const formValues = this.getFormValues();
+
+    this.resetForm();
+
+    if (!this.props.isAuthenticated) {
       window.grecaptcha.execute(window.captchaId);
       const getCaptchaToken = () => {
         setTimeout(() => {
@@ -82,14 +99,15 @@ class Shortener extends Component {
             const reCaptchaToken = window.grecaptcha.getResponse(window.captchaId);
             window.isCaptchaReady = false;
             window.grecaptcha.reset(window.captchaId);
-            return this.props.createShortUrl({ target, reCaptchaToken, ...options });
+            return this.props.createShortUrl({ reCaptchaToken, ...formValues });
           }
           return getCaptchaToken();
         }, 200);
       };
       return getCaptchaToken();
     }
-    return this.props.createShortUrl({ target, ...options });
+
+    return this.props.createShortUrl({ ...formValues });
   }
 
   copyHandler() {
