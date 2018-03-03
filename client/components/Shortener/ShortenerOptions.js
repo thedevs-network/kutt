@@ -69,6 +69,7 @@ class ShortenerOptions extends Component {
     return (
       this.props.isAuthenticated !== nextProps.isAuthenticated ||
       customurlCheckbox !== nextState.customurlCheckbox ||
+      this.props.domain !== nextProps.domain ||
       passwordCheckbox !== nextState.passwordCheckbox
     );
   }
@@ -84,10 +85,10 @@ class ShortenerOptions extends Component {
 
   render() {
     const { customurlCheckbox, passwordCheckbox } = this.state;
-    const { isAuthenticated } = this.props;
+    const { isAuthenticated, domain } = this.props;
     const customUrlInput = customurlCheckbox && (
       <div>
-        <Label htmlFor="customurl">{window.location.hostname}/</Label>
+        <Label htmlFor="customurl">{domain || window.location.hostname}/</Label>
         <TextInput id="customurl" type="text" placeholder="custom name" small />
       </div>
     );
@@ -126,6 +127,7 @@ class ShortenerOptions extends Component {
 
 ShortenerOptions.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
+  domain: PropTypes.string.isRequired,
   setShortenerFormError: PropTypes.func.isRequired,
 };
 

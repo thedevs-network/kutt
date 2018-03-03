@@ -77,7 +77,7 @@ export const generateApiKey = () => dispatch => {
 };
 
 /* Login & signup actions */
-export const authUser = payload => ({ type: types.AUTH_USER, payload: decodeJwt(payload).sub });
+export const authUser = payload => ({ type: types.AUTH_USER, payload });
 export const unauthUser = () => ({ type: types.UNAUTH_USER });
 export const sentVerification = payload => ({ type: types.SENT_VERIFICATION, payload });
 export const showAuthError = payload => ({ type: types.AUTH_ERROR, payload });
@@ -104,7 +104,8 @@ export const loginUser = body => dispatch => {
       const { token } = res.data;
       cookie.set('token', token, { expires: 7 });
       dispatch(authRenew());
-      dispatch(authUser(token));
+      dispatch(authUser(decodeJwt(token).sub));
+      dispatch(setDomain(decodeJwt(token).domain));
       dispatch(showPageLoading());
       Router.push('/');
     })
@@ -126,7 +127,8 @@ export const renewAuthUser = () => (dispatch, getState) => {
       const { token } = res.data;
       cookie.set('token', token, { expires: 7 });
       dispatch(authRenew());
-      dispatch(authUser(token));
+      dispatch(authUser(decodeJwt(token).sub));
+      dispatch(setDomain(decodeJwt(token).domain));
     })
     .catch(() => {
       cookie.remove('token');

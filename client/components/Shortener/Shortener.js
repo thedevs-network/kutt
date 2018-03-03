@@ -49,12 +49,19 @@ class Shortener extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const { isAuthenticated, shortenerError, shortenerLoading, url: { isShortened } } = this.props;
+    const {
+      isAuthenticated,
+      domain,
+      shortenerError,
+      shortenerLoading,
+      url: { isShortened },
+    } = this.props;
     return (
       isAuthenticated !== nextProps.isAuthenticated ||
       shortenerError !== nextProps.shortenerError ||
       isShortened !== nextProps.url.isShortened ||
       shortenerLoading !== nextProps.shortenerLoading ||
+      domain !== nextProps.domain ||
       this.state.isCopied !== nextState.isCopied
     );
   }
@@ -120,6 +127,7 @@ class Shortener extends Component {
           isAuthenticated={isAuthenticated}
           handleSubmit={this.handleSubmit}
           setShortenerFormError={this.props.setShortenerFormError}
+          domain={this.props.domain}
         />
       </Wrapper>
     );
@@ -128,6 +136,7 @@ class Shortener extends Component {
 
 Shortener.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
+  domain: PropTypes.string.isRequired,
   createShortUrl: PropTypes.func.isRequired,
   shortenerError: PropTypes.string.isRequired,
   shortenerLoading: PropTypes.bool.isRequired,
@@ -142,9 +151,11 @@ const mapStateToProps = ({
   auth: { isAuthenticated },
   error: { shortener: shortenerError },
   loading: { shortener: shortenerLoading },
+  settings: { customDomain: domain },
   url,
 }) => ({
   isAuthenticated,
+  domain,
   shortenerError,
   shortenerLoading,
   url,

@@ -52,7 +52,7 @@ const Icon = styled(SVG)`
   }
 `;
 
-const ShortenerInput = ({ isAuthenticated, handleSubmit, setShortenerFormError }) => (
+const ShortenerInput = ({ isAuthenticated, domain, handleSubmit, setShortenerFormError }) => (
   <ShortenerForm id="shortenerform" onSubmit={handleSubmit}>
     <TextInput id="target" name="target" placeholder="Paste your long URL" autoFocus />
     <Submit onClick={handleSubmit}>
@@ -62,6 +62,7 @@ const ShortenerInput = ({ isAuthenticated, handleSubmit, setShortenerFormError }
     <ShortenerOptions
       isAuthenticated={isAuthenticated}
       setShortenerFormError={setShortenerFormError}
+      domain={domain}
     />
   </ShortenerForm>
 );
@@ -69,6 +70,7 @@ const ShortenerInput = ({ isAuthenticated, handleSubmit, setShortenerFormError }
 ShortenerInput.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
+  domain: PropTypes.string.isRequired,
   setShortenerFormError: PropTypes.func.isRequired,
 };
 

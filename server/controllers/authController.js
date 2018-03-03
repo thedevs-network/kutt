@@ -32,6 +32,7 @@ const signToken = user =>
     {
       iss: 'ApiAuth',
       sub: user.email,
+      domain: user.domain || '',
       iat: new Date().getTime(),
       exp: new Date().setDate(new Date().getDate() + 7),
     },
