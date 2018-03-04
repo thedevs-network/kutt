@@ -2,7 +2,7 @@ const passport = require('passport');
 const JwtStrategy = require('passport-jwt').Strategy;
 const { ExtractJwt } = require('passport-jwt');
 const LocalStratergy = require('passport-local').Strategy;
-const LocalAPIKeyStrategy = require('passport-localapikey').Strategy;
+const LocalAPIKeyStrategy = require('passport-localapikey-update').Strategy;
 const bcrypt = require('bcryptjs');
 const config = require('./config');
 const { getUser } = require('./db/user');
@@ -46,8 +46,13 @@ passport.use(
   })
 );
 
+const localAPIKeyOptions = {
+  apiKeyField: 'apikey',
+  apiKeyHeader: 'x-api-key',
+};
+
 passport.use(
-  new LocalAPIKeyStrategy(async (apikey, done) => {
+  new LocalAPIKeyStrategy(localAPIKeyOptions, async (apikey, done) => {
     try {
       const user = await getUser({ apikey });
       if (!user) {

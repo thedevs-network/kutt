@@ -72,7 +72,7 @@ In order to use these APIs you need to generate an API key from settings. Do not
 
 All API requests and responses are in JSON format.
 
-Include the API key as `apikey` in the body of all below requests. Available API URLs with body parameters:
+Include the API key as `X-API-Key` in the header of all below requests. Available API URLs with body parameters:
 
 **Get shortened URLs list:**
 ```
