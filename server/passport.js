@@ -46,8 +46,13 @@ passport.use(
   })
 );
 
+const localAPIKeyOptions = {
+  apiKeyField: 'apikey',
+  apiKeyHeader: 'x-api-key',
+};
+
 passport.use(
-  new LocalAPIKeyStrategy(async (apikey, done) => {
+  new LocalAPIKeyStrategy(localAPIKeyOptions, async (apikey, done) => {
     try {
       const user = await getUser({ apikey });
       if (!user) {
