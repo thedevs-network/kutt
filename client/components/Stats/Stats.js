@@ -88,7 +88,7 @@ class Stats extends Component {
     const { id } = this.props;
     if (!id) return null;
     return axios
-      .post('/api/url/stats', { id }, { headers: { Authorization: cookie.get('token') } })
+      .get(`/api/url/stats?id=${id}`, { headers: { Authorization: cookie.get('token') } })
       .then(({ data }) =>
         this.setState({
           stats: data,

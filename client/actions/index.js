@@ -22,8 +22,13 @@ export const createShortUrl = params => dispatch =>
 export const getUrlsList = params => (dispatch, getState) => {
   if (params) dispatch(updateUrlList(params));
   dispatch(showTableLoading());
+  const { url } = getState();
+  const query = Object.keys(url).reduce(
+    (string, item) => (typeof url[item] !== 'object' ? `${string + item}=${url[item]}&` : string),
+    '?'
+  );
   return axios
-    .post('/api/url/geturls', getState().url, { headers: { Authorization: cookie.get('token') } })
+    .get(`/api/url/geturls${query}`, { headers: { Authorization: cookie.get('token') } })
     .then(({ data }) => dispatch(listUrls(data)));
 };
 
@@ -49,7 +54,7 @@ export const showDomainInput = () => ({ type: types.SHOW_DOMAIN_INPUT });
 
 export const getUserSettings = () => dispatch =>
   axios
-    .post('/api/auth/usersettings', null, { headers: { Authorization: cookie.get('token') } })
+    .get('/api/auth/usersettings', { headers: { Authorization: cookie.get('token') } })
     .then(({ data }) => {
       dispatch(setDomain(data.customDomain));
       dispatch(setApiKey(data.apikey));

@@ -144,8 +144,8 @@ exports.goToUrl = async (req, res, next) => {
   return res.redirect(url.target);
 };
 
-exports.getUrls = async ({ body, user }, res) => {
-  const urlsList = await getUrls({ options: body, user });
+exports.getUrls = async ({ query, user }, res) => {
+  const urlsList = await getUrls({ options: query, user });
   return res.json(urlsList);
 };
 
@@ -185,7 +185,7 @@ exports.deleteUrl = async ({ body: { id, domain }, user }, res) => {
   return res.status(400).json({ error: "Couldn't delete short URL." });
 };
 
-exports.getStats = async ({ body: { id, domain }, user }, res) => {
+exports.getStats = async ({ query: { id, domain }, user }, res) => {
   if (!id) return res.status(400).json({ error: 'No id has been provided.' });
   const customDomain = domain !== config.DEFAULT_DOMAIN && domain;
   const stats = await getStats({ id, domain: customDomain, user });

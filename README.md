@@ -76,7 +76,7 @@ Include the API key as `X-API-Key` in the header of all below requests. Availabl
 
 **Get shortened URLs list:**
 ```
-POST /api/url/geturls
+GET /api/url/geturls
 ```
 
 Returns:
@@ -99,9 +99,9 @@ Returns: URL object
 **Delete a shortened URL** and **Get stats for a shortened URL:**
 ```
 POST /api/url/deleteurl
-POST /api/url/stats
+GET /api/url/stats
 ```
-Body
+Body (or query for GET request)
   * `id`: ID of the shortened URL.
   * `domain` (optional):  Required if a custom domain is used for short URL.
 

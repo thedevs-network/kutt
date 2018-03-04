@@ -101,7 +101,7 @@ app.prepare().then(() => {
   server.post('/api/auth/changepassword', auth.authJwt, catchErrors(auth.changePassword));
   server.post('/api/auth/generateapikey', auth.authJwt, catchErrors(auth.generateApiKey));
   server.post('/api/auth/resetpassword', catchErrors(auth.requestPasswordReset));
-  server.post('/api/auth/usersettings', auth.authJwt, auth.userSettings);
+  server.get('/api/auth/usersettings', auth.authJwt, auth.userSettings);
 
   /* URL shortener */
   server.post(
@@ -112,10 +112,10 @@ app.prepare().then(() => {
     catchErrors(url.urlShortener)
   );
   server.post('/api/url/deleteurl', auth.authApikey, auth.authJwt, catchErrors(url.deleteUrl));
-  server.post('/api/url/geturls', auth.authApikey, auth.authJwt, catchErrors(url.getUrls));
+  server.get('/api/url/geturls', auth.authApikey, auth.authJwt, catchErrors(url.getUrls));
   server.post('/api/url/customdomain', auth.authJwt, catchErrors(url.setCustomDomain));
   server.delete('/api/url/customdomain', auth.authJwt, catchErrors(url.deleteCustomDomain));
-  server.post('/api/url/stats', auth.authApikey, auth.authJwt, catchErrors(url.getStats));
+  server.get('/api/url/stats', auth.authApikey, auth.authJwt, catchErrors(url.getStats));
   server.post('/api/url/requesturl', catchErrors(url.goToUrl));
   server.get('/:id', catchErrors(url.goToUrl), (req, res) =>
     app.render(req, res, '/url-password', req.protectedUrl)
