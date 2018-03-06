@@ -2,7 +2,6 @@ const nextApp = require('next');
 const express = require('express');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const cors = require('cors');
 const Raven = require('raven');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -36,22 +35,6 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   const server = express();
-
-  server.use(
-    cors({
-      origin: '*',
-      methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
-      allowedHeaders: [
-        'Origin',
-        'X-Requested-With',
-        'Content-Type',
-        'Accept',
-        'Authorization',
-        'Access-Control-Allow-Credentials',
-      ],
-      credentials: true,
-    })
-  );
 
   server.set('trust proxy', true);
   server.use(helmet());
