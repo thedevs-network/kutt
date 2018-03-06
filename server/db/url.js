@@ -75,12 +75,12 @@ exports.createVisit = params =>
             'MERGE (o:OS { os: $os })' +
             'MERGE (r:REFERRER { referrer: $referrer })' +
             'MERGE (d:DATE { date: $date })' +
-            'CREATE (v)-[:VISITED]->(l),' +
-            '(v)-[:BROWSED_BY]->(b),' +
-            '(v)-[:LOCATED_IN]->(c),' +
-            '(v)-[:OS]->(o),' +
-            '(v)-[:REFERRED_BY]->(r),' +
-            '(v)-[:VISITED_IN]->(d)' +
+            'MERGE (v)-[:VISITED]->(l)' +
+            'MERGE (v)-[:BROWSED_BY]->(b)' +
+            'MERGE (v)-[:LOCATED_IN]->(c)' +
+            'MERGE (v)-[:OS]->(o)' +
+            'MERGE (v)-[:REFERRED_BY]->(r)' +
+            'MERGE (v)-[:VISITED_IN]->(d)' +
             'RETURN l',
           {
             id: params.id,
