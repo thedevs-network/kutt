@@ -87,7 +87,7 @@ Returns:
 }
 ```
 
-**Submit a links to be shortened**:
+**Submit a link to be shortened**:
 ```
 POST /api/url/submit
 ```
