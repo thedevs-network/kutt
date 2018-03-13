@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   align-items: flex-start;
 `;
 
-const SettingsPage = () => (
+const TermsPage = () => (
   <BodyWrapper>
     <Wrapper>
       <h3>Kutt Terms of Service</h3>
@@ -54,9 +54,9 @@ const SettingsPage = () => (
   </BodyWrapper>
 );
 
-SettingsPage.getInitialProps = ({ req, store }) => {
+TermsPage.getInitialProps = ({ req, store }) => {
   const token = req && req.cookies && req.cookies.token;
   if (token && store) store.dispatch(authUser(token));
 };
 
-export default withRedux(initialState)(SettingsPage);
+export default withRedux(initialState)(TermsPage);

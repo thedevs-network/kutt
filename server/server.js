@@ -70,6 +70,7 @@ app.prepare().then(() => {
   server.get('/settings', (req, res) => app.render(req, res, '/settings'));
   server.get('/stats', (req, res) => app.render(req, res, '/stats', req.query));
   server.get('/terms', (req, res) => app.render(req, res, '/terms'));
+  server.get('/report', (req, res) => app.render(req, res, '/report'));
   server.get('/reset-password/:resetPasswordToken?', catchErrors(auth.resetPassword), (req, res) =>
     app.render(req, res, '/reset-password', req.user)
   );
