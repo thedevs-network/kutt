@@ -109,7 +109,8 @@ exports.goToUrl = async (req, res, next) => {
   const location = geoip.lookup(req.realIp);
   const country = location && location.country;
   const urls = await findUrl({ id, domain });
-  const isBot = botList.some(bot => agent.source.toLowerCase().includes(bot));
+  const isBot =
+    botList.some(bot => agent.source.toLowerCase().includes(bot)) || agent.family === 'Other';
   if (!urls && !urls.length) return next();
   const [url] = urls;
   if (url.password && !req.body.password) {
