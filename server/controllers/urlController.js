@@ -92,7 +92,7 @@ exports.urlShortener = async ({ body, user }, res) => {
 
 const browsersList = ['IE', 'Firefox', 'Chrome', 'Opera', 'Safari', 'Edge'];
 const osList = ['Windows', 'Mac Os X', 'Linux', 'Chrome OS', 'Android', 'iOS'];
-const botList = ['bot', 'dataminr', 'pinterest', 'yahoo', 'facebook'];
+const botList = ['bot', 'dataminr', 'pinterest', 'yahoo', 'facebook', 'fire', 'crawl'];
 const filterInBrowser = agent => item =>
   agent.family.toLowerCase().includes(item.toLocaleLowerCase());
 const filterInOs = agent => item =>
@@ -109,7 +109,7 @@ exports.goToUrl = async (req, res, next) => {
   const location = geoip.lookup(req.realIp);
   const country = location && location.country;
   const urls = await findUrl({ id, domain });
-  const isBot = botList.some(bot => agent.family.toLocaleLowerCase().includes(bot));
+  const isBot = botList.some(bot => agent.source.toLowerCase().includes(bot));
   if (!urls && !urls.length) return next();
   const [url] = urls;
   if (url.password && !req.body.password) {
