@@ -92,6 +92,7 @@ exports.urlShortener = async ({ body, user }, res) => {
 
 const browsersList = ['IE', 'Firefox', 'Chrome', 'Opera', 'Safari', 'Edge'];
 const osList = ['Windows', 'Mac Os X', 'Linux', 'Chrome OS', 'Android', 'iOS'];
+const botList = ['bot', 'dataminr', 'pinterest', 'yahoo', 'facebook'];
 const filterInBrowser = agent => item =>
   agent.family.toLowerCase().includes(item.toLocaleLowerCase());
 const filterInOs = agent => item =>
@@ -108,6 +109,7 @@ exports.goToUrl = async (req, res, next) => {
   const location = geoip.lookup(req.realIp);
   const country = location && location.country;
   const urls = await findUrl({ id, domain });
+  const isBot = botList.some(bot => agent.family.toLocaleLowerCase().includes(bot));
   if (!urls && !urls.length) return next();
   const [url] = urls;
   if (url.password && !req.body.password) {
@@ -119,7 +121,7 @@ exports.goToUrl = async (req, res, next) => {
     if (!isMatch) {
       return res.status(401).json({ error: 'Password is not correct' });
     }
-    if (url.user) {
+    if (url.user && !isBot) {
       await createVisit({
         browser,
         country: country || 'Unknown',
@@ -131,7 +133,7 @@ exports.goToUrl = async (req, res, next) => {
     }
     return res.status(200).json({ target: url.target });
   }
-  if (url.user) {
+  if (url.user && !isBot) {
     await createVisit({
       browser,
       country: country || 'Unknown',
