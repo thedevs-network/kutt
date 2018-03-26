@@ -42,7 +42,7 @@ app.prepare().then(() => {
     server.use(morgan('dev'));
   }
   server.use(cookieParser());
-  server.use(bodyParser.json());
+  server.use(bodyParser.json({ type: '*/*' }));
   server.use(bodyParser.urlencoded({ extended: true }));
   server.use(passport.initialize());
   server.use(express.static('static'));
