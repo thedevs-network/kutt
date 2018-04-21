@@ -5,8 +5,10 @@ import PropTypes from 'prop-types';
 import Router from 'next/router';
 import styled from 'styled-components';
 import URL from 'url';
+import QRCode from 'qrcode.react';
 import TBodyButton from './TBodyButton';
 import { showPageLoading } from '../../../actions';
+import Modal from '../../Modal';
 
 const Wrapper = styled.div`
   display: flex;
@@ -33,7 +35,17 @@ const Icon = styled.img`
 class TBodyCount extends Component {
   constructor() {
     super();
+    this.state = {
+      showQrCodeModal: false,
+    };
     this.goTo = this.goTo.bind(this);
+    this.toggleQrCodeModal = this.toggleQrCodeModal.bind(this);
+  }
+
+  toggleQrCodeModal() {
+    this.setState(prevState => ({
+      showQrCodeModal: !prevState.showQrCodeModal,
+    }));
   }
 
   goTo(e) {
@@ -45,6 +57,8 @@ class TBodyCount extends Component {
 
   render() {
     const { showModal, url } = this.props;
+    const showQrCode = window.innerWidth > 640;
+
     return (
       <Wrapper>
         {url.count || 0}
@@ -56,6 +70,11 @@ class TBodyCount extends Component {
               Stats
             </TBodyButton>
           )}
+          {showQrCode && (
+            <TBodyButton onClick={this.toggleQrCodeModal}>
+              <Icon src="/images/qrcode.svg" />
+            </TBodyButton>
+          )}
           <TBodyButton
             data-id={url.id}
             data-host={URL.parse(url.shortUrl).hostname}
@@ -64,6 +83,9 @@ class TBodyCount extends Component {
             <Icon src="/images/trash.svg" />
           </TBodyButton>
         </Actions>
+        <Modal show={this.state.showQrCodeModal} close={this.toggleQrCodeModal}>
+          <QRCode value={url.shortUrl} size={196} />
+        </Modal>
       </Wrapper>
     );
   }

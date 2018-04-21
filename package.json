@@ -54,6 +54,7 @@
     "passport-local": "^1.0.0",
     "passport-localapikey-update": "^0.6.0",
     "prop-types": "^15.6.0",
+    "qrcode.react": "^0.8.0",
     "raven": "^2.4.0",
     "react": "^16.3.2",
     "react-copy-to-clipboard": "^5.0.1",
