@@ -44,9 +44,9 @@ const Modal = ({ children, handler, show, close }) =>
         {children}
         <ButtonsWrapper>
           <Button color="gray" onClick={close}>
-            No
+            {handler ? 'No' : 'Close'}
           </Button>
-          <Button onClick={handler}>Yes</Button>
+          {handler && <Button onClick={handler}>Yes</Button>}
         </ButtonsWrapper>
       </Content>
     </Wrapper>
@@ -55,12 +55,13 @@ const Modal = ({ children, handler, show, close }) =>
 Modal.propTypes = {
   children: PropTypes.node.isRequired,
   close: PropTypes.func.isRequired,
-  handler: PropTypes.func.isRequired,
+  handler: PropTypes.func,
   show: PropTypes.bool,
 };
 
 Modal.defaultProps = {
   show: false,
+  handler: null,
 };
 
 export default Modal;
