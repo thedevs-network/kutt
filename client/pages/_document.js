@@ -25,7 +25,7 @@ class AppDocument extends Document {
         <Head>
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-          <title>Kutt.it | Modern URL shortener.</title>
+          <title>Kutt.it | Modern Open Source URL shortener.</title>
           <meta
             name="description"
             content="Kutt.it is a free and open source URL shortener with custom domains and stats."
@@ -45,10 +45,10 @@ class AppDocument extends Document {
           <meta property="og:type" content="website" />
           <meta property="og:title" content="Kutt.it" />
           <meta property="og:image" content="https://kutt.it/images/card.png" />
-          <meta property="og:description" content="Free Modern URL Shortener" />
+          <meta property="og:description" content="Free & Open Source Modern URL Shortener" />
           <meta name="twitter:url" content="https://kutt.it" />
           <meta name="twitter:title" content="Kutt.it" />
-          <meta name="twitter:description" content="Free Modern URL Shortener" />
+          <meta name="twitter:description" content="Free & Open Source Modern URL Shortener" />
           <meta name="twitter:image" content="https://kutt.it/images/card.png" />
 
           {this.props.styleTags}
