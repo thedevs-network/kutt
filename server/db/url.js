@@ -1,4 +1,3 @@
-const generate = require('nanoid/generate');
 const bcrypt = require('bcryptjs');
 const _ = require('lodash/');
 const {
@@ -18,9 +17,6 @@ const getUTCDate = (dateString = Date.now()) => {
   const date = new Date(dateString);
   return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours());
 };
-
-const generateId = () =>
-  generate('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890', 6);
 
 const queryNewUrl = 'CREATE (l:URL { id: $id, target: $target, createdAt: $createdAt }) RETURN l';
 
@@ -59,7 +55,7 @@ exports.createShortUrl = params =>
           shortUrl: generateShortUrl(data.id, params.user.domain),
         });
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 exports.createVisit = params =>
@@ -99,7 +95,7 @@ exports.createVisit = params =>
         const url = records.length && records[0].get('l').properties;
         resolve(url);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 exports.findUrl = ({ id, domain, target }) =>
@@ -134,7 +130,7 @@ exports.findUrl = ({ id, domain, target }) =>
           }));
         resolve(url);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 exports.getUrls = ({ user, options }) =>
@@ -169,7 +165,7 @@ exports.getUrls = ({ user, options }) =>
         }));
         resolve({ list: urls, countAll });
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 exports.getCustomDomain = ({ customDomain }) =>
@@ -186,7 +182,7 @@ exports.getCustomDomain = ({ customDomain }) =>
         const data = records.length && records[0].get('u').properties;
         resolve(data);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 exports.setCustomDomain = ({ user, customDomain }) =>
@@ -210,7 +206,7 @@ exports.setCustomDomain = ({ user, customDomain }) =>
         const data = records.length && records[0].get('d').properties;
         resolve(data);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 exports.deleteCustomDomain = ({ user }) =>
@@ -227,7 +223,7 @@ exports.deleteCustomDomain = ({ user }) =>
         const data = records.length && records[0].get('u').properties;
         resolve(data);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 exports.deleteUrl = ({ id, domain, user }) =>
@@ -257,7 +253,7 @@ exports.deleteUrl = ({ id, domain, user }) =>
         const data = records.length && records[0].get('u').properties;
         resolve(data);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 /* Collecting stats */
@@ -395,5 +391,5 @@ exports.getStats = ({ id, domain, user }) =>
 
         return resolve(response);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
