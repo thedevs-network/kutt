@@ -3,7 +3,6 @@ const URL = require('url');
 const useragent = require('useragent');
 const geoip = require('geoip-lite');
 const bcrypt = require('bcryptjs');
-const axios = require('axios');
 const {
   createShortUrl,
   createVisit,
@@ -15,48 +14,12 @@ const {
   deleteCustomDomain,
   deleteUrl,
 } = require('../db/url');
+const { addProtocol } = require('../utils');
 const config = require('../config');
 
-const preservedUrls = [
-  'login',
-  'logout',
-  'signup',
-  'reset-password',
-  'resetpassword',
-  'url-password',
-  'settings',
-  'stats',
-  'verify',
-  'api',
-  '404',
-  'static',
-  'images',
-];
-
-exports.preservedUrls = preservedUrls;
-
 exports.urlShortener = async ({ body, user }, res) => {
-  if (!body.target) return res.status(400).json({ error: 'No target has been provided.' });
-  if (body.target.length > 1024) {
-    return res.status(400).json({ error: 'Maximum URL length is 1024.' });
-  }
-  const isValidUrl = urlRegex({ exact: true, strict: false }).test(body.target);
-  if (!isValidUrl) return res.status(400).json({ error: 'URL is not valid.' });
-  const hasProtocol = /^https?/.test(URL.parse(body.target).protocol);
-  const target = hasProtocol ? body.target : `http://${body.target}`;
-  if (body.password && body.password.length > 64) {
-    return res.status(400).json({ error: 'Maximum password length is 64.' });
-  }
+  // Check if custom URL already exists
   if (user && body.customurl) {
-    if (!/^[a-zA-Z1-9-_]+$/g.test(body.customurl.trim())) {
-      return res.status(400).json({ error: 'Custom URL is not valid.' });
-    }
-    if (preservedUrls.some(url => url === body.customurl)) {
-      return res.status(400).json({ error: "You can't use this custom URL name." });
-    }
-    if (body.customurl.length > 64) {
-      return res.status(400).json({ error: 'Maximum custom URL length is 64.' });
-    }
     const urls = await findUrl({ id: body.customurl || '' });
     if (urls.length) {
       const urlWithNoDomain = !user.domain && urls.some(url => !url.domain);
@@ -66,27 +29,11 @@ exports.urlShortener = async ({ body, user }, res) => {
       }
     }
   }
-  const isMalware = await axios.post(
-    `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${
-      config.GOOGLE_SAFE_BROWSING_KEY
-    }`,
-    {
-      client: {
-        clientId: config.DEFAULT_DOMAIN.toLowerCase().replace('.', ''),
-        clientVersion: '1.0.0',
-      },
-      threatInfo: {
-        threatTypes: ['MALWARE', 'SOCIAL_ENGINEERING'],
-        platformTypes: ['WINDOWS'],
-        threatEntryTypes: ['URL'],
-        threatEntries: [{ url: body.target }],
-      },
-    }
-  );
-  if (isMalware.data && isMalware.data.matches) {
-    return res.status(400).json({ error: 'Malware detected!' });
-  }
+
+  // Create new URL
+  const target = addProtocol(body.target);
   const url = await createShortUrl({ ...body, target, user });
+
   return res.json(url);
 };
 
