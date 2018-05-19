@@ -12,6 +12,7 @@ const {
 } = require('date-fns');
 const driver = require('./neo4j');
 const config = require('../config');
+const { generateShortUrl } = require('../utils');
 
 const getUTCDate = (dateString = Date.now()) => {
   const date = new Date(dateString);
@@ -43,7 +44,7 @@ exports.createShortUrl = params =>
           createdAt: new Date().toJSON(),
           domain: params.user && params.user.domain,
           email: params.user && params.user.email,
-          id: (params.user && params.customurl) || generateId(),
+          id: params.id,
           password: hash || '',
           target: params.target,
         })
@@ -54,8 +55,8 @@ exports.createShortUrl = params =>
         resolve({
           ...data,
           password: !!data.password,
-          shortUrl: `http${!params.user.domain ? 's' : ''}://${params.user.domain ||
-            config.DEFAULT_DOMAIN}/${data.id}`,
+          reuse: !!params.reuse,
+          shortUrl: generateShortUrl(data.id, params.user.domain),
         });
       })
       .catch(reject);
@@ -101,13 +102,13 @@ exports.createVisit = params =>
       .catch(reject);
   });
 
-exports.findUrl = ({ id, domain }) =>
+exports.findUrl = ({ id, domain, target }) =>
   new Promise((resolve, reject) => {
     const session = driver.session();
     session
       .readTransaction(tx =>
         tx.run(
-          'MATCH (l:URL { id: $id })' +
+          `MATCH (l:URL { ${id ? 'id: $id' : 'target: $target'} })` +
             `${
               domain
                 ? 'MATCH (l)-[:USES]->(d:DOMAIN { name: $domain })'
@@ -118,6 +119,7 @@ exports.findUrl = ({ id, domain }) =>
           {
             id,
             domain,
+            target,
           }
         )
       )

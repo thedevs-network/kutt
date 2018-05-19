@@ -1,5 +1,6 @@
 const urlRegex = require('url-regex');
 const URL = require('url');
+const generate = require('nanoid/generate');
 const useragent = require('useragent');
 const geoip = require('geoip-lite');
 const bcrypt = require('bcryptjs');
@@ -14,10 +15,34 @@ const {
   deleteCustomDomain,
   deleteUrl,
 } = require('../db/url');
-const { addProtocol } = require('../utils');
+const { addProtocol, generateShortUrl } = require('../utils');
 const config = require('../config');
 
+const generateId = async () => {
+  const id = generate('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890', 6);
+  const urls = await findUrl({ id });
+  if (!urls.length) return id;
+  return generateId();
+};
+
 exports.urlShortener = async ({ body, user }, res) => {
+  // if "reuse" is true, try to return
+  // the existent URL without creating one
+  if (user && body.reuse) {
+    const urls = await findUrl({ target: addProtocol(body.target) });
+    if (urls.length) {
+      urls.sort((a, b) => a.createdAt > b.createdAt);
+      const { domain: d, user: u, ...url } = urls[urls.length - 1];
+      const data = {
+        ...url,
+        password: !!url.password,
+        reuse: true,
+        shortUrl: generateShortUrl(url.id, user.domain),
+      };
+      return res.json(data);
+    }
+  }
+
   // Check if custom URL already exists
   if (user && body.customurl) {
     const urls = await findUrl({ id: body.customurl || '' });
@@ -31,8 +56,9 @@ exports.urlShortener = async ({ body, user }, res) => {
   }
 
   // Create new URL
+  const id = (user && body.customurl) || (await generateId());
   const target = addProtocol(body.target);
-  const url = await createShortUrl({ ...body, target, user });
+  const url = await createShortUrl({ ...body, id, target, user });
 
   return res.json(url);
 };
