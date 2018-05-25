@@ -94,7 +94,7 @@ POST /api/url/submit
 Body:
   * `target`: Original long URL to be shortened.
   * `customurl` (optional): Set a custom URL.
-  * `passowrd` (optional): Set a password.
+  * `password` (optional): Set a password.
   * `reuse` (optional): If a URL with the specified target exists returns it, otherwise will send a new shortened URL.
 
 Returns: URL object
