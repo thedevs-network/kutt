@@ -1,8 +1,8 @@
-<a href="https://kutt.it" title="kutt.it"><img src="https://camo.githubusercontent.com/073e709d02d3cf6ee5439ee6ce0bb0895f9f3733/687474703a2f2f6f6936372e74696e797069632e636f6d2f3636797a346f2e6a7067" alt="Kutt.it"></a>
+<p align="center"><a href="https://kutt.it" title="kutt.it"><img src="https://raw.githubusercontent.com/thedevs-network/kutt/9d1c873897c3f5b9a1bd0c74dc5d23f2ed01f2ec/static/images/logo-github.png" alt="Kutt.it"></a></p>
 
 # Kutt.it
 
-**Kutt** is a modern URL shortener which lets you set custom domains for your shortened URLs, manage your links and view the click rate statistics.
+**Kutt** is a modern URL shortener with support for custom domains. Shorten URLs, manage your links and view the click rate statistics.
 
 *Contributions and bug reports are welcome.*
 
@@ -22,12 +22,12 @@
 
 ## Key Features
 * Free and open source.
-* Setting custom domain.
-* Using custom URLs for shortened links
+* Custom domain support.
+* Custom URLs for shortened links
 * Setting password for links.
 * Private statistics for shortened URLs.
 * View and manage your links.
-* Provided API.
+* RESTful API.
 
 ## Stack
 * Node (Web server)
@@ -41,7 +41,7 @@
 * Neo4j (Graph database)
 
 ## Setup
-You need to have [Node.js](https://nodejs.org/) and [Neo4j](https://neo4j.com/) installed on your system.
+You need to have [Node.js](https://nodejs.org/) and [Neo4j](https://neo4j.com/) installed on your machine.
 
 1. Clone this repository or [download zip](https://github.com/thedevs-network/kutt/archive/develop.zip).
 2. Copy `config.example.js` to `config.js` in both server and client folders and fill them properly.
@@ -53,7 +53,7 @@ You need to have [Node.js](https://nodejs.org/) and [Neo4j](https://neo4j.com/) 
 **Docker:** You can use Docker to run the app. Read [docker-examples](/docker-examples) for more info.
 
 ## API
-In additional to the website, you can use these APIs to create, delete and get URLs.
+In addition to the website, you can use these APIs to create, delete and get URLs.
 
 ### Types
 
@@ -68,11 +68,11 @@ URL {
 }
 ```
 
-In order to use these APIs you need to generate an API key from settings. Do not ever put this key in the client side of your app or anywhere that is exposed to others.
+In order to use these APIs you need to generate an API key from settings. Never put this key in the client side of your app or anywhere that is exposed to others.
 
 All API requests and responses are in JSON format.
 
-Include the API key as `X-API-Key` in the header of all below requests. Available API URLs with body parameters:
+Include the API key as `X-API-Key` in the header of all below requests. Available API endpoints with body parameters:
 
 **Get shortened URLs list:**
 ```
@@ -111,6 +111,6 @@ Body (or query for GET request)
 ## Contributing
 Pull requests are welcome. You'll probably find lots of improvements to be made.
 
-Open issues for feedback, needed features, reporting bugs or discussing ideas.
+Open issues for feedback, requesting features, reporting bugs or discussing ideas.
 
-Special thanks to [Thomas](https://github.com/trgwii) and [Muthu](https://github.com/MKRhere). Logo design by [Muthu](https://github.com/MKRhere)
+Special thanks to [Thomas](https://github.com/trgwii) and [Muthu](https://github.com/MKRhere). Logo design by [Muthu](https://github.com/MKRhere).
