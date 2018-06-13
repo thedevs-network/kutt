@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-  - "node"
+  - "9"
 
 before_install:
   - cp ./server/config.example.js ./server/config.js
