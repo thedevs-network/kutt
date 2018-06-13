@@ -14,6 +14,7 @@ const initialState = {
   auth: '',
   domain: '',
   shortener: '',
+  urlOptions: '',
 };
 
 const error = (state = initialState, action) => {
@@ -23,7 +24,6 @@ const error = (state = initialState, action) => {
     case DOMAIN_ERROR:
       return { ...state, domain: action.payload };
     case SET_DOMAIN:
-      return { ...state, domain: '' };
     case SHOW_DOMAIN_INPUT:
       return { ...state, domain: '' };
     case ADD_URL:

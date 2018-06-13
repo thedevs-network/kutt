@@ -48,21 +48,17 @@ const loading = (state = initialState, action) => {
     case SHORTENER_LOADING:
       return { ...state, shortener: true };
     case ADD_URL:
-      return { ...state, shortener: false };
     case SHORTENER_ERROR:
       return { ...state, shortener: false };
     case LIST_URLS:
-      return { ...state, table: false };
     case DELETE_URL:
       return { ...state, table: false };
     case AUTH_ERROR:
-      return { ...state, login: false, signup: false };
     case AUTH_USER:
       return { ...state, login: false, signup: false };
     case DOMAIN_LOADING:
       return { ...state, domain: true };
     case SET_DOMAIN:
-      return { ...state, domain: false };
     case DOMAIN_ERROR:
       return { ...state, domain: false };
     case API_LOADING:
