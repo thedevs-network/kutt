@@ -4,17 +4,20 @@ const generate = require('nanoid/generate');
 const useragent = require('useragent');
 const geoip = require('geoip-lite');
 const bcrypt = require('bcryptjs');
+const subDay = require('date-fns/sub_days');
 const {
   createShortUrl,
   createVisit,
-  findUrl,
-  getStats,
-  getUrls,
-  getCustomDomain,
-  setCustomDomain,
   deleteCustomDomain,
   deleteUrl,
+  findUrl,
+  getCustomDomain,
+  getStats,
+  getUrls,
+  setCustomDomain,
+  urlCountFromDate,
 } = require('../db/url');
+
 const { addProtocol, generateShortUrl } = require('../utils');
 const config = require('../config');
 
@@ -26,6 +29,19 @@ const generateId = async () => {
 };
 
 exports.urlShortener = async ({ body, user }, res) => {
+  // Check if user has passed daily limit
+  if (user) {
+    const { count } = await urlCountFromDate({
+      email: user.email,
+      date: subDay(new Date(), 365).toJSON(),
+    });
+    if (count > config.USER_LIMIT_PER_DAY) {
+      return res.status(429).json({
+        error: `You have reached your daily limit (${config.USER_LIMIT_PER_DAY}). Please wait 24h.`,
+      });
+    }
+  }
+
   // if "reuse" is true, try to return
   // the existent URL without creating one
   if (user && body.reuse) {
