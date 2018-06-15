@@ -11,6 +11,7 @@ const {
   validationCriterias,
   preservedUrls,
   validateUrl,
+  cooldownCheck,
   malwareCheck,
 } = require('./controllers/validateBodyController');
 const auth = require('./controllers/authController');
@@ -100,6 +101,7 @@ app.prepare().then(() => {
     auth.authJwtLoose,
     catchErrors(auth.recaptcha),
     catchErrors(validateUrl),
+    catchErrors(cooldownCheck),
     catchErrors(malwareCheck),
     catchErrors(url.urlShortener)
   );
