@@ -163,3 +163,64 @@ exports.resetPassword = ({ resetPasswordToken }) =>
       })
       .catch(err => reject(err));
   });
+
+exports.addCooldown = ({ email }) =>
+  new Promise((resolve, reject) => {
+    const session = driver.session();
+    session
+      .writeTransaction(tx =>
+        tx.run(
+          'MATCH (u:USER { email: $email }) ' +
+            'MERGE (u)-[r:RECEIVED]->(c:COOLDOWN { date: $date }) ' +
+            'RETURN COUNT(r) as count',
+          {
+            date: new Date().toJSON(),
+            email,
+          }
+        )
+      )
+      .then(({ records }) => {
+        session.close();
+        const count = records.length && records[0].get('count').toNumber();
+        return resolve({ count });
+      })
+      .catch(err => reject(err));
+  });
+
+exports.getCooldowns = ({ email }) =>
+  new Promise((resolve, reject) => {
+    const session = driver.session();
+    session
+      .writeTransaction(tx =>
+        tx.run(
+          'MATCH (u:USER { email: $email }) MATCH (u)-[r:RECEIVED]->(c) RETURN c.date as date',
+          {
+            date: new Date().toJSON(),
+            email,
+          }
+        )
+      )
+      .then(({ records = [] }) => {
+        session.close();
+        const cooldowns = records.map(record => record.get('date'));
+        return resolve({ cooldowns });
+      })
+      .catch(err => reject(err));
+  });
+
+exports.banUser = ({ email }) =>
+  new Promise((resolve, reject) => {
+    const session = driver.session();
+    session
+      .writeTransaction(tx =>
+        tx.run('MATCH (u:USER { email: $email }) SET u.banned = true RETURN u', {
+          email,
+        })
+      )
+      .then(({ records = [] }) => {
+        session.close();
+        const user = records.length && records[0].get('u');
+        return resolve({ user });
+      })
+      .catch(err => reject(err));
+  });
