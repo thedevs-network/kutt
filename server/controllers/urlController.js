@@ -33,7 +33,7 @@ exports.urlShortener = async ({ body, user }, res) => {
   if (user) {
     const { count } = await urlCountFromDate({
       email: user.email,
-      date: subDay(new Date(), 365).toJSON(),
+      date: subDay(new Date(), 1).toJSON(),
     });
     if (count > config.USER_LIMIT_PER_DAY) {
       return res.status(429).json({
