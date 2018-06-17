@@ -72,7 +72,7 @@ exports.validateUrl = async ({ body, user }, res, next) => {
   // Custom URL validations
   if (user && body.customurl) {
     // Validate custom URL
-    if (!/^[a-zA-Z1-9-_]+$/g.test(body.customurl.trim())) {
+    if (!/^[a-zA-Z0-9-_]+$/g.test(body.customurl.trim())) {
       return res.status(400).json({ error: 'Custom URL is not valid.' });
     }
 
