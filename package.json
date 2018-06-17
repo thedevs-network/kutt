@@ -4,7 +4,7 @@
   "description": "Modern URL shortener.",
   "main": "./server/server.js",
   "scripts": {
-    "test": "mocha --require babel-core/register './client/**/__test__/*.js'",
+    "test": "mocha --require babel-core/register ./client/**/__test__/*.js",
     "dev": "node ./server/server.js",
     "build": "next build ./client",
     "start": "NODE_ENV=production node ./server/server.js",
