@@ -1,4 +1,3 @@
-const generate = require('nanoid/generate');
 const bcrypt = require('bcryptjs');
 const _ = require('lodash/');
 const {
@@ -12,14 +11,12 @@ const {
 } = require('date-fns');
 const driver = require('./neo4j');
 const config = require('../config');
+const { generateShortUrl } = require('../utils');
 
 const getUTCDate = (dateString = Date.now()) => {
   const date = new Date(dateString);
   return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours());
 };
-
-const generateId = () =>
-  generate('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890', 6);
 
 const queryNewUrl = 'CREATE (l:URL { id: $id, target: $target, createdAt: $createdAt }) RETURN l';
 
@@ -43,7 +40,7 @@ exports.createShortUrl = params =>
           createdAt: new Date().toJSON(),
           domain: params.user && params.user.domain,
           email: params.user && params.user.email,
-          id: (params.user && params.customurl) || generateId(),
+          id: params.id,
           password: hash || '',
           target: params.target,
         })
@@ -54,11 +51,11 @@ exports.createShortUrl = params =>
         resolve({
           ...data,
           password: !!data.password,
-          shortUrl: `http${!params.user.domain ? 's' : ''}://${params.user.domain ||
-            config.DEFAULT_DOMAIN}/${data.id}`,
+          reuse: !!params.reuse,
+          shortUrl: generateShortUrl(data.id, params.user.domain),
         });
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 exports.createVisit = params =>
@@ -98,16 +95,16 @@ exports.createVisit = params =>
         const url = records.length && records[0].get('l').properties;
         resolve(url);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
-exports.findUrl = ({ id, domain }) =>
+exports.findUrl = ({ id, domain, target }) =>
   new Promise((resolve, reject) => {
     const session = driver.session();
     session
       .readTransaction(tx =>
         tx.run(
-          'MATCH (l:URL { id: $id })' +
+          `MATCH (l:URL { ${id ? 'id: $id' : 'target: $target'} })` +
             `${
               domain
                 ? 'MATCH (l)-[:USES]->(d:DOMAIN { name: $domain })'
@@ -118,6 +115,7 @@ exports.findUrl = ({ id, domain }) =>
           {
             id,
             domain,
+            target,
           }
         )
       )
@@ -132,7 +130,7 @@ exports.findUrl = ({ id, domain }) =>
           }));
         resolve(url);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 exports.getUrls = ({ user, options }) =>
@@ -167,7 +165,7 @@ exports.getUrls = ({ user, options }) =>
         }));
         resolve({ list: urls, countAll });
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 exports.getCustomDomain = ({ customDomain }) =>
@@ -184,7 +182,7 @@ exports.getCustomDomain = ({ customDomain }) =>
         const data = records.length && records[0].get('u').properties;
         resolve(data);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 exports.setCustomDomain = ({ user, customDomain }) =>
@@ -208,7 +206,7 @@ exports.setCustomDomain = ({ user, customDomain }) =>
         const data = records.length && records[0].get('d').properties;
         resolve(data);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 exports.deleteCustomDomain = ({ user }) =>
@@ -225,7 +223,7 @@ exports.deleteCustomDomain = ({ user }) =>
         const data = records.length && records[0].get('u').properties;
         resolve(data);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 exports.deleteUrl = ({ id, domain, user }) =>
@@ -255,7 +253,7 @@ exports.deleteUrl = ({ id, domain, user }) =>
         const data = records.length && records[0].get('u').properties;
         resolve(data);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
   });
 
 /* Collecting stats */
@@ -393,5 +391,27 @@ exports.getStats = ({ id, domain, user }) =>
 
         return resolve(response);
       })
-      .catch(reject);
+      .catch(() => session.close() && reject);
+  });
+
+exports.urlCountFromDate = ({ date, email }) =>
+  new Promise((resolve, reject) => {
+    const session = driver.session();
+    session
+      .readTransaction(tx =>
+        tx.run(
+          'MATCH (u:USER { email: $email })-[:CREATED]->(l) WHERE l.createdAt > $date ' +
+            'RETURN COUNT(l) as count',
+          {
+            date,
+            email,
+          }
+        )
+      )
+      .then(({ records }) => {
+        session.close();
+        const count = records.length && records[0].get('count').toNumber();
+        return resolve({ count });
+      })
+      .catch(err => reject(err));
   });

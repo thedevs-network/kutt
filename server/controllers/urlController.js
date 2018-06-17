@@ -1,62 +1,66 @@
 const urlRegex = require('url-regex');
 const URL = require('url');
+const generate = require('nanoid/generate');
 const useragent = require('useragent');
 const geoip = require('geoip-lite');
 const bcrypt = require('bcryptjs');
-const axios = require('axios');
+const subDay = require('date-fns/sub_days');
 const {
   createShortUrl,
   createVisit,
-  findUrl,
-  getStats,
-  getUrls,
-  getCustomDomain,
-  setCustomDomain,
   deleteCustomDomain,
   deleteUrl,
+  findUrl,
+  getCustomDomain,
+  getStats,
+  getUrls,
+  setCustomDomain,
+  urlCountFromDate,
 } = require('../db/url');
+
+const { addProtocol, generateShortUrl } = require('../utils');
 const config = require('../config');
 
-const preservedUrls = [
-  'login',
-  'logout',
-  'signup',
-  'reset-password',
-  'resetpassword',
-  'url-password',
-  'settings',
-  'stats',
-  'verify',
-  'api',
-  '404',
-  'static',
-  'images',
-];
-
-exports.preservedUrls = preservedUrls;
+const generateId = async () => {
+  const id = generate('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890', 6);
+  const urls = await findUrl({ id });
+  if (!urls.length) return id;
+  return generateId();
+};
 
 exports.urlShortener = async ({ body, user }, res) => {
-  if (!body.target) return res.status(400).json({ error: 'No target has been provided.' });
-  if (body.target.length > 1024) {
-    return res.status(400).json({ error: 'Maximum URL length is 1024.' });
+  // Check if user has passed daily limit
+  if (user) {
+    const { count } = await urlCountFromDate({
+      email: user.email,
+      date: subDay(new Date(), 1).toJSON(),
+    });
+    if (count > config.USER_LIMIT_PER_DAY) {
+      return res.status(429).json({
+        error: `You have reached your daily limit (${config.USER_LIMIT_PER_DAY}). Please wait 24h.`,
+      });
+    }
   }
-  const isValidUrl = urlRegex({ exact: true, strict: false }).test(body.target);
-  if (!isValidUrl) return res.status(400).json({ error: 'URL is not valid.' });
-  const hasProtocol = /^https?/.test(URL.parse(body.target).protocol);
-  const target = hasProtocol ? body.target : `http://${body.target}`;
-  if (body.password && body.password.length > 64) {
-    return res.status(400).json({ error: 'Maximum password length is 64.' });
+
+  // if "reuse" is true, try to return
+  // the existent URL without creating one
+  if (user && body.reuse) {
+    const urls = await findUrl({ target: addProtocol(body.target) });
+    if (urls.length) {
+      urls.sort((a, b) => a.createdAt > b.createdAt);
+      const { domain: d, user: u, ...url } = urls[urls.length - 1];
+      const data = {
+        ...url,
+        password: !!url.password,
+        reuse: true,
+        shortUrl: generateShortUrl(url.id, user.domain),
+      };
+      return res.json(data);
+    }
   }
+
+  // Check if custom URL already exists
   if (user && body.customurl) {
-    if (!/^[a-zA-Z1-9-_]+$/g.test(body.customurl.trim())) {
-      return res.status(400).json({ error: 'Custom URL is not valid.' });
-    }
-    if (preservedUrls.some(url => url === body.customurl)) {
-      return res.status(400).json({ error: "You can't use this custom URL name." });
-    }
-    if (body.customurl.length > 64) {
-      return res.status(400).json({ error: 'Maximum custom URL length is 64.' });
-    }
     const urls = await findUrl({ id: body.customurl || '' });
     if (urls.length) {
       const urlWithNoDomain = !user.domain && urls.some(url => !url.domain);
@@ -66,27 +70,12 @@ exports.urlShortener = async ({ body, user }, res) => {
       }
     }
   }
-  const isMalware = await axios.post(
-    `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${
-      config.GOOGLE_SAFE_BROWSING_KEY
-    }`,
-    {
-      client: {
-        clientId: config.DEFAULT_DOMAIN.toLowerCase().replace('.', ''),
-        clientVersion: '1.0.0',
-      },
-      threatInfo: {
-        threatTypes: ['MALWARE', 'SOCIAL_ENGINEERING'],
-        platformTypes: ['WINDOWS'],
-        threatEntryTypes: ['URL'],
-        threatEntries: [{ url: body.target }],
-      },
-    }
-  );
-  if (isMalware.data && isMalware.data.matches) {
-    return res.status(400).json({ error: 'Malware detected!' });
-  }
-  const url = await createShortUrl({ ...body, target, user });
+
+  // Create new URL
+  const id = (user && body.customurl) || (await generateId());
+  const target = addProtocol(body.target);
+  const url = await createShortUrl({ ...body, id, target, user });
+
   return res.json(url);
 };
 

@@ -6,7 +6,14 @@ const Raven = require('raven');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const { validateBody, validationCriterias } = require('./controllers/validateBodyController');
+const {
+  validateBody,
+  validationCriterias,
+  preservedUrls,
+  validateUrl,
+  cooldownCheck,
+  malwareCheck,
+} = require('./controllers/validateBodyController');
 const auth = require('./controllers/authController');
 const url = require('./controllers/urlController');
 const config = require('./config');
@@ -56,7 +63,7 @@ app.prepare().then(() => {
     const { headers, path } = req;
     if (
       headers.host !== config.DEFAULT_DOMAIN &&
-      (path === '/' || url.preservedUrls.some(item => item === path.replace('/', '')))
+      (path === '/' || preservedUrls.some(item => item === path.replace('/', '')))
     ) {
       return res.redirect(`http://${config.DEFAULT_DOMAIN + path}`);
     }
@@ -93,6 +100,9 @@ app.prepare().then(() => {
     auth.authApikey,
     auth.authJwtLoose,
     catchErrors(auth.recaptcha),
+    catchErrors(validateUrl),
+    catchErrors(cooldownCheck),
+    catchErrors(malwareCheck),
     catchErrors(url.urlShortener)
   );
   server.post('/api/url/deleteurl', auth.authApikey, auth.authJwt, catchErrors(url.deleteUrl));
