@@ -19,8 +19,8 @@ const ReportPage = () => (
     <Wrapper>
       <h3>Report abuse</h3>
       <p>
-        Report abuses, malware and phishing links to the below email address. We we will take them
-        down within 12 hours.
+        Report abuses, malware and phishing links to the below email address. We will take them down
+        within 12 hours.
       </p>
       <p>{REPORT_EMAIL}</p>
     </Wrapper>
