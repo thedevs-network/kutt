@@ -101,7 +101,7 @@ exports.goToUrl = async (req, res, next) => {
   const isBot =
     botList.some(bot => agent.source.toLowerCase().includes(bot)) || agent.family === 'Other';
   if (!urls && !urls.length) return next();
-  const [url] = urls;
+  const url = urls.find(item => (domain ? item.domain === domain : !item.domain));
   if (url.password && !req.body.password) {
     req.protectedUrl = id;
     return next();
