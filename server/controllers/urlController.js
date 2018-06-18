@@ -89,7 +89,8 @@ const filterInOs = agent => item =>
 
 exports.goToUrl = async (req, res, next) => {
   const { host } = req.headers;
-  const id = req.params.id || req.body.id;
+  const reqestedId = req.params.id || req.body.id;
+  const id = reqestedId.replace('+', '');
   const domain = host !== config.DEFAULT_DOMAIN && host;
   const agent = useragent.parse(req.headers['user-agent']);
   const [browser = 'Other'] = browsersList.filter(filterInBrowser(agent));
@@ -102,8 +103,15 @@ exports.goToUrl = async (req, res, next) => {
     botList.some(bot => agent.source.toLowerCase().includes(bot)) || agent.family === 'Other';
   if (!urls && !urls.length) return next();
   const url = urls.find(item => (domain ? item.domain === domain : !item.domain));
+  const doesRequestInfo = /.*\+$/gi.test(reqestedId);
+  if (doesRequestInfo && !url.password) {
+    req.urlTarget = url.target;
+    req.pageType = 'info';
+    return next();
+  }
   if (url.password && !req.body.password) {
     req.protectedUrl = id;
+    req.pageType = 'password';
     return next();
   }
   if (url.password) {
