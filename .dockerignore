@@ -1,2 +1,14 @@
-.git
+cypress
 node_modules
+.dockerignore
+.env
+.git
+.gitignore
+.prettierrc
+.travis.yml
+cypress.json
+docker-compose.yml
+Dockerfile
+npm-debug.log
+yarn-debug.log
+yarn-error.log

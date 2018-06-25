@@ -1,13 +1,22 @@
 language: node_js
-
 node_js:
   - "9"
 
+env:
+  - DOCKER_COMPOSE_VERSION=1.4.2
+
 before_install:
-  - cp ./server/config.example.js ./server/config.js
-  - cp ./client/config.example.js ./client/config.js
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  #
+  - cp ./docker-examples/client-config.example.js ./client/config.js
+  - cp ./docker-examples/server-config.example.js ./server/config.js
 
 script:
   - yarn run lint:nofix
   - yarn test
+  # - yarn test:e2e
   - yarn build
+  - docker-compose up

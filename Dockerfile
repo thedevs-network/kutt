@@ -1,7 +1,9 @@
-FROM node:9.5.0-alpine
+FROM keymetrics/pm2:latest-alpine
 
-ADD . /code
-WORKDIR /code
+COPY . .
+
 RUN npm install
 RUN npm run build
-CMD ["npm", "start"]
+
+EXPOSE 3000
+CMD [ "npm", "run", "pm2-next" ]
