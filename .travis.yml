@@ -10,3 +10,6 @@ script:
   - npm build
   - docker-compose up --build -d
   # - yarn test:e2e
+
+after_script:
+  - docker-compose down
