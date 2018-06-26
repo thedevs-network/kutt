@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - "10"
 
-before_install: ./docker-examples/before-install.sh
+before_install: chmod a+x ./docker-examples/before-install.sh
 
 script:
   - yarn run lint:nofix
