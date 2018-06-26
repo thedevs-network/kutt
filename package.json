@@ -9,7 +9,6 @@
     "build": "next build ./client",
     "test": "mocha --require babel-core/register './client/**/__test__/*.js'",
     "pm2-next": "pm2-runtime start ./docker-examples/ecosystem.config.js --env production",
-    "pm2-next-cluster": "npm run pm2-next -- -i max",
     "lint": "./node_modules/.bin/eslint . --fix",
     "lint:nofix": "./node_modules/.bin/eslint ."
   },

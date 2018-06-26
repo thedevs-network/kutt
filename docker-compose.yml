@@ -2,6 +2,8 @@ version: "3"
 services:
   web:
     build: .
+    depends_on:
+      - neo4j
     ports:
      - "3000:3000"
     container_name: kutt
