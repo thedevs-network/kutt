@@ -11,6 +11,7 @@ const {
   validationCriterias,
   preservedUrls,
   validateUrl,
+  cooldownCheck,
   malwareCheck,
 } = require('./controllers/validateBodyController');
 const auth = require('./controllers/authController');
@@ -100,6 +101,7 @@ app.prepare().then(() => {
     auth.authJwtLoose,
     catchErrors(auth.recaptcha),
     catchErrors(validateUrl),
+    catchErrors(cooldownCheck),
     catchErrors(malwareCheck),
     catchErrors(url.urlShortener)
   );
@@ -109,9 +111,15 @@ app.prepare().then(() => {
   server.delete('/api/url/customdomain', auth.authJwt, catchErrors(url.deleteCustomDomain));
   server.get('/api/url/stats', auth.authApikey, auth.authJwt, catchErrors(url.getStats));
   server.post('/api/url/requesturl', catchErrors(url.goToUrl));
-  server.get('/:id', catchErrors(url.goToUrl), (req, res) =>
-    app.render(req, res, '/url-password', req.protectedUrl)
-  );
+  server.get('/:id', catchErrors(url.goToUrl), (req, res) => {
+    switch (req.pageType) {
+      case 'password':
+        return app.render(req, res, '/url-password', req.protectedUrl);
+      case 'info':
+      default:
+        return app.render(req, res, '/url-info', req.urlTarget);
+    }
+  });
 
   server.get('*', (req, res) => handle(req, res));
 

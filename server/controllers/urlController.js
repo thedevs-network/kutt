@@ -4,17 +4,20 @@ const generate = require('nanoid/generate');
 const useragent = require('useragent');
 const geoip = require('geoip-lite');
 const bcrypt = require('bcryptjs');
+const subDay = require('date-fns/sub_days');
 const {
   createShortUrl,
   createVisit,
-  findUrl,
-  getStats,
-  getUrls,
-  getCustomDomain,
-  setCustomDomain,
   deleteCustomDomain,
   deleteUrl,
+  findUrl,
+  getCustomDomain,
+  getStats,
+  getUrls,
+  setCustomDomain,
+  urlCountFromDate,
 } = require('../db/url');
+
 const { addProtocol, generateShortUrl } = require('../utils');
 const config = require('../config');
 
@@ -26,6 +29,19 @@ const generateId = async () => {
 };
 
 exports.urlShortener = async ({ body, user }, res) => {
+  // Check if user has passed daily limit
+  if (user) {
+    const { count } = await urlCountFromDate({
+      email: user.email,
+      date: subDay(new Date(), 1).toJSON(),
+    });
+    if (count > config.USER_LIMIT_PER_DAY) {
+      return res.status(429).json({
+        error: `You have reached your daily limit (${config.USER_LIMIT_PER_DAY}). Please wait 24h.`,
+      });
+    }
+  }
+
   // if "reuse" is true, try to return
   // the existent URL without creating one
   if (user && body.reuse) {
@@ -73,7 +89,8 @@ const filterInOs = agent => item =>
 
 exports.goToUrl = async (req, res, next) => {
   const { host } = req.headers;
-  const id = req.params.id || req.body.id;
+  const reqestedId = req.params.id || req.body.id;
+  const id = reqestedId.replace('+', '');
   const domain = host !== config.DEFAULT_DOMAIN && host;
   const agent = useragent.parse(req.headers['user-agent']);
   const [browser = 'Other'] = browsersList.filter(filterInBrowser(agent));
@@ -85,9 +102,16 @@ exports.goToUrl = async (req, res, next) => {
   const isBot =
     botList.some(bot => agent.source.toLowerCase().includes(bot)) || agent.family === 'Other';
   if (!urls && !urls.length) return next();
-  const [url] = urls;
+  const url = urls.find(item => (domain ? item.domain === domain : !item.domain));
+  const doesRequestInfo = /.*\+$/gi.test(reqestedId);
+  if (doesRequestInfo && !url.password) {
+    req.urlTarget = url.target;
+    req.pageType = 'info';
+    return next();
+  }
   if (url.password && !req.body.password) {
     req.protectedUrl = id;
+    req.pageType = 'password';
     return next();
   }
   if (url.password) {

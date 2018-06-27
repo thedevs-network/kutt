@@ -9,6 +9,9 @@ module.exports = {
   DB_USERNAME: '',
   DB_PASSWORD: '',
 
+  /* The daily limit for each user */
+  USER_LIMIT_PER_DAY: 50,
+
   /* A passphrase to encrypt JWT. Use a long and secure key. */
   JWT_SECRET: 'securekey',
 

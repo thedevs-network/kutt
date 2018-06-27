@@ -46,6 +46,9 @@ const authenticate = (type, error, isStrict = true) =>
     return passport.authenticate(type, (err, user) => {
       if (err) return res.status(400);
       if (!user && isStrict) return res.status(401).json({ error });
+      if (user.banned) {
+        return res.status(400).json({ error: 'Your are banned from using this website.' });
+      }
       req.user = user;
       return next();
     })(req, res, next);

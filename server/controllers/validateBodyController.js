@@ -1,7 +1,9 @@
 const axios = require('axios');
 const urlRegex = require('url-regex');
 const validator = require('express-validator/check');
+const { subHours } = require('date-fns/');
 const { validationResult } = require('express-validator/check');
+const { addCooldown, banUser, getCooldowns } = require('../db/user');
 const config = require('../config');
 
 exports.validationCriterias = [
@@ -88,7 +90,22 @@ exports.validateUrl = async ({ body, user }, res, next) => {
   return next();
 };
 
-exports.malwareCheck = async ({ body }, res, next) => {
+exports.cooldownCheck = async ({ user }, res, next) => {
+  if (user) {
+    const { cooldowns } = await getCooldowns(user);
+    if (cooldowns.length > 4) {
+      await banUser(user);
+      return res.status(400).json({ error: 'Too much malware requests. You are now banned.' });
+    }
+    const hasCooldownNow = cooldowns.some(cooldown => cooldown > subHours(new Date(), 12).toJSON());
+    if (hasCooldownNow) {
+      return res.status(400).json({ error: 'Cooldown because of a malware URL. Wait 12h' });
+    }
+  }
+  return next();
+};
+
+exports.malwareCheck = async ({ body, user }, res, next) => {
   const isMalware = await axios.post(
     `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${
       config.GOOGLE_SAFE_BROWSING_KEY
@@ -107,7 +124,8 @@ exports.malwareCheck = async ({ body }, res, next) => {
     }
   );
   if (isMalware.data && isMalware.data.matches) {
-    return res.status(400).json({ error: 'Malware detected!' });
+    await addCooldown(user);
+    return res.status(400).json({ error: 'Malware detected! Cooldown for 12h.' });
   }
   return next();
 };

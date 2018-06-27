@@ -393,3 +393,25 @@ exports.getStats = ({ id, domain, user }) =>
       })
       .catch(() => session.close() && reject);
   });
+
+exports.urlCountFromDate = ({ date, email }) =>
+  new Promise((resolve, reject) => {
+    const session = driver.session();
+    session
+      .readTransaction(tx =>
+        tx.run(
+          'MATCH (u:USER { email: $email })-[:CREATED]->(l) WHERE l.createdAt > $date ' +
+            'RETURN COUNT(l) as count',
+          {
+            date,
+            email,
+          }
+        )
+      )
+      .then(({ records }) => {
+        session.close();
+        const count = records.length && records[0].get('count').toNumber();
+        return resolve({ count });
+      })
+      .catch(err => reject(err));
+  });
