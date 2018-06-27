@@ -7,7 +7,7 @@ DOCKER_COMPOSE_VERSION="1.21.2"
 # Install docker-compose
 
 if [ -f /usr/local/bin/docker-compose ]; then
-  rm /usr/local/bin/docker-compose
+  rm /usr/local/bin/docker-compose -f
 fi
 
 ulr=https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m`
