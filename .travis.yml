@@ -1,13 +1,16 @@
 language: node_js
-
 node_js:
   - "9"
 
-before_install:
-  - cp ./server/config.example.js ./server/config.js
-  - cp ./client/config.example.js ./client/config.js
+before_install: 
+   - sudo bash ./docker-examples/before-install.sh
 
 script:
-  - yarn run lint:nofix
-  - yarn test
-  - yarn build
+  - npm run lint:nofix
+  - npm test
+  - npm build
+  - docker-compose up --build -d
+  # - yarn test:e2e
+
+after_script:
+  - docker-compose down
