@@ -2,10 +2,10 @@ language: node_js
 node_js:
   - "9"
 
-before_install: chmod a+x ./docker-examples/before-install.sh
+before_install: 
+   - sudo bash ./docker-examples/before-install.sh
 
 script:
-  - sudo  bash ./docker-examples/before-install.sh
   - npm run lint:nofix
   - npm test
   - npm build
