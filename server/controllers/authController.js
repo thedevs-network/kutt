@@ -93,7 +93,7 @@ exports.signup = async (req, res) => {
   if (user && user.verified) return res.status(403).json({ error: 'Email is already in use.' });
   const newUser = await createUser({ email, password });
   const mail = await transporter.sendMail({
-    from: config.MAIL_USER,
+    from: config.MAIL_FROM || config.MAIL_USER,
     to: newUser.email,
     subject: 'Verify your account',
     text: verifyMailText.replace('{{verification}}', newUser.verificationToken),
@@ -156,7 +156,7 @@ exports.requestPasswordReset = async ({ body: { email } }, res) => {
     return res.status(400).json({ error: "Couldn't reset password." });
   }
   const mail = await transporter.sendMail({
-    from: config.MAIL_USER,
+    from: config.MAIL_FROM || config.MAIL_USER,
     to: user.email,
     subject: 'Reset your password',
     text: resetMailText

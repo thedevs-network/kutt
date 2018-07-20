@@ -7,12 +7,14 @@ if (process.env.NODE_ENV === 'production') {
   mailConfig = {
     host: config.MAIL_HOST,
     port: config.MAIL_PORT,
-    secure: config.MAIL_SECURE,
-    auth: {
+    secure: config.MAIL_SECURE
+  };
+  if (config.MAIL_USER && '' != config.MAIL_USER) {
+    mailConfig.auth = {
       user: config.MAIL_USER,
       pass: config.MAIL_PASSWORD,
-    },
-  };
+    };
+  }
 } else {
   mailConfig = {
     host: 'smtp.ethereal.email',

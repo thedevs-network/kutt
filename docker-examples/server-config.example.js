@@ -31,6 +31,7 @@ module.exports = {
   MAIL_HOST: '',
   MAIL_PORT: 587,
   MAIL_SECURE: false,
+  MAIL_FROM: '',
   MAIL_USER: '',
   MAIL_PASSWORD: '',
 };
