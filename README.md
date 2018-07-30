@@ -18,6 +18,7 @@
 * [Stack](#stack)
 * [Setup](#setup)
 * [API](#api)
+* [Integrate with ShareX](#sharex)
 * [Contributing](#contributing)
 
 ## Key Features
@@ -107,6 +108,9 @@ GET /api/url/stats
 Body (or query for GET request)
   * `id`: ID of the shortened URL.
   * `domain` (optional):  Required if a custom domain is used for short URL.
+  
+## ShareX
+You can use Kutt as your default URL shortener in [ShareX](https://getsharex.com/). Please refer to our [ShareX wiki](https://github.com/thedevs-network/kutt/wiki/ShareX) for more informations.
 
 ## Contributing
 Pull requests are welcome. You'll probably find lots of improvements to be made.
