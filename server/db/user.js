@@ -94,7 +94,7 @@ exports.changePassword = ({ email, password }) =>
         const user = res.records.length && res.records[0].get('u').properties;
         return resolve(user);
       })
-      .catch(() => session.close() && reject);
+      .catch(err => session.close() || reject(err));
   });
 
 exports.generateApiKey = ({ email }) =>
@@ -113,7 +113,7 @@ exports.generateApiKey = ({ email }) =>
         const newApikey = res.records.length && res.records[0].get('u').properties.apikey;
         return resolve({ apikey: newApikey });
       })
-      .catch(() => session.close() && reject);
+      .catch(err => session.close() || reject(err));
   });
 
 exports.requestPasswordReset = ({ email }) =>
@@ -140,7 +140,7 @@ exports.requestPasswordReset = ({ email }) =>
         const user = res.records.length && res.records[0].get('u').properties;
         return resolve(user);
       })
-      .catch(() => session.close() && reject);
+      .catch(err => session.close() || reject(err));
   });
 
 exports.resetPassword = ({ resetPasswordToken }) =>

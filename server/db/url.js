@@ -55,7 +55,7 @@ exports.createShortUrl = params =>
           shortUrl: generateShortUrl(data.id, params.user.domain),
         });
       })
-      .catch(() => session.close() && reject);
+      .catch(err => session.close() || reject(err));
   });
 
 exports.createVisit = params =>
@@ -95,7 +95,7 @@ exports.createVisit = params =>
         const url = records.length && records[0].get('l').properties;
         resolve(url);
       })
-      .catch(() => session.close() && reject);
+      .catch(err => session.close() || reject(err));
   });
 
 exports.findUrl = ({ id, domain, target }) =>
@@ -130,7 +130,7 @@ exports.findUrl = ({ id, domain, target }) =>
           }));
         resolve(url);
       })
-      .catch(() => session.close() && reject);
+      .catch(err => session.close() || reject(err));
   });
 
 exports.getCountUrls = ({ user }) =>
@@ -201,7 +201,7 @@ exports.getCustomDomain = ({ customDomain }) =>
         const data = records.length && records[0].get('u').properties;
         resolve(data);
       })
-      .catch(() => session.close() && reject);
+      .catch(err => session.close() || reject(err));
   });
 
 exports.setCustomDomain = ({ user, customDomain }) =>
@@ -225,7 +225,7 @@ exports.setCustomDomain = ({ user, customDomain }) =>
         const data = records.length && records[0].get('d').properties;
         resolve(data);
       })
-      .catch(() => session.close() && reject);
+      .catch(err => session.close() || reject(err));
   });
 
 exports.deleteCustomDomain = ({ user }) =>
@@ -242,7 +242,7 @@ exports.deleteCustomDomain = ({ user }) =>
         const data = records.length && records[0].get('u').properties;
         resolve(data);
       })
-      .catch(() => session.close() && reject);
+      .catch(err => session.close() || reject(err));
   });
 
 exports.deleteUrl = ({ id, domain, user }) =>
@@ -272,7 +272,7 @@ exports.deleteUrl = ({ id, domain, user }) =>
         const data = records.length && records[0].get('u').properties;
         resolve(data);
       })
-      .catch(() => session.close() && reject);
+      .catch(err => session.close() || reject(err));
   });
 
 /* Collecting stats */
@@ -410,7 +410,7 @@ exports.getStats = ({ id, domain, user }) =>
 
         return resolve(response);
       })
-      .catch(() => session.close() && reject);
+      .catch(err => session.close() || reject(err));
   });
 
 exports.urlCountFromDate = ({ date, email }) =>
