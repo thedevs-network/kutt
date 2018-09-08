@@ -133,39 +133,58 @@ exports.findUrl = ({ id, domain, target }) =>
       .catch(() => session.close() && reject);
   });
 
+exports.getCountUrls = ({ user }) =>
+  new Promise((resolve, reject) => {
+    const session = driver.session();
+    session
+      .readTransaction(tx =>
+        tx.run('MATCH (u:USER {email: $email}) RETURN size((u)-[:CREATED]->()) as count', {
+          email: user.email,
+        })
+      )
+      .then(({ records }) => {
+        session.close();
+        const countAll = records.length ? records[0].get('count').toNumber() : 0;
+        resolve({ countAll });
+      })
+      .catch(err => session.close() || reject(err));
+  });
+
 exports.getUrls = ({ user, options }) =>
   new Promise((resolve, reject) => {
     const session = driver.session();
     const { count = 5, page = 1, search = '' } = options;
+    const limit = parseInt(count, 10);
+    const skip = parseInt(page, 10);
     const searchQuery = search ? 'WHERE l.id =~ $search OR l.target =~ $search' : '';
     session
       .readTransaction(tx =>
         tx.run(
           `MATCH (u:USER { email: $email })-[:CREATED]->(l) ${searchQuery} ` +
-            'OPTIONAL MATCH (l)-[:USES]->(d)' +
-            'OPTIONAL MATCH (l)<-[:VISITED]-(v:VISIT)' +
-            'RETURN l, d.name AS domain, COUNT(v) AS count ORDER BY l.createdAt DESC',
+            'WITH l ORDER BY l.createdAt DESC ' +
+            'WITH l SKIP $skip LIMIT $limit ' +
+            'OPTIONAL MATCH (l)-[:USES]->(d) ' +
+            'RETURN l, d.name AS domain, size((l)<-[:VISITED]-()) as count',
           {
             email: user.email,
+            limit,
+            skip: limit * (skip - 1),
             search: `(?i).*${search}.*`,
           }
         )
       )
       .then(({ records }) => {
         session.close();
-        const countAll = records.length;
-        const first = (page - 1) * count;
-        const last = page * count;
-        const urls = records.slice(first, last).map(record => ({
+        const urls = records.map(record => ({
           ...record.get('l').properties,
           password: !!record.get('l').properties.password,
           count: record.get('count').toNumber(),
           shortUrl: `http${!record.get('domain') ? 's' : ''}://${record.get('domain') ||
             config.DEFAULT_DOMAIN}/${record.get('l').properties.id}`,
         }));
-        resolve({ list: urls, countAll });
+        resolve({ list: urls });
       })
-      .catch(() => session.close() && reject);
+      .catch(err => session.close() || reject(err));
   });
 
 exports.getCustomDomain = ({ customDomain }) =>

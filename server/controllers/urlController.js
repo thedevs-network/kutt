@@ -11,6 +11,7 @@ const {
   deleteCustomDomain,
   deleteUrl,
   findUrl,
+  getCountUrls,
   getCustomDomain,
   getStats,
   getUrls,
@@ -145,8 +146,9 @@ exports.goToUrl = async (req, res, next) => {
 };
 
 exports.getUrls = async ({ query, user }, res) => {
+  const { countAll } = await getCountUrls({ user });
   const urlsList = await getUrls({ options: query, user });
-  return res.json(urlsList);
+  return res.json({ ...urlsList, countAll });
 };
 
 exports.setCustomDomain = async ({ body: { customDomain }, user }, res) => {
