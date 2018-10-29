@@ -19,6 +19,7 @@
 * [Setup](#setup)
 * [API](#api)
 * [Integrate with ShareX](#sharex)
+* [3rd Party API Packages](#3rd-party-api-packages)
 * [Contributing](#contributing)
 
 ## Key Features
@@ -109,13 +110,13 @@ Body (or query for GET request)
   * `id`: ID of the shortened URL.
   * `domain` (optional):  Required if a custom domain is used for short URL.
   
-### 3rd Party API packages
-| Language  | Link                                                       | Description                                       |
-|-----------|------------------------------------------------------------|---------------------------------------------------|
-| C# (.NET) | [Nuget Package](https://www.nuget.org/packages/KuttSharp/) | Unofficial .NET package for Kutt.it url shortener |
-
 ## ShareX
 You can use Kutt as your default URL shortener in [ShareX](https://getsharex.com/). Please refer to our [ShareX wiki](https://github.com/thedevs-network/kutt/wiki/ShareX) for more informations.
+
+## 3rd Party API packages
+| Language  | Link                                                       | Description                                       |
+|-----------|------------------------------------------------------------|---------------------------------------------------|
+| C# (.NET) | [KuttSharp](https://github.com/0xaryan/KuttSharp)          | Unofficial .NET package for Kutt.it url shortener |
 
 ## Contributing
 Pull requests are welcome. You'll probably find lots of improvements to be made.
