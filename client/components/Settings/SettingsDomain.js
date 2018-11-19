@@ -57,7 +57,7 @@ const SettingsDomain = ({ settings, handleCustomDomain, loading, showDomainInput
       have <b>example.com/shorturl.</b>
     </p>
     <p>
-      Point your domain A record to <b>31.220.54.35</b> then add the domain via form below:
+      Point your domain A record to <b>164.132.153.221</b> then add the domain via form below:
     </p>
     {settings.customDomain && !settings.domainInput ? (
       <DomainWrapper>
