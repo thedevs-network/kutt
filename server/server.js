@@ -78,6 +78,7 @@ app.prepare().then(() => {
   server.get('/stats', (req, res) => app.render(req, res, '/stats', req.query));
   server.get('/terms', (req, res) => app.render(req, res, '/terms'));
   server.get('/report', (req, res) => app.render(req, res, '/report'));
+  server.get('/banned', (req, res) => app.render(req, res, '/banned'));
   server.get('/reset-password/:resetPasswordToken?', catchErrors(auth.resetPassword), (req, res) =>
     app.render(req, res, '/reset-password', req.user)
   );
@@ -111,6 +112,13 @@ app.prepare().then(() => {
   server.delete('/api/url/customdomain', auth.authJwt, catchErrors(url.deleteCustomDomain));
   server.get('/api/url/stats', auth.authApikey, auth.authJwt, catchErrors(url.getStats));
   server.post('/api/url/requesturl', catchErrors(url.goToUrl));
+  server.post(
+    '/api/url/admin/ban',
+    auth.authApikey,
+    auth.authJwt,
+    auth.authAdmin,
+    catchErrors(url.ban)
+  );
   server.get('/:id', catchErrors(url.goToUrl), (req, res) => {
     switch (req.pageType) {
       case 'password':
