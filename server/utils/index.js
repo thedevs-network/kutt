@@ -8,3 +8,5 @@ exports.addProtocol = url => {
 
 exports.generateShortUrl = (id, domain) =>
   `http${!domain ? 's' : ''}://${domain || config.DEFAULT_DOMAIN}/${id}`;
+
+exports.isAdmin = email => config.ADMIN_EMAILS.includes(email);

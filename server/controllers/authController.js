@@ -4,6 +4,7 @@ const passport = require('passport');
 const JWT = require('jsonwebtoken');
 const axios = require('axios');
 const config = require('../config');
+const { isAdmin } = require('../utils');
 const transporter = require('../mail/mail');
 const { resetMailText, verifyMailText } = require('../mail/text');
 const {
@@ -33,6 +34,7 @@ const signToken = user =>
       iss: 'ApiAuth',
       sub: user.email,
       domain: user.domain || '',
+      admin: isAdmin(user.email),
       iat: new Date().getTime(),
       exp: new Date().setDate(new Date().getDate() + 7),
     },
@@ -46,10 +48,19 @@ const authenticate = (type, error, isStrict = true) =>
     return passport.authenticate(type, (err, user) => {
       if (err) return res.status(400);
       if (!user && isStrict) return res.status(401).json({ error });
-      if (user.banned) {
+      if (user && isStrict && !user.verified) {
+        return res.status(400).json({ error: 'Your email address is not verified.' });
+      }
+      if (user && user.banned) {
         return res.status(400).json({ error: 'Your are banned from using this website.' });
       }
-      req.user = user;
+      if (user) {
+        req.user = {
+          ...user,
+          admin: isAdmin(user.email),
+        };
+        return next();
+      }
       return next();
     })(req, res, next);
   };
@@ -77,6 +88,13 @@ exports.recaptcha = async (req, res, next) => {
     if (!isReCaptchaValid.data.success) {
       return res.status(401).json({ error: 'reCAPTCHA is not valid. Try again.' });
     }
+  }
+  return next();
+};
+
+exports.authAdmin = async (req, res, next) => {
+  if (!req.user.admin) {
+    return res.status(401).json({ error: 'Unauthorized.' });
   }
   return next();
 };
