@@ -46,7 +46,7 @@ export const loginUser = payload => async dispatch => {
     const { data: { token } } = await axios.post('/api/auth/login', payload);
     cookie.set('token', token, { expires: 7 });
     dispatch(authRenew());
-    dispatch(authUser(decodeJwt(token).sub));
+    dispatch(authUser(decodeJwt(token)));
     dispatch(setDomain(decodeJwt(token).domain));
     dispatch(showPageLoading());
     Router.push('/');
@@ -77,7 +77,7 @@ export const renewAuthUser = () => async (dispatch, getState) => {
     const { data: { token } } = await axios(options);
     cookie.set('token', token, { expires: 7 });
     dispatch(authRenew());
-    dispatch(authUser(decodeJwt(token).sub));
+    dispatch(authUser(decodeJwt(token)));
     dispatch(setDomain(decodeJwt(token).domain));
   } catch (error) {
     cookie.remove('token');

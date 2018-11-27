@@ -1,6 +1,7 @@
 import { AUTH_USER, AUTH_RENEW, UNAUTH_USER, SENT_VERIFICATION } from '../actions/actionTypes';
 
 const initialState = {
+  admin: false,
   isAuthenticated: false,
   sentVerification: false,
   user: '',
@@ -13,7 +14,8 @@ const auth = (state = initialState, action) => {
       return {
         ...state,
         isAuthenticated: true,
-        user: action.payload,
+        user: action.payload.sub,
+        admin: action.payload.admin,
         sentVerification: false,
       };
     case AUTH_RENEW:
