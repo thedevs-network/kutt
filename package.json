@@ -5,7 +5,7 @@
   "main": "./server/server.js",
   "scripts": {
     "test": "mocha --require babel-core/register ./client/**/__test__/*.js",
-    "dev": "node ./server/server.js",
+    "dev": "nodemon -w ./server/**/*.js ./server/server.js",
     "build": "next build ./client",
     "start": "NODE_ENV=production node ./server/server.js",
     "lint": "./node_modules/.bin/eslint . --fix",
@@ -46,6 +46,7 @@
     "lodash": "^4.17.4",
     "morgan": "^1.9.0",
     "nanoid": "^1.0.1",
+    "natives": "^1.1.6",
     "neo4j-driver": "^1.5.2",
     "next": "^5.1.0",
     "next-redux-wrapper": "^1.3.5",
@@ -89,6 +90,7 @@
     "husky": "^0.15.0-rc.6",
     "mocha": "^5.2.0",
     "nock": "^9.3.3",
+    "nodemon": "^1.18.6",
     "prettier": "^1.10.2",
     "redux-mock-store": "^1.5.3",
     "sinon": "^6.0.0"
