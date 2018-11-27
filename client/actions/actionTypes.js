@@ -28,3 +28,4 @@ export const DOMAIN_LOADING = 'DOMAIN_LOADING';
 export const API_LOADING = 'API_LOADING';
 export const DOMAIN_ERROR = 'DOMAIN_ERROR';
 export const SHOW_DOMAIN_INPUT = 'SHOW_DOMAIN_INPUT';
+export const BAN_URL = 'BAN_URL';
