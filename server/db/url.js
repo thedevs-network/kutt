@@ -52,7 +52,7 @@ exports.createShortUrl = params =>
           ...data,
           password: !!data.password,
           reuse: !!params.reuse,
-          shortUrl: generateShortUrl(data.id, params.user.domain),
+          shortUrl: generateShortUrl(data.id, params.user && params.user.domain),
         });
       })
       .catch(err => session.close() || reject(err));
