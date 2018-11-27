@@ -16,6 +16,12 @@ module.exports = {
   JWT_SECRET: 'securekey',
 
   /*
+    Admin emails so they can access admin actions on settings page
+    Array of strings
+  */
+  ADMIN_EMAILS: [],
+
+  /*
     Invisible reCaptcha secret key
     Create one in https://www.google.com/recaptcha/intro/
   */
