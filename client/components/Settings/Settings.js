@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import Router from 'next/router';
 import { bindActionCreators } from 'redux';
@@ -9,6 +9,7 @@ import axios from 'axios';
 import SettingsWelcome from './SettingsWelcome';
 import SettingsDomain from './SettingsDomain';
 import SettingsPassword from './SettingsPassword';
+import SettingsBan from './SettingsBan';
 import SettingsApi from './SettingsApi';
 import Modal from '../Modal';
 import { fadeIn } from '../../helpers/animations';
@@ -18,6 +19,7 @@ import {
   getUserSettings,
   setCustomDomain,
   showDomainInput,
+  banUrl,
 } from '../../actions';
 
 const Wrapper = styled.div`
@@ -76,7 +78,17 @@ class Settings extends Component {
       showModal: false,
       passwordMessage: '',
       passwordError: '',
+      ban: {
+        domain: false,
+        error: '',
+        host: false,
+        loading: false,
+        message: '',
+        user: false,
+      },
     };
+    this.onSubmitBan = this.onSubmitBan.bind(this);
+    this.onChangeBanCheckboxes = this.onChangeBanCheckboxes.bind(this);
     this.handleCustomDomain = this.handleCustomDomain.bind(this);
     this.deleteDomain = this.deleteDomain.bind(this);
     this.showModal = this.showModal.bind(this);
@@ -87,6 +99,64 @@ class Settings extends Component {
   componentDidMount() {
     if (!this.props.auth.isAuthenticated) Router.push('/login');
     this.props.getUserSettings();
+  }
+
+  async onSubmitBan(e) {
+    e.preventDefault();
+    const { ban: { domain, host, user } } = this.state;
+    this.setState(state => ({
+      ban: {
+        ...state.ban,
+        loading: true,
+      },
+    }));
+    const id = e.currentTarget.elements.id.value;
+    let message;
+    let error;
+    try {
+      message = await this.props.banUrl({
+        id,
+        domain,
+        host,
+        user,
+      });
+    } catch (err) {
+      error = err;
+    }
+    this.setState(
+      state => ({
+        ban: {
+          ...state.ban,
+          loading: false,
+          message,
+          error,
+        },
+      }),
+      () => {
+        setTimeout(() => {
+          this.setState(state => ({
+            ban: {
+              ...state.ban,
+              loading: false,
+              message: '',
+              error: '',
+            },
+          }));
+        }, 2000);
+      }
+    );
+  }
+
+  onChangeBanCheckboxes(type) {
+    return e => {
+      const { checked } = e.target;
+      this.setState(state => ({
+        ban: {
+          ...state.ban,
+          [type]: !checked,
+        },
+      }));
+    };
   }
 
   handleCustomDomain(e) {
@@ -148,9 +218,21 @@ class Settings extends Component {
   }
 
   render() {
+    const { auth: { user, admin } } = this.props;
     return (
       <Wrapper>
-        <SettingsWelcome user={this.props.auth.user} />
+        <SettingsWelcome user={user} />
+        <hr />
+        {admin && (
+          <Fragment>
+            <SettingsBan
+              {...this.state.ban}
+              onSubmitBan={this.onSubmitBan}
+              onChangeBanCheckboxes={this.onChangeBanCheckboxes}
+            />
+            <hr />
+          </Fragment>
+        )}
         <SettingsDomain
           handleCustomDomain={this.handleCustomDomain}
           loading={this.props.domainLoading}
@@ -180,12 +262,14 @@ class Settings extends Component {
 
 Settings.propTypes = {
   auth: PropTypes.shape({
+    admin: PropTypes.bool.isRequired,
     isAuthenticated: PropTypes.bool.isRequired,
     user: PropTypes.string.isRequired,
   }).isRequired,
   apiLoading: PropTypes.bool,
   deleteCustomDomain: PropTypes.func.isRequired,
   domainLoading: PropTypes.bool,
+  banUrl: PropTypes.func.isRequired,
   setCustomDomain: PropTypes.func.isRequired,
   generateApiKey: PropTypes.func.isRequired,
   getUserSettings: PropTypes.func.isRequired,
@@ -214,6 +298,7 @@ const mapStateToProps = ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  banUrl: bindActionCreators(banUrl, dispatch),
   deleteCustomDomain: bindActionCreators(deleteCustomDomain, dispatch),
   setCustomDomain: bindActionCreators(setCustomDomain, dispatch),
   generateApiKey: bindActionCreators(generateApiKey, dispatch),

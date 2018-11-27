@@ -6,7 +6,13 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin: 24px 16px 24px;
+  margin: 16px 0 16px;
+
+  ${({ withMargin }) =>
+    withMargin &&
+    css`
+      margin: 24px 16px 24px;
+    `};
 
   :first-child {
     margin-left: 0;
@@ -77,8 +83,8 @@ const Box = styled.span`
     `};
 `;
 
-const Checkbox = ({ checked, label, id, onClick }) => (
-  <Wrapper>
+const Checkbox = ({ checked, label, id, withMargin, onClick }) => (
+  <Wrapper withMargin={withMargin}>
     <Box checked={checked} id={id} onClick={onClick}>
       {label}
     </Box>
@@ -87,12 +93,14 @@ const Checkbox = ({ checked, label, id, onClick }) => (
 
 Checkbox.propTypes = {
   checked: PropTypes.bool,
+  withMargin: PropTypes.bool,
   label: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   onClick: PropTypes.func,
 };
 
 Checkbox.defaultProps = {
+  withMargin: true,
   checked: false,
   onClick: f => f,
 };

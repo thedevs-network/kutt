@@ -8,12 +8,14 @@ import {
   SET_DOMAIN,
   SET_APIKEY,
   SHOW_DOMAIN_INPUT,
+  BAN_URL,
 } from './actionTypes';
 
 const deleteDomain = () => ({ type: DELETE_DOMAIN });
 const setDomainError = payload => ({ type: DOMAIN_ERROR, payload });
 const showDomainLoading = () => ({ type: DOMAIN_LOADING });
 const showApiLoading = () => ({ type: API_LOADING });
+const urlBanned = () => ({ type: BAN_URL });
 
 export const setDomain = payload => ({ type: SET_DOMAIN, payload });
 export const setApiKey = payload => ({ type: SET_APIKEY, payload });
@@ -63,5 +65,17 @@ export const generateApiKey = () => async dispatch => {
     dispatch(setApiKey(data.apikey));
   } catch (error) {
     //
+  }
+};
+
+export const banUrl = params => async dispatch => {
+  try {
+    const { data } = await axios.post('/api/url/admin/ban', params, {
+      headers: { Authorization: cookie.get('token') },
+    });
+    dispatch(urlBanned());
+    return data.message;
+  } catch ({ response }) {
+    return Promise.reject(response.data && response.data.error);
   }
 };
