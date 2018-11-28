@@ -124,8 +124,12 @@ exports.malwareCheck = async ({ body, user }, res, next) => {
     }
   );
   if (isMalware.data && isMalware.data.matches) {
-    await addCooldown(user);
-    return res.status(400).json({ error: 'Malware detected! Cooldown for 12h.' });
+    if (user) {
+      await addCooldown(user);
+    }
+    return res
+      .status(400)
+      .json({ error: user ? 'Malware detected! Cooldown for 12h.' : 'Malware detected!' });
   }
   return next();
 };
