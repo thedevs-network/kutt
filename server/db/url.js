@@ -445,10 +445,11 @@ exports.banUrl = async ({ id, domain, host, user }) => {
     ? 'MERGE (d:DOMAIN { name: $domain }) ON CREATE SET d.banned = true'
     : '';
   const hostQuery = host ? 'MERGE (h:HOST { name: $host }) ON CREATE SET h.banned = true' : '';
+  const withL = user || domain || host ? 'WITH l' : '';
   await session.writeTransaction(tx =>
     tx.run(
       'MATCH (l:URL { id: $id }) WHERE NOT (l)-[:USES]->(:DOMAIN) ' +
-        `SET l.banned = true WITH l ${userQuery} ${domainQuery} ${hostQuery}`,
+        `SET l.banned = true ${withL} ${userQuery} ${domainQuery} ${hostQuery}`,
       {
         id,
         domain,
