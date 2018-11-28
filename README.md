@@ -43,7 +43,7 @@
 * Neo4j (Graph database)
 
 ## Setup
-You need to have [Node.js](https://nodejs.org/) and [Neo4j](https://neo4j.com/) installed on your machine.
+You need to have [Node.js](https://nodejs.org/), [Neo4j](https://neo4j.com/) and [Redis](https://redis.io/) installed on your machine.
 
 1. Clone this repository or [download zip](https://github.com/thedevs-network/kutt/archive/develop.zip).
 2. Copy `config.example.js` to `config.js` in both server and client folders and fill them properly.
