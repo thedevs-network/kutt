@@ -142,7 +142,7 @@ exports.goToUrl = async (req, res, next) => {
   redis.set(id + (domain || ''), JSON.stringify(url), 'EX', 60 * 60 * 1);
 
   if (url.banned) {
-    return res.redirect('/banned');
+    return res.redirect(301, '/banned');
   }
 
   const doesRequestInfo = /.*\+$/gi.test(reqestedId);
@@ -184,7 +184,7 @@ exports.goToUrl = async (req, res, next) => {
       referrer: referrer || 'Direct',
     });
   }
-  return res.redirect(url.target);
+  return res.redirect(301, url.target);
 };
 
 exports.getUrls = async ({ query, user }, res) => {
