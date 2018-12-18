@@ -42,7 +42,6 @@ export default App =>
     constructor(props) {
       super(props);
       this.reduxStore = getOrCreateStore(props.initialReduxState);
-      console.log('test');
     }
 
     render() {
