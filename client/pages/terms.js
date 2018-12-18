@@ -1,7 +1,5 @@
 import React from 'react';
-import withRedux from 'next-redux-wrapper';
 import styled from 'styled-components';
-import initialState from '../store';
 import BodyWrapper from '../components/BodyWrapper';
 import { authUser } from '../actions';
 
@@ -54,9 +52,10 @@ const TermsPage = () => (
   </BodyWrapper>
 );
 
-TermsPage.getInitialProps = ({ req, store }) => {
+TermsPage.getInitialProps = ({ req, reduxStore }) => {
   const token = req && req.cookies && req.cookies.token;
-  if (token && store) store.dispatch(authUser(token));
+  if (token && reduxStore) reduxStore.dispatch(authUser(token));
+  return {};
 };
 
-export default withRedux(initialState)(TermsPage);
+export default TermsPage;

@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Router from 'next/router';
-import withRedux from 'next-redux-wrapper';
+import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
 import cookie from 'js-cookie';
-import initialState from '../store';
 import BodyWrapper from '../components/BodyWrapper';
 import { authRenew, authUser, showPageLoading } from '../actions';
 import Button from '../components/Button';
@@ -74,13 +73,13 @@ const Verify = ({ showLoading, query }) => {
   return <BodyWrapper norenew>{message}</BodyWrapper>;
 };
 
-Verify.getInitialProps = ({ store, query }) => {
+Verify.getInitialProps = ({ reduxStore, query }) => {
   if (query && query.token) {
-    store.dispatch(authUser(query.token));
-    store.dispatch(authRenew());
+    reduxStore.dispatch(authUser(query.token));
+    reduxStore.dispatch(authRenew());
     return { query };
   }
-  return null;
+  return {};
 };
 
 Verify.propTypes = {
@@ -98,4 +97,4 @@ const mapDispatchToProps = dispatch => ({
   showLoading: bindActionCreators(showPageLoading, dispatch),
 });
 
-export default withRedux(initialState, null, mapDispatchToProps)(Verify);
+export default connect(null, mapDispatchToProps)(Verify);

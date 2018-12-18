@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import withRedux from 'next-redux-wrapper';
-import initialState from '../store';
+import { connect } from 'react-redux';
 import { logoutUser } from '../actions';
 
 class LogoutPage extends Component {
@@ -20,4 +19,4 @@ LogoutPage.propTypes = {
 
 const mapDispatchToProps = dispatch => ({ logoutUser: bindActionCreators(logoutUser, dispatch) });
 
-export default withRedux(initialState, null, mapDispatchToProps)(LogoutPage);
+export default connect(null, mapDispatchToProps)(LogoutPage);

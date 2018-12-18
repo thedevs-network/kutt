@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withRedux from 'next-redux-wrapper';
-import initialState from '../store';
+import { connect } from 'react-redux';
 import BodyWrapper from '../components/BodyWrapper';
 import Footer from '../components/Footer';
 import { authUser } from '../actions';
@@ -14,9 +13,10 @@ const SettingsPage = ({ isAuthenticated }) => (
   </BodyWrapper>
 );
 
-SettingsPage.getInitialProps = ({ req, store }) => {
+SettingsPage.getInitialProps = ({ req, reduxStore }) => {
   const token = req && req.cookies && req.cookies.token;
-  if (token && store) store.dispatch(authUser(token));
+  if (token && reduxStore) reduxStore.dispatch(authUser(token));
+  return {};
 };
 
 SettingsPage.propTypes = {
@@ -25,4 +25,4 @@ SettingsPage.propTypes = {
 
 const mapStateToProps = ({ auth: { isAuthenticated } }) => ({ isAuthenticated });
 
-export default withRedux(initialState, mapStateToProps)(SettingsPage);
+export default connect(mapStateToProps)(SettingsPage);

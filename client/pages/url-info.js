@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import withRedux from 'next-redux-wrapper';
-import initialState from '../store';
 import BodyWrapper from '../components/BodyWrapper';
 import Footer from '../components/Footer';
 import { authUser } from '../actions';
@@ -35,9 +33,9 @@ const Target = styled.h3`
 `;
 
 class UrlInfoPage extends Component {
-  static getInitialProps({ query, req, store }) {
+  static getInitialProps({ query, req, reduxStore }) {
     const token = req && req.cookies && req.cookies.token;
-    if (token && store) store.dispatch(authUser(token));
+    if (token && reduxStore) reduxStore.dispatch(authUser(token));
     return { query };
   }
 
@@ -70,4 +68,4 @@ UrlInfoPage.defaultProps = {
   query: null,
 };
 
-export default withRedux(initialState)(UrlInfoPage);
+export default UrlInfoPage;

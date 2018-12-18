@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import withRedux from 'next-redux-wrapper';
 import styled from 'styled-components';
 import axios from 'axios';
-import initialState from '../store';
 import BodyWrapper from '../components/BodyWrapper';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
@@ -117,4 +115,4 @@ UrlPasswordPage.defaultProps = {
   query: null,
 };
 
-export default withRedux(initialState)(UrlPasswordPage);
+export default UrlPasswordPage;
