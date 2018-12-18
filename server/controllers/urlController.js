@@ -127,7 +127,7 @@ exports.goToUrl = async (req, res, next) => {
 
   let url;
 
-  const cachedUrl = await redis.get(id + domain || '');
+  const cachedUrl = await redis.get(id + (domain || ''));
 
   if (cachedUrl) {
     url = JSON.parse(cachedUrl);
@@ -139,7 +139,7 @@ exports.goToUrl = async (req, res, next) => {
 
   if (!url) return next();
 
-  redis.set(id + domain || '', JSON.stringify(url), 'EX', 60 * 60 * 1);
+  redis.set(id + (domain || ''), JSON.stringify(url), 'EX', 60 * 60 * 1);
 
   if (url.banned) {
     return res.redirect('/banned');
@@ -224,7 +224,7 @@ exports.deleteUrl = async ({ body: { id, domain }, user }, res) => {
   const customDomain = domain !== config.DEFAULT_DOMAIN && domain;
   const urls = await findUrl({ id, domain: customDomain });
   if (!urls && !urls.length) return res.status(400).json({ error: "Couldn't find the short URL." });
-  redis.del(id + customDomain || '');
+  redis.del(id + (customDomain || ''));
   const response = await deleteUrl({ id, domain: customDomain, user });
   if (response) return res.status(200).json({ message: 'Sort URL deleted successfully' });
   return res.status(400).json({ error: "Couldn't delete short URL." });
