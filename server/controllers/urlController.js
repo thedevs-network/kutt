@@ -23,6 +23,7 @@ const {
   getBannedDomain,
   getBannedHost,
 } = require('../db/url');
+const transporter = require('../mail/mail');
 const redis = require('../redis');
 const { addProtocol, generateShortUrl } = require('../utils');
 const config = require('../config');
@@ -236,6 +237,21 @@ exports.getStats = async ({ query: { id, domain }, user }, res) => {
   const stats = await getStats({ id, domain: customDomain, user });
   if (!stats) return res.status(400).json({ error: 'Could not get the short URL stats.' });
   return res.status(200).json(stats);
+};
+
+exports.reportUrl = async ({ body: { url } }, res) => {
+  if (!url) return res.status(400).json({ error: 'No URL has been provided.' });
+  const mail = await transporter.sendMail({
+    from: config.MAIL_USER,
+    to: config.REPORT_MAIL,
+    subject: '[REPORT]',
+    text: url,
+    html: url,
+  });
+  if (mail.accepted.length) {
+    return res.status(200).json({ message: "Thanks for the report, we'll take actions shortly." });
+  }
+  return res.status(400).json({ error: "Couldn't submit the report. Try again later." });
 };
 
 exports.ban = async ({ body }, res) => {

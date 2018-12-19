@@ -112,6 +112,7 @@ app.prepare().then(() => {
   server.delete('/api/url/customdomain', auth.authJwt, catchErrors(url.deleteCustomDomain));
   server.get('/api/url/stats', auth.authApikey, auth.authJwt, catchErrors(url.getStats));
   server.post('/api/url/requesturl', catchErrors(url.goToUrl));
+  server.post('/api/url/report', catchErrors(url.reportUrl));
   server.post(
     '/api/url/admin/ban',
     auth.authApikey,

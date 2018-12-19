@@ -42,4 +42,9 @@ module.exports = {
   MAIL_SECURE: false,
   MAIL_USER: '',
   MAIL_PASSWORD: '',
+
+  /*
+    The email address that will receive submitted reports.
+  */
+  REPORT_MAIL: '',
 };
