@@ -49,7 +49,11 @@ const authenticate = (type, error, isStrict = true) =>
       if (err) return res.status(400);
       if (!user && isStrict) return res.status(401).json({ error });
       if (user && isStrict && !user.verified) {
-        return res.status(400).json({ error: 'Your email address is not verified.' });
+        return res.status(400).json({
+          error:
+            'Your email address is not verified.' +
+            'Click on signup to get the verification link again.',
+        });
       }
       if (user && user.banned) {
         return res.status(400).json({ error: 'Your are banned from using this website.' });
