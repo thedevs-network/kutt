@@ -18,6 +18,13 @@ const List = styled.ul`
   list-style: none;
 `;
 
+const ReportLink = styled.a`
+  display: none;
+  @media only screen and (max-width: 488px) {
+    display: block;
+  }
+`;
+
 const HeaderMenu = props => {
   const goTo = e => {
     e.preventDefault();
@@ -30,7 +37,7 @@ const HeaderMenu = props => {
   const login = !props.auth.isAuthenticated && (
     <HeaderMenuItem>
       <a href="/login" title="login / signup" onClick={goTo}>
-        <Button>Login / Signup</Button>
+        <Button>Login / Sign up</Button>
       </a>
     </HeaderMenuItem>
   );
@@ -50,6 +57,11 @@ const HeaderMenu = props => {
   );
   return (
     <List>
+      <HeaderMenuItem>
+        <ReportLink href="/report" title="Report" onClick={goTo}>
+          Report
+        </ReportLink>
+      </HeaderMenuItem>
       {logout}
       {settings}
       {login}

@@ -30,6 +30,7 @@ const LeftMenuWrapper = styled.div`
 
   @media only screen and (max-width: 488px) {
     flex-direction: column;
+    align-items: flex-start;
   }
 `;
 
