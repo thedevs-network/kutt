@@ -30,14 +30,14 @@ const HeaderMenu = props => {
   const login = !props.auth.isAuthenticated && (
     <HeaderMenuItem>
       <a href="/login" title="login / signup" onClick={goTo}>
-        <Button>Login / Sign up</Button>
+        <Button>Login / Signup</Button>
       </a>
     </HeaderMenuItem>
   );
   const logout = props.auth.isAuthenticated && (
     <HeaderMenuItem>
       <a href="/logout" title="logout" onClick={goTo}>
-        Logout
+        Log out
       </a>
     </HeaderMenuItem>
   );

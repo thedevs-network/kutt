@@ -125,7 +125,7 @@ class Login extends Component {
                 onClick={this.loginHandler}
                 big
               >
-                Login
+                Log in
               </Button>
               <Button
                 icon={this.props.loading.signup ? 'loader' : 'signup'}
