@@ -25,6 +25,7 @@ const {
 } = require('../db/url');
 const transporter = require('../mail/mail');
 const redis = require('../redis');
+const visitor = require('../universal-analytics');
 const { addProtocol, generateShortUrl } = require('../utils');
 const config = require('../config');
 
@@ -185,6 +186,17 @@ exports.goToUrl = async (req, res, next) => {
       referrer: referrer || 'Direct',
     });
   }
+
+  if (config.GOOGLE_ANALYTICS) {
+    visitor
+      .pageview({
+        dp: `/${id}`,
+        ua: req.headers['user-agent'],
+        uip: req.realIp,
+      })
+      .send();
+  }
+
   return res.redirect(301, url.target);
 };
 
