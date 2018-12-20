@@ -23,12 +23,12 @@ const Form = styled.form`
 const Message = styled.p`
   position: absolute;
   left: 0;
-  bottom: -48px;
+  bottom: -54px;
   font-size: 14px;
   color: ${props => (props.type === 'error' ? 'red' : 'green')};
 
   @media only screen and (max-width: 448px) {
-    bottom: -40px;
+    bottom: -44px;
     font-size: 12px;
   }
 `;
@@ -64,6 +64,7 @@ class ReportPage extends Component {
           type: 'success',
           text: "Thanks for the report, we'll take actions shortly.",
         },
+        url: '',
       });
     } catch (error) {
       this.setState({
@@ -72,6 +73,7 @@ class ReportPage extends Component {
           type: 'error',
           text: error.response.data.error,
         },
+        url: '',
       });
     }
 
@@ -82,7 +84,7 @@ class ReportPage extends Component {
           text: '',
         },
       });
-    }, 2000);
+    }, 5000);
   }
 
   render() {
@@ -93,15 +95,17 @@ class ReportPage extends Component {
         <Wrapper>
           <h3>Report abuse</h3>
           <p>
-            Report abuses, malware and phishing links to the below email address. We will take
-            actions shortly.
+            Report abuses, malware and phishing links to the below email address or use the form. We
+            will take actions shortly.
           </p>
           <p>{REPORT_EMAIL}</p>
-          <p>Or use the form below.</p>
+          <p>
+            <b>URL containting malware/scam:</b>
+          </p>
           <Form onSubmit={this.onSubmit}>
             <TextInput
               type="text"
-              placeholder="URL"
+              placeholder="kutt.it/example"
               value={url}
               onChange={this.onChange}
               height={44}

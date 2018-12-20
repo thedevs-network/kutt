@@ -241,6 +241,10 @@ exports.getStats = async ({ query: { id, domain }, user }, res) => {
 
 exports.reportUrl = async ({ body: { url } }, res) => {
   if (!url) return res.status(400).json({ error: 'No URL has been provided.' });
+
+  const isValidUrl = urlRegex({ exact: true, strict: false }).test(url);
+  if (!isValidUrl) return res.status(400).json({ error: 'URL is not valid.' });
+
   const mail = await transporter.sendMail({
     from: config.MAIL_USER,
     to: config.REPORT_MAIL,
