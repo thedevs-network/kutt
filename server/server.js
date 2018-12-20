@@ -65,7 +65,7 @@ app.prepare().then(() => {
       headers.host !== config.DEFAULT_DOMAIN &&
       (path === '/' || preservedUrls.some(item => item === path.replace('/', '')))
     ) {
-      return res.redirect(301, `http://${config.DEFAULT_DOMAIN + path}`);
+      return res.redirect(`http://${config.DEFAULT_DOMAIN + path}`);
     }
     return next();
   });
