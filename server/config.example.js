@@ -33,6 +33,12 @@ module.exports = {
   */
   GOOGLE_SAFE_BROWSING_KEY: '',
 
+  /* 
+    Google Analytics tracking ID for universal analytics.
+    Example: UA-XXXX-XX
+  */
+  GOOGLE_ANALYTICS: '',
+
   /*
     Your email host details to use to send verification emails.
     More info on http://nodemailer.com/
