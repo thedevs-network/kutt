@@ -7,6 +7,7 @@ const useragent = require('useragent');
 const geoip = require('geoip-lite');
 const bcrypt = require('bcryptjs');
 const subDay = require('date-fns/sub_days');
+const ua = require('universal-analytics');
 const {
   createShortUrl,
   createVisit,
@@ -25,7 +26,6 @@ const {
 } = require('../db/url');
 const transporter = require('../mail/mail');
 const redis = require('../redis');
-const visitor = require('../universal-analytics');
 const { addProtocol, generateShortUrl } = require('../utils');
 const config = require('../config');
 
@@ -188,6 +188,7 @@ exports.goToUrl = async (req, res, next) => {
   }
 
   if (config.GOOGLE_ANALYTICS) {
+    const visitor = ua(config.GOOGLE_ANALYTICS);
     visitor
       .pageview({
         dp: `/${id}`,
