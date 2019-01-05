@@ -111,7 +111,7 @@ Body (or query for GET request)
   * `domain` (optional):  Required if a custom domain is used for short URL.
   
 ## ShareX
-You can use Kutt as your default URL shortener in [ShareX](https://getsharex.com/). Please refer to our [ShareX wiki](https://github.com/thedevs-network/kutt/wiki/ShareX) for more informations.
+You can use Kutt as your default URL shortener in [ShareX](https://getsharex.com/). If you host your custom instance of Kutt, refer to [ShareX wiki](https://github.com/thedevs-network/kutt/wiki/ShareX) on how to setup.
 
 ## 3rd Party API packages
 | Language  | Link                                                       | Description                                       |
