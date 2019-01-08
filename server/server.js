@@ -6,6 +6,7 @@ const Raven = require('raven');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const passport = require('passport');
+const cors = require('cors');
 const {
   validateBody,
   validationCriterias,
@@ -98,6 +99,7 @@ app.prepare().then(() => {
   /* URL shortener */
   server.post(
     '/api/url/submit',
+    cors(),
     auth.authApikey,
     auth.authJwtLoose,
     catchErrors(auth.recaptcha),
