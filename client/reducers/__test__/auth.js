@@ -12,10 +12,11 @@ import reducer from '../auth';
 
 describe('auth reducer', () => {
   const initialState = {
+    admin: false,
     isAuthenticated: false,
     sentVerification: false,
     user: '',
-    renew: false
+    renew: false,
   };
 
   beforeEach(() => {
@@ -27,11 +28,19 @@ describe('auth reducer', () => {
   });
 
   it('should handle AUTH_USER', () => {
+    const jwt = {
+      domain: '',
+      exp: 1529137738725,
+      iat: 1529137738725,
+      iss: 'ApiAuth',
+      sub: 'test@user.com',
+    };
+
     const user = 'test@user.com';
 
     const state = reducer(initialState, {
       type: AUTH_USER,
-      payload: user
+      payload: jwt
     });
 
     expect(state).not.to.be.undefined;
