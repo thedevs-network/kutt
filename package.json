@@ -4,7 +4,7 @@
   "description": "Modern URL shortener.",
   "main": "./server/server.js",
   "scripts": {
-    "test": "mocha --require babel-core/register ./client/**/__test__/*.js",
+    "test": "mocha --compilers js:@babel/register ./client/**/__test__/*.js",
     "dev": "nodemon -w ./server/**/*.js ./server/server.js",
     "build": "next build ./client",
     "start": "NODE_ENV=production node ./server/server.js",
@@ -76,6 +76,11 @@
     "useragent": "^2.2.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
+    "@babel/register": "^7.0.0",
     "babel": "^6.23.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
