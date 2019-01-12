@@ -56,8 +56,8 @@ exports.validateUrl = async ({ body, user }, res, next) => {
   if (!body.target) return res.status(400).json({ error: 'No target has been provided.' });
 
   // validate URL length
-  if (body.target.length > 1024) {
-    return res.status(400).json({ error: 'Maximum URL length is 1024.' });
+  if (body.target.length > 3000) {
+    return res.status(400).json({ error: 'Maximum URL length is 3000.' });
   }
 
   // Validate URL
