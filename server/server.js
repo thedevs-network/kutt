@@ -105,10 +105,7 @@ app.prepare().then(() => {
     catchErrors(auth.recaptcha),
     catchErrors(validateUrl),
     /* Allows running without Google Safe Browsing enabled */
-    config.GOOGLE_SAFE_BROWSING_KEY
-      ? [ catchErrors(cooldownCheck),
-          catchErrors(malwareCheck) ]
-      : [],
+    config.GOOGLE_SAFE_BROWSING_KEY ? [catchErrors(cooldownCheck), catchErrors(malwareCheck)] : [],
     catchErrors(url.urlShortener)
   );
   server.post('/api/url/deleteurl', auth.authApikey, auth.authJwt, catchErrors(url.deleteUrl));
