@@ -204,7 +204,11 @@ exports.goToUrl = async (req, res, next) => {
 exports.getUrls = async ({ query, user }, res) => {
   const { countAll } = await getCountUrls({ user });
   const urlsList = await getUrls({ options: query, user });
-  return res.json({ ...urlsList, countAll });
+  const isCountMissing = urlsList.list.some(url => typeof url.count === 'undefined');
+  const { list } = isCountMissing
+    ? await getUrls({ options: query, user, setCount: true })
+    : urlsList;
+  return res.json({ list, countAll });
 };
 
 exports.setCustomDomain = async ({ body: { customDomain }, user }, res) => {

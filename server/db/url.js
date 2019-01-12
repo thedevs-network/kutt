@@ -64,8 +64,9 @@ exports.createVisit = params =>
     session
       .writeTransaction(tx =>
         tx.run(
-          'MATCH (l:URL { id: $id })' +
-            `${params.domain ? 'MATCH (l)-[:USES]->({ name: $domain })' : ''}` +
+          'MATCH (l:URL { id: $id }) ' +
+            `${params.domain ? 'MATCH (l)-[:USES]->({ name: $domain })' : ''} ` +
+            'SET l.count = l.count + 1 ' +
             'CREATE (v:VISIT)' +
             'MERGE (b:BROWSER { browser: $browser })' +
             'MERGE (c:COUNTRY { country: $country })' +
@@ -150,21 +151,22 @@ exports.getCountUrls = ({ user }) =>
       .catch(err => session.close() || reject(err));
   });
 
-exports.getUrls = ({ user, options }) =>
+exports.getUrls = ({ user, options, setCount }) =>
   new Promise((resolve, reject) => {
     const session = driver.session();
     const { count = 5, page = 1, search = '' } = options;
     const limit = parseInt(count, 10);
     const skip = parseInt(page, 10);
     const searchQuery = search ? 'WHERE l.id =~ $search OR l.target =~ $search' : '';
+    const setVisitsCount = setCount ? 'SET l.count = size((l)<-[:VISITED]-())' : '';
     session
       .readTransaction(tx =>
         tx.run(
           `MATCH (u:USER { email: $email })-[:CREATED]->(l) ${searchQuery} ` +
             'WITH l ORDER BY l.createdAt DESC ' +
             'WITH l SKIP $skip LIMIT $limit ' +
-            'OPTIONAL MATCH (l)-[:USES]->(d) ' +
-            'RETURN l, d.name AS domain, size((l)<-[:VISITED]-()) as count',
+            `OPTIONAL MATCH (l)-[:USES]->(d) ${setVisitsCount} ` +
+            'RETURN l, d.name AS domain',
           {
             email: user.email,
             limit,
@@ -175,13 +177,16 @@ exports.getUrls = ({ user, options }) =>
       )
       .then(({ records }) => {
         session.close();
-        const urls = records.map(record => ({
-          ...record.get('l').properties,
-          password: !!record.get('l').properties.password,
-          count: record.get('count').toNumber(),
-          shortUrl: `http${!record.get('domain') ? 's' : ''}://${record.get('domain') ||
-            config.DEFAULT_DOMAIN}/${record.get('l').properties.id}`,
-        }));
+        const urls = records.map(record => {
+          const visitCount = record.get('l').properties.count;
+          return {
+            ...record.get('l').properties,
+            count: typeof visitCount === 'object' ? visitCount.toNumber() : visitCount,
+            password: !!record.get('l').properties.password,
+            shortUrl: `http${!record.get('domain') ? 's' : ''}://${record.get('domain') ||
+              config.DEFAULT_DOMAIN}/${record.get('l').properties.id}`,
+          };
+        });
         resolve({ list: urls });
       })
       .catch(err => session.close() || reject(err));
