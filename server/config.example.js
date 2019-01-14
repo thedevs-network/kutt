@@ -9,6 +9,10 @@ module.exports = {
   DB_USERNAME: '',
   DB_PASSWORD: '',
 
+  /* Redis host and port */
+  REDIS_HOST: '127.0.0.1',
+  REDIS_PORT: 6379,
+
   /* The daily limit for each user */
   USER_LIMIT_PER_DAY: 50,
 
