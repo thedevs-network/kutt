@@ -194,6 +194,7 @@ exports.goToUrl = async (req, res, next) => {
         dp: `/${id}`,
         ua: req.headers['user-agent'],
         uip: req.realIp,
+        aip: 1,
       })
       .send();
   }
