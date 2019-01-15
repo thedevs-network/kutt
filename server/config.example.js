@@ -13,6 +13,12 @@ module.exports = {
   REDIS_HOST: '127.0.0.1',
   REDIS_PORT: 6379,
 
+  /* Remote configuration server (optional) */
+  /* ZooKeeper Parameters */
+  // ZOOKEEPER_HOST: 'localhost',
+  // ZOOKEEPER_PORT: '2181',
+  // ZOOKEEPER_CONFIG_PATH: '/config/kutt',
+
   /* The daily limit for each user */
   USER_LIMIT_PER_DAY: 50,
 

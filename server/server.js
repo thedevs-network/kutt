@@ -18,6 +18,7 @@ const {
 const auth = require('./controllers/authController');
 const url = require('./controllers/urlController');
 const config = require('./config');
+const remoteConfigurationLoader = require('./remote-configuration/remoteConfigurationLoader');
 
 require('./passport');
 
@@ -43,6 +44,9 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   const server = express();
+
+  /* Begin listening for remote configuration changes */
+  remoteConfigurationLoader.loadConfiguration();
 
   server.set('trust proxy', true);
   server.use(helmet());
