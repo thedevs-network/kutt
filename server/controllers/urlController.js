@@ -8,6 +8,7 @@ const geoip = require('geoip-lite');
 const bcrypt = require('bcryptjs');
 const subDay = require('date-fns/sub_days');
 const ua = require('universal-analytics');
+const isbot = require('isbot');
 const {
   createShortUrl,
   createVisit,
@@ -107,7 +108,6 @@ exports.urlShortener = async ({ body, user }, res) => {
 
 const browsersList = ['IE', 'Firefox', 'Chrome', 'Opera', 'Safari', 'Edge'];
 const osList = ['Windows', 'Mac Os X', 'Linux', 'Chrome OS', 'Android', 'iOS'];
-const botList = ['bot', 'dataminr', 'pinterest', 'yahoo', 'facebook', 'crawl'];
 const filterInBrowser = agent => item =>
   agent.family.toLowerCase().includes(item.toLocaleLowerCase());
 const filterInOs = agent => item =>
@@ -124,8 +124,7 @@ exports.goToUrl = async (req, res, next) => {
   const referrer = req.header('Referer') && URL.parse(req.header('Referer')).hostname;
   const location = geoip.lookup(req.realIp);
   const country = location && location.country;
-  const isBot =
-    botList.some(bot => agent.source.toLowerCase().includes(bot)) || agent.family === 'Other';
+  const isBot = isbot(req.headers['user-agent']);
 
   let url;
 
@@ -187,13 +186,14 @@ exports.goToUrl = async (req, res, next) => {
     });
   }
 
-  if (config.GOOGLE_ANALYTICS) {
+  if (config.GOOGLE_ANALYTICS && !isBot) {
     const visitor = ua(config.GOOGLE_ANALYTICS);
     visitor
       .pageview({
         dp: `/${id}`,
         ua: req.headers['user-agent'],
         uip: req.realIp,
+        aip: 1,
       })
       .send();
   }
@@ -204,7 +204,11 @@ exports.goToUrl = async (req, res, next) => {
 exports.getUrls = async ({ query, user }, res) => {
   const { countAll } = await getCountUrls({ user });
   const urlsList = await getUrls({ options: query, user });
-  return res.json({ ...urlsList, countAll });
+  const isCountMissing = urlsList.list.some(url => typeof url.count === 'undefined');
+  const { list } = isCountMissing
+    ? await getUrls({ options: query, user, setCount: true })
+    : urlsList;
+  return res.json({ list, countAll });
 };
 
 exports.setCustomDomain = async ({ body: { customDomain }, user }, res) => {

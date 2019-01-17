@@ -22,6 +22,13 @@ const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
 describe('auth actions', () => {
+  const jwt = {
+    domain: '',
+    exp: 1529137738725,
+    iat: 1529137738725,
+    iss: 'ApiAuth',
+    sub: 'test@mail.com',
+  };
   const email = 'test@mail.com';
   const password = 'password';
   const token =
@@ -75,7 +82,7 @@ describe('auth actions', () => {
         { type: AUTH_RENEW },
         {
           type: AUTH_USER,
-          payload: email
+          payload: jwt
         },
         {
           type: SET_DOMAIN,
@@ -140,7 +147,7 @@ describe('auth actions', () => {
         { type: AUTH_RENEW },
         {
           type: AUTH_USER,
-          payload: email
+          payload: jwt
         },
         {
           type: SET_DOMAIN,
