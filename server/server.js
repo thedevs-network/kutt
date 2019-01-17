@@ -87,8 +87,8 @@ app.prepare().then(() => {
     app.render(req, res, '/verify', req.user)
   );
   server.get('/sw.js', (_req, res) => {
-    res.sendFile(__dirname + '/offline/sw.js')
-});
+    res.sendFile(`${__dirname}/offline/sw.js`);
+  });
 
   /* User and authentication */
   server.post('/api/auth/signup', validationCriterias, validateBody, catchErrors(auth.signup));
