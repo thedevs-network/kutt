@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import formatDate from 'date-fns/format';
 
 const Wrapper = styled.div`
   flex: 1 1 50%;
@@ -14,11 +15,23 @@ const Wrapper = styled.div`
 `;
 
 const Title = styled.h3`
+  margin-bottom: 12px;
   font-size: 24px;
   font-weight: 300;
 
   @media only screen and (max-width: 768px) {
     font-size: 18px;
+  }
+`;
+
+const SubTitle = styled.span`
+  margin-bottom: 32px;
+  font-size: 13px;
+  font-weight: 300;
+  color: #aaa;
+
+  @media only screen and (max-width: 768px) {
+    font-size: 11px;
   }
 `;
 
@@ -35,6 +48,10 @@ const withTitle = ChartComponent => {
           {props.periodText && <Count>{props.data.reduce((sum, view) => sum + view, 0)}</Count>}
           {props.periodText ? ` clicks in ${props.periodText}` : props.title}.
         </Title>
+        {props.periodText &&
+          props.updatedAt && (
+            <SubTitle>Last update in {formatDate(props.updatedAt, 'dddd, hh:mm aa')}</SubTitle>
+          )}
         <ChartComponent {...props} />
       </Wrapper>
     );
@@ -43,6 +60,7 @@ const withTitle = ChartComponent => {
     data: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.object])).isRequired,
     periodText: PropTypes.string,
     title: PropTypes.string,
+    updatedAt: PropTypes.string.isRequired,
   };
   WithTitle.defaultProps = {
     title: '',

@@ -141,7 +141,7 @@ class Stats extends Component {
         </TitleWrapper>
         <Content>
           <StatsHead total={stats.total} period={period} changePeriod={this.changePeriod} />
-          <StatsCharts stats={stats[period]} period={period} />
+          <StatsCharts stats={stats[period]} updatedAt={stats.updatedAt} period={period} />
         </Content>
         <ButtonWrapper>
           <Button icon="arrow-left" onClick={this.goToHomepage}>
