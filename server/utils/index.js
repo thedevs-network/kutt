@@ -1,4 +1,5 @@
 const URL = require('url');
+const ms = require('ms');
 const config = require('../config');
 
 exports.addProtocol = url => {
@@ -10,3 +11,19 @@ exports.generateShortUrl = (id, domain) =>
   `http${!domain ? 's' : ''}://${domain || config.DEFAULT_DOMAIN}/${id}`;
 
 exports.isAdmin = email => config.ADMIN_EMAILS.includes(email);
+
+exports.getStatsCacheTime = total => {
+  switch (true) {
+    case total > 5000 && total < 20000:
+      return ms('1 hour');
+
+    case total < 40000:
+      return ms('3 hours');
+
+    case total > 40000:
+      return ms('6 hours');
+
+    default:
+      return ms('15 minutes');
+  }
+};

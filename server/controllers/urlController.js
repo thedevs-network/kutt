@@ -27,7 +27,7 @@ const {
 } = require('../db/url');
 const transporter = require('../mail/mail');
 const redis = require('../redis');
-const { addProtocol, generateShortUrl } = require('../utils');
+const { addProtocol, generateShortUrl, getStatsCacheTime } = require('../utils');
 const config = require('../config');
 
 const dnsLookup = promisify(dns.lookup);
@@ -251,8 +251,13 @@ exports.deleteUrl = async ({ body: { id, domain }, user }, res) => {
 exports.getStats = async ({ query: { id, domain }, user }, res) => {
   if (!id) return res.status(400).json({ error: 'No id has been provided.' });
   const customDomain = domain !== config.DEFAULT_DOMAIN && domain;
+  const redisKey = id + (customDomain || '') + user.email;
+  const cached = await redis.get(redisKey);
+  if (cached) return res.status(200).json(JSON.parse(cached));
   const stats = await getStats({ id, domain: customDomain, user });
   if (!stats) return res.status(400).json({ error: 'Could not get the short URL stats.' });
+  const cacheTime = getStatsCacheTime(stats.total);
+  redis.set(redisKey, JSON.stringify(stats), 'EX', cacheTime);
   return res.status(200).json(stats);
 };
 

@@ -407,6 +407,7 @@ exports.getStats = ({ id, domain, user }) =>
             domain ? records[0].get('domain') : config.DEFAULT_DOMAIN
           }/${id}`,
           target: records[0].get('l').properties.target,
+          updatedAt: new Date().toISOString(),
           lastDay: stats[0],
           lastWeek: stats[1],
           lastMonth: stats[2],
