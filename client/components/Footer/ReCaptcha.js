@@ -4,7 +4,7 @@ import config from '../../config';
 
 const Recaptcha = styled.div`
   display: flex;
-  margin: 40px 0 16px;
+  margin: 54px 0 16px;
 `;
 
 const ReCaptcha = () => (
