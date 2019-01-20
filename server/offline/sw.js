@@ -1,8 +1,5 @@
 // This is the "Offline copy of pages" service worker
 
-// Install stage sets up the index page (home page) in the cache and opens a new cache
-const { self } = window;
-
 self.addEventListener('install', event => {
   const indexPage = new Request('index.html');
   event.waitUntil(
