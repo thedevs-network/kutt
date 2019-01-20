@@ -51,6 +51,7 @@ module.exports = {
   MAIL_PORT: 587,
   MAIL_SECURE: false,
   MAIL_USER: '',
+  MAIL_FROM: '', // Example: "Kutt <support@kutt.it>". Leave empty to use MAIL_USER
   MAIL_PASSWORD: '',
 
   /*
