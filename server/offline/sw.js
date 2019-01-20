@@ -1,7 +1,5 @@
 // This is the "Offline copy of pages" service worker
 
-const {self} = WorkerGlobalScope;
-
 self.addEventListener('install', event => {
   const indexPage = new Request('index.html');
   event.waitUntil(
