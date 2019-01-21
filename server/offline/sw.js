@@ -1,5 +1,6 @@
 // This is the "Offline copy of pages" service worker
 
+// eslint-disable-next-line no-restricted-globals
 self.addEventListener('install', event => {
   const indexPage = new Request('index.html');
   event.waitUntil(
@@ -9,7 +10,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// If any fetch fails, it will look for the request in the cache and serve it from there first
+// eslint-disable-next-line no-restricted-globals
 self.addEventListener('fetch', event => {
   const updateCache = request =>
     caches
