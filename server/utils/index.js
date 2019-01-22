@@ -14,6 +14,9 @@ exports.isAdmin = email => config.ADMIN_EMAILS.includes(email);
 
 exports.getStatsCacheTime = total => {
   switch (true) {
+    case total <= 5000:
+      return ms('15 minutes') / 1000;
+
     case total > 5000 && total < 20000:
       return ms('1 hour') / 1000;
 
