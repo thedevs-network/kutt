@@ -135,8 +135,8 @@ exports.goToUrl = async (req, res, next) => {
     url = JSON.parse(cachedUrl);
   } else {
     const urls = await findUrl({ id, domain });
-    if (!urls && !urls.length) return next();
-    url = urls.find(item => (domain ? item.domain === domain : !item.domain));
+    url =
+      urls && urls.length && urls.find(item => (domain ? item.domain === domain : !item.domain));
   }
 
   if (!url) {
