@@ -25,6 +25,7 @@ const {
   getBannedDomain,
   getBannedHost,
 } = require('../db/url');
+const { preservedUrls } = require('./validateBodyController');
 const transporter = require('../mail/mail');
 const redis = require('../redis');
 const { addProtocol, generateShortUrl, getStatsCacheTime } = require('../utils');
@@ -211,23 +212,33 @@ exports.getUrls = async ({ query, user }, res) => {
   return res.json({ list, countAll });
 };
 
-exports.setCustomDomain = async ({ body: { customDomain }, user }, res) => {
+exports.setCustomDomain = async ({ body, user }, res) => {
+  const parsed = URL.parse(body.customDomain);
+  const customDomain = parsed.hostname || parsed.href;
+  if (!customDomain) return res.status(400).json({ error: 'Domain is not valid.' });
   if (customDomain.length > 40) {
     return res.status(400).json({ error: 'Maximum custom domain length is 40.' });
   }
   if (customDomain === config.DEFAULT_DOMAIN) {
     return res.status(400).json({ error: "You can't use default domain." });
   }
-  const isValidDomain = urlRegex({ exact: true, strict: false }).test(customDomain);
-  if (!isValidDomain) return res.status(400).json({ error: 'Domain is not valid.' });
-  const isOwned = await getCustomDomain({ customDomain });
-  if (isOwned && isOwned.email !== user.email) {
+  const isValidHomepage =
+    !body.homepage || urlRegex({ exact: true, strict: false }).test(body.homepage);
+  if (!isValidHomepage) return res.status(400).json({ error: 'Homepage is not valid.' });
+  const homepage =
+    body.homepage &&
+    (URL.parse(body.homepage).protocol ? body.homepage : `http://${body.homepage}`);
+  const { email } = await getCustomDomain({ customDomain });
+  if (email !== user.email) {
     return res
       .status(400)
       .json({ error: 'Domain is already taken. Contact us for multiple users.' });
   }
-  const userCustomDomain = await setCustomDomain({ user, customDomain });
-  if (userCustomDomain) return res.status(201).json({ customDomain: userCustomDomain.name });
+  const userCustomDomain = await setCustomDomain({ user, customDomain, homepage });
+  if (userCustomDomain)
+    return res
+      .status(201)
+      .json({ customDomain: userCustomDomain.name, homepage: userCustomDomain.homepage });
   return res.status(400).json({ error: "Couldn't set custom domain." });
 };
 
@@ -235,6 +246,19 @@ exports.deleteCustomDomain = async ({ user }, res) => {
   const response = await deleteCustomDomain({ user });
   if (response) return res.status(200).json({ message: 'Domain deleted successfully' });
   return res.status(400).json({ error: "Couldn't delete custom domain." });
+};
+
+exports.customDomainRedirection = async (req, res, next) => {
+  const { headers, path } = req;
+  if (
+    headers.host !== config.DEFAULT_DOMAIN &&
+    (path === '/' ||
+      preservedUrls.filter(u => u !== 'url-password').some(item => item === path.replace('/', '')))
+  ) {
+    const { homepage } = await getCustomDomain({ customDomain: headers.host });
+    return res.redirect(301, homepage || `http://${config.DEFAULT_DOMAIN + path}`);
+  }
+  return next();
 };
 
 exports.deleteUrl = async ({ body: { id, domain }, user }, res) => {
