@@ -86,7 +86,9 @@ describe('auth actions', () => {
         },
         {
           type: SET_DOMAIN,
-          payload: ''
+          payload: {
+            customDomain: '',
+          }
         },
         { type: SHOW_PAGE_LOADING }
       ];
@@ -151,7 +153,9 @@ describe('auth actions', () => {
         },
         {
           type: SET_DOMAIN,
-          payload: ''
+          payload: {
+            customDomain: '',
+          }
         }
       ];
 

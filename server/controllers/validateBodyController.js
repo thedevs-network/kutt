@@ -40,6 +40,7 @@ const preservedUrls = [
   'reset-password',
   'resetpassword',
   'url-password',
+  'url-info',
   'settings',
   'stats',
   'verify',
@@ -47,6 +48,10 @@ const preservedUrls = [
   '404',
   'static',
   'images',
+  'banned',
+  'terms',
+  'privacy',
+  'report',
 ];
 
 exports.preservedUrls = preservedUrls;

@@ -197,19 +197,27 @@ exports.getCustomDomain = ({ customDomain }) =>
     const session = driver.session();
     session
       .readTransaction(tx =>
-        tx.run('MATCH (d:DOMAIN { name: $customDomain })<-[:OWNS]-(u) RETURN u', {
-          customDomain,
-        })
+        tx.run(
+          'MATCH (d:DOMAIN { name: $customDomain })<-[:OWNS]-(u) RETURN u.email as email, d.homepage as homepage',
+          {
+            customDomain,
+          }
+        )
       )
       .then(({ records }) => {
         session.close();
-        const data = records.length && records[0].get('u').properties;
+        const data = records.length
+          ? {
+              email: records[0].get('email'),
+              homepage: records[0].get('homepage'),
+            }
+          : {};
         resolve(data);
       })
       .catch(err => session.close() || reject(err));
   });
 
-exports.setCustomDomain = ({ user, customDomain }) =>
+exports.setCustomDomain = ({ user, customDomain, homepage }) =>
   new Promise((resolve, reject) => {
     const session = driver.session();
     session
@@ -217,10 +225,11 @@ exports.setCustomDomain = ({ user, customDomain }) =>
         tx.run(
           'MATCH (u:USER { email: $email }) ' +
             'OPTIONAL MATCH (u)-[r:OWNS]->() DELETE r ' +
-            'MERGE (d:DOMAIN { name: $customDomain }) ' +
+            `MERGE (d:DOMAIN { name: $customDomain, homepage: $homepage }) ` +
             'MERGE (u)-[:OWNS]->(d) RETURN u, d',
           {
             customDomain,
+            homepage: homepage || '',
             email: user.email,
           }
         )

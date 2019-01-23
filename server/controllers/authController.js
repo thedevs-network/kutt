@@ -170,7 +170,11 @@ exports.generateApiKey = async ({ user }, res) => {
 };
 
 exports.userSettings = ({ user }, res) =>
-  res.status(200).json({ apikey: user.apikey || '', customDomain: user.domain || '' });
+  res.status(200).json({
+    apikey: user.apikey || '',
+    customDomain: user.domain || '',
+    homepage: user.homepage || '',
+  });
 
 exports.requestPasswordReset = async ({ body: { email } }, res) => {
   const user = await requestPasswordReset({ email });
