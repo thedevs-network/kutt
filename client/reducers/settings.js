@@ -9,6 +9,7 @@ import {
 const initialState = {
   apikey: '',
   customDomain: '',
+  homepage: '',
   domainInput: true,
 };
 
