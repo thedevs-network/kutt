@@ -47,7 +47,7 @@ export const loginUser = payload => async dispatch => {
     cookie.set('token', token, { expires: 7 });
     dispatch(authRenew());
     dispatch(authUser(decodeJwt(token)));
-    dispatch(setDomain(decodeJwt(token).domain));
+    dispatch(setDomain({ customDomain: decodeJwt(token).domain }));
     dispatch(showPageLoading());
     Router.push('/');
   } catch ({ response }) {
@@ -78,7 +78,7 @@ export const renewAuthUser = () => async (dispatch, getState) => {
     cookie.set('token', token, { expires: 7 });
     dispatch(authRenew());
     dispatch(authUser(decodeJwt(token)));
-    dispatch(setDomain(decodeJwt(token).domain));
+    dispatch(setDomain({ customDomain: decodeJwt(token).domain }));
   } catch (error) {
     cookie.remove('token');
     dispatch(unauthUser());

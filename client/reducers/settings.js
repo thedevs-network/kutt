@@ -15,11 +15,16 @@ const initialState = {
 const settings = (state = initialState, action) => {
   switch (action.type) {
     case SET_DOMAIN:
-      return { ...state, customDomain: action.payload, domainInput: false };
+      return {
+        ...state,
+        customDomain: action.payload.customDomain,
+        homepage: action.payload.homepage,
+        domainInput: false,
+      };
     case SET_APIKEY:
       return { ...state, apikey: action.payload };
     case DELETE_DOMAIN:
-      return { ...state, customDomain: '', domainInput: true };
+      return { ...state, customDomain: '', homepage: '', domainInput: true };
     case SHOW_DOMAIN_INPUT:
       return { ...state, domainInput: true };
     case UNAUTH_USER:
