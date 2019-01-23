@@ -139,7 +139,14 @@ exports.goToUrl = async (req, res, next) => {
     url = urls.find(item => (domain ? item.domain === domain : !item.domain));
   }
 
-  if (!url) return next();
+  if (!url) {
+    if (host !== config.DEFAULT_DOMAIN) {
+      const { homepage } = await getCustomDomain({ customDomain: domain });
+      if (!homepage) return next();
+      return res.redirect(301, homepage);
+    }
+    return next();
+  }
 
   redis.set(id + (domain || ''), JSON.stringify(url), 'EX', 60 * 60 * 1);
 
