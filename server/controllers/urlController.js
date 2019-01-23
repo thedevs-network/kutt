@@ -229,7 +229,7 @@ exports.setCustomDomain = async ({ body, user }, res) => {
     body.homepage &&
     (URL.parse(body.homepage).protocol ? body.homepage : `http://${body.homepage}`);
   const { email } = await getCustomDomain({ customDomain });
-  if (email !== user.email) {
+  if (email && email !== user.email) {
     return res
       .status(400)
       .json({ error: 'Domain is already taken. Contact us for multiple users.' });
