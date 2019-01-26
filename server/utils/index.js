@@ -1,5 +1,6 @@
 const URL = require('url');
 const ms = require('ms');
+const { differenceInDays, differenceInHours, differenceInMonths } = require('date-fns');
 const config = require('../config');
 
 exports.addProtocol = url => {
@@ -30,3 +31,46 @@ exports.getStatsCacheTime = total => {
       return ms('15 minutes') / 1000;
   }
 };
+
+exports.statsObjectToArray = item => {
+  const objToArr = key =>
+    Array.from(Object.keys(item[key]))
+      .map(name => ({
+        name,
+        value: item[key][name],
+      }))
+      .sort((a, b) => b.value - a.value);
+
+  return {
+    browser: objToArr('browser'),
+    os: objToArr('os'),
+    country: objToArr('country'),
+    referrer: objToArr('referrer'),
+  };
+};
+
+exports.getDifferenceFunction = type => {
+  switch (type) {
+    case 'lastDay':
+      return differenceInHours;
+
+    case 'lastWeek':
+      return differenceInDays;
+
+    case 'lastMonth':
+      return differenceInDays;
+
+    case 'allTime':
+      return differenceInMonths;
+
+    default:
+      return null;
+  }
+};
+
+const getUTCDate = (dateString = Date.now()) => {
+  const date = new Date(dateString);
+  return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours());
+};
+
+exports.getUTCDate = getUTCDate;
