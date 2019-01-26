@@ -285,8 +285,15 @@ exports.getStats = async ({ query: { id, domain }, user }, res) => {
   const redisKey = id + (customDomain || '') + user.email;
   const cached = await redis.get(redisKey);
   if (cached) return res.status(200).json(JSON.parse(cached));
+  const urls = await findUrl({ id, domain: customDomain });
+  if (!urls && !urls.length) return res.status(400).json({ error: "Couldn't find the short URL." });
+  const [url] = urls;
   const stats = await getStats({ id, domain: customDomain, user });
   if (!stats) return res.status(400).json({ error: 'Could not get the short URL stats.' });
+  stats.shortUrl = `http${!domain ? 's' : ''}://${domain ? url.domain : config.DEFAULT_DOMAIN}/${
+    url.id
+  }`;
+  stats.target = url.target;
   const cacheTime = getStatsCacheTime(stats.total);
   redis.set(redisKey, JSON.stringify(stats), 'EX', cacheTime);
   return res.status(200).json(stats);
