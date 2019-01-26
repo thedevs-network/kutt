@@ -17,6 +17,7 @@
 * [Key Features](#key-features)
 * [Stack](#stack)
 * [Setup](#setup)
+* [Browser Extensions](#browser-extensions)
 * [API](#api)
 * [Integrate with ShareX](#sharex)
 * [3rd Party API Packages](#3rd-party-api-packages)
@@ -53,6 +54,11 @@ You need to have [Node.js](https://nodejs.org/), [Neo4j](https://neo4j.com/) and
 6. Run for production: `npm run build` then `npm start`.
 
 **Docker:** You can use Docker to run the app. Read [docker-examples](/docker-examples) for more info.
+
+## Browser Extensions
+Download Kutt's extension for web browsers via below links. You can also find the source code on [kutt-extension](https://github.com/abhijithvijayan/kutt-extension).
+* [Chrome](https://chrome.google.com/webstore/detail/kutt/pklakpjfiegjacoppcodencchehlfnpd)
+* [Firefox](https://addons.mozilla.org/en-US/firefox/addon/kutt/)
 
 ## API
 In addition to the website, you can use these APIs to create, delete and get URLs.
