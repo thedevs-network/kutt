@@ -401,7 +401,7 @@ exports.getStats = ({ id, domain, user }) =>
           stats.allTime.stats = statsObjectToArray(stats.allTime.stats);
           const response = {
             total,
-            id: 'sv-v104',
+            id,
             updatedAt: new Date().toISOString(),
             lastDay: stats.lastDay,
             lastWeek: stats.lastWeek,
