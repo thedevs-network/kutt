@@ -10,7 +10,7 @@ const Section = styled.div`
   flex-direction: column;
   align-items: center;
   margin: 0;
-  padding: 102px 0;
+  padding: 102px 0 110px;
   background-color: #eaeaea;
 
   @media only screen and (max-width: 768px) {

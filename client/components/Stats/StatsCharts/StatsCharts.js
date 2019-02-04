@@ -41,7 +41,7 @@ const Row = styled.div`
   }
 `;
 
-const StatsCharts = ({ stats, period }) => {
+const StatsCharts = ({ stats, period, updatedAt }) => {
   const periodText = period.includes('last')
     ? `the last ${period.replace('last', '').toLocaleLowerCase()}`
     : 'all time';
@@ -49,17 +49,17 @@ const StatsCharts = ({ stats, period }) => {
   return (
     <ChartsWrapper>
       <Row>
-        <Area data={stats.views} period={period} periodText={periodText} />
+        <Area data={stats.views} period={period} updatedAt={updatedAt} periodText={periodText} />
       </Row>
       {hasView.length
         ? [
             <Row key="second-row">
-              <Pie data={stats.stats.referrer} title="Referrals" />
-              <Bar data={stats.stats.browser} title="Browsers" />
+              <Pie data={stats.stats.referrer} updatedAt={updatedAt} title="Referrals" />
+              <Bar data={stats.stats.browser} updatedAt={updatedAt} title="Browsers" />
             </Row>,
             <Row key="third-row">
-              <Pie data={stats.stats.country} title="Country" />
-              <Bar data={stats.stats.os} title="OS" />
+              <Pie data={stats.stats.country} updatedAt={updatedAt} title="Country" />
+              <Bar data={stats.stats.os} updatedAt={updatedAt} title="OS" />
             </Row>,
           ]
         : null}
@@ -68,6 +68,7 @@ const StatsCharts = ({ stats, period }) => {
 };
 
 StatsCharts.propTypes = {
+  updatedAt: PropTypes.string.isRequired,
   period: PropTypes.string.isRequired,
   stats: PropTypes.shape({
     stats: PropTypes.object.isRequired,

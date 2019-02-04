@@ -25,9 +25,10 @@ const {
   getBannedDomain,
   getBannedHost,
 } = require('../db/url');
+const { preservedUrls } = require('./validateBodyController');
 const transporter = require('../mail/mail');
 const redis = require('../redis');
-const { addProtocol, generateShortUrl } = require('../utils');
+const { addProtocol, generateShortUrl, getStatsCacheTime } = require('../utils');
 const config = require('../config');
 
 const dnsLookup = promisify(dns.lookup);
@@ -134,11 +135,18 @@ exports.goToUrl = async (req, res, next) => {
     url = JSON.parse(cachedUrl);
   } else {
     const urls = await findUrl({ id, domain });
-    if (!urls && !urls.length) return next();
-    url = urls.find(item => (domain ? item.domain === domain : !item.domain));
+    url =
+      urls && urls.length && urls.find(item => (domain ? item.domain === domain : !item.domain));
   }
 
-  if (!url) return next();
+  if (!url) {
+    if (host !== config.DEFAULT_DOMAIN) {
+      const { homepage } = await getCustomDomain({ customDomain: domain });
+      if (!homepage) return next();
+      return res.redirect(301, homepage);
+    }
+    return next();
+  }
 
   redis.set(id + (domain || ''), JSON.stringify(url), 'EX', 60 * 60 * 1);
 
@@ -211,23 +219,33 @@ exports.getUrls = async ({ query, user }, res) => {
   return res.json({ list, countAll });
 };
 
-exports.setCustomDomain = async ({ body: { customDomain }, user }, res) => {
+exports.setCustomDomain = async ({ body, user }, res) => {
+  const parsed = URL.parse(body.customDomain);
+  const customDomain = parsed.hostname || parsed.href;
+  if (!customDomain) return res.status(400).json({ error: 'Domain is not valid.' });
   if (customDomain.length > 40) {
     return res.status(400).json({ error: 'Maximum custom domain length is 40.' });
   }
   if (customDomain === config.DEFAULT_DOMAIN) {
     return res.status(400).json({ error: "You can't use default domain." });
   }
-  const isValidDomain = urlRegex({ exact: true, strict: false }).test(customDomain);
-  if (!isValidDomain) return res.status(400).json({ error: 'Domain is not valid.' });
-  const isOwned = await getCustomDomain({ customDomain });
-  if (isOwned && isOwned.email !== user.email) {
+  const isValidHomepage =
+    !body.homepage || urlRegex({ exact: true, strict: false }).test(body.homepage);
+  if (!isValidHomepage) return res.status(400).json({ error: 'Homepage is not valid.' });
+  const homepage =
+    body.homepage &&
+    (URL.parse(body.homepage).protocol ? body.homepage : `http://${body.homepage}`);
+  const { email } = await getCustomDomain({ customDomain });
+  if (email && email !== user.email) {
     return res
       .status(400)
       .json({ error: 'Domain is already taken. Contact us for multiple users.' });
   }
-  const userCustomDomain = await setCustomDomain({ user, customDomain });
-  if (userCustomDomain) return res.status(201).json({ customDomain: userCustomDomain.name });
+  const userCustomDomain = await setCustomDomain({ user, customDomain, homepage });
+  if (userCustomDomain)
+    return res
+      .status(201)
+      .json({ customDomain: userCustomDomain.name, homepage: userCustomDomain.homepage });
   return res.status(400).json({ error: "Couldn't set custom domain." });
 };
 
@@ -235,6 +253,19 @@ exports.deleteCustomDomain = async ({ user }, res) => {
   const response = await deleteCustomDomain({ user });
   if (response) return res.status(200).json({ message: 'Domain deleted successfully' });
   return res.status(400).json({ error: "Couldn't delete custom domain." });
+};
+
+exports.customDomainRedirection = async (req, res, next) => {
+  const { headers, path } = req;
+  if (
+    headers.host !== config.DEFAULT_DOMAIN &&
+    (path === '/' ||
+      preservedUrls.filter(u => u !== 'url-password').some(item => item === path.replace('/', '')))
+  ) {
+    const { homepage } = await getCustomDomain({ customDomain: headers.host });
+    return res.redirect(301, homepage || `http://${config.DEFAULT_DOMAIN + path}`);
+  }
+  return next();
 };
 
 exports.deleteUrl = async ({ body: { id, domain }, user }, res) => {
@@ -251,8 +282,20 @@ exports.deleteUrl = async ({ body: { id, domain }, user }, res) => {
 exports.getStats = async ({ query: { id, domain }, user }, res) => {
   if (!id) return res.status(400).json({ error: 'No id has been provided.' });
   const customDomain = domain !== config.DEFAULT_DOMAIN && domain;
+  const redisKey = id + (customDomain || '') + user.email;
+  const cached = await redis.get(redisKey);
+  if (cached) return res.status(200).json(JSON.parse(cached));
+  const urls = await findUrl({ id, domain: customDomain });
+  if (!urls && !urls.length) return res.status(400).json({ error: "Couldn't find the short URL." });
+  const [url] = urls;
   const stats = await getStats({ id, domain: customDomain, user });
   if (!stats) return res.status(400).json({ error: 'Could not get the short URL stats.' });
+  stats.shortUrl = `http${!domain ? 's' : ''}://${domain ? url.domain : config.DEFAULT_DOMAIN}/${
+    url.id
+  }`;
+  stats.target = url.target;
+  const cacheTime = getStatsCacheTime(stats.total);
+  redis.set(redisKey, JSON.stringify(stats), 'EX', cacheTime);
   return res.status(200).json(stats);
 };
 

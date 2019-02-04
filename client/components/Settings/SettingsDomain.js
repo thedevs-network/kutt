@@ -9,6 +9,9 @@ import { fadeIn } from '../../helpers/animations';
 const Form = styled.form`
   position: relative;
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
   margin: 32px 0;
   animation: ${fadeIn} 0.8s ease;
 
@@ -23,6 +26,11 @@ const Form = styled.form`
 `;
 
 const DomainWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   margin: 32px 0;
@@ -42,11 +50,40 @@ const DomainWrapper = styled.div`
   }
 `;
 
-const Domain = styled.span`
-  margin-right: 16px;
+const Domain = styled.h4`
+  margin: 0 16px 0 0;
   font-size: 20px;
   font-weight: bold;
-  border-bottom: 2px dotted #999;
+
+  span {
+    border-bottom: 2px dotted #999;
+  }
+`;
+
+const Homepage = styled.h6`
+  margin: 0 16px 0 0;
+  font-size: 14px;
+  font-weight: 300;
+
+  span {
+    border-bottom: 2px dotted #999;
+  }
+`;
+
+const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+`;
+
+const LabelWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  span {
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
 `;
 
 const SettingsDomain = ({ settings, handleCustomDomain, loading, showDomainInput, showModal }) => (
@@ -60,27 +97,53 @@ const SettingsDomain = ({ settings, handleCustomDomain, loading, showDomainInput
       Point your domain A record to <b>164.132.153.221</b> then add the domain via form below:
     </p>
     {settings.customDomain && !settings.domainInput ? (
-      <DomainWrapper>
-        <Domain>{settings.customDomain}</Domain>
-        <Button icon="edit" onClick={showDomainInput}>
-          Change
-        </Button>
-        <Button color="gray" icon="x" onClick={showModal}>
-          Delete
-        </Button>
-      </DomainWrapper>
+      <div>
+        <DomainWrapper>
+          <Domain>
+            <span>{settings.customDomain}</span>
+          </Domain>
+          <Homepage>
+            (Homepage redirects to <span>{settings.homepage || window.location.hostname}</span>)
+          </Homepage>
+        </DomainWrapper>
+        <ButtonWrapper>
+          <Button icon="edit" onClick={showDomainInput}>
+            Change
+          </Button>
+          <Button color="gray" icon="x" onClick={showModal}>
+            Delete
+          </Button>
+        </ButtonWrapper>
+      </div>
     ) : (
       <Form onSubmit={handleCustomDomain}>
-        <Error type="domain" left={0} bottom={-48} />
-        <TextInput
-          id="customdomain"
-          name="customdomain"
-          type="text"
-          placeholder="example.com"
-          defaultValue={settings.customDomain}
-          height={44}
-          small
-        />
+        <Error type="domain" left={0} bottom={-54} />
+        <InputWrapper>
+          <LabelWrapper htmlFor="customdomain">
+            <span>Domain</span>
+            <TextInput
+              id="customdomain"
+              name="customdomain"
+              type="text"
+              placeholder="example.com"
+              defaultValue={settings.customDomain}
+              height={44}
+              small
+            />
+          </LabelWrapper>
+          <LabelWrapper>
+            <span>Homepage (Optional)</span>
+            <TextInput
+              id="homepage"
+              name="homepage"
+              type="text"
+              placeholder="Homepage URL"
+              defaultValue={settings.homepage}
+              height={44}
+              small
+            />
+          </LabelWrapper>
+        </InputWrapper>
         <Button type="submit" color="purple" icon={loading ? 'loader' : ''}>
           Set domain
         </Button>

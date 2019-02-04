@@ -163,7 +163,8 @@ class Settings extends Component {
     e.preventDefault();
     if (this.props.domainLoading) return null;
     const customDomain = e.currentTarget.elements.customdomain.value;
-    return this.props.setCustomDomain({ customDomain });
+    const homepage = e.currentTarget.elements.homepage.value;
+    return this.props.setCustomDomain({ customDomain, homepage });
   }
 
   deleteDomain() {

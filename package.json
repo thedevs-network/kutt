@@ -47,6 +47,7 @@
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.4",
     "morgan": "^1.9.1",
+    "ms": "^2.1.1",
     "nanoid": "^1.0.1",
     "natives": "^1.1.6",
     "neo4j-driver": "^1.5.2",

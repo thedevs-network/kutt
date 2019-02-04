@@ -10,7 +10,6 @@ const cors = require('cors');
 const {
   validateBody,
   validationCriterias,
-  preservedUrls,
   validateUrl,
   cooldownCheck,
   malwareCheck,
@@ -60,16 +59,7 @@ app.prepare().then(() => {
     return next();
   });
 
-  server.use((req, res, next) => {
-    const { headers, path } = req;
-    if (
-      headers.host !== config.DEFAULT_DOMAIN &&
-      (path === '/' || preservedUrls.some(item => item === path.replace('/', '')))
-    ) {
-      return res.redirect(`http://${config.DEFAULT_DOMAIN + path}`);
-    }
-    return next();
-  });
+  server.use(url.customDomainRedirection);
 
   /* View routes */
   server.get('/', (req, res) => app.render(req, res, '/'));
