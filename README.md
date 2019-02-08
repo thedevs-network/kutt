@@ -17,6 +17,7 @@
 * [Key Features](#key-features)
 * [Stack](#stack)
 * [Setup](#setup)
+* [Browser Extensions](#browser-extensions)
 * [API](#api)
 * [Integrate with ShareX](#sharex)
 * [3rd Party API Packages](#3rd-party-api-packages)
@@ -53,6 +54,11 @@ You need to have [Node.js](https://nodejs.org/), [Neo4j](https://neo4j.com/) and
 6. Run for production: `npm run build` then `npm start`.
 
 **Docker:** You can use Docker to run the app. Read [docker-examples](/docker-examples) for more info.
+
+## Browser Extensions
+Download Kutt's extension for web browsers via below links. You can also find the source code on [kutt-extension](https://github.com/abhijithvijayan/kutt-extension).
+* [Chrome](https://chrome.google.com/webstore/detail/kutt/pklakpjfiegjacoppcodencchehlfnpd)
+* [Firefox](https://addons.mozilla.org/en-US/firefox/addon/kutt/)
 
 ## API
 In addition to the website, you can use these APIs to create, delete and get URLs.
@@ -120,7 +126,7 @@ You can use Kutt as your default URL shortener in [ShareX](https://getsharex.com
 | Python    | [kutt-cli](https://github.com/univa64/kutt-cli)            | Command-line client for Kutt written in Python    |
 | Ruby      | [kutt.rb](https://github.com/univa64/kutt.rb)              | Kutt library written in Ruby                      |
 | Node.js   | [node-kutt](https://github.com/ardalanamini/node-kutt)     | Node.js client for Kutt.it url shortener          |
-| Bash      | [kutt-bash](https://github.com/caltlgin/kutt-bash)         | Simple command line program for Kutt              |
+| Bash      | [kutt-bash](https://git.nixnet.xyz/caltlgin/kutt-bash)     | Simple command line program for Kutt              |
 
 ## Contributing
 Pull requests are welcome. You'll probably find lots of improvements to be made.
