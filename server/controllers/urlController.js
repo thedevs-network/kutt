@@ -65,7 +65,7 @@ exports.urlShortener = async ({ body, user }, res) => {
         ...url,
         password: !!url.password,
         reuse: true,
-        shortUrl: generateShortUrl(url.id, user.domain),
+        shortUrl: generateShortUrl(url.id, user.domain, user.useHttps),
       };
       return res.json(data);
     }
@@ -241,11 +241,18 @@ exports.setCustomDomain = async ({ body, user }, res) => {
       .status(400)
       .json({ error: 'Domain is already taken. Contact us for multiple users.' });
   }
-  const userCustomDomain = await setCustomDomain({ user, customDomain, homepage });
+  const userCustomDomain = await setCustomDomain({
+    user,
+    customDomain,
+    homepage,
+    useHttps: body.useHttps,
+  });
   if (userCustomDomain)
-    return res
-      .status(201)
-      .json({ customDomain: userCustomDomain.name, homepage: userCustomDomain.homepage });
+    return res.status(201).json({
+      customDomain: userCustomDomain.name,
+      homepage: userCustomDomain.homepage,
+      useHttps: userCustomDomain.useHttps,
+    });
   return res.status(400).json({ error: "Couldn't set custom domain." });
 };
 
@@ -263,7 +270,7 @@ exports.customDomainRedirection = async (req, res, next) => {
       preservedUrls.filter(u => u !== 'url-password').some(item => item === path.replace('/', '')))
   ) {
     const { homepage } = await getCustomDomain({ customDomain: headers.host });
-    return res.redirect(301, homepage || `http://${config.DEFAULT_DOMAIN + path}`);
+    return res.redirect(301, homepage || `https://${config.DEFAULT_DOMAIN + path}`);
   }
   return next();
 };

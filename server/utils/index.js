@@ -8,8 +8,10 @@ exports.addProtocol = url => {
   return hasProtocol ? url : `http://${url}`;
 };
 
-exports.generateShortUrl = (id, domain) =>
-  `http${!domain ? 's' : ''}://${domain || config.DEFAULT_DOMAIN}/${id}`;
+exports.generateShortUrl = (id, domain, useHttps) => {
+  const protocol = useHttps || !domain ? 'https://' : 'http://';
+  return `${protocol}${domain || config.DEFAULT_DOMAIN}/${id}`;
+};
 
 exports.isAdmin = email => config.ADMIN_EMAILS.includes(email);
 

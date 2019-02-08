@@ -23,10 +23,13 @@ export const showDomainInput = () => ({ type: SHOW_DOMAIN_INPUT });
 
 export const getUserSettings = () => async dispatch => {
   try {
-    const { data: { apikey, customDomain, homepage } } = await axios.get('/api/auth/usersettings', {
-      headers: { Authorization: cookie.get('token') },
-    });
-    dispatch(setDomain({ customDomain, homepage }));
+    const { data: { apikey, customDomain, homepage, useHttps } } = await axios.get(
+      '/api/auth/usersettings',
+      {
+        headers: { Authorization: cookie.get('token') },
+      }
+    );
+    dispatch(setDomain({ customDomain, homepage, useHttps }));
     dispatch(setApiKey(apikey));
   } catch (error) {
     //
@@ -36,10 +39,14 @@ export const getUserSettings = () => async dispatch => {
 export const setCustomDomain = params => async dispatch => {
   dispatch(showDomainLoading());
   try {
-    const { data: { customDomain, homepage } } = await axios.post('/api/url/customdomain', params, {
-      headers: { Authorization: cookie.get('token') },
-    });
-    dispatch(setDomain({ customDomain, homepage }));
+    const { data: { customDomain, homepage, useHttps } } = await axios.post(
+      '/api/url/customdomain',
+      params,
+      {
+        headers: { Authorization: cookie.get('token') },
+      }
+    );
+    dispatch(setDomain({ customDomain, homepage, useHttps }));
   } catch ({ response }) {
     dispatch(setDomainError(response.data.error));
   }

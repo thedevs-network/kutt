@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import TextInput from '../TextInput';
+import Checkbox from '../Checkbox';
 import Button from '../Button';
 import Error from '../Error';
 import { fadeIn } from '../../helpers/animations';
@@ -73,7 +74,6 @@ const Homepage = styled.h6`
 const InputWrapper = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
 `;
 
 const LabelWrapper = styled.div`
@@ -86,7 +86,15 @@ const LabelWrapper = styled.div`
   }
 `;
 
-const SettingsDomain = ({ settings, handleCustomDomain, loading, showDomainInput, showModal }) => (
+const SettingsDomain = ({
+  settings,
+  handleCustomDomain,
+  loading,
+  showDomainInput,
+  showModal,
+  useHttps,
+  handleCheckbox,
+}) => (
   <div>
     <h3>Custom domain</h3>
     <p>
@@ -102,6 +110,7 @@ const SettingsDomain = ({ settings, handleCustomDomain, loading, showDomainInput
           <Domain>
             <span>{settings.customDomain}</span>
           </Domain>
+          {settings.useHttps && <Homepage>(With HTTPS)</Homepage>}
           <Homepage>
             (Homepage redirects to <span>{settings.homepage || window.location.hostname}</span>)
           </Homepage>
@@ -144,6 +153,14 @@ const SettingsDomain = ({ settings, handleCustomDomain, loading, showDomainInput
             />
           </LabelWrapper>
         </InputWrapper>
+        <Checkbox
+          checked={useHttps === null ? settings.useHttps : useHttps}
+          id="useHttps"
+          name="useHttps"
+          onClick={handleCheckbox}
+          withMargin={false}
+          label="Use HTTPS (We don't handle the SSL, you should take care of it)"
+        />
         <Button type="submit" color="purple" icon={loading ? 'loader' : ''}>
           Set domain
         </Button>
@@ -161,6 +178,8 @@ SettingsDomain.propTypes = {
   loading: PropTypes.bool.isRequired,
   showDomainInput: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
+  handleCheckbox: PropTypes.func.isRequired,
+  useHttps: PropTypes.bool.isRequired,
 };
 
 export default SettingsDomain;

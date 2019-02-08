@@ -44,7 +44,11 @@ exports.createShortUrl = params =>
           ...data,
           password: !!data.password,
           reuse: !!params.reuse,
-          shortUrl: generateShortUrl(data.id, params.user && params.user.domain),
+          shortUrl: generateShortUrl(
+            data.id,
+            params.user && params.user.domain,
+            params.user && params.user.useHttps
+          ),
         });
       })
       .catch(err => session.close() || reject(err));
@@ -158,7 +162,7 @@ exports.getUrls = ({ user, options, setCount }) =>
             'WITH l ORDER BY l.createdAt DESC ' +
             'WITH l SKIP $skip LIMIT $limit ' +
             `OPTIONAL MATCH (l)-[:USES]->(d) ${setVisitsCount} ` +
-            'RETURN l, d.name AS domain',
+            'RETURN l, d.name AS domain, d.useHttps as useHttps',
           {
             email: user.email,
             limit,
@@ -171,12 +175,15 @@ exports.getUrls = ({ user, options, setCount }) =>
         session.close();
         const urls = records.map(record => {
           const visitCount = record.get('l').properties.count;
+          const domain = record.get('domain');
+          const protocol = record.get('useHttps') || !domain ? 'https://' : 'http://';
           return {
             ...record.get('l').properties,
             count: typeof visitCount === 'object' ? visitCount.toNumber() : visitCount,
             password: !!record.get('l').properties.password,
-            shortUrl: `http${!record.get('domain') ? 's' : ''}://${record.get('domain') ||
-              config.DEFAULT_DOMAIN}/${record.get('l').properties.id}`,
+            shortUrl: `${protocol}${domain || config.DEFAULT_DOMAIN}/${
+              record.get('l').properties.id
+            }`,
           };
         });
         resolve({ list: urls });
@@ -209,7 +216,7 @@ exports.getCustomDomain = ({ customDomain }) =>
       .catch(err => session.close() || reject(err));
   });
 
-exports.setCustomDomain = ({ user, customDomain, homepage }) =>
+exports.setCustomDomain = ({ user, customDomain, homepage, useHttps }) =>
   new Promise((resolve, reject) => {
     const session = driver.session();
     session
@@ -217,12 +224,13 @@ exports.setCustomDomain = ({ user, customDomain, homepage }) =>
         tx.run(
           'MATCH (u:USER { email: $email }) ' +
             'OPTIONAL MATCH (u)-[r:OWNS]->() DELETE r ' +
-            `MERGE (d:DOMAIN { name: $customDomain, homepage: $homepage }) ` +
+            `MERGE (d:DOMAIN { name: $customDomain, homepage: $homepage, useHttps: $useHttps }) ` +
             'MERGE (u)-[:OWNS]->(d) RETURN u, d',
           {
             customDomain,
             homepage: homepage || '',
             email: user.email,
+            useHttps,
           }
         )
       )

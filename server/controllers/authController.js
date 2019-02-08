@@ -174,6 +174,7 @@ exports.userSettings = ({ user }, res) =>
     apikey: user.apikey || '',
     customDomain: user.domain || '',
     homepage: user.homepage || '',
+    useHttps: user.useHttps || false,
   });
 
 exports.requestPasswordReset = async ({ body: { email } }, res) => {
