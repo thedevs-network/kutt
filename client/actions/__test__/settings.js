@@ -42,6 +42,7 @@ describe('settings actions', () => {
       const apikey = '123';
       const customDomain = 'test.com';
       const homepage = '';
+      const useHttps = false;
 
       nock('http://localhost', {
         reqheaders: {
@@ -49,7 +50,7 @@ describe('settings actions', () => {
         }
       })
         .get('/api/auth/usersettings')
-        .reply(200, { apikey, customDomain, homepage });
+        .reply(200, { apikey, customDomain, homepage, useHttps });
 
       const store = mockStore({});
 
@@ -58,7 +59,8 @@ describe('settings actions', () => {
           type: SET_DOMAIN,
           payload: {
             customDomain,
-            homepage: ''
+            homepage: '',
+            useHttps: false,
           }
         },
         {
@@ -81,6 +83,7 @@ describe('settings actions', () => {
     it('should dispatch SET_DOMAIN when setting custom domain has been done', done => {
       const customDomain = 'test.com';
       const homepage = '';
+      const useHttps = false;
 
       nock('http://localhost', {
         reqheaders: {
@@ -88,7 +91,7 @@ describe('settings actions', () => {
         }
       })
         .post('/api/url/customdomain')
-        .reply(200, { customDomain, homepage });
+        .reply(200, { customDomain, homepage, useHttps });
 
       const store = mockStore({});
 
@@ -98,7 +101,8 @@ describe('settings actions', () => {
           type: SET_DOMAIN,
           payload: {
             customDomain,
-            homepage: ''
+            homepage: '',
+            useHttps: false,
           }
         }
       ];
@@ -106,7 +110,8 @@ describe('settings actions', () => {
       store
         .dispatch(setCustomDomain({
           customDomain,
-          homepage: ''
+          homepage: '',
+          useHttps: false,
         }))
         .then(() => {
           expect(store.getActions()).to.deep.equal(expectedActions);

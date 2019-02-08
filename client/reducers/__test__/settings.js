@@ -16,7 +16,8 @@ describe('settings reducer', () => {
     apikey: '',
     customDomain: '',
     homepage: '',
-    domainInput: true
+    domainInput: true,
+    useHttps: false,
   };
 
   beforeEach(() => {
