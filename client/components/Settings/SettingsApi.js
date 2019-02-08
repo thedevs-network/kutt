@@ -67,7 +67,7 @@ const SettingsApi = ({ apikey, generateKey, loader }) => (
         {apikey ? 'Regenerate' : 'Generate'} key
       </Button>
     </ApiKeyWrapper>
-    <Link href="http://github.com/thedevs-network/kutt#api" title="API Docs" target="_blank">
+    <Link href="https://github.com/thedevs-network/kutt#api" title="API Docs" target="_blank">
       Read API docs
     </Link>
   </Wrapper>
