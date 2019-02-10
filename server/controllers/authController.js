@@ -118,8 +118,8 @@ exports.signup = async (req, res) => {
     from: config.MAIL_FROM || config.MAIL_USER,
     to: newUser.email,
     subject: 'Verify your account',
-    text: verifyMailText.replace('{{verification}}', newUser.verificationToken),
-    html: verifyEmailTemplate.replace('{{verification}}', newUser.verificationToken),
+    text: verifyMailText.replace(/{{verification}}/gim, newUser.verificationToken),
+    html: verifyEmailTemplate.replace(/{{verification}}/gim, newUser.verificationToken),
   });
   if (mail.accepted.length) {
     return res.status(201).json({ email, message: 'Verification email has been sent.' });
