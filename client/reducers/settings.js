@@ -11,6 +11,7 @@ const initialState = {
   customDomain: '',
   homepage: '',
   domainInput: true,
+  useHttps: false,
 };
 
 const settings = (state = initialState, action) => {
@@ -21,6 +22,7 @@ const settings = (state = initialState, action) => {
         customDomain: action.payload.customDomain,
         homepage: action.payload.homepage,
         domainInput: false,
+        useHttps: action.payload.useHttps,
       };
     case SET_APIKEY:
       return { ...state, apikey: action.payload };

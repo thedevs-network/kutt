@@ -78,6 +78,7 @@ class Settings extends Component {
       showModal: false,
       passwordMessage: '',
       passwordError: '',
+      useHttps: null,
       ban: {
         domain: false,
         error: '',
@@ -90,6 +91,7 @@ class Settings extends Component {
     this.onSubmitBan = this.onSubmitBan.bind(this);
     this.onChangeBanCheckboxes = this.onChangeBanCheckboxes.bind(this);
     this.handleCustomDomain = this.handleCustomDomain.bind(this);
+    this.handleCheckbox = this.handleCheckbox.bind(this);
     this.deleteDomain = this.deleteDomain.bind(this);
     this.showModal = this.showModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
@@ -162,9 +164,14 @@ class Settings extends Component {
   handleCustomDomain(e) {
     e.preventDefault();
     if (this.props.domainLoading) return null;
+    const { useHttps } = this.state;
     const customDomain = e.currentTarget.elements.customdomain.value;
     const homepage = e.currentTarget.elements.homepage.value;
-    return this.props.setCustomDomain({ customDomain, homepage });
+    return this.props.setCustomDomain({ customDomain, homepage, useHttps });
+  }
+
+  handleCheckbox({ target: { id, checked } }) {
+    this.setState({ [id]: !checked });
   }
 
   deleteDomain() {
@@ -236,6 +243,8 @@ class Settings extends Component {
         )}
         <SettingsDomain
           handleCustomDomain={this.handleCustomDomain}
+          handleCheckbox={this.handleCheckbox}
+          useHttps={this.state.useHttps}
           loading={this.props.domainLoading}
           settings={this.props.settings}
           showDomainInput={this.props.showDomainInput}

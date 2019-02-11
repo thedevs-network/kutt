@@ -22,7 +22,8 @@ exports.getUser = ({ email = '', apikey = '' }) =>
         const domainProps = res.records.length && res.records[0].get('l');
         const domain = domainProps ? domainProps.properties.name : '';
         const homepage = domainProps ? domainProps.properties.homepage : '';
-        return resolve(user && { ...user, domain, homepage });
+        const useHttps = domainProps ? domainProps.properties.useHttps : '';
+        return resolve(user && { ...user, domain, homepage, useHttps });
       })
       .catch(err => reject(err));
   });

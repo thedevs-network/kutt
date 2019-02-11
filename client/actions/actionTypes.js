@@ -1,5 +1,6 @@
 /* Homepage input actions */
 export const ADD_URL = 'ADD_URL';
+export const UPDATE_URL = 'UPDATE_URL';
 export const UPDATE_URL_LIST = 'UPDATE_URL_LIST';
 export const LIST_URLS = 'LIST_URLS';
 export const DELETE_URL = 'DELETE_URL';
