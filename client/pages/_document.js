@@ -25,7 +25,6 @@ class AppDocument extends Document {
         <Head>
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-          <title>Kutt.it | Modern Open Source URL shortener.</title>
           <meta
             name="description"
             content="Kutt.it is a free and open source URL shortener with custom domains and stats."
