@@ -70,6 +70,7 @@ app.prepare().then(() => {
   server.get('/terms', (req, res) => app.render(req, res, '/terms'));
   server.get('/report', (req, res) => app.render(req, res, '/report'));
   server.get('/banned', (req, res) => app.render(req, res, '/banned'));
+  server.get('/offline', (req, res) => app.render(req, res, '/offline'));
   server.get('/reset-password/:resetPasswordToken?', catchErrors(auth.resetPassword), (req, res) =>
     app.render(req, res, '/reset-password', req.user)
   );
@@ -79,9 +80,9 @@ app.prepare().then(() => {
 
   // Disabled service worker because of multiple requests
   // Resulting in duplicated visist count
-  // server.get('/sw.js', (_req, res) => {
-  //   res.sendFile(`${__dirname}/offline/sw.js`);
-  // });
+  server.get('/sw.js', (_req, res) => {
+    res.sendFile(`${__dirname}/offline/sw.js`);
+  });
 
   /* User and authentication */
   server.post('/api/auth/signup', validationCriterias, validateBody, catchErrors(auth.signup));
