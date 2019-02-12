@@ -1,10 +1,16 @@
+const { promisify } = require('util');
+const dns = require('dns');
 const axios = require('axios');
 const urlRegex = require('url-regex');
 const validator = require('express-validator/check');
 const { subHours } = require('date-fns/');
 const { validationResult } = require('express-validator/check');
-const { addCooldown, banUser, getCooldowns } = require('../db/user');
+const { addCooldown, banUser } = require('../db/user');
+const { getBannedDomain, getBannedHost, urlCountFromDate } = require('../db/url');
 const config = require('../config');
+const subDay = require('date-fns/sub_days');
+
+const dnsLookup = promisify(dns.lookup);
 
 exports.validationCriterias = [
   validator
@@ -95,22 +101,22 @@ exports.validateUrl = async ({ body, user }, res, next) => {
   return next();
 };
 
-exports.cooldownCheck = async ({ user }, res, next) => {
-  if (user) {
-    const { cooldowns } = await getCooldowns(user);
-    if (cooldowns.length > 4) {
+exports.cooldownCheck = async user => {
+  if (user && user.cooldowns) {
+    if (user.cooldowns.length > 4) {
       await banUser(user);
-      return res.status(400).json({ error: 'Too much malware requests. You are now banned.' });
+      throw new Error('Too much malware requests. You are now banned.');
     }
-    const hasCooldownNow = cooldowns.some(cooldown => cooldown > subHours(new Date(), 12).toJSON());
+    const hasCooldownNow = user.cooldowns.some(
+      cooldown => cooldown > subHours(new Date(), 12).toJSON()
+    );
     if (hasCooldownNow) {
-      return res.status(400).json({ error: 'Cooldown because of a malware URL. Wait 12h' });
+      throw new Error('Cooldown because of a malware URL. Wait 12h');
     }
   }
-  return next();
 };
 
-exports.malwareCheck = async ({ body, user }, res, next) => {
+exports.malwareCheck = async (user, target) => {
   const isMalware = await axios.post(
     `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${
       config.GOOGLE_SAFE_BROWSING_KEY
@@ -130,7 +136,7 @@ exports.malwareCheck = async ({ body, user }, res, next) => {
         ],
         platformTypes: ['ANY_PLATFORM', 'PLATFORM_TYPE_UNSPECIFIED'],
         threatEntryTypes: ['EXECUTABLE', 'URL', 'THREAT_ENTRY_TYPE_UNSPECIFIED'],
-        threatEntries: [{ url: body.target }],
+        threatEntries: [{ url: target }],
       },
     }
   );
@@ -138,9 +144,38 @@ exports.malwareCheck = async ({ body, user }, res, next) => {
     if (user) {
       await addCooldown(user);
     }
-    return res
-      .status(400)
-      .json({ error: user ? 'Malware detected! Cooldown for 12h.' : 'Malware detected!' });
+    throw new Error(user ? 'Malware detected! Cooldown for 12h.' : 'Malware detected!');
   }
-  return next();
+};
+
+exports.urlCountsCheck = async email => {
+  const { count } = await urlCountFromDate({
+    email,
+    date: subDay(new Date(), 1).toJSON(),
+  });
+  if (count > config.USER_LIMIT_PER_DAY) {
+    throw new Error(
+      `You have reached your daily limit (${config.USER_LIMIT_PER_DAY}). Please wait 24h.`
+    );
+  }
+};
+
+exports.checkBannedDomain = async domain => {
+  const isDomainBanned = await getBannedDomain(domain);
+  if (isDomainBanned) {
+    throw new Error('URL is containing malware/scam.');
+  }
+};
+
+exports.checkBannedHost = async domain => {
+  let isHostBanned;
+  try {
+    const dnsRes = await dnsLookup(domain);
+    isHostBanned = await getBannedHost(dnsRes && dnsRes.address);
+  } catch (error) {
+    isHostBanned = null;
+  }
+  if (isHostBanned) {
+    throw new Error('URL is containing malware/scam.');
+  }
 };

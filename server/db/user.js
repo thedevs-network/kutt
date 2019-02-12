@@ -9,7 +9,8 @@ exports.getUser = ({ email = '', apikey = '' }) =>
       .readTransaction(tx =>
         tx.run(
           'MATCH (u:USER) WHERE u.email = $email OR u.apikey = $apikey ' +
-            'OPTIONAL MATCH (u)-[:OWNS]->(l) RETURN u, l',
+            'OPTIONAL MATCH (u)-[r:RECEIVED]->(c) WITH u, collect(c.date) as cooldowns ' +
+            'OPTIONAL MATCH (u)-[:OWNS]->(d) RETURN u, d, cooldowns',
           {
             apikey,
             email,
@@ -19,11 +20,12 @@ exports.getUser = ({ email = '', apikey = '' }) =>
       .then(res => {
         session.close();
         const user = res.records.length && res.records[0].get('u').properties;
-        const domainProps = res.records.length && res.records[0].get('l');
+        const cooldowns = res.records.length && res.records[0].get('cooldowns');
+        const domainProps = res.records.length && res.records[0].get('d');
         const domain = domainProps ? domainProps.properties.name : '';
         const homepage = domainProps ? domainProps.properties.homepage : '';
         const useHttps = domainProps ? domainProps.properties.useHttps : '';
-        return resolve(user && { ...user, domain, homepage, useHttps });
+        return resolve(user && { ...user, cooldowns, domain, homepage, useHttps });
       })
       .catch(err => reject(err));
   });

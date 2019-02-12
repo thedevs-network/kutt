@@ -1,12 +1,11 @@
-const urlRegex = require('url-regex');
-const URL = require('url');
-const dns = require('dns');
 const { promisify } = require('util');
+const urlRegex = require('url-regex');
+const dns = require('dns');
+const URL = require('url');
 const generate = require('nanoid/generate');
 const useragent = require('useragent');
 const geoip = require('geoip-lite');
 const bcrypt = require('bcryptjs');
-const subDay = require('date-fns/sub_days');
 const ua = require('universal-analytics');
 const isbot = require('isbot');
 const {
@@ -20,12 +19,16 @@ const {
   getStats,
   getUrls,
   setCustomDomain,
-  urlCountFromDate,
   banUrl,
-  getBannedDomain,
-  getBannedHost,
 } = require('../db/url');
-const { preservedUrls } = require('./validateBodyController');
+const {
+  checkBannedDomain,
+  checkBannedHost,
+  cooldownCheck,
+  malwareCheck,
+  preservedUrls,
+  urlCountsCheck,
+} = require('./validateBodyController');
 const transporter = require('../mail/mail');
 const redis = require('../redis');
 const { addProtocol, generateShortUrl, getStatsCacheTime } = require('../utils');
@@ -41,70 +44,58 @@ const generateId = async () => {
 };
 
 exports.urlShortener = async ({ body, user }, res) => {
-  // Check if user has passed daily limit
-  if (user) {
-    const { count } = await urlCountFromDate({
-      email: user.email,
-      date: subDay(new Date(), 1).toJSON(),
-    });
-    if (count > config.USER_LIMIT_PER_DAY) {
-      return res.status(429).json({
-        error: `You have reached your daily limit (${config.USER_LIMIT_PER_DAY}). Please wait 24h.`,
-      });
-    }
-  }
+  try {
+    const domain = URL.parse(body.target).hostname;
 
-  // if "reuse" is true, try to return
-  // the existent URL without creating one
-  if (user && body.reuse) {
-    const urls = await findUrl({ target: addProtocol(body.target) });
-    if (urls.length) {
-      urls.sort((a, b) => a.createdAt > b.createdAt);
-      const { domain: d, user: u, ...url } = urls[urls.length - 1];
-      const data = {
-        ...url,
-        password: !!url.password,
-        reuse: true,
-        shortUrl: generateShortUrl(url.id, user.domain, user.useHttps),
-      };
-      return res.json(data);
-    }
-  }
+    const queries = await Promise.all([
+      config.GOOGLE_SAFE_BROWSING_KEY && cooldownCheck(user),
+      config.GOOGLE_SAFE_BROWSING_KEY && malwareCheck(user, body.target),
+      user && urlCountsCheck(user.email),
+      user && body.reuse && findUrl({ target: addProtocol(body.target) }),
+      user && body.customurl && findUrl({ id: body.customurl || '' }),
+      (!user || !body.customurl) && generateId(),
+      checkBannedDomain(domain),
+      checkBannedHost(domain),
+    ]);
 
-  // Check if custom URL already exists
-  if (user && body.customurl) {
-    const urls = await findUrl({ id: body.customurl || '' });
-    if (urls.length) {
-      const urlWithNoDomain = !user.domain && urls.some(url => !url.domain);
-      const urlWithDmoain = user.domain && urls.some(url => url.domain === user.domain);
-      if (urlWithNoDomain || urlWithDmoain) {
-        return res.status(400).json({ error: 'Custom URL is already in use.' });
+    // if "reuse" is true, try to return
+    // the existent URL without creating one
+    if (user && body.reuse) {
+      const urls = queries[3];
+      if (urls.length) {
+        urls.sort((a, b) => a.createdAt > b.createdAt);
+        const { domain: d, user: u, ...url } = urls[urls.length - 1];
+        const data = {
+          ...url,
+          password: !!url.password,
+          reuse: true,
+          shortUrl: generateShortUrl(url.id, user.domain, user.useHttps),
+        };
+        return res.json(data);
       }
     }
-  }
 
-  // If domain or host is banned
-  const domain = URL.parse(body.target).hostname;
-  const isDomainBanned = await getBannedDomain(domain);
+    // Check if custom URL already exists
+    if (user && body.customurl) {
+      const urls = queries[4];
+      if (urls.length) {
+        const urlWithNoDomain = !user.domain && urls.some(url => !url.domain);
+        const urlWithDmoain = user.domain && urls.some(url => url.domain === user.domain);
+        if (urlWithNoDomain || urlWithDmoain) {
+          throw new Error('Custom URL is already in use.');
+        }
+      }
+    }
 
-  let isHostBanned;
-  try {
-    const dnsRes = await dnsLookup(domain);
-    isHostBanned = await getBannedHost(dnsRes && dnsRes.address);
+    // Create new URL
+    const id = (user && body.customurl) || queries[5];
+    const target = addProtocol(body.target);
+    const url = await createShortUrl({ ...body, id, target, user });
+
+    return res.json(url);
   } catch (error) {
-    isHostBanned = null;
+    return res.status(400).json({ error: error.message });
   }
-
-  if (isDomainBanned || isHostBanned) {
-    return res.status(400).json({ error: 'URL is containing malware/scam.' });
-  }
-
-  // Create new URL
-  const id = (user && body.customurl) || (await generateId());
-  const target = addProtocol(body.target);
-  const url = await createShortUrl({ ...body, id, target, user });
-
-  return res.json(url);
 };
 
 const browsersList = ['IE', 'Firefox', 'Chrome', 'Opera', 'Safari', 'Edge'];
