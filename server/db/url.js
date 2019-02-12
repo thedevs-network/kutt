@@ -354,9 +354,10 @@ exports.getStats = ({ id, domain, user }) =>
           'MATCH (v)-[:OS]->(o) ' +
           'MATCH (v)-[:REFERRED_BY]->(r) ' +
           'MATCH (v)-[:VISITED_IN]->(d) ' +
-          'RETURN l, b.browser AS browser, c.country AS country,' +
+          'WITH l, b.browser AS browser, c.country AS country, ' +
           'o.os AS os, r.referrer AS referrer, d.date AS date ' +
-          'ORDER BY d.date DESC',
+          'RETURN l, browser, country, os, referrer, date ' +
+          'ORDER BY date DESC',
         {
           email: user.email,
           domain,
@@ -432,7 +433,7 @@ exports.urlCountFromDate = ({ date, email }) =>
       .readTransaction(tx =>
         tx.run(
           'MATCH (u:USER { email: $email })-[:CREATED]->(l) WHERE l.createdAt > $date ' +
-            'RETURN COUNT(l) as count',
+            'WITH COUNT(l) as count RETURN count',
           {
             date,
             email,
