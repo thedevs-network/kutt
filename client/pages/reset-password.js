@@ -61,7 +61,9 @@ class ResetPassword extends Component {
     if (this.state.loading) return null;
     e.preventDefault();
     const form = document.getElementById('reset-password-form');
-    const { email: { value } } = form.elements;
+    const {
+      email: { value },
+    } = form.elements;
     if (!value) {
       this.setState({ error: 'Please provide an Email address.' }, () => {
         setTimeout(() => {

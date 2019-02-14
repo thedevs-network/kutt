@@ -197,4 +197,7 @@ const mapDispatchToProps = dispatch => ({
   getUrlsList: bindActionCreators(getUrlsList, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(TableOptions);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TableOptions);

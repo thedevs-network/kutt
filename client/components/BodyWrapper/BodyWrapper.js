@@ -92,4 +92,7 @@ const mapDispatchToProps = dispatch => ({
   renewAuthUser: bindActionCreators(renewAuthUser, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(BodyWrapper);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(BodyWrapper);

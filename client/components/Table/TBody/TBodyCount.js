@@ -106,4 +106,7 @@ const mapDispatchToProps = dispatch => ({
   showLoading: bindActionCreators(showPageLoading, dispatch),
 });
 
-export default connect(null, mapDispatchToProps)(TBodyCount);
+export default connect(
+  null,
+  mapDispatchToProps
+)(TBodyCount);

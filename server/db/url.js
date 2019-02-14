@@ -289,9 +289,9 @@ exports.deleteUrl = ({ id, domain, user }) =>
       .catch(err => session.close() || reject(err));
   });
 
-/* 
-** Collecting stats 
-*/
+/*
+ ** Collecting stats
+ */
 
 const initialStats = {
   browser: {

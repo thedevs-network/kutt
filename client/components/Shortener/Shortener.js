@@ -167,4 +167,7 @@ const mapDispatchToProps = dispatch => ({
   showShortenerLoading: bindActionCreators(showShortenerLoading, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Shortener);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Shortener);

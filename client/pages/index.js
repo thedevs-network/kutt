@@ -54,4 +54,7 @@ const mapDispatchToProps = dispatch => ({
   getUrlsList: bindActionCreators(getUrlsList, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Homepage);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Homepage);

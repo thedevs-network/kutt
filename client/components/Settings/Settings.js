@@ -105,7 +105,9 @@ class Settings extends Component {
 
   async onSubmitBan(e) {
     e.preventDefault();
-    const { ban: { domain, host, user } } = this.state;
+    const {
+      ban: { domain, host, user },
+    } = this.state;
     this.setState(state => ({
       ban: {
         ...state.ban,
@@ -226,7 +228,9 @@ class Settings extends Component {
   }
 
   render() {
-    const { auth: { user, admin } } = this.props;
+    const {
+      auth: { user, admin },
+    } = this.props;
     return (
       <Wrapper>
         <SettingsWelcome user={user} />
@@ -316,4 +320,7 @@ const mapDispatchToProps = dispatch => ({
   showDomainInput: bindActionCreators(showDomainInput, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Settings);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Settings);

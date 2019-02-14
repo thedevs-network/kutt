@@ -58,7 +58,8 @@ class BannedPage extends Component {
               <a href="/report" title="Send report">
                 send us a report
               </a>
-            </Link>.
+            </Link>
+            .
           </Subtitle>
         </Wrapper>
         <Footer />
