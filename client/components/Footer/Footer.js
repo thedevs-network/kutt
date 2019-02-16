@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import ReCaptcha from './ReCaptcha';
 import showRecaptcha from '../../helpers/recaptcha';
+import config from '../../config';
 
 const Wrapper = styled.footer`
   width: 100%;
@@ -53,13 +54,21 @@ class Footer extends Component {
             GitHub
           </a>
           {' | '}
-          <a href="/terms" title="Terms of Service" target="_blank">
+          <a href="/terms" title="Terms of Service">
             Terms of Service
           </a>
           {' | '}
-          <a href="/report" title="Report abuse" target="_blank">
+          <a href="/report" title="Report abuse">
             Report Abuse
           </a>
+          {config.CONTACT_EMAIL && (
+            <Fragment>
+              {' | '}
+              <a href={`mailto:${config.CONTACT_EMAIL}`} title="Contact us">
+                Contact us
+              </a>
+            </Fragment>
+          )}
           .
         </Text>
       </Wrapper>

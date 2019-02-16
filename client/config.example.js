@@ -8,6 +8,9 @@ module.exports = {
   // Google analytics tracking ID
   GOOGLE_ANALYTICS_ID: '6Lc4TUAUAAAAAMRHnlEEt21UkPlOXKCXHaIapdTT',
 
+  // Contact email address
+  CONTACT_EMAIL: '',
+
   // Report email address
   REPORT_EMAIL: '',
 };
