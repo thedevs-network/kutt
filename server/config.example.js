@@ -12,6 +12,7 @@ module.exports = {
   /* Redis host and port */
   REDIS_HOST: '127.0.0.1',
   REDIS_PORT: 6379,
+  REDIS_PASSWORD: '',
 
   /* The daily limit for each user */
   USER_LIMIT_PER_DAY: 50,
