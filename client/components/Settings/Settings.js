@@ -79,6 +79,7 @@ class Settings extends Component {
       passwordMessage: '',
       passwordError: '',
       useHttps: null,
+      isCopied: false,
       ban: {
         domain: false,
         error: '',
@@ -94,6 +95,7 @@ class Settings extends Component {
     this.handleCheckbox = this.handleCheckbox.bind(this);
     this.deleteDomain = this.deleteDomain.bind(this);
     this.showModal = this.showModal.bind(this);
+    this.onCopy = this.onCopy.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.changePassword = this.changePassword.bind(this);
   }
@@ -149,6 +151,13 @@ class Settings extends Component {
         }, 2000);
       }
     );
+  }
+
+  onCopy() {
+    this.setState({ isCopied: true });
+    setTimeout(() => {
+      this.setState({ isCopied: false });
+    }, 1500);
   }
 
   onChangeBanCheckboxes(type) {
@@ -265,6 +274,8 @@ class Settings extends Component {
           loader={this.props.apiLoading}
           generateKey={this.props.generateApiKey}
           apikey={this.props.settings.apikey}
+          isCopied={this.state.isCopied}
+          onCopy={this.onCopy}
         />
         <Modal show={this.state.showModal} close={this.closeModal} handler={this.deleteDomain}>
           Are you sure do you want to delete the domain?
