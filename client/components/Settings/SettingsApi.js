@@ -48,7 +48,7 @@ const KeyWrapper = styled.div`
 const ApiKey = styled.span`
   max-width: 100%;
   margin-right: 16px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   border-bottom: 2px dotted #999;
 
