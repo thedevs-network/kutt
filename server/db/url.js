@@ -230,7 +230,7 @@ exports.setCustomDomain = ({ user, customDomain, homepage, useHttps }) =>
             customDomain,
             homepage: homepage || '',
             email: user.email,
-            useHttps,
+            useHttps: !!useHttps,
           }
         )
       )
