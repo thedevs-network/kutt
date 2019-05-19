@@ -2,4 +2,3 @@
 client/.next/
 node_modules/
 client/config.js
-server/config.js
