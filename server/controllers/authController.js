@@ -3,7 +3,6 @@ const path = require('path');
 const passport = require('passport');
 const JWT = require('jsonwebtoken');
 const axios = require('axios');
-const config = require('../config');
 const { isAdmin } = require('../utils');
 const transporter = require('../mail/mail');
 const { resetMailText, verifyMailText } = require('../mail/text');
@@ -22,10 +21,10 @@ const resetEmailTemplatePath = path.join(__dirname, '../mail/template-reset.html
 const verifyEmailTemplatePath = path.join(__dirname, '../mail/template-verify.html');
 const resetEmailTemplate = fs
   .readFileSync(resetEmailTemplatePath, { encoding: 'utf-8' })
-  .replace(/{{domain}}/gm, config.DEFAULT_DOMAIN);
+  .replace(/{{domain}}/gm, process.env.DEFAULT_DOMAIN);
 const verifyEmailTemplate = fs
   .readFileSync(verifyEmailTemplatePath, { encoding: 'utf-8' })
-  .replace(/{{domain}}/gm, config.DEFAULT_DOMAIN);
+  .replace(/{{domain}}/gm, process.env.DEFAULT_DOMAIN);
 
 /* Function to generate JWT */
 const signToken = user =>
@@ -38,7 +37,7 @@ const signToken = user =>
       iat: new Date().getTime(),
       exp: new Date().setDate(new Date().getDate() + 7),
     },
-    config.JWT_SECRET
+    process.env.JWT_SECRET
   );
 
 /* Passport.js authentication controller */
@@ -84,7 +83,7 @@ exports.recaptcha = async (req, res, next) => {
         'Content-type': 'application/x-www-form-urlencoded',
       },
       params: {
-        secret: config.RECAPTCHA_SECRET_KEY,
+        secret: process.env.RECAPTCHA_SECRET_KEY,
         response: req.body.reCaptchaToken,
         remoteip: req.realIp,
       },
@@ -115,7 +114,7 @@ exports.signup = async (req, res) => {
   if (user && user.verified) return res.status(403).json({ error: 'Email is already in use.' });
   const newUser = await createUser({ email, password });
   const mail = await transporter.sendMail({
-    from: config.MAIL_FROM || config.MAIL_USER,
+    from: process.env.MAIL_FROM || process.env.MAIL_USER,
     to: newUser.email,
     subject: 'Verify your account',
     text: verifyMailText.replace(/{{verification}}/gim, newUser.verificationToken),
@@ -183,15 +182,15 @@ exports.requestPasswordReset = async ({ body: { email } }, res) => {
     return res.status(400).json({ error: "Couldn't reset password." });
   }
   const mail = await transporter.sendMail({
-    from: config.MAIL_USER,
+    from: process.env.MAIL_USER,
     to: user.email,
     subject: 'Reset your password',
     text: resetMailText
       .replace(/{{resetpassword}}/gm, user.resetPasswordToken)
-      .replace(/{{domain}}/gm, config.DEFAULT_DOMAIN),
+      .replace(/{{domain}}/gm, process.env.DEFAULT_DOMAIN),
     html: resetEmailTemplate
       .replace(/{{resetpassword}}/gm, user.resetPasswordToken)
-      .replace(/{{domain}}/gm, config.DEFAULT_DOMAIN),
+      .replace(/{{domain}}/gm, process.env.DEFAULT_DOMAIN),
   });
   if (mail.accepted.length) {
     return res.status(200).json({ email, message: 'Reset password email has been sent.' });

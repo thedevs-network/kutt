@@ -8,7 +8,6 @@ import Header from '../Header';
 import PageLoading from '../PageLoading';
 import { renewAuthUser, hidePageLoading } from '../../actions';
 import { initGA, logPageView } from '../../helpers/analytics';
-import { GOOGLE_ANALYTICS_ID } from '../../config';
 
 const Wrapper = styled.div`
   position: relative;
@@ -43,7 +42,7 @@ const ContentWrapper = styled.div`
 
 class BodyWrapper extends React.Component {
   componentDidMount() {
-    if (GOOGLE_ANALYTICS_ID) {
+    if (process.env.GOOGLE_ANALYTICS_ID) {
       if (!window.GA_INITIALIZED) {
         initGA();
         window.GA_INITIALIZED = true;

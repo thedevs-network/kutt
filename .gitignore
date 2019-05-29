@@ -1,3 +1,4 @@
+.env
 .vscode/
 client/.next/
 node_modules/

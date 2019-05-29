@@ -7,7 +7,6 @@ const { subHours } = require('date-fns/');
 const { validationResult } = require('express-validator/check');
 const { addCooldown, banUser } = require('../db/user');
 const { getBannedDomain, getBannedHost, urlCountFromDate } = require('../db/url');
-const config = require('../config');
 const subDay = require('date-fns/sub_days');
 
 const dnsLookup = promisify(dns.lookup);
@@ -119,11 +118,11 @@ exports.cooldownCheck = async user => {
 exports.malwareCheck = async (user, target) => {
   const isMalware = await axios.post(
     `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${
-      config.GOOGLE_SAFE_BROWSING_KEY
+      process.env.GOOGLE_SAFE_BROWSING_KEY
     }`,
     {
       client: {
-        clientId: config.DEFAULT_DOMAIN.toLowerCase().replace('.', ''),
+        clientId: process.env.DEFAULT_DOMAIN.toLowerCase().replace('.', ''),
         clientVersion: '1.0.0',
       },
       threatInfo: {
@@ -153,9 +152,9 @@ exports.urlCountsCheck = async email => {
     email,
     date: subDay(new Date(), 1).toJSON(),
   });
-  if (count > config.USER_LIMIT_PER_DAY) {
+  if (count > Number(process.env.USER_LIMIT_PER_DAY)) {
     throw new Error(
-      `You have reached your daily limit (${config.USER_LIMIT_PER_DAY}). Please wait 24h.`
+      `You have reached your daily limit (${process.env.USER_LIMIT_PER_DAY}). Please wait 24h.`
     );
   }
 };

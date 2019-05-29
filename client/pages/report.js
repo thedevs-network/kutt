@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import axios from 'axios';
 import BodyWrapper from '../components/BodyWrapper';
 import { authUser } from '../actions';
-import { REPORT_EMAIL } from '../config';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 
@@ -98,7 +97,7 @@ class ReportPage extends Component {
             Report abuses, malware and phishing links to the below email address or use the form. We
             will take actions shortly.
           </p>
-          <p>{REPORT_EMAIL}</p>
+          <p>{process.env.REPORT_EMAIL}</p>
           <p>
             <b>URL containting malware/scam:</b>
           </p>
