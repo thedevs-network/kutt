@@ -49,5 +49,3 @@ if (hasServerConfig && hasClientConfig) {
     path.resolve(__dirname, '../client/old.config.js')
   );
 }
-
-process.exit('yeehaw');
