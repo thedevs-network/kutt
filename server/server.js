@@ -1,3 +1,4 @@
+require('./configToEnv');
 require('dotenv').config();
 const nextApp = require('next');
 const express = require('express');
