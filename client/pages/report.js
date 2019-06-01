@@ -97,7 +97,7 @@ class ReportPage extends Component {
             Report abuses, malware and phishing links to the below email address or use the form. We
             will take actions shortly.
           </p>
-          <p>{process.env.REPORT_EMAIL}</p>
+          <p>{(process.env.REPORT_EMAIL || '').replace('@', '[at]')}</p>
           <p>
             <b>URL containting malware/scam:</b>
           </p>
