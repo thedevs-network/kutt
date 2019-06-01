@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const _ = require('lodash/');
 const { isAfter, subDays } = require('date-fns');
 const driver = require('./neo4j');
-const config = require('../config');
 const {
   generateShortUrl,
   statsObjectToArray,
@@ -181,7 +180,7 @@ exports.getUrls = ({ user, options, setCount }) =>
             ...record.get('l').properties,
             count: typeof visitCount === 'object' ? visitCount.toNumber() : visitCount,
             password: !!record.get('l').properties.password,
-            shortUrl: `${protocol}${domain || config.DEFAULT_DOMAIN}/${
+            shortUrl: `${protocol}${domain || process.env.DEFAULT_DOMAIN}/${
               record.get('l').properties.id
             }`,
           };

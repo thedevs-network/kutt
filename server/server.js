@@ -1,3 +1,5 @@
+require('./configToEnv');
+require('dotenv').config();
 const nextApp = require('next');
 const express = require('express');
 const helmet = require('helmet');
@@ -14,17 +16,16 @@ const {
 } = require('./controllers/validateBodyController');
 const auth = require('./controllers/authController');
 const url = require('./controllers/urlController');
-const config = require('./config');
 
 require('./passport');
 
-if (config.RAVEN_DSN) {
-  Raven.config(config.RAVEN_DSN).install();
+if (process.env.RAVEN_DSN) {
+  Raven.config(process.env.RAVEN_DSN).install();
 }
 const catchErrors = fn => (req, res, next) =>
   fn(req, res, next).catch(err => {
     res.status(500).json({ error: 'Sorry an error ocurred. Please try again later.' });
-    if (config.RAVEN_DSN) {
+    if (process.env.RAVEN_DSN) {
       Raven.captureException(err, {
         user: { email: req.user && req.user.email },
       });
@@ -33,7 +34,7 @@ const catchErrors = fn => (req, res, next) =>
     }
   });
 
-const port = Number(config.PORT) || 3000;
+const port = Number(process.env.PORT) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
 const app = nextApp({ dir: './client', dev });
 const handle = app.getRequestHandler();

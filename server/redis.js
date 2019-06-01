@@ -1,16 +1,15 @@
 const { promisify } = require('util');
 const redis = require('redis');
-const config = require('./config');
 
-if (config.REDIS_DISABLED === true) {
+if (process.env.REDIS_DISABLED === 'true') {
   exports.get = () => Promise.resolve(null);
   exports.set = () => Promise.resolve(null);
   exports.del = () => Promise.resolve(null);
 } else {
   const client = redis.createClient({
-    host: config.REDIS_HOST || '127.0.0.1',
-    port: config.REDIS_PORT || 6379,
-    ...(config.REDIS_PASSWORD && { password: config.REDIS_PASSWORD }),
+    host: process.env.REDIS_HOST || '127.0.0.1',
+    port: Number(process.env.REDIS_PORT) || 6379,
+    ...(process.env.REDIS_PASSWORD && { password: process.env.REDIS_PASSWORD }),
   });
 
   exports.get = promisify(client.get).bind(client);

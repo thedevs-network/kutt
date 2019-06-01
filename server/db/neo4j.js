@@ -1,9 +1,8 @@
 const neo4j = require('neo4j-driver').v1;
-const config = require('../config');
 
 const driver = neo4j.driver(
-  config.DB_URI,
-  neo4j.auth.basic(config.DB_USERNAME, config.DB_PASSWORD)
+  process.env.DB_URI,
+  neo4j.auth.basic(process.env.DB_USERNAME, process.env.DB_PASSWORD)
 );
 
 module.exports = driver;

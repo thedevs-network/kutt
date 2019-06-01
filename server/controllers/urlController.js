@@ -32,7 +32,6 @@ const {
 const transporter = require('../mail/mail');
 const redis = require('../redis');
 const { addProtocol, generateShortUrl, getStatsCacheTime } = require('../utils');
-const config = require('../config');
 
 const dnsLookup = promisify(dns.lookup);
 
@@ -48,8 +47,8 @@ exports.urlShortener = async ({ body, user }, res) => {
     const domain = URL.parse(body.target).hostname;
 
     const queries = await Promise.all([
-      config.GOOGLE_SAFE_BROWSING_KEY && cooldownCheck(user),
-      config.GOOGLE_SAFE_BROWSING_KEY && malwareCheck(user, body.target),
+      process.env.GOOGLE_SAFE_BROWSING_KEY && cooldownCheck(user),
+      process.env.GOOGLE_SAFE_BROWSING_KEY && malwareCheck(user, body.target),
       user && urlCountsCheck(user.email),
       user && body.reuse && findUrl({ target: addProtocol(body.target) }),
       user && body.customurl && findUrl({ id: body.customurl || '' }),
@@ -109,7 +108,7 @@ exports.goToUrl = async (req, res, next) => {
   const { host } = req.headers;
   const reqestedId = req.params.id || req.body.id;
   const id = reqestedId.replace('+', '');
-  const domain = host !== config.DEFAULT_DOMAIN && host;
+  const domain = host !== process.env.DEFAULT_DOMAIN && host;
   const agent = useragent.parse(req.headers['user-agent']);
   const [browser = 'Other'] = browsersList.filter(filterInBrowser(agent));
   const [os = 'Other'] = osList.filter(filterInOs(agent));
@@ -131,7 +130,7 @@ exports.goToUrl = async (req, res, next) => {
   }
 
   if (!url) {
-    if (host !== config.DEFAULT_DOMAIN) {
+    if (host !== process.env.DEFAULT_DOMAIN) {
       const { homepage } = await getCustomDomain({ customDomain: domain });
       if (!homepage) return next();
       return res.redirect(301, homepage);
@@ -185,8 +184,8 @@ exports.goToUrl = async (req, res, next) => {
     });
   }
 
-  if (config.GOOGLE_ANALYTICS && !isBot) {
-    const visitor = ua(config.GOOGLE_ANALYTICS);
+  if (process.env.GOOGLE_ANALYTICS && !isBot) {
+    const visitor = ua(process.env.GOOGLE_ANALYTICS);
     visitor
       .pageview({
         dp: `/${id}`,
@@ -217,7 +216,7 @@ exports.setCustomDomain = async ({ body, user }, res) => {
   if (customDomain.length > 40) {
     return res.status(400).json({ error: 'Maximum custom domain length is 40.' });
   }
-  if (customDomain === config.DEFAULT_DOMAIN) {
+  if (customDomain === process.env.DEFAULT_DOMAIN) {
     return res.status(400).json({ error: "You can't use default domain." });
   }
   const isValidHomepage =
@@ -256,19 +255,19 @@ exports.deleteCustomDomain = async ({ user }, res) => {
 exports.customDomainRedirection = async (req, res, next) => {
   const { headers, path } = req;
   if (
-    headers.host !== config.DEFAULT_DOMAIN &&
+    headers.host !== process.env.DEFAULT_DOMAIN &&
     (path === '/' ||
       preservedUrls.filter(u => u !== 'url-password').some(item => item === path.replace('/', '')))
   ) {
     const { homepage } = await getCustomDomain({ customDomain: headers.host });
-    return res.redirect(301, homepage || `https://${config.DEFAULT_DOMAIN + path}`);
+    return res.redirect(301, homepage || `https://${process.env.DEFAULT_DOMAIN + path}`);
   }
   return next();
 };
 
 exports.deleteUrl = async ({ body: { id, domain }, user }, res) => {
   if (!id) return res.status(400).json({ error: 'No id has been provided.' });
-  const customDomain = domain !== config.DEFAULT_DOMAIN && domain;
+  const customDomain = domain !== process.env.DEFAULT_DOMAIN && domain;
   const urls = await findUrl({ id, domain: customDomain });
   if (!urls && !urls.length) return res.status(400).json({ error: "Couldn't find the short URL." });
   redis.del(id + (customDomain || ''));
@@ -279,7 +278,7 @@ exports.deleteUrl = async ({ body: { id, domain }, user }, res) => {
 
 exports.getStats = async ({ query: { id, domain }, user }, res) => {
   if (!id) return res.status(400).json({ error: 'No id has been provided.' });
-  const customDomain = domain !== config.DEFAULT_DOMAIN && domain;
+  const customDomain = domain !== process.env.DEFAULT_DOMAIN && domain;
   const redisKey = id + (customDomain || '') + user.email;
   const cached = await redis.get(redisKey);
   if (cached) return res.status(200).json(JSON.parse(cached));
@@ -288,9 +287,9 @@ exports.getStats = async ({ query: { id, domain }, user }, res) => {
   const [url] = urls;
   const stats = await getStats({ id, domain: customDomain, user });
   if (!stats) return res.status(400).json({ error: 'Could not get the short URL stats.' });
-  stats.shortUrl = `http${!domain ? 's' : ''}://${domain ? url.domain : config.DEFAULT_DOMAIN}/${
-    url.id
-  }`;
+  stats.shortUrl = `http${!domain ? 's' : ''}://${
+    domain ? url.domain : process.env.DEFAULT_DOMAIN
+  }/${url.id}`;
   stats.target = url.target;
   const cacheTime = getStatsCacheTime(stats.total);
   redis.set(redisKey, JSON.stringify(stats), 'EX', cacheTime);
@@ -304,8 +303,8 @@ exports.reportUrl = async ({ body: { url } }, res) => {
   if (!isValidUrl) return res.status(400).json({ error: 'URL is not valid.' });
 
   const mail = await transporter.sendMail({
-    from: config.MAIL_USER,
-    to: config.REPORT_MAIL,
+    from: process.env.MAIL_USER,
+    to: process.env.REPORT_MAIL,
     subject: '[REPORT]',
     text: url,
     html: url,
