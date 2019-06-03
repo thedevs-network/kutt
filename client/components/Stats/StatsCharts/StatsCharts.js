@@ -59,7 +59,14 @@ const StatsCharts = ({ stats, period, updatedAt }) => {
             </Row>,
             <Row key="third-row">
               <Pie data={stats.stats.country} updatedAt={updatedAt} title="Country" />
-              <Bar data={stats.stats.os} updatedAt={updatedAt} title="OS" />
+              <Bar
+                data={stats.stats.os.map(o => ({
+                  ...o,
+                  name: o.name === 'Mac Os X' ? 'macOS' : o.name,
+                }))}
+                updatedAt={updatedAt}
+                title="OS"
+              />
             </Row>,
           ]
         : null}

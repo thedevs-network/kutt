@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import styled from 'styled-components';
 import ReCaptcha from './ReCaptcha';
 import showRecaptcha from '../../helpers/recaptcha';
-import config from '../../config';
 
 const Wrapper = styled.footer`
   width: 100%;
@@ -61,10 +60,10 @@ class Footer extends Component {
           <a href="/report" title="Report abuse">
             Report Abuse
           </a>
-          {config.CONTACT_EMAIL && (
+          {process.env.CONTACT_EMAIL && (
             <Fragment>
               {' | '}
-              <a href={`mailto:${config.CONTACT_EMAIL}`} title="Contact us">
+              <a href={`mailto:${process.env.CONTACT_EMAIL}`} title="Contact us">
                 Contact us
               </a>
             </Fragment>

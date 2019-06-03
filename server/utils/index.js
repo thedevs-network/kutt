@@ -1,7 +1,6 @@
 const URL = require('url');
 const ms = require('ms');
 const { differenceInDays, differenceInHours, differenceInMonths } = require('date-fns');
-const config = require('../config');
 
 exports.addProtocol = url => {
   const hasProtocol = /^https?/.test(URL.parse(url).protocol);
@@ -10,10 +9,13 @@ exports.addProtocol = url => {
 
 exports.generateShortUrl = (id, domain, useHttps) => {
   const protocol = useHttps || !domain ? 'https://' : 'http://';
-  return `${protocol}${domain || config.DEFAULT_DOMAIN}/${id}`;
+  return `${protocol}${domain || process.env.DEFAULT_DOMAIN}/${id}`;
 };
 
-exports.isAdmin = email => config.ADMIN_EMAILS.includes(email);
+exports.isAdmin = email =>
+  process.env.ADMIN_EMAILS.split(',')
+    .map(e => e.trim())
+    .includes(email);
 
 exports.getStatsCacheTime = total => {
   switch (true) {
