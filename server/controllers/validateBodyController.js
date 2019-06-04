@@ -1,6 +1,7 @@
 const { promisify } = require('util');
 const dns = require('dns');
 const axios = require('axios');
+const URL = require('url');
 const urlRegex = require('url-regex');
 const validator = require('express-validator/check');
 const { subHours } = require('date-fns/');
@@ -8,6 +9,7 @@ const { validationResult } = require('express-validator/check');
 const { addCooldown, banUser } = require('../db/user');
 const { getBannedDomain, getBannedHost, urlCountFromDate } = require('../db/url');
 const subDay = require('date-fns/sub_days');
+const { addProtocol } = require('../utils');
 
 const dnsLookup = promisify(dns.lookup);
 
@@ -73,6 +75,12 @@ exports.validateUrl = async ({ body, user }, res, next) => {
   // Validate URL
   const isValidUrl = urlRegex({ exact: true, strict: false }).test(body.target);
   if (!isValidUrl) return res.status(400).json({ error: 'URL is not valid.' });
+
+  // If target is the URL shortener itself
+  const { host } = URL.parse(addProtocol(body.target));
+  if (host === process.env.DEFAULT_DOMAIN) {
+    return res.status(400).json({ error: `${process.env.DEFAULT_DOMAIN} URLs are not allowed.` });
+  }
 
   // Validate password length
   if (body.password && body.password.length > 64) {
