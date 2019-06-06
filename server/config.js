@@ -10,8 +10,8 @@ module.exports = {
   DB_PASSWORD: process.env.NEO4J_PASS || '',
 
   /* Redis host and port */
-  REDIS_DISABLED: process.env.REDIS_DISABLED === "true" || false,
-  REDIS_HOST:  process.env.REDIS_HOST || '127.0.0.1',
+  REDIS_DISABLED: process.env.REDIS_DISABLED === 'true' || false,
+  REDIS_HOST: process.env.REDIS_HOST || '127.0.0.1',
   REDIS_PORT: process.env.REDIS_PORT || 6379,
   REDIS_PASSWORD: process.env.REDIS_PASS || '',
 
@@ -51,9 +51,9 @@ module.exports = {
   */
   MAIL_HOST: process.env.MAIL_HOST || '',
   MAIL_PORT: process.env.MAIL_PORT || 587,
-  MAIL_SECURE: process.env.MAIL_SECURE === "true" || false,
+  MAIL_SECURE: process.env.MAIL_SECURE === 'true' || false,
   MAIL_USER: process.env.MAIL_USER || '',
-  MAIL_FROM: process.env.MAIL_FROM ||'', // Example: "Kutt <support@kutt.it>". Leave empty to use MAIL_USER
+  MAIL_FROM: process.env.MAIL_FROM || '', // Example: "Kutt <support@kutt.it>". Leave empty to use MAIL_USER
   MAIL_PASSWORD: process.env.MAIL_PASS || '',
 
   /*
