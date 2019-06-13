@@ -19,7 +19,7 @@
 * [Setup](#setup)
 * [Browser Extensions](#browser-extensions)
 * [API](#api)
-* [Integrate with ShareX](#sharex)
+* [Integrations](#integrations)
 * [3rd Party API Packages](#3rd-party-api-packages)
 * [Contributing](#contributing)
 
@@ -117,9 +117,14 @@ GET /api/url/stats
 Body (or query for GET request)
   * `id`: ID of the shortened URL.
   * `domain` (optional):  Required if a custom domain is used for short URL.
-  
-## ShareX
+
+## Integrations
+
+### ShareX
 You can use Kutt as your default URL shortener in [ShareX](https://getsharex.com/). If you host your custom instance of Kutt, refer to [ShareX wiki](https://github.com/thedevs-network/kutt/wiki/ShareX) on how to setup.
+
+### Alfred Workflow
+Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app from [alfred-kutt](https://github.com/thedevs-network/alfred-kutt) repository.
 
 ## 3rd Party API packages
 | Language  | Link                                                       | Description                                       |
