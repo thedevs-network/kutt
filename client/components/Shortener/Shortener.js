@@ -81,7 +81,7 @@ class Shortener extends Component {
     const password = pwd && pwd.value;
     const options = isAuthenticated && { customurl, password };
     shortenerForm.reset();
-    if (!isAuthenticated) {
+    if (process.env.NODE_ENV === 'production' && !isAuthenticated) {
       window.grecaptcha.execute(window.captchaId);
       const getCaptchaToken = () => {
         setTimeout(() => {

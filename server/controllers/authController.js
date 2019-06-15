@@ -75,7 +75,7 @@ exports.authApikey = authenticate('localapikey', 'API key is not correct.', fals
 
 /* reCaptcha controller */
 exports.recaptcha = async (req, res, next) => {
-  if (!req.user) {
+  if (process.env.NODE_ENV === 'production' && !req.user) {
     const isReCaptchaValid = await axios({
       method: 'post',
       url: 'https://www.google.com/recaptcha/api/siteverify',
