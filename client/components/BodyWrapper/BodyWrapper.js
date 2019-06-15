@@ -42,7 +42,7 @@ const ContentWrapper = styled.div`
 
 class BodyWrapper extends React.Component {
   componentDidMount() {
-    if (process.env.GOOGLE_ANALYTICS_ID) {
+    if (process.env.GOOGLE_ANALYTICS) {
       if (!window.GA_INITIALIZED) {
         initGA();
         window.GA_INITIALIZED = true;
