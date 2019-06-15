@@ -4,9 +4,9 @@ const axios = require('axios');
 const URL = require('url');
 const urlRegex = require('url-regex');
 const validator = require('express-validator/check');
-const { subHours } = require('date-fns/');
+const { differenceInMinutes, subHours } = require('date-fns/');
 const { validationResult } = require('express-validator/check');
-const { addCooldown, banUser } = require('../db/user');
+const { addCooldown, banUser, getIPCooldown: getIPCooldownCount } = require('../db/user');
 const { getBannedDomain, getBannedHost, urlCountFromDate } = require('../db/url');
 const subDay = require('date-fns/sub_days');
 const { addProtocol } = require('../utils');
@@ -121,6 +121,19 @@ exports.cooldownCheck = async user => {
       throw new Error('Cooldown because of a malware URL. Wait 12h');
     }
   }
+};
+
+exports.ipCooldownCheck = async (req, res, next) => {
+  const cooldonwConfig = Number(process.env.NON_USER_COOLDOWN);
+  if (req.user || !cooldonwConfig) return next();
+  const cooldownDate = await getIPCooldownCount(req.realIp);
+  if (cooldownDate) {
+    const timeToWait = cooldonwConfig - differenceInMinutes(new Date(), cooldownDate);
+    return res
+      .status(400)
+      .json({ error: `Non-users are limited. Wait ${timeToWait} minutes or log in.` });
+  }
+  next();
 };
 
 exports.malwareCheck = async (user, target) => {

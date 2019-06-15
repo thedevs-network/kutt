@@ -13,10 +13,12 @@ const {
   validateBody,
   validationCriterias,
   validateUrl,
+  ipCooldownCheck,
 } = require('./controllers/validateBodyController');
 const auth = require('./controllers/authController');
 const url = require('./controllers/urlController');
 
+require('./cron');
 require('./passport');
 
 if (process.env.RAVEN_DSN) {
@@ -100,6 +102,7 @@ app.prepare().then(() => {
     auth.authJwtLoose,
     catchErrors(auth.recaptcha),
     catchErrors(validateUrl),
+    catchErrors(ipCooldownCheck),
     catchErrors(url.urlShortener)
   );
   server.post('/api/url/deleteurl', auth.authApikey, auth.authJwt, catchErrors(url.deleteUrl));

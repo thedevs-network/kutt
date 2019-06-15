@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const nanoid = require('nanoid');
+const subMinutes = require('date-fns/sub_minutes');
 const driver = require('./neo4j');
 
 exports.getUser = ({ email = '', apikey = '' }) =>
@@ -228,3 +229,50 @@ exports.banUser = ({ email }) =>
       })
       .catch(err => reject(err));
   });
+
+exports.addIPCooldown = async ip => {
+  const session = driver.session();
+  const { records = [] } = await session.writeTransaction(tx =>
+    tx.run(
+      'MERGE (i:IP { ip: $ip }) ' +
+        'MERGE (i)-[r:RECEIVED]->(c:COOLDOWN { date: $date }) ' +
+        'RETURN COUNT(r) as count',
+      {
+        date: new Date().toJSON(),
+        ip,
+      }
+    )
+  );
+  session.close();
+  const count = records.length && records[0].get('count').toNumber();
+  return count;
+};
+
+exports.getIPCooldown = async ip => {
+  const session = driver.session();
+  const { records = [] } = await session.readTransaction(tx =>
+    tx.run(
+      'MATCH (i:IP { ip: $ip }) ' +
+        'MATCH (i)-[:RECEIVED]->(c:COOLDOWN) ' +
+        'WHERE c.date > $date ' +
+        'RETURN c.date as date',
+      {
+        date: subMinutes(new Date(), Number(process.env.NON_USER_COOLDOWN)).toJSON(),
+        ip,
+      }
+    )
+  );
+  session.close();
+  const count = records.length && records[0].get('date');
+  return count;
+};
+
+exports.clearIPs = async () => {
+  const session = driver.session();
+  await session.writeTransaction(tx =>
+    tx.run('MATCH (i:IP)-[:RECEIVED]->(c:COOLDOWN) WHERE c.date < $date DETACH DELETE i, c', {
+      date: subMinutes(new Date(), Number(process.env.NON_USER_COOLDOWN)).toJSON(),
+    })
+  );
+  session.close();
+};

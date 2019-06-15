@@ -8,6 +8,7 @@ const geoip = require('geoip-lite');
 const bcrypt = require('bcryptjs');
 const ua = require('universal-analytics');
 const isbot = require('isbot');
+const { addIPCooldown } = require('../db/user');
 const {
   createShortUrl,
   createVisit,
@@ -42,7 +43,7 @@ const generateId = async () => {
   return generateId();
 };
 
-exports.urlShortener = async ({ body, user }, res) => {
+exports.urlShortener = async ({ body, realIp, user }, res) => {
   try {
     const domain = URL.parse(body.target).hostname;
 
@@ -90,6 +91,9 @@ exports.urlShortener = async ({ body, user }, res) => {
     const id = (user && body.customurl) || queries[5];
     const target = addProtocol(body.target);
     const url = await createShortUrl({ ...body, id, target, user });
+    if (!user && Number(process.env.NON_USER_COOLDOWN)) {
+      addIPCooldown(realIp);
+    }
 
     return res.json(url);
   } catch (error) {
