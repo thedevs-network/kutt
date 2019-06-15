@@ -131,7 +131,7 @@ exports.ipCooldownCheck = async (req, res, next) => {
     const timeToWait = cooldonwConfig - differenceInMinutes(new Date(), cooldownDate);
     return res
       .status(400)
-      .json({ error: `Non-users are limited. Wait ${timeToWait} minutes or log in.` });
+      .json({ error: `Non-logged in users are limited. Wait ${timeToWait} minutes or log in.` });
   }
   next();
 };
