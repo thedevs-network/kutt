@@ -188,8 +188,8 @@ exports.goToUrl = async (req, res, next) => {
     });
   }
 
-  if (process.env.GOOGLE_ANALYTICS && !isBot) {
-    const visitor = ua(process.env.GOOGLE_ANALYTICS);
+  if (process.env.GOOGLE_ANALYTICS_UNIVERSAL && !isBot) {
+    const visitor = ua(process.env.GOOGLE_ANALYTICS_UNIVERSAL);
     visitor
       .pageview({
         dp: `/${id}`,
