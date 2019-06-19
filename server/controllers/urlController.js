@@ -319,7 +319,7 @@ exports.reportUrl = async ({ body: { url } }, res) => {
   return res.status(400).json({ error: "Couldn't submit the report. Try again later." });
 };
 
-exports.ban = async ({ body }, res) => {
+exports.ban = async ({ body, user }, res) => {
   if (!body.id) return res.status(400).json({ error: 'No id has been provided.' });
 
   const urls = await findUrl({ id: body.id });
@@ -344,6 +344,7 @@ exports.ban = async ({ body }, res) => {
   }
 
   await banUrl({
+    adminEmail: user.email,
     domain: body.domain && domain,
     host,
     id: body.id,
