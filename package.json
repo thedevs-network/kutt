@@ -6,6 +6,8 @@
   "scripts": {
     "test": "mocha --compilers js:@babel/register ./client/**/__test__/*.js",
     "dev": "nodemon ./server/server.js",
+    "docker:build": "docker build -t kutt .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env -d kutt:latest",
     "build": "next build ./client",
     "start": "NODE_ENV=production node ./server/server.js",
     "lint": "./node_modules/.bin/eslint . --fix",

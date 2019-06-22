@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  kutt:
+    build: .
+    container_name: kutt
+    links:
+      - neo4j
+      - redis
+    ports:
+      - "3000:3000"
+    env_file: 
+      - .env
+    
+  redis:
+    image: "redis:alpine"
+    container_name: kutt-redis
+    expose:
+      - 6379
+
+  neo4j:
+    image: neo4j:3.5
+    container_name: kutt-neo4j
+    environment:
+      - NEO4J_AUTH=neo4j/test
+    expose:
+      - 7687

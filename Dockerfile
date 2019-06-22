@@ -1,40 +1,17 @@
-FROM node:9.5.0-alpine
+FROM node:10-alpine
 
-ADD . /code
-WORKDIR /code
-RUN apk add --no-cache bash
+# Setting working directory. 
+WORKDIR /usr/src/app
+
+# Installing dependencies
+COPY package*.json ./
 RUN npm install
+
+# Copying source files
+COPY . .
+
+# Building app
 RUN npm run build
 
-ENV KUTT_PORT 3000
-ENV KUTT_DOMAIN 'kutt.it'
-
-ENV NEO4J_HOST '127.0.0.1'
-ENV NEO4J_USER ''
-ENV NEO4J_PASS ''
-
-ENV REDIS_HOST '127.0.0.1'
-ENV REDIS_PORT 6379
-ENV REDIS_PASSWORD ''
-
-ENV USER_LIMIT_PER_DAY 50
-ENV JWT_SECRET 'mysecurekey'
-ENV ADMIN_EMAILS '[]'
-
-ENV RECAPTCHA_SECRET_KEY ''
-ENV RECAPTCHA_SITE_KEY ''
-
-ENV GOOGLE_SAFE_BROWSING_KEY ''
-ENV GOOGLE_ANALYTICS ''
-
-ENV MAIL_HOST ''
-ENV MAIL_PORT ''
-ENV MAIL_SECURE 'false'
-ENV MAIL_USER ''
-ENV MAIL_FROM ''
-ENV MAIL_PASSWORD ''
-ENV MAIL_REPORT ''
-ENV CONTACT_EMAIL ''
-
-CMD /code/run.sh
-
+# Running the app
+CMD [ "npm", "start" ]
