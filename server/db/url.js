@@ -19,274 +19,229 @@ const queryNewUserUrl = (domain, password) =>
   `${domain ? 'MERGE (l)-[:USES]->(:DOMAIN { name: $domain })' : ''}` +
   'RETURN l';
 
-exports.createShortUrl = params =>
-  new Promise(async (resolve, reject) => {
-    const query = params.user ? queryNewUserUrl(params.user.domain, params.password) : queryNewUrl;
-    const session = driver.session();
-    const salt = params.password && (await bcrypt.genSalt(12));
-    const hash = params.password && (await bcrypt.hash(params.password, salt));
-    session
-      .writeTransaction(tx =>
-        tx.run(query, {
-          createdAt: new Date().toJSON(),
-          domain: params.user && params.user.domain,
-          email: params.user && params.user.email,
-          id: params.id,
-          password: hash || '',
-          target: params.target,
-        })
-      )
-      .then(({ records }) => {
-        session.close();
-        const data = records[0].get('l').properties;
-        resolve({
-          ...data,
-          password: !!data.password,
-          reuse: !!params.reuse,
-          shortUrl: generateShortUrl(
-            data.id,
-            params.user && params.user.domain,
-            params.user && params.user.useHttps
-          ),
-        });
-      })
-      .catch(err => session.close() || reject(err));
-  });
+exports.createShortUrl = async params => {
+  const session = driver.session();
+  const query = params.user ? queryNewUserUrl(params.user.domain, params.password) : queryNewUrl;
+  const salt = params.password && (await bcrypt.genSalt(12));
+  const hash = params.password && (await bcrypt.hash(params.password, salt));
+  const { records = [] } = await session.writeTransaction(tx =>
+    tx.run(query, {
+      createdAt: new Date().toJSON(),
+      domain: params.user && params.user.domain,
+      email: params.user && params.user.email,
+      id: params.id,
+      password: hash || '',
+      target: params.target,
+    })
+  );
+  session.close();
+  const data = records[0].get('l').properties;
+  return {
+    ...data,
+    password: !!data.password,
+    reuse: !!params.reuse,
+    shortUrl: generateShortUrl(
+      data.id,
+      params.user && params.user.domain,
+      params.user && params.user.useHttps
+    ),
+  };
+};
 
-exports.createVisit = params =>
-  new Promise((resolve, reject) => {
-    const session = driver.session();
-    session
-      .writeTransaction(tx =>
-        tx.run(
-          'MATCH (l:URL { id: $id }) ' +
-            `${params.domain ? 'MATCH (l)-[:USES]->({ name: $domain })' : ''} ` +
-            'SET l.count = l.count + 1 ' +
-            'CREATE (v:VISIT)' +
-            'MERGE (b:BROWSER { browser: $browser })' +
-            'MERGE (c:COUNTRY { country: $country })' +
-            'MERGE (o:OS { os: $os })' +
-            'MERGE (r:REFERRER { referrer: $referrer })' +
-            'MERGE (d:DATE { date: $date })' +
-            'MERGE (v)-[:VISITED]->(l)' +
-            'MERGE (v)-[:BROWSED_BY]->(b)' +
-            'MERGE (v)-[:LOCATED_IN]->(c)' +
-            'MERGE (v)-[:OS]->(o)' +
-            'MERGE (v)-[:REFERRED_BY]->(r)' +
-            'MERGE (v)-[:VISITED_IN]->(d)' +
-            'RETURN l',
-          {
-            id: params.id,
-            browser: params.browser,
-            domain: params.domain,
-            country: params.country,
-            os: params.os,
-            referrer: params.referrer,
-            date: getUTCDate().toJSON(),
-          }
-        )
-      )
-      .then(({ records }) => {
-        session.close();
-        const url = records.length && records[0].get('l').properties;
-        resolve(url);
-      })
-      .catch(err => session.close() || reject(err));
-  });
+exports.createVisit = async params => {
+  const session = driver.session();
+  const { records = [] } = await session.writeTransaction(tx =>
+    tx.run(
+      'MATCH (l:URL { id: $id }) ' +
+        `${params.domain ? 'MATCH (l)-[:USES]->({ name: $domain })' : ''} ` +
+        'SET l.count = l.count + 1 ' +
+        'CREATE (v:VISIT)' +
+        'MERGE (b:BROWSER { browser: $browser })' +
+        'MERGE (c:COUNTRY { country: $country })' +
+        'MERGE (o:OS { os: $os })' +
+        'MERGE (r:REFERRER { referrer: $referrer })' +
+        'MERGE (d:DATE { date: $date })' +
+        'MERGE (v)-[:VISITED]->(l)' +
+        'MERGE (v)-[:BROWSED_BY]->(b)' +
+        'MERGE (v)-[:LOCATED_IN]->(c)' +
+        'MERGE (v)-[:OS]->(o)' +
+        'MERGE (v)-[:REFERRED_BY]->(r)' +
+        'MERGE (v)-[:VISITED_IN]->(d)' +
+        'RETURN l',
+      {
+        id: params.id,
+        browser: params.browser,
+        domain: params.domain,
+        country: params.country,
+        os: params.os,
+        referrer: params.referrer,
+        date: getUTCDate().toJSON(),
+      }
+    )
+  );
+  session.close();
+  const url = records.length && records[0].get('l').properties;
+  return url;
+};
 
-exports.findUrl = ({ id, domain, target }) =>
-  new Promise((resolve, reject) => {
-    const session = driver.session();
-    session
-      .readTransaction(tx =>
-        tx.run(
-          `MATCH (l:URL { ${id ? 'id: $id' : 'target: $target'} })` +
-            `${
-              domain
-                ? 'MATCH (l)-[:USES]->(d:DOMAIN { name: $domain })'
-                : 'OPTIONAL MATCH (l)-[:USES]->(d)'
-            }` +
-            'OPTIONAL MATCH (u)-[:CREATED]->(l)' +
-            'RETURN l, d.name AS domain, u.email AS user',
-          {
-            id,
-            domain,
-            target,
-          }
-        )
-      )
-      .then(({ records }) => {
-        session.close();
-        const url =
-          records.length &&
-          records.map(record => ({
-            ...record.get('l').properties,
-            domain: record.get('domain'),
-            user: record.get('user'),
-          }));
-        resolve(url);
-      })
-      .catch(err => session.close() || reject(err));
-  });
+exports.findUrl = async ({ id, domain, target }) => {
+  const session = driver.session();
+  const { records = [] } = await session.readTransaction(tx =>
+    tx.run(
+      `MATCH (l:URL { ${id ? 'id: $id' : 'target: $target'} })` +
+        `${
+          domain
+            ? 'MATCH (l)-[:USES]->(d:DOMAIN { name: $domain })'
+            : 'OPTIONAL MATCH (l)-[:USES]->(d)'
+        }` +
+        'OPTIONAL MATCH (u)-[:CREATED]->(l)' +
+        'RETURN l, d.name AS domain, u.email AS user',
+      {
+        id,
+        domain,
+        target,
+      }
+    )
+  );
+  session.close();
+  const url =
+    records.length &&
+    records.map(record => ({
+      ...record.get('l').properties,
+      domain: record.get('domain'),
+      user: record.get('user'),
+    }));
+  return url;
+};
 
-exports.getCountUrls = ({ user }) =>
-  new Promise((resolve, reject) => {
-    const session = driver.session();
-    session
-      .readTransaction(tx =>
-        tx.run('MATCH (u:USER {email: $email}) RETURN size((u)-[:CREATED]->()) as count', {
-          email: user.email,
-        })
-      )
-      .then(({ records }) => {
-        session.close();
-        const countAll = records.length ? records[0].get('count').toNumber() : 0;
-        resolve({ countAll });
-      })
-      .catch(err => session.close() || reject(err));
-  });
+exports.getCountUrls = async ({ user }) => {
+  const session = driver.session();
+  const { records = [] } = await session.readTransaction(tx =>
+    tx.run('MATCH (u:USER {email: $email}) RETURN size((u)-[:CREATED]->()) as count', {
+      email: user.email,
+    })
+  );
+  session.close();
+  const countAll = records.length ? records[0].get('count').toNumber() : 0;
+  return { countAll };
+};
 
-exports.getUrls = ({ user, options, setCount }) =>
-  new Promise((resolve, reject) => {
-    const session = driver.session();
-    const { count = 5, page = 1, search = '' } = options;
-    const limit = parseInt(count, 10);
-    const skip = parseInt(page, 10);
-    const searchQuery = search ? 'WHERE l.id =~ $search OR l.target =~ $search' : '';
-    const setVisitsCount = setCount ? 'SET l.count = size((l)<-[:VISITED]-())' : '';
-    session
-      .readTransaction(tx =>
-        tx.run(
-          `MATCH (u:USER { email: $email })-[:CREATED]->(l) ${searchQuery} ` +
-            'WITH l ORDER BY l.createdAt DESC ' +
-            'WITH l SKIP $skip LIMIT $limit ' +
-            `OPTIONAL MATCH (l)-[:USES]->(d) ${setVisitsCount} ` +
-            'RETURN l, d.name AS domain, d.useHttps as useHttps',
-          {
-            email: user.email,
-            limit,
-            skip: limit * (skip - 1),
-            search: `(?i).*${search}.*`,
-          }
-        )
-      )
-      .then(({ records }) => {
-        session.close();
-        const urls = records.map(record => {
-          const visitCount = record.get('l').properties.count;
-          const domain = record.get('domain');
-          const protocol = record.get('useHttps') || !domain ? 'https://' : 'http://';
-          return {
-            ...record.get('l').properties,
-            count: typeof visitCount === 'object' ? visitCount.toNumber() : visitCount,
-            password: !!record.get('l').properties.password,
-            shortUrl: `${protocol}${domain || process.env.DEFAULT_DOMAIN}/${
-              record.get('l').properties.id
-            }`,
-          };
-        });
-        resolve({ list: urls });
-      })
-      .catch(err => session.close() || reject(err));
+exports.getUrls = async ({ user, options, setCount }) => {
+  const session = driver.session();
+  const { count = 5, page = 1, search = '' } = options;
+  const limit = parseInt(count, 10);
+  const skip = parseInt(page, 10);
+  const searchQuery = search ? 'WHERE l.id =~ $search OR l.target =~ $search' : '';
+  const setVisitsCount = setCount ? 'SET l.count = size((l)<-[:VISITED]-())' : '';
+  const { records = [] } = await session.readTransaction(tx =>
+    tx.run(
+      `MATCH (u:USER { email: $email })-[:CREATED]->(l) ${searchQuery} ` +
+        'WITH l ORDER BY l.createdAt DESC ' +
+        'WITH l SKIP $skip LIMIT $limit ' +
+        `OPTIONAL MATCH (l)-[:USES]->(d) ${setVisitsCount} ` +
+        'RETURN l, d.name AS domain, d.useHttps as useHttps',
+      {
+        email: user.email,
+        limit,
+        skip: limit * (skip - 1),
+        search: `(?i).*${search}.*`,
+      }
+    )
+  );
+  session.close();
+  const urls = records.map(record => {
+    const visitCount = record.get('l').properties.count;
+    const domain = record.get('domain');
+    const protocol = record.get('useHttps') || !domain ? 'https://' : 'http://';
+    return {
+      ...record.get('l').properties,
+      count: typeof visitCount === 'object' ? visitCount.toNumber() : visitCount,
+      password: !!record.get('l').properties.password,
+      shortUrl: `${protocol}${domain || process.env.DEFAULT_DOMAIN}/${
+        record.get('l').properties.id
+      }`,
+    };
   });
+  return { list: urls };
+};
 
-exports.getCustomDomain = ({ customDomain }) =>
-  new Promise((resolve, reject) => {
-    const session = driver.session();
-    session
-      .readTransaction(tx =>
-        tx.run(
-          'MATCH (d:DOMAIN { name: $customDomain })<-[:OWNS]-(u) RETURN u.email as email, d.homepage as homepage',
-          {
-            customDomain,
-          }
-        )
-      )
-      .then(({ records }) => {
-        session.close();
-        const data = records.length
-          ? {
-              email: records[0].get('email'),
-              homepage: records[0].get('homepage'),
-            }
-          : {};
-        resolve(data);
-      })
-      .catch(err => session.close() || reject(err));
-  });
+exports.getCustomDomain = async ({ customDomain }) => {
+  const session = driver.session();
+  const { records = [] } = await session.readTransaction(tx =>
+    tx.run(
+      'MATCH (d:DOMAIN { name: $customDomain })<-[:OWNS]-(u) RETURN u.email as email, d.homepage as homepage',
+      {
+        customDomain,
+      }
+    )
+  );
+  session.close();
+  const data = records.length
+    ? {
+        email: records[0].get('email'),
+        homepage: records[0].get('homepage'),
+      }
+    : {};
+  return data;
+};
 
-exports.setCustomDomain = ({ user, customDomain, homepage, useHttps }) =>
-  new Promise((resolve, reject) => {
-    const session = driver.session();
-    session
-      .writeTransaction(tx =>
-        tx.run(
-          'MATCH (u:USER { email: $email }) ' +
-            'OPTIONAL MATCH (u)-[r:OWNS]->() DELETE r ' +
-            `MERGE (d:DOMAIN { name: $customDomain, homepage: $homepage, useHttps: $useHttps }) ` +
-            'MERGE (u)-[:OWNS]->(d) RETURN u, d',
-          {
-            customDomain,
-            homepage: homepage || '',
-            email: user.email,
-            useHttps: !!useHttps,
-          }
-        )
-      )
-      .then(({ records }) => {
-        session.close();
-        const data = records.length && records[0].get('d').properties;
-        resolve(data);
-      })
-      .catch(err => session.close() || reject(err));
-  });
+exports.setCustomDomain = async ({ user, customDomain, homepage, useHttps }) => {
+  const session = driver.session();
+  const { records = [] } = await session.writeTransaction(tx =>
+    tx.run(
+      'MATCH (u:USER { email: $email }) ' +
+        'OPTIONAL MATCH (u)-[r:OWNS]->() DELETE r ' +
+        `MERGE (d:DOMAIN { name: $customDomain, homepage: $homepage, useHttps: $useHttps }) ` +
+        'MERGE (u)-[:OWNS]->(d) RETURN u, d',
+      {
+        customDomain,
+        homepage: homepage || '',
+        email: user.email,
+        useHttps: !!useHttps,
+      }
+    )
+  );
+  session.close();
+  const data = records.length && records[0].get('d').properties;
+  return data;
+};
 
-exports.deleteCustomDomain = ({ user }) =>
-  new Promise((resolve, reject) => {
-    const session = driver.session();
-    session
-      .writeTransaction(tx =>
-        tx.run('MATCH (u:USER { email: $email }) MATCH (u)-[r:OWNS]->() DELETE r RETURN u', {
-          email: user.email,
-        })
-      )
-      .then(({ records }) => {
-        session.close();
-        const data = records.length && records[0].get('u').properties;
-        resolve(data);
-      })
-      .catch(err => session.close() || reject(err));
-  });
+exports.deleteCustomDomain = async ({ user }) => {
+  const session = driver.session();
+  const { records = [] } = await session.writeTransaction(tx =>
+    tx.run('MATCH (u:USER { email: $email }) MATCH (u)-[r:OWNS]->() DELETE r RETURN u', {
+      email: user.email,
+    })
+  );
+  session.close();
+  const data = records.length && records[0].get('u').properties;
+  return data;
+};
 
-exports.deleteUrl = ({ id, domain, user }) =>
-  new Promise((resolve, reject) => {
-    const session = driver.session();
-    session
-      .writeTransaction(tx =>
-        tx.run(
-          'MATCH (u:USER { email: $email }) ' +
-            'MATCH (u)-[:CREATED]->(l { id: $id }) ' +
-            `${
-              domain
-                ? 'MATCH (l)-[:USES]->(:DOMAIN { name: $domain })'
-                : 'MATCH (l) WHERE NOT (l)-[:USES]->()'
-            }` +
-            'OPTIONAL MATCH (l)-[:MATCHES]->(v) ' +
-            'DETACH DELETE l, v RETURN u',
-          {
-            email: user.email,
-            domain,
-            id,
-          }
-        )
-      )
-      .then(({ records }) => {
-        session.close();
-        const data = records.length && records[0].get('u').properties;
-        resolve(data);
-      })
-      .catch(err => session.close() || reject(err));
-  });
+exports.deleteUrl = async ({ id, domain, user }) => {
+  const session = driver.session();
+  const { records = [] } = await session.writeTransaction(tx =>
+    tx.run(
+      'MATCH (u:USER { email: $email }) ' +
+        'MATCH (u)-[:CREATED]->(l { id: $id }) ' +
+        `${
+          domain
+            ? 'MATCH (l)-[:USES]->(:DOMAIN { name: $domain })'
+            : 'MATCH (l) WHERE NOT (l)-[:USES]->()'
+        }` +
+        'OPTIONAL MATCH (l)-[:MATCHES]->(v) ' +
+        'DETACH DELETE l, v RETURN u',
+      {
+        email: user.email,
+        domain,
+        id,
+      }
+    )
+  );
+  session.close();
+  const data = records.length && records[0].get('u').properties;
+  return data;
+};
 
 /*
  ** Collecting stats
@@ -425,27 +380,22 @@ exports.getStats = ({ id, domain, user }) =>
       });
   });
 
-exports.urlCountFromDate = ({ date, email }) =>
-  new Promise((resolve, reject) => {
-    const session = driver.session();
-    session
-      .readTransaction(tx =>
-        tx.run(
-          'MATCH (u:USER { email: $email })-[:CREATED]->(l) WHERE l.createdAt > $date ' +
-            'WITH COUNT(l) as count RETURN count',
-          {
-            date,
-            email,
-          }
-        )
-      )
-      .then(({ records }) => {
-        session.close();
-        const count = records.length && records[0].get('count').toNumber();
-        return resolve({ count });
-      })
-      .catch(err => reject(err));
-  });
+exports.urlCountFromDate = async ({ date, email }) => {
+  const session = driver.session();
+  const { records = [] } = await session.readTransaction(tx =>
+    tx.run(
+      'MATCH (u:USER { email: $email })-[:CREATED]->(l) WHERE l.createdAt > $date ' +
+        'WITH COUNT(l) as count RETURN count',
+      {
+        date,
+        email,
+      }
+    )
+  );
+  session.close();
+  const count = records.length && records[0].get('count').toNumber();
+  return { count };
+};
 
 exports.banUrl = async ({ adminEmail, id, domain, host, user }) => {
   const session = driver.session();
