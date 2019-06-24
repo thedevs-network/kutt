@@ -120,12 +120,15 @@ exports.requestPasswordReset = async ({ email }) => {
 
 exports.resetPassword = async ({ resetPasswordToken }) => {
   const session = driver.session();
+  const currentTime = Date.now();
   const { records = [] } = await session.writeTransaction(tx =>
     tx.run(
-      'MATCH (u:USER { resetPasswordToken: $resetPasswordToken })' +
-        'SET u.resetPasswordExpires = NULL SET u.resetPasswordToken = NULL RETURN u',
+      'MATCH (u:USER) ' +
+        'WHERE u.resetPasswordToken = $resetPasswordToken AND u.resetPasswordExpires > $currentTime ' +
+        'SET u.resetPasswordExpires = NULL, u.resetPasswordToken = NULL RETURN u',
       {
         resetPasswordToken,
+        currentTime,
       }
     )
   );
