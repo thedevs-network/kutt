@@ -98,17 +98,17 @@ exports.generateApiKey = async ({ email }) => {
 
 exports.requestPasswordReset = async ({ email }) => {
   const session = driver.session();
-  const resetPasswordExprie = Date.now() + 3600000;
+  const resetPasswordExpires = Date.now() + 3600000;
   const resetPasswordToken = nanoid(40);
   const { records = [] } = await session.writeTransaction(tx =>
     tx.run(
       'MATCH (u:USER { email: $email }) ' +
         'SET u.resetPasswordToken = $resetPasswordToken ' +
-        'SET u.resetPasswordExprie = $resetPasswordExprie ' +
+        'SET u.resetPasswordExpires = $resetPasswordExpires ' +
         'RETURN u',
       {
         email,
-        resetPasswordExprie,
+        resetPasswordExpires,
         resetPasswordToken,
       }
     )
@@ -123,7 +123,7 @@ exports.resetPassword = async ({ resetPasswordToken }) => {
   const { records = [] } = await session.writeTransaction(tx =>
     tx.run(
       'MATCH (u:USER { resetPasswordToken: $resetPasswordToken })' +
-        'SET u.resetPasswordExprie = NULL SET u.resetPasswordToken = NULL RETURN u',
+        'SET u.resetPasswordExpires = NULL SET u.resetPasswordToken = NULL RETURN u',
       {
         resetPasswordToken,
       }
