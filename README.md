@@ -132,6 +132,7 @@ Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app f
 | C# (.NET) | [KuttSharp](https://github.com/0xaryan/KuttSharp)          | .NET package for Kutt.it url shortener            |
 | Python    | [kutt-cli](https://github.com/univa64/kutt-cli)            | Command-line client for Kutt written in Python    |
 | Ruby      | [kutt.rb](https://github.com/univa64/kutt.rb)              | Kutt library written in Ruby                      |
+| Rust      | [kutt-rs](https://github.com/robatipoor/kutt-rs)           | Command line tool written in Rust                 |
 | Node.js   | [node-kutt](https://github.com/ardalanamini/node-kutt)     | Node.js client for Kutt.it url shortener          |
 | Bash      | [kutt-bash](https://git.nixnet.xyz/caltlgin/kutt-bash)     | Simple command line program for Kutt              |
 
