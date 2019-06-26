@@ -35,7 +35,7 @@ exports.createUser = async ({ email, password }) => {
     tx.run(
       'MERGE (u:USER { email: $email }) ' +
         'SET u.password = $hash , u.verified = $verified , ' +
-        'u.verificationToken = $verificationToken , u.createdAt = $createdAt ' +
+        'u.verificationToken = $verificationToken , u.verificationExpires = $verificationExpires, u.createdAt = $createdAt ' +
         'RETURN u',
       {
         email,
@@ -43,6 +43,7 @@ exports.createUser = async ({ email, password }) => {
         createdAt: new Date().toJSON(),
         verified: false,
         verificationToken,
+        verificationExpires: Date.now() + 3600000,
       }
     )
   );
@@ -55,10 +56,12 @@ exports.verifyUser = async ({ verificationToken }) => {
   const session = driver.session();
   const { records = [] } = await session.writeTransaction(tx =>
     tx.run(
-      'MATCH (u:USER { verificationToken: $verificationToken })' +
-        'SET u.verified = true SET u.verificationToken = NULL RETURN u',
+      'MATCH (u:USER) ' +
+        'WHERE u.verificationToken = $verificationToken AND u.verificationExpires > $currentTime ' +
+        'SET u.verified = true, u.verificationToken = NULL, u.verificationExpires = NULL RETURN u',
       {
         verificationToken,
+        currentTime: Date.now(),
       }
     )
   );
@@ -98,17 +101,16 @@ exports.generateApiKey = async ({ email }) => {
 
 exports.requestPasswordReset = async ({ email }) => {
   const session = driver.session();
-  const resetPasswordExprie = Date.now() + 3600000;
   const resetPasswordToken = nanoid(40);
   const { records = [] } = await session.writeTransaction(tx =>
     tx.run(
       'MATCH (u:USER { email: $email }) ' +
         'SET u.resetPasswordToken = $resetPasswordToken ' +
-        'SET u.resetPasswordExprie = $resetPasswordExprie ' +
+        'SET u.resetPasswordExpires = $resetPasswordExpires ' +
         'RETURN u',
       {
         email,
-        resetPasswordExprie,
+        resetPasswordExpires: Date.now() + 3600000,
         resetPasswordToken,
       }
     )
@@ -122,10 +124,12 @@ exports.resetPassword = async ({ resetPasswordToken }) => {
   const session = driver.session();
   const { records = [] } = await session.writeTransaction(tx =>
     tx.run(
-      'MATCH (u:USER { resetPasswordToken: $resetPasswordToken })' +
-        'SET u.resetPasswordExprie = NULL SET u.resetPasswordToken = NULL RETURN u',
+      'MATCH (u:USER) ' +
+        'WHERE u.resetPasswordToken = $resetPasswordToken AND u.resetPasswordExpires > $currentTime ' +
+        'SET u.resetPasswordExpires = NULL, u.resetPasswordToken = NULL RETURN u',
       {
         resetPasswordToken,
+        currentTime: Date.now(),
       }
     )
   );
