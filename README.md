@@ -11,7 +11,9 @@
 [![Build Status](https://travis-ci.org/thedevs-network/kutt.svg?branch=develop)](https://travis-ci.org/thedevs-network/kutt)
 [![Contributions](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](https://github.com/thedevs-network/kutt/#contributing)
 [![GitHub license](https://img.shields.io/github/license/thedevs-network/kutt.svg)](https://github.com/thedevs-network/kutt/blob/develop/LICENSE)
-[![Twitter](https://img.shields.io/twitter/url/https/github.com/thedevs-network/kutt/.svg?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fthedevs-network%2Fkutt%2F)
+
+
+
 
 ## Table of Contents
 * [Key Features](#key-features)
@@ -53,9 +55,9 @@ You need to have [Node.js](https://nodejs.org/), [Neo4j](https://neo4j.com/) and
 5. Run for development: `npm run dev`.
 6. Run for production: `npm run build` then `npm start`.
 
-**[Visis our wiki for a more complete setup and development guide.](https://github.com/thedevs-network/kutt/wiki/Setup-and-deployment)**
+**[Visit our wiki for a more complete setup and development guide.](https://github.com/thedevs-network/kutt/wiki/Setup-and-deployment)**
 
-**Docker:** You can use Docker to run the app. Read [docker-examples](/docker-examples) for more info.
+**Docker:** You can also use Docker to run the app. Read [docker-examples](/docker-examples) for more info.
 
 ## Browser Extensions
 Download Kutt's extension for web browsers via below links. You can also find the source code on [kutt-extension](https://github.com/abhijithvijayan/kutt-extension).
@@ -65,58 +67,167 @@ Download Kutt's extension for web browsers via below links. You can also find th
 ## API
 In addition to the website, you can use these APIs to create, delete and get URLs.
 
-### Types
+### Usage
 
-```
-URL {
-  createdAt {string} ISO timestamp of when the URL was created
-  id {string} Unique ID of the URL
-  target {string} Where the URL will redirect to
-  password {boolean} Whether or not a password is required
-  count {number} The amount of visits to this URL
-  shortUrl {string} The shortened link (Usually https://kutt.it/id)
-}
-```
-
-In order to use these APIs you need to generate an API key from settings. Never put this key in the client side of your app or anywhere that is exposed to others.
+In order to use these APIs you need to generate an API key from settings. Never publish this key in the client side of your app or anywhere that is exposed to others.
 
 All API requests and responses are in JSON format.
 
-Include the API key as `X-API-Key` in the header of all below requests. Available API endpoints with body parameters:
+Include the API key as `X-API-Key` in the header of all  requests.
+
+Available API endpoints with body parameters:
+
+
 
 **Get shortened URLs list:**
 ```
 GET /api/url/geturls
 ```
 
-Returns:
+Returns
 ```
 {
-  list {Array<URL>} List of URL objects
-  countAll {number} Amount of items in the list
+  list:
+   [
+    {
+      count {int},
+      createdAt {string},
+      id {string},
+      target  {string<URL>},
+      password {boolean},
+      shortUrl {string<URL>}
+    }
+   ],
+  countAll {int}
 }
 ```
+* `list` : Array of shorted URLs data 
+* `count` : Total number of clicks
+* `createdAt` :  ISO timestamp of when the URL was created.
+* `id` : Unique ID of the URL
+* `target` : Where the URL will redirect to
+* `password` : Whether a password is required
+* `count` : The number of visits to this URL
+* `shortUrl` : The shortened link (Usually https://kutt.it/id)
+* `countAll` : Total number of URLs shorted
 
 **Submit a link to be shortened**:
 ```
 POST /api/url/submit
 ```
-Body:
-  * `target`: Original long URL to be shortened.
-  * `customurl` (optional): Set a custom URL.
+Body
+```
+{
+  target {string<URL>}  ,
+  customurl {string },
+  password {string},
+  reuse {boolean}
+}
+```
+
+  * `target` (mandatory) : Original long URL to be shortened.
+  * `customurl` (optional) : Set a custom URL.
   * `password` (optional): Set a password.
-  * `reuse` (optional): If a URL with the specified target exists returns it, otherwise will send a new shortened URL.
+  * `reuse` (optional) : If a URL with the specified target exists returns it, otherwise will send a new shortened URL.
 
-Returns: URL object
+Returns
+```
+{
+  createdAt {string},
+  id {string}, 
+  target {string<URL>} ,
+  password {boolean} ,
+  count {number} ,
+  shortUrl {string<URL>} 
+}
+```
+* `createdAt` : ISO timestamp of when the URL was created.
+* `id`  : Unique ID of the URL
+* `target`  : Where the URL will redirect to
+* `password` : Whether a password is required
+* `count` : The number of visits to this URL
+* `shortUrl` : The shortened link (Usually https://kutt.it/id)
 
-**Delete a shortened URL** and **Get stats for a shortened URL:**
+
+**Delete a shortened URL** 
 ```
 POST /api/url/deleteurl
-GET /api/url/stats
 ```
-Body (or query for GET request)
+
+Body
+```
+{
+  id {string},
+  domain {string<URL>}
+}
+```
   * `id`: ID of the shortened URL.
   * `domain` (optional):  Required if a custom domain is used for short URL.
+
+Returns 
+```
+{
+  message {string}
+}
+```
+* `message` : Response message (Short URL deleted successfully )
+
+**Get stats for a shortened URL**
+```
+GET /api/url/stats
+```
+
+Query
+```
+ id {string}
+ domain {string<URL>}
+```
+* `id`: ID of the shortened URL.
+* `domain` (optional):  Required if a custom domain is used for short URL.
+
+Returns
+```
+{
+  total {int},
+  id {string},
+  updatedAt {string},
+  lastDay {stats,views[]},
+  lastWeek {stats,views[]},
+  lastMonth {stats,views[]},
+  allTime {stats,views[]},
+  shortUrl {string<URL>},
+  target {string<URL>}
+}
+```
+where status is like
+```
+ stats
+  {
+    browser[{name,value}],
+    os[{name,value}],
+    country[],
+    referrer[]
+  }
+```
+* `total` : total number of clicks 
+* `id` : ID of the shortened URL
+* `updatedAt` : ISO timestamp of when the URL was updated.
+* `lastDay` : Analytics data for the last day  
+* `lastWeek` : Analytics data for the last week
+* `lastMonth` : Analytics data for the last month
+* `allTime` : Analytics data since the short URL was created
+* `browser` : Array of number of clicks in browsers where `name` referes to the browser's name and `value` refers to the number of times clicked in that browser
+* `os` : Array of number of clicks in different operating systems where `name` referes to the Operating systems's name and `value` refers to the number of times clicked in that OS.
+* `country` : Array of list of countries where the Short URL is clicked
+* `referrer` : Array of list of referrers  where the Short URL is clicked
+
+**Error Response**
+
+On receiving any errors a message like this will be sent as response. 
+```
+{ error":"Couldn't find the short URL" }
+```
+
 
 ## Integrations
 
@@ -137,8 +248,13 @@ Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app f
 | Bash      | [kutt-bash](https://git.nixnet.xyz/caltlgin/kutt-bash)     | Simple command line program for Kutt              |
 
 ## Contributing
-Pull requests are welcome. You'll probably find lots of improvements to be made.
+Pull requests are welcome. You'll probably find lots of improvements to be made .
 
 Open issues for feedback, requesting features, reporting bugs or discussing ideas.
 
 Special thanks to [Thomas](https://github.com/trgwii) and [Muthu](https://github.com/MKRhere). Logo design by [Muthu](https://github.com/MKRhere).
+
+## Share
+  [![Tweet](https://img.shields.io/twitter/url/https/kutt.svg?style=social)](https://twitter.com/intent/tweet?text=Wow:%20This%20Open%20Source%20URL%20Shortner%20is%20%23awesome%20%23kutt%20&url=https%3A%2F%2Fgithub.com%2Fthedevs-network%2Fkutt%2F)
+
+
