@@ -314,8 +314,6 @@ exports.getStats = ({ id, domain, user }) =>
       },
     };
 
-    let total = 0;
-
     const statsPeriods = [[1, 'lastDay'], [7, 'lastWeek'], [30, 'lastMonth']];
 
     session
@@ -340,7 +338,6 @@ exports.getStats = ({ id, domain, user }) =>
       )
       .subscribe({
         onNext(record) {
-          total += 1;
           const browser = record.get('browser');
           const os = record.get('os');
           const country = record.get('country');
@@ -383,7 +380,6 @@ exports.getStats = ({ id, domain, user }) =>
           stats.lastMonth.stats = statsObjectToArray(stats.lastMonth.stats);
           stats.allTime.stats = statsObjectToArray(stats.allTime.stats);
           const response = {
-            total,
             id,
             updatedAt: new Date().toISOString(),
             lastDay: stats.lastDay,

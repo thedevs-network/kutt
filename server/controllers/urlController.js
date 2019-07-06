@@ -297,6 +297,7 @@ exports.getStats = async ({ query: { id, domain }, user }, res) => {
   const [url] = urls;
   const stats = await getStats({ id, domain: customDomain, user });
   if (!stats) return res.status(400).json({ error: 'Could not get the short URL stats.' });
+  stats.total = url.count && url.count.toNumber ? url.count.toNumber() : 0;
   stats.shortUrl = `http${!domain ? 's' : ''}://${
     domain ? url.domain : process.env.DEFAULT_DOMAIN
   }/${url.id}`;
