@@ -134,7 +134,7 @@ Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app f
 | Ruby      | [kutt.rb](https://github.com/univa64/kutt.rb)              | Kutt library written in Ruby                      |
 | Rust      | [kutt-rs](https://github.com/robatipoor/kutt-rs)           | Command line tool written in Rust                 |
 | Node.js   | [node-kutt](https://github.com/ardalanamini/node-kutt)     | Node.js client for Kutt.it url shortener          |
-| Bash      | [kutt-bash](https://git.nixnet.xyz/caltlgin/kutt-bash)     | Simple command line program for Kutt              |
+| Bash      | [kutt-bash](https://git.fossdaily.xyz/caltlgin/kutt-bash)     | Simple command line program for Kutt              |
 
 ## Contributing
 Pull requests are welcome. You'll probably find lots of improvements to be made.
