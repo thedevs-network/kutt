@@ -13,7 +13,7 @@ const queryNewUrl = 'CREATE (l:URL { id: $id, target: $target, createdAt: $creat
 
 const queryNewUserUrl = (domain, password) =>
   'MATCH (u:USER { email: $email })' +
-  'CREATE (l:URL { id: $id, target: $target, createdAt: $createdAt' +
+  'CREATE (l:URL { id: $id, target: $target, createdAt: $createdAt, count: 0 ' +
   `${password ? ', password: $password' : ''} })` +
   'CREATE (u)-[:CREATED]->(l)' +
   `${domain ? 'MERGE (l)-[:USES]->(:DOMAIN { name: $domain })' : ''}` +
@@ -40,6 +40,7 @@ exports.createShortUrl = async params => {
     ...data,
     password: !!data.password,
     reuse: !!params.reuse,
+    count: 0,
     shortUrl: generateShortUrl(
       data.id,
       params.user && params.user.domain,
