@@ -10,6 +10,7 @@ const ua = require('universal-analytics');
 const isbot = require('isbot');
 const { addIPCooldown } = require('../db/user');
 const {
+  addUrlCount,
   createShortUrl,
   createVisit,
   deleteCustomDomain,
@@ -32,7 +33,7 @@ const {
 } = require('./validateBodyController');
 const transporter = require('../mail/mail');
 const redis = require('../redis');
-const { addProtocol, generateShortUrl, getStatsCacheTime } = require('../utils');
+const { addProtocol, getStatsLimit, generateShortUrl, getStatsCacheTime } = require('../utils');
 
 const dnsLookup = promisify(dns.lookup);
 
@@ -160,12 +161,14 @@ exports.goToUrl = async (req, res, next) => {
     req.pageType = 'password';
     return next();
   }
+
   if (url.password) {
     const isMatch = await bcrypt.compare(req.body.password, url.password);
     if (!isMatch) {
       return res.status(401).json({ error: 'Password is not correct' });
     }
     if (url.user && !isBot) {
+      addUrlCount(url.id, domain);
       createVisit({
         browser,
         country: country || 'Unknown',
@@ -173,11 +176,13 @@ exports.goToUrl = async (req, res, next) => {
         id: url.id,
         os,
         referrer: referrer || 'Direct',
+        limit: getStatsLimit(url),
       });
     }
     return res.status(200).json({ target: url.target });
   }
   if (url.user && !isBot) {
+    addUrlCount(url.id, domain);
     createVisit({
       browser,
       country: country || 'Unknown',
@@ -185,6 +190,7 @@ exports.goToUrl = async (req, res, next) => {
       id: url.id,
       os,
       referrer: referrer || 'Direct',
+      limit: getStatsLimit(url),
     });
   }
 

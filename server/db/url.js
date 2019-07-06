@@ -72,7 +72,7 @@ exports.createVisit = async params => {
   const session = driver.session();
   const { records = [] } = await session.writeTransaction(tx =>
     tx.run(
-      'MATCH (l:URL { id: $id }) ' +
+      'MATCH (l:URL { id: $id }) WHERE l.count < $limit' +
         `${params.domain ? 'MATCH (l)-[:USES]->({ name: $domain })' : ''} ` +
         'CREATE (v:VISIT)' +
         'MERGE (b:BROWSER { browser: $browser })' +
@@ -95,6 +95,7 @@ exports.createVisit = async params => {
         os: params.os,
         referrer: params.referrer,
         date: getUTCDate().toJSON(),
+        limit: params.limit,
       }
     )
   );
