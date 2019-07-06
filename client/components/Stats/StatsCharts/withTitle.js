@@ -46,10 +46,10 @@ const withTitle = ChartComponent => {
       <Wrapper>
         <Title>
           {props.periodText && <Count>{props.data.reduce((sum, view) => sum + view, 0)}</Count>}
-          {props.periodText ? ` clicks in ${props.periodText}` : props.title}.
+          {props.periodText ? ` tracked clicks in ${props.periodText}` : props.title}.
         </Title>
         {props.periodText && props.updatedAt && (
-          <SubTitle>Last update in {formatDate(props.updatedAt, 'dddd, hh:mm aa')}</SubTitle>
+          <SubTitle>Last update in {formatDate(props.updatedAt, 'dddd, hh:mm aa')}.</SubTitle>
         )}
         <ChartComponent {...props} />
       </Wrapper>
