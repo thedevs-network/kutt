@@ -114,7 +114,7 @@ exports.findUrl = async ({ id, domain, target }) => {
             : 'OPTIONAL MATCH (l)-[:USES]->(d)'
         }` +
         'OPTIONAL MATCH (u)-[:CREATED]->(l)' +
-        'RETURN l, d.name AS domain, u.email AS user',
+        'RETURN l, d.name AS domain, u AS user',
       {
         id,
         domain,
@@ -128,7 +128,7 @@ exports.findUrl = async ({ id, domain, target }) => {
     records.map(record => ({
       ...record.get('l').properties,
       domain: record.get('domain'),
-      user: record.get('user'),
+      user: (record.get('user') || {}).properties,
     }));
   return url;
 };
