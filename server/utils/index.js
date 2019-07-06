@@ -17,6 +17,9 @@ exports.isAdmin = email =>
     .map(e => e.trim())
     .includes(email);
 
+exports.getStatsLimit = url =>
+  url.user.statsLimit || Number(process.env.DEFAULT_MAX_STATS_PER_LINK) || 10000000;
+
 exports.getStatsCacheTime = total => {
   switch (true) {
     case total <= 5000:
