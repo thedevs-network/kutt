@@ -49,13 +49,31 @@ exports.createShortUrl = async params => {
   };
 };
 
+exports.addUrlCount = async (id, domain) => {
+  const session = driver.session();
+  const { records = [] } = await session.writeTransaction(tx =>
+    tx.run(
+      'MATCH (l:URL { id: $id }) ' +
+        `${domain ? 'MATCH (l)-[:USES]->({ name: $domain })' : ''} ` +
+        'SET l.count = l.count + 1 ' +
+        'RETURN l',
+      {
+        id,
+        domain,
+      }
+    )
+  );
+  session.close();
+  const url = records.length && records[0].get('l').properties;
+  return url;
+};
+
 exports.createVisit = async params => {
   const session = driver.session();
   const { records = [] } = await session.writeTransaction(tx =>
     tx.run(
       'MATCH (l:URL { id: $id }) ' +
         `${params.domain ? 'MATCH (l)-[:USES]->({ name: $domain })' : ''} ` +
-        'SET l.count = l.count + 1 ' +
         'CREATE (v:VISIT)' +
         'MERGE (b:BROWSER { browser: $browser })' +
         'MERGE (c:COUNTRY { country: $country })' +
