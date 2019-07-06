@@ -138,7 +138,7 @@ describe('url actions', () => {
         }
       })
         .post('/api/url/deleteurl')
-        .reply(200, { message: 'Sort URL deleted successfully' });
+        .reply(200, { message: 'Short URL deleted successfully' });
 
       const store = mockStore({ url: { list: mockedItems } });
 

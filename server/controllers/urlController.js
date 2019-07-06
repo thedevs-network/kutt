@@ -276,7 +276,7 @@ exports.deleteUrl = async ({ body: { id, domain }, user }, res) => {
   if (!urls && !urls.length) return res.status(400).json({ error: "Couldn't find the short URL." });
   redis.del(id + (customDomain || ''));
   const response = await deleteUrl({ id, domain: customDomain, user });
-  if (response) return res.status(200).json({ message: 'Sort URL deleted successfully' });
+  if (response) return res.status(200).json({ message: 'Short URL deleted successfully' });
   return res.status(400).json({ error: "Couldn't delete short URL." });
 };
 

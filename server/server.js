@@ -17,6 +17,7 @@ const {
 } = require('./controllers/validateBodyController');
 const auth = require('./controllers/authController');
 const url = require('./controllers/urlController');
+const neo4j = require('./db/neo4j');
 
 require('./cron');
 require('./passport');
@@ -27,10 +28,12 @@ if (process.env.RAVEN_DSN) {
 const catchErrors = fn => (req, res, next) =>
   fn(req, res, next).catch(err => {
     res.status(500).json({ error: 'Sorry an error ocurred. Please try again later.' });
+    neo4j.close();
     if (process.env.RAVEN_DSN) {
       Raven.captureException(err, {
         user: { email: req.user && req.user.email },
       });
+      throw new Error(err);
     } else {
       throw new Error(err);
     }
