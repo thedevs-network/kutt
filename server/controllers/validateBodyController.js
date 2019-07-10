@@ -74,7 +74,8 @@ exports.validateUrl = async ({ body, user }, res, next) => {
 
   // Validate URL
   const isValidUrl = urlRegex({ exact: true, strict: false }).test(body.target);
-  if (!isValidUrl) return res.status(400).json({ error: 'URL is not valid.' });
+  if (!isValidUrl && !/^\w+:\/\//.test(body.target))
+    return res.status(400).json({ error: 'URL is not valid.' });
 
   // If target is the URL shortener itself
   const { host } = URL.parse(addProtocol(body.target));
