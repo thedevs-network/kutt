@@ -1,9 +1,8 @@
-const URL = require('url');
 const ms = require('ms');
 const { differenceInDays, differenceInHours, differenceInMonths } = require('date-fns');
 
 exports.addProtocol = url => {
-  const hasProtocol = /^https?/.test(URL.parse(url).protocol);
+  const hasProtocol = /^\w+:\/\//.test(url);
   return hasProtocol ? url : `http://${url}`;
 };
 
