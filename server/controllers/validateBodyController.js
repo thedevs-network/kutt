@@ -6,7 +6,7 @@ const urlRegex = require('url-regex');
 const validator = require('express-validator/check');
 const { differenceInMinutes, subHours } = require('date-fns/');
 const { validationResult } = require('express-validator/check');
-const { addCooldown, banUser, getIPCooldown: getIPCooldownCount } = require('../db/user');
+const { addCooldown, banUser, getIp } = require('../db/user');
 const { getBannedDomain, getBannedHost, urlCountFromDate } = require('../db/url');
 const subDay = require('date-fns/sub_days');
 const { addProtocol } = require('../utils');
@@ -112,7 +112,7 @@ exports.validateUrl = async ({ body, user }, res, next) => {
 exports.cooldownCheck = async user => {
   if (user && user.cooldowns) {
     if (user.cooldowns.length > 4) {
-      await banUser(user);
+      await banUser(user._id);
       throw new Error('Too much malware requests. You are now banned.');
     }
     const hasCooldownNow = user.cooldowns.some(
@@ -125,11 +125,11 @@ exports.cooldownCheck = async user => {
 };
 
 exports.ipCooldownCheck = async (req, res, next) => {
-  const cooldonwConfig = Number(process.env.NON_USER_COOLDOWN);
-  if (req.user || !cooldonwConfig) return next();
-  const cooldownDate = await getIPCooldownCount(req.realIp);
-  if (cooldownDate) {
-    const timeToWait = cooldonwConfig - differenceInMinutes(new Date(), cooldownDate);
+  const cooldownConfig = Number(process.env.NON_USER_COOLDOWN);
+  if (req.user || !cooldownConfig) return next();
+  const ip = await getIp(req.realIp);
+  if (ip) {
+    const timeToWait = cooldownConfig - differenceInMinutes(new Date(), ip.createdAt);
     return res
       .status(400)
       .json({ error: `Non-logged in users are limited. Wait ${timeToWait} minutes or log in.` });
@@ -163,7 +163,7 @@ exports.malwareCheck = async (user, target) => {
   );
   if (isMalware.data && isMalware.data.matches) {
     if (user) {
-      await addCooldown(user);
+      await addCooldown(user._id);
     }
     throw new Error(user ? 'Malware detected! Cooldown for 12h.' : 'Malware detected!');
   }

@@ -14,7 +14,7 @@ const jwtOptions = {
 passport.use(
   new JwtStrategy(jwtOptions, async (payload, done) => {
     try {
-      const user = await getUser({ email: payload.sub });
+      const user = await getUser(payload.sub);
       if (!user) return done(null, false);
       return done(null, user);
     } catch (err) {
@@ -30,7 +30,7 @@ const localOptions = {
 passport.use(
   new LocalStratergy(localOptions, async (email, password, done) => {
     try {
-      const user = await getUser({ email });
+      const user = await getUser(email);
       if (!user) {
         return done(null, false);
       }
@@ -53,7 +53,7 @@ const localAPIKeyOptions = {
 passport.use(
   new LocalAPIKeyStrategy(localAPIKeyOptions, async (apikey, done) => {
     try {
-      const user = await getUser({ apikey });
+      const user = await getUser(apikey);
       if (!user) {
         return done(null, false);
       }

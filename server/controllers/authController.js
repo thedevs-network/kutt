@@ -110,9 +110,9 @@ exports.signup = async (req, res) => {
   if (email.length > 64) {
     return res.status(400).json({ error: 'Maximum email length is 64.' });
   }
-  const user = await getUser({ email });
+  const user = await getUser(email);
   if (user && user.verified) return res.status(403).json({ error: 'Email is already in use.' });
-  const newUser = await createUser({ email, password });
+  const newUser = await createUser(email, password);
   const mail = await transporter.sendMail({
     from: process.env.MAIL_FROM || process.env.MAIL_USER,
     to: newUser.email,
@@ -137,8 +137,7 @@ exports.renew = ({ user }, res) => {
 };
 
 exports.verify = async (req, res, next) => {
-  const { verificationToken = '' } = req.params;
-  const user = await verifyUser({ verificationToken });
+  const user = await verifyUser(req.params.verificationToken);
   if (user) {
     const token = signToken(user);
     req.user = { token };
@@ -153,17 +152,17 @@ exports.changePassword = async ({ body: { password }, user }, res) => {
   if (password.length > 64) {
     return res.status(400).json({ error: 'Maximum password length is 64.' });
   }
-  const changedUser = await changePassword({ email: user.email, password });
+  const changedUser = await changePassword(user._id, password);
   if (changedUser) {
     return res.status(200).json({ message: 'Your password has been changed successfully.' });
   }
   return res.status(400).json({ error: "Couldn't change the password. Try again later" });
 };
 
-exports.generateApiKey = async ({ user }, res) => {
-  const { apikey } = await generateApiKey({ email: user.email });
-  if (apikey) {
-    return res.status(201).json({ apikey });
+exports.generateApiKey = async (req, res) => {
+  const user = await generateApiKey(req.user._id);
+  if (user.apikey) {
+    return res.status(201).json({ apikey: user.apikey });
   }
   return res.status(400).json({ error: 'Sorry, an error occured. Please try again later.' });
 };
@@ -176,8 +175,8 @@ exports.userSettings = ({ user }, res) =>
     useHttps: user.useHttps || false,
   });
 
-exports.requestPasswordReset = async ({ body: { email } }, res) => {
-  const user = await requestPasswordReset({ email });
+exports.requestPasswordReset = async (req, res) => {
+  const user = await requestPasswordReset(req.body.email);
   if (!user) {
     return res.status(400).json({ error: "Couldn't reset password." });
   }
@@ -193,14 +192,15 @@ exports.requestPasswordReset = async ({ body: { email } }, res) => {
       .replace(/{{domain}}/gm, process.env.DEFAULT_DOMAIN),
   });
   if (mail.accepted.length) {
-    return res.status(200).json({ email, message: 'Reset password email has been sent.' });
+    return res
+      .status(200)
+      .json({ email: user.email, message: 'Reset password email has been sent.' });
   }
   return res.status(400).json({ error: "Couldn't reset password." });
 };
 
 exports.resetPassword = async (req, res, next) => {
-  const { resetPasswordToken = '' } = req.params;
-  const user = await resetPassword({ resetPasswordToken });
+  const user = await resetPassword(req.params.resetPasswordToken);
   if (user) {
     const token = signToken(user);
     req.user = { token };

@@ -2,6 +2,7 @@ require('./configToEnv');
 require('dotenv').config();
 const nextApp = require('next');
 const express = require('express');
+const mongoose = require('mongoose');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const Raven = require('raven');
@@ -22,9 +23,12 @@ const neo4j = require('./db/neo4j');
 require('./cron');
 require('./passport');
 
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
+
 if (process.env.RAVEN_DSN) {
   Raven.config(process.env.RAVEN_DSN).install();
 }
+
 const catchErrors = fn => (req, res, next) =>
   fn(req, res, next).catch(err => {
     res.status(500).json({ error: 'Sorry an error ocurred. Please try again later.' });
