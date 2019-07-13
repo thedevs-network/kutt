@@ -19,6 +19,7 @@
         ]
       }
     ],
+    "no-underscore-dangle": 0,
     "prettier/prettier": [
       "error",
       {
