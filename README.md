@@ -53,7 +53,7 @@ You need to have [Node.js](https://nodejs.org/), [Neo4j](https://neo4j.com/) and
 5. Run for development: `npm run dev`.
 6. Run for production: `npm run build` then `npm start`.
 
-**[Visis our wiki for a more complete setup and development guide.](https://github.com/thedevs-network/kutt/wiki/Setup-and-deployment)**
+**[Visit our wiki for a more complete setup and development guide.](https://github.com/thedevs-network/kutt/wiki/Setup-and-deployment)**
 
 **Docker:** You can use Docker to run the app. Read [docker-examples](/docker-examples) for more info.
 
