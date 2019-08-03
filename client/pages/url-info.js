@@ -40,7 +40,7 @@ class UrlInfoPage extends Component {
   }
 
   render() {
-    if (!this.props.query) {
+    if (!this.props.query.linkTarget) {
       return (
         <BodyWrapper>
           <Title>404 | Not found.</Title>
@@ -52,7 +52,7 @@ class UrlInfoPage extends Component {
       <BodyWrapper>
         <Wrapper>
           <Title>Target:</Title>
-          <Target>{this.props.query}</Target>
+          <Target>{this.props.query.linkTarget}</Target>
         </Wrapper>
         <Footer />
       </BodyWrapper>
@@ -61,11 +61,13 @@ class UrlInfoPage extends Component {
 }
 
 UrlInfoPage.propTypes = {
-  query: PropTypes.string,
+  query: PropTypes.shape({
+    linkTarget: PropTypes.string,
+  }),
 };
 
 UrlInfoPage.defaultProps = {
-  query: null,
+  query: {},
 };
 
 export default UrlInfoPage;

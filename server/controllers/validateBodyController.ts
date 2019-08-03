@@ -1,19 +1,24 @@
-const { promisify } = require('util');
-const dns = require('dns');
-const axios = require('axios');
-const URL = require('url');
-const urlRegex = require('url-regex');
-const validator = require('express-validator/check');
-const { differenceInMinutes, subHours } = require('date-fns/');
-const { validationResult } = require('express-validator/check');
-const { addCooldown, banUser, getIp } = require('../db/user');
-const { getBannedDomain, getBannedHost, urlCountFromDate } = require('../db/url');
-const subDay = require('date-fns/sub_days');
-const { addProtocol } = require('../utils');
+import { RequestHandler } from 'express';
+import { promisify } from 'util';
+import dns from 'dns';
+import axios from 'axios';
+import URL from 'url';
+import urlRegex from 'url-regex';
+import validator from 'express-validator/check';
+import { differenceInMinutes, subHours, subDays } from 'date-fns';
+import { validationResult } from 'express-validator/check';
+
+import { IUser } from '../models/user';
+import { addCooldown, banUser } from '../db/user';
+import { getIP } from '../db/ip';
+import { getUserLinksCount } from '../db/link';
+import { getDomain } from '../db/domain';
+import { getHost } from '../db/host';
+import { addProtocol } from '../utils';
 
 const dnsLookup = promisify(dns.lookup);
 
-exports.validationCriterias = [
+export const validationCriterias = [
   validator
     .body('email')
     .exists()
@@ -29,7 +34,7 @@ exports.validationCriterias = [
     .isLength({ min: 8 }),
 ];
 
-exports.validateBody = (req, res, next) => {
+export const validateBody = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const errorsObj = errors.mapped();
@@ -40,7 +45,7 @@ exports.validateBody = (req, res, next) => {
   return next();
 };
 
-const preservedUrls = [
+export const preservedUrls = [
   'login',
   'logout',
   'signup',
@@ -59,64 +64,72 @@ const preservedUrls = [
   'terms',
   'privacy',
   'report',
+  'pricing',
 ];
 
-exports.preservedUrls = preservedUrls;
-
-exports.validateUrl = async ({ body, user }, res, next) => {
+export const validateUrl: RequestHandler = async (req, res, next) => {
   // Validate URL existence
-  if (!body.target) return res.status(400).json({ error: 'No target has been provided.' });
+  if (!req.body.target)
+    return res.status(400).json({ error: 'No target has been provided.' });
 
   // validate URL length
-  if (body.target.length > 3000) {
+  if (req.body.target.length > 3000) {
     return res.status(400).json({ error: 'Maximum URL length is 3000.' });
   }
 
   // Validate URL
-  const isValidUrl = urlRegex({ exact: true, strict: false }).test(body.target);
-  if (!isValidUrl && !/^\w+:\/\//.test(body.target))
+  const isValidUrl = urlRegex({ exact: true, strict: false }).test(
+    req.body.target
+  );
+  if (!isValidUrl && !/^\w+:\/\//.test(req.body.target))
     return res.status(400).json({ error: 'URL is not valid.' });
 
   // If target is the URL shortener itself
-  const { host } = URL.parse(addProtocol(body.target));
+  const { host } = URL.parse(addProtocol(req.body.target));
   if (host === process.env.DEFAULT_DOMAIN) {
-    return res.status(400).json({ error: `${process.env.DEFAULT_DOMAIN} URLs are not allowed.` });
+    return res
+      .status(400)
+      .json({ error: `${process.env.DEFAULT_DOMAIN} URLs are not allowed.` });
   }
 
   // Validate password length
-  if (body.password && body.password.length > 64) {
+  if (req.body.password && req.body.password.length > 64) {
     return res.status(400).json({ error: 'Maximum password length is 64.' });
   }
 
   // Custom URL validations
-  if (user && body.customurl) {
+  if (req.user && req.body.customurl) {
     // Validate custom URL
-    if (!/^[a-zA-Z0-9-_]+$/g.test(body.customurl.trim())) {
+    if (!/^[a-zA-Z0-9-_]+$/g.test(req.body.customurl.trim())) {
       return res.status(400).json({ error: 'Custom URL is not valid.' });
     }
 
     // Prevent from using preserved URLs
-    if (preservedUrls.some(url => url === body.customurl)) {
-      return res.status(400).json({ error: "You can't use this custom URL name." });
+    if (preservedUrls.some(url => url === req.body.customurl)) {
+      return res
+        .status(400)
+        .json({ error: "You can't use this custom URL name." });
     }
 
     // Validate custom URL length
-    if (body.customurl.length > 64) {
-      return res.status(400).json({ error: 'Maximum custom URL length is 64.' });
+    if (req.body.customurl.length > 64) {
+      return res
+        .status(400)
+        .json({ error: 'Maximum custom URL length is 64.' });
     }
   }
 
   return next();
 };
 
-exports.cooldownCheck = async user => {
+export const cooldownCheck = async (user: IUser) => {
   if (user && user.cooldowns) {
     if (user.cooldowns.length > 4) {
       await banUser(user._id);
       throw new Error('Too much malware requests. You are now banned.');
     }
     const hasCooldownNow = user.cooldowns.some(
-      cooldown => cooldown > subHours(new Date(), 12).toJSON()
+      cooldown => cooldown.toJSON() > subHours(new Date(), 12).toJSON()
     );
     if (hasCooldownNow) {
       throw new Error('Cooldown because of a malware URL. Wait 12h');
@@ -124,20 +137,23 @@ exports.cooldownCheck = async user => {
   }
 };
 
-exports.ipCooldownCheck = async (req, res, next) => {
+export const ipCooldownCheck: RequestHandler = async (req, res, next) => {
   const cooldownConfig = Number(process.env.NON_USER_COOLDOWN);
   if (req.user || !cooldownConfig) return next();
-  const ip = await getIp(req.realIp);
+  const ip = await getIP(req.realIP);
   if (ip) {
-    const timeToWait = cooldownConfig - differenceInMinutes(new Date(), ip.createdAt);
-    return res
-      .status(400)
-      .json({ error: `Non-logged in users are limited. Wait ${timeToWait} minutes or log in.` });
+    const timeToWait =
+      cooldownConfig - differenceInMinutes(new Date(), ip.createdAt);
+    return res.status(400).json({
+      error:
+        `Non-logged in users are limited. Wait ${timeToWait} ` +
+        'minutes or log in.',
+    });
   }
   next();
 };
 
-exports.malwareCheck = async (user, target) => {
+export const malwareCheck = async (user: IUser, target: string) => {
   const isMalware = await axios.post(
     `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${
       process.env.GOOGLE_SAFE_BROWSING_KEY
@@ -156,7 +172,11 @@ exports.malwareCheck = async (user, target) => {
           'POTENTIALLY_HARMFUL_APPLICATION',
         ],
         platformTypes: ['ANY_PLATFORM', 'PLATFORM_TYPE_UNSPECIFIED'],
-        threatEntryTypes: ['EXECUTABLE', 'URL', 'THREAT_ENTRY_TYPE_UNSPECIFIED'],
+        threatEntryTypes: [
+          'EXECUTABLE',
+          'URL',
+          'THREAT_ENTRY_TYPE_UNSPECIFIED',
+        ],
         threatEntries: [{ url: target }],
       },
     }
@@ -165,34 +185,41 @@ exports.malwareCheck = async (user, target) => {
     if (user) {
       await addCooldown(user._id);
     }
-    throw new Error(user ? 'Malware detected! Cooldown for 12h.' : 'Malware detected!');
-  }
-};
-
-exports.urlCountsCheck = async email => {
-  const { count } = await urlCountFromDate({
-    email,
-    date: subDay(new Date(), 1).toJSON(),
-  });
-  if (count > Number(process.env.USER_LIMIT_PER_DAY)) {
     throw new Error(
-      `You have reached your daily limit (${process.env.USER_LIMIT_PER_DAY}). Please wait 24h.`
+      user ? 'Malware detected! Cooldown for 12h.' : 'Malware detected!'
     );
   }
 };
 
-exports.checkBannedDomain = async domain => {
-  const isDomainBanned = await getBannedDomain(domain);
-  if (isDomainBanned) {
+export const urlCountsCheck = async (user: IUser) => {
+  const count = await getUserLinksCount({
+    user: user._id,
+    date: subDays(new Date(), 1),
+  });
+  if (count > Number(process.env.USER_LIMIT_PER_DAY)) {
+    throw new Error(
+      `You have reached your daily limit (${
+        process.env.USER_LIMIT_PER_DAY
+      }). Please wait 24h.`
+    );
+  }
+};
+
+export const checkBannedDomain = async (domain: string) => {
+  const bannedDomain = await getDomain({ name: domain, banned: true });
+  if (bannedDomain) {
     throw new Error('URL is containing malware/scam.');
   }
 };
 
-exports.checkBannedHost = async domain => {
+export const checkBannedHost = async (domain: string) => {
   let isHostBanned;
   try {
     const dnsRes = await dnsLookup(domain);
-    isHostBanned = await getBannedHost(dnsRes && dnsRes.address);
+    isHostBanned = await getHost({
+      address: dnsRes && dnsRes.address,
+      banned: true,
+    });
   } catch (error) {
     isHostBanned = null;
   }

@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "module": "commonjs",
+    "noEmit": false,
+    "outDir": "production-server/",
+    "sourceMap": false
+  },
+  "include": ["server/**/*.ts", "index.d.ts"]
+}

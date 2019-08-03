@@ -1,12 +1,14 @@
-const fs = require('fs');
-const path = require('path');
-const passport = require('passport');
-const JWT = require('jsonwebtoken');
-const axios = require('axios');
-const { isAdmin } = require('../utils');
-const transporter = require('../mail/mail');
-const { resetMailText, verifyMailText } = require('../mail/text');
-const {
+import { RequestHandler } from 'express';
+import fs from 'fs';
+import path from 'path';
+import passport from 'passport';
+import JWT from 'jsonwebtoken';
+import axios from 'axios';
+
+import { isAdmin } from '../utils';
+import transporter from '../mail/mail';
+import { resetMailText, verifyMailText } from '../mail/text';
+import {
   createUser,
   changePassword,
   generateApiKey,
@@ -14,11 +16,18 @@ const {
   verifyUser,
   requestPasswordReset,
   resetPassword,
-} = require('../db/user');
+} from '../db/user';
+import { IUser } from '../models/user';
 
 /* Read email template */
-const resetEmailTemplatePath = path.join(__dirname, '../mail/template-reset.html');
-const verifyEmailTemplatePath = path.join(__dirname, '../mail/template-verify.html');
+const resetEmailTemplatePath = path.join(
+  __dirname,
+  '../mail/template-reset.html'
+);
+const verifyEmailTemplatePath = path.join(
+  __dirname,
+  '../mail/template-verify.html'
+);
 const resetEmailTemplate = fs
   .readFileSync(resetEmailTemplatePath, { encoding: 'utf-8' })
   .replace(/{{domain}}/gm, process.env.DEFAULT_DOMAIN);
@@ -27,12 +36,12 @@ const verifyEmailTemplate = fs
   .replace(/{{domain}}/gm, process.env.DEFAULT_DOMAIN);
 
 /* Function to generate JWT */
-const signToken = user =>
+const signToken = (user: IUser) =>
   JWT.sign(
     {
       iss: 'ApiAuth',
-      sub: user.email,
-      domain: user.domain || '',
+      sub: () => user.email,
+      domain: (user.domain && user.domain.name) || '',
       admin: isAdmin(user.email),
       iat: new Date().getTime(),
       exp: new Date().setDate(new Date().getDate() + 7),
@@ -41,7 +50,11 @@ const signToken = user =>
   );
 
 /* Passport.js authentication controller */
-const authenticate = (type, error, isStrict = true) =>
+const authenticate = (
+  type: 'jwt' | 'local' | 'localapikey',
+  error: string,
+  isStrict: boolean = true
+) =>
   function auth(req, res, next) {
     if (req.user) return next();
     return passport.authenticate(type, (err, user) => {
@@ -55,7 +68,9 @@ const authenticate = (type, error, isStrict = true) =>
         });
       }
       if (user && user.banned) {
-        return res.status(400).json({ error: 'Your are banned from using this website.' });
+        return res
+          .status(400)
+          .json({ error: 'Your are banned from using this website.' });
       }
       if (user) {
         req.user = {
@@ -68,13 +83,20 @@ const authenticate = (type, error, isStrict = true) =>
     })(req, res, next);
   };
 
-exports.authLocal = authenticate('local', 'Login email and/or password are wrong.');
-exports.authJwt = authenticate('jwt', 'Unauthorized.');
-exports.authJwtLoose = authenticate('jwt', 'Unauthorized.', false);
-exports.authApikey = authenticate('localapikey', 'API key is not correct.', false);
+export const authLocal = authenticate(
+  'local',
+  'Login email and/or password are wrong.'
+);
+export const authJwt = authenticate('jwt', 'Unauthorized.');
+export const authJwtLoose = authenticate('jwt', 'Unauthorized.', false);
+export const authApikey = authenticate(
+  'localapikey',
+  'API key is not correct.',
+  false
+);
 
 /* reCaptcha controller */
-exports.recaptcha = async (req, res, next) => {
+export const recaptcha: RequestHandler = async (req, res, next) => {
   if (process.env.NODE_ENV === 'production' && !req.user) {
     const isReCaptchaValid = await axios({
       method: 'post',
@@ -85,58 +107,79 @@ exports.recaptcha = async (req, res, next) => {
       params: {
         secret: process.env.RECAPTCHA_SECRET_KEY,
         response: req.body.reCaptchaToken,
-        remoteip: req.realIp,
+        remoteip: req.realIP,
       },
     });
     if (!isReCaptchaValid.data.success) {
-      return res.status(401).json({ error: 'reCAPTCHA is not valid. Try again.' });
+      return res
+        .status(401)
+        .json({ error: 'reCAPTCHA is not valid. Try again.' });
     }
   }
   return next();
 };
 
-exports.authAdmin = async (req, res, next) => {
+export const authAdmin: RequestHandler = async (req, res, next) => {
   if (!req.user.admin) {
     return res.status(401).json({ error: 'Unauthorized.' });
   }
   return next();
 };
 
-exports.signup = async (req, res) => {
+export const signup: RequestHandler = async (req, res) => {
   const { email, password } = req.body;
+
   if (password.length > 64) {
     return res.status(400).json({ error: 'Maximum password length is 64.' });
   }
+
   if (email.length > 64) {
     return res.status(400).json({ error: 'Maximum email length is 64.' });
   }
+
   const user = await getUser(email);
-  if (user && user.verified) return res.status(403).json({ error: 'Email is already in use.' });
+
+  if (user && user.verified)
+    return res.status(403).json({ error: 'Email is already in use.' });
+
   const newUser = await createUser(email, password);
+
   const mail = await transporter.sendMail({
     from: process.env.MAIL_FROM || process.env.MAIL_USER,
     to: newUser.email,
     subject: 'Verify your account',
-    text: verifyMailText.replace(/{{verification}}/gim, newUser.verificationToken),
-    html: verifyEmailTemplate.replace(/{{verification}}/gim, newUser.verificationToken),
+    text: verifyMailText.replace(
+      /{{verification}}/gim,
+      newUser.verificationToken
+    ),
+    html: verifyEmailTemplate.replace(
+      /{{verification}}/gim,
+      newUser.verificationToken
+    ),
   });
+
   if (mail.accepted.length) {
-    return res.status(201).json({ email, message: 'Verification email has been sent.' });
+    return res
+      .status(201)
+      .json({ email, message: 'Verification email has been sent.' });
   }
-  return res.status(400).json({ error: "Couldn't send verification email. Try again." });
+
+  return res
+    .status(400)
+    .json({ error: "Couldn't send verification email. Try again." });
 };
 
-exports.login = ({ user }, res) => {
-  const token = signToken(user);
+export const login: RequestHandler = (req, res) => {
+  const token = signToken(req.user);
   return res.status(200).json({ token });
 };
 
-exports.renew = ({ user }, res) => {
-  const token = signToken(user);
+export const renew: RequestHandler = (req, res) => {
+  const token = signToken(req.user);
   return res.status(200).json({ token });
 };
 
-exports.verify = async (req, res, next) => {
+export const verify: RequestHandler = async (req, _res, next) => {
   const user = await verifyUser(req.params.verificationToken);
   if (user) {
     const token = signToken(user);
@@ -145,41 +188,56 @@ exports.verify = async (req, res, next) => {
   return next();
 };
 
-exports.changePassword = async ({ body: { password }, user }, res) => {
-  if (password.length < 8) {
-    return res.status(400).json({ error: 'Password must be at least 8 chars long.' });
+export const changeUserPassword: RequestHandler = async (req, res) => {
+  if (req.body.password.length < 8) {
+    return res
+      .status(400)
+      .json({ error: 'Password must be at least 8 chars long.' });
   }
-  if (password.length > 64) {
+
+  if (req.body.password.length > 64) {
     return res.status(400).json({ error: 'Maximum password length is 64.' });
   }
-  const changedUser = await changePassword(user._id, password);
+
+  const changedUser = await changePassword(req.user._id, req.body.password);
+
   if (changedUser) {
-    return res.status(200).json({ message: 'Your password has been changed successfully.' });
+    return res
+      .status(200)
+      .json({ message: 'Your password has been changed successfully.' });
   }
-  return res.status(400).json({ error: "Couldn't change the password. Try again later" });
+
+  return res
+    .status(400)
+    .json({ error: "Couldn't change the password. Try again later" });
 };
 
-exports.generateApiKey = async (req, res) => {
+export const generateUserApiKey: RequestHandler = async (req, res) => {
   const user = await generateApiKey(req.user._id);
+
   if (user.apikey) {
     return res.status(201).json({ apikey: user.apikey });
   }
-  return res.status(400).json({ error: 'Sorry, an error occured. Please try again later.' });
+
+  return res
+    .status(400)
+    .json({ error: 'Sorry, an error occured. Please try again later.' });
 };
 
-exports.userSettings = ({ user }, res) =>
+export const userSettings: RequestHandler = (req, res) =>
   res.status(200).json({
-    apikey: user.apikey || '',
-    customDomain: user.domain || '',
-    homepage: user.homepage || '',
-    useHttps: user.useHttps || false,
+    apikey: req.user.apikey || '',
+    customDomain: req.user.domain || '',
+    homepage: req.user.homepage || '',
   });
 
-exports.requestPasswordReset = async (req, res) => {
+export const requestUserPasswordReset: RequestHandler = async (req, res) => {
   const user = await requestPasswordReset(req.body.email);
+
   if (!user) {
     return res.status(400).json({ error: "Couldn't reset password." });
   }
+
   const mail = await transporter.sendMail({
     from: process.env.MAIL_USER,
     to: user.email,
@@ -191,15 +249,18 @@ exports.requestPasswordReset = async (req, res) => {
       .replace(/{{resetpassword}}/gm, user.resetPasswordToken)
       .replace(/{{domain}}/gm, process.env.DEFAULT_DOMAIN),
   });
+
   if (mail.accepted.length) {
-    return res
-      .status(200)
-      .json({ email: user.email, message: 'Reset password email has been sent.' });
+    return res.status(200).json({
+      email: user.email,
+      message: 'Reset password email has been sent.',
+    });
   }
+
   return res.status(400).json({ error: "Couldn't reset password." });
 };
 
-exports.resetPassword = async (req, res, next) => {
+export const resetUserPassword: RequestHandler = async (req, _res, next) => {
   const user = await resetPassword(req.params.resetPasswordToken);
   if (user) {
     const token = signToken(user);

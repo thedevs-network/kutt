@@ -1,15 +1,19 @@
 /* eslint-disable global-require */
-/* eslint-disable import/no-unresolved */
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 const hasServerConfig = fs.existsSync(path.resolve(__dirname, 'config.js'));
-const hasClientConfig = fs.existsSync(path.resolve(__dirname, '../client/config.js'));
+const hasClientConfig = fs.existsSync(
+  path.resolve(__dirname, '../client/config.js')
+);
 
 if (hasServerConfig && hasClientConfig) {
   const serverConfig = require('./config.js');
   const clientConfig = require('../client/config.js');
-  let envTemplate = fs.readFileSync(path.resolve(__dirname, '../.template.env'), 'utf-8');
+  let envTemplate = fs.readFileSync(
+    path.resolve(__dirname, '../.template.env'),
+    'utf-8'
+  );
 
   const configs = {
     PORT: serverConfig.PORT || 3000,
@@ -40,11 +44,17 @@ if (hasServerConfig && hasClientConfig) {
   };
 
   Object.keys(configs).forEach(c => {
-    envTemplate = envTemplate.replace(new RegExp(`{{${c}}}`, 'gm'), configs[c] || '');
+    envTemplate = envTemplate.replace(
+      new RegExp(`{{${c}}}`, 'gm'),
+      configs[c] || ''
+    );
   });
 
   fs.writeFileSync(path.resolve(__dirname, '../.env'), envTemplate);
-  fs.renameSync(path.resolve(__dirname, 'config.js'), path.resolve(__dirname, 'old.config.js'));
+  fs.renameSync(
+    path.resolve(__dirname, 'config.js'),
+    path.resolve(__dirname, 'old.config.js')
+  );
   fs.renameSync(
     path.resolve(__dirname, '../client/config.js'),
     path.resolve(__dirname, '../client/old.config.js')

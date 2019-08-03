@@ -126,8 +126,8 @@ class Stats extends Component {
         <TitleWrapper>
           <Title>
             Stats for:{' '}
-            <a href={stats.shortUrl} title="Short URL">
-              {stats.shortUrl.replace(/https?:\/\//, '')}
+            <a href={stats.shortLink} title="Short link">
+              {stats.shortLink.replace(/https?:\/\//, '')}
             </a>
           </Title>
           <TitleTarget>

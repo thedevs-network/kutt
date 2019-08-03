@@ -1,10 +1,10 @@
-const passport = require('passport');
-const JwtStrategy = require('passport-jwt').Strategy;
-const { ExtractJwt } = require('passport-jwt');
-const LocalStratergy = require('passport-local').Strategy;
-const LocalAPIKeyStrategy = require('passport-localapikey-update').Strategy;
-const bcrypt = require('bcryptjs');
-const { getUser } = require('./db/user');
+import passport  from 'passport';
+import { Strategy as JwtStrategy, ExtractJwt }  from 'passport-jwt';
+import { Strategy as LocalStratergy }  from 'passport-local';
+import { Strategy as LocalAPIKeyStrategy }  from 'passport-localapikey-update';
+import bcrypt  from 'bcryptjs';
+
+import { getUser }  from './db/user';
 
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromHeader('authorization'),

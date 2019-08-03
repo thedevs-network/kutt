@@ -25,12 +25,12 @@ const Icon = styled.img`
 const TBodyShortUrl = ({ index, copiedIndex, handleCopy, url }) => (
   <Wrapper>
     {copiedIndex === index && <CopyText>Copied to clipboard!</CopyText>}
-    <CopyToClipboard onCopy={() => handleCopy(index)} text={`${url.shortUrl}`}>
+    <CopyToClipboard onCopy={() => handleCopy(index)} text={`${url.shortLink}`}>
       <TBodyButton>
         <Icon src="/images/copy.svg" />
       </TBodyButton>
     </CopyToClipboard>
-    <a href={`${url.shortUrl}`}>{`${url.shortUrl.replace(/^https?:\/\//, '')}`}</a>
+    <a href={`${url.shortLink}`}>{`${url.shortLink.replace(/^https?:\/\//, '')}`}</a>
   </Wrapper>
 );
 
