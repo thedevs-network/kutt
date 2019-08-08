@@ -99,7 +99,7 @@ class ReportPage extends Component {
           </p>
           <p>{(process.env.REPORT_EMAIL || '').replace('@', '[at]')}</p>
           <p>
-            <b>URL containting malware/scam:</b>
+            <b>URL containing malware/scam:</b>
           </p>
           <Form onSubmit={this.onSubmit}>
             <TextInput
