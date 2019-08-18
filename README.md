@@ -126,6 +126,9 @@ You can use Kutt as your default URL shortener in [ShareX](https://getsharex.com
 ### Alfred Workflow
 Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app from [alfred-kutt](https://github.com/thedevs-network/alfred-kutt) repository.
 
+### Visual Studio Code
+You can download [Kutt for VSCode](https://github.com/mehrad77/kutt-vscode) from [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=mehrad.kutt). 
+
 ## 3rd Party API packages
 | Language  | Link                                                       | Description                                       |
 |-----------|------------------------------------------------------------|---------------------------------------------------|
