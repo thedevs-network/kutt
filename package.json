@@ -8,7 +8,7 @@
     "docker:build": "docker build -t kutt .",
     "docker:run": "docker run -p 3000:3000 --env-file .env -d kutt:latest",
     "dev": "nodemon server/server.ts",
-    "build": "next build && tsc --project tsconfig.server.json",
+    "build": "next build client/ && tsc --project tsconfig.server.json",
     "start": "NODE_ENV=production node production-server/server.js",
     "lint": "eslint server/ --ext .js,.ts --fix",
     "lint:nofix": "eslint server/ --ext .js,.ts"
@@ -46,6 +46,7 @@
     "@types/passport": "^0.4.7",
     "@types/passport-jwt": "^3.0.1",
     "@types/redis": "^2.8.10",
+    "@zeit/next-typescript": "^1.1.1",
     "axios": "^0.19.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.4",

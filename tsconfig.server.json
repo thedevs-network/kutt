@@ -1,11 +1,16 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "module": "commonjs",
-    "noEmit": false,
-    "outDir": "production-server/",
-    "sourceMap": false
+		"target": "es2018",
+		"module": "commonjs",
+		"sourceMap": true,
+		"outDir": "production-server",
+		"noUnusedLocals": true,
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"noEmit": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,		
+		"strict": false
   },
-  "include": ["server/**/*.ts", "index.d.ts"]
+  "include": ["server"]
 }

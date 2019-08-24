@@ -16,6 +16,8 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "esnext",
-    "typeRoots": ["./node_modules/@types"]
-  }
+    "typeRoots": ["./node_modules/@types"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true    
+  },
 }
