@@ -73,7 +73,7 @@ exports.createVisit = async params => {
   const { records = [] } = await session.writeTransaction(tx =>
     tx.run(
       'MATCH (l:URL { id: $id }) WHERE l.count < $limit' +
-        `${params.domain ? 'MATCH (l)-[:USES]->({ name: $domain })' : ''} ` +
+        `${params.domain ? ' MATCH (l)-[:USES]->({ name: $domain })' : ''} ` +
         'CREATE (v:VISIT)' +
         'MERGE (b:BROWSER { browser: $browser })' +
         'MERGE (c:COUNTRY { country: $country })' +
