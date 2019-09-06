@@ -182,7 +182,7 @@ exports.requestPasswordReset = async ({ body: { email } }, res) => {
     return res.status(400).json({ error: "Couldn't reset password." });
   }
   const mail = await transporter.sendMail({
-    from: process.env.MAIL_USER,
+    from: process.env.MAIL_FROM || process.env.MAIL_USER,
     to: user.email,
     subject: 'Reset your password',
     text: resetMailText

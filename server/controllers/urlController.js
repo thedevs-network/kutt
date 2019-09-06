@@ -314,7 +314,7 @@ exports.reportUrl = async ({ body: { url } }, res) => {
   if (!isValidUrl) return res.status(400).json({ error: 'URL is not valid.' });
 
   const mail = await transporter.sendMail({
-    from: process.env.MAIL_USER,
+    from: process.env.MAIL_FROM || process.env.MAIL_USER,
     to: process.env.REPORT_MAIL,
     subject: '[REPORT]',
     text: url,
