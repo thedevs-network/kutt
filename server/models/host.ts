@@ -1,23 +1,23 @@
-import { Document, model, Schema, Types } from 'mongoose';
+import * as Knex from "knex";
 
-export interface IHost extends Document {
-  address: string;
-  banned?: boolean;
-  bannedBy?: Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-  user?: Types.ObjectId;
+export async function createHostTable(knex: Knex) {
+  const hasTable = await knex.schema.hasTable("hosts");
+  if (!hasTable) {
+    await knex.schema.createTable("hosts", table => {
+      table.increments("id").primary();
+      table
+        .string("address")
+        .unique()
+        .notNullable();
+      table
+        .boolean("banned")
+        .notNullable()
+        .defaultTo(false);
+      table
+        .integer("banned_by_id")
+        .references("id")
+        .inTable("users");
+      table.timestamps(false, true);
+    });
+  }
 }
-
-const HostSchema: Schema = new Schema({
-  address: { type: String, unique: true, trim: true, required: true },
-  banned: { type: Boolean, default: false },
-  bannedBy: { type: Schema.Types.ObjectId, ref: 'user' },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-  user: { type: Schema.Types.ObjectId, ref: 'user' },
-});
-
-const Host = model<IHost>('host', HostSchema);
-
-export default Host;

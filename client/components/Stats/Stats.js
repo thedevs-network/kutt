@@ -85,10 +85,10 @@ class Stats extends Component {
   }
 
   componentDidMount() {
-    const { id } = this.props;
+    const { domain, id } = this.props;
     if (!id) return null;
     return axios
-      .get(`/api/url/stats?id=${id}`, { headers: { Authorization: cookie.get('token') } })
+      .get(`/api/url/stats?id=${id}&domain=${domain}`, { headers: { Authorization: cookie.get('token') } })
       .then(({ data }) =>
         this.setState({
           stats: data,
@@ -155,6 +155,7 @@ class Stats extends Component {
 
 Stats.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
+  domain: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   showPageLoading: PropTypes.func.isRequired,
 };

@@ -1,32 +1,35 @@
-import { Document, model, Schema, Types } from 'mongoose';
-import { IDomain } from './domain';
+import * as Knex from "knex";
 
-export interface ILink extends Document {
-  banned?: boolean;
-  bannedBy?: Types.ObjectId;
-  count?: number;
-  createdAt?: Date;
-  domain?: Types.ObjectId | IDomain;
-  id: string;
-  password?: string;
-  target: string;
-  updatedAt?: Date;
-  user?: Types.ObjectId;
+export async function createLinkTable(knex: Knex) {
+  const hasTable = await knex.schema.hasTable("links");
+
+  if (!hasTable) {
+    await knex.schema.createTable("links", table => {
+      table.increments("id").primary();
+      table.string("address").notNullable();
+      table
+        .boolean("banned")
+        .notNullable()
+        .defaultTo(false);
+      table
+        .integer("banned_by_id")
+        .references("id")
+        .inTable("users");
+      table
+        .integer("domain_id")
+        .references("id")
+        .inTable("domains");
+      table.string("password");
+      table.string("target").notNullable();
+      table
+        .integer("user_id")
+        .references("id")
+        .inTable("users");
+      table
+        .integer("visit_count")
+        .notNullable()
+        .defaultTo(0);
+      table.timestamps(false, true);
+    });
+  }
 }
-
-const LinkSchema: Schema = new Schema({
-  banned: { type: Boolean, default: false },
-  bannedBy: { type: Schema.Types.ObjectId, ref: 'user' },
-  count: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now },
-  domain: { type: Schema.Types.ObjectId, ref: 'domain' },
-  id: { type: String, required: true, trim: true },
-  password: { type: String, trim: true },
-  target: { type: String, required: true },
-  updatedAt: { type: Date, default: Date.now },
-  user: { type: Schema.Types.ObjectId, ref: 'user' },
-});
-
-const Link = model<ILink>('link', LinkSchema);
-
-export default Link;

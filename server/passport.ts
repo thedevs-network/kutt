@@ -1,14 +1,14 @@
-import passport  from 'passport';
-import { Strategy as JwtStrategy, ExtractJwt }  from 'passport-jwt';
-import { Strategy as LocalStratergy }  from 'passport-local';
-import { Strategy as LocalAPIKeyStrategy }  from 'passport-localapikey-update';
-import bcrypt  from 'bcryptjs';
+import passport from "passport";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import { Strategy as LocalStratergy } from "passport-local";
+import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey-update";
+import bcrypt from "bcryptjs";
 
-import { getUser }  from './db/user';
+import { getUser } from "./db/user";
 
 const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-  secretOrKey: process.env.JWT_SECRET,
+  jwtFromRequest: ExtractJwt.fromHeader("authorization"),
+  secretOrKey: process.env.JWT_SECRET
 };
 
 passport.use(
@@ -24,7 +24,7 @@ passport.use(
 );
 
 const localOptions = {
-  usernameField: 'email',
+  usernameField: "email"
 };
 
 passport.use(
@@ -46,8 +46,8 @@ passport.use(
 );
 
 const localAPIKeyOptions = {
-  apiKeyField: 'apikey',
-  apiKeyHeader: 'x-api-key',
+  apiKeyField: "apikey",
+  apiKeyHeader: "x-api-key"
 };
 
 passport.use(

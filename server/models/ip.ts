@@ -1,17 +1,15 @@
-import { Document, model, Schema } from 'mongoose';
+import * as Knex from "knex";
 
-export interface IIP extends Document {
-  createdAt?: Date;
-  updatedAt?: Date;
-  ip: string;
+export async function createIPTable(knex: Knex) {
+  const hasTable = await knex.schema.hasTable("ips");
+  if (!hasTable) {
+    await knex.schema.createTable("ips", table => {
+      table.increments("id").primary();
+      table
+        .string("ip")
+        .unique()
+        .notNullable();
+      table.timestamps(false, true);
+    });
+  }
 }
-
-const IpSchema: Schema = new Schema({
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-  ip: { type: String, required: true, trim: true },
-});
-
-const IP = model<IIP>('ip', IpSchema);
-
-export default IP;

@@ -4,23 +4,25 @@ import BodyWrapper from '../components/BodyWrapper';
 import Stats from '../components/Stats';
 import { authUser } from '../actions';
 
-const StatsPage = ({ id }) => (
+const StatsPage = ({ domain, id }) => (
   <BodyWrapper>
-    <Stats id={id} />
+    <Stats domain={domain} id={id} />
   </BodyWrapper>
 );
 
 StatsPage.getInitialProps = ({ req, reduxStore, query }) => {
   const token = req && req.cookies && req.cookies.token;
   if (token && reduxStore) reduxStore.dispatch(authUser(token));
-  return { id: query && query.id };
+  return query;
 };
 
 StatsPage.propTypes = {
+  domain: PropTypes.string,
   id: PropTypes.string,
 };
 
 StatsPage.defaultProps = {
+  domain: '',
   id: '',
 };
 

@@ -93,15 +93,15 @@ class Table extends Component {
     }, 1500);
   }
 
-  showModal(e) {
-    e.preventDefault();
-    const modalUrlId = e.currentTarget.dataset.id;
-    const modalUrlDomain = e.currentTarget.dataset.host;
-    this.setState({
-      modalUrlId,
-      modalUrlDomain,
-      showModal: true,
-    });
+  showModal(url) {
+    return e => {
+      e.preventDefault();
+      this.setState({
+        modalUrlId: url.address,
+        modalUrlDomain: url.domain,
+        showModal: true,
+      });
+    }
   }
 
   closeModal() {

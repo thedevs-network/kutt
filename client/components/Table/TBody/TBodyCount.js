@@ -50,9 +50,9 @@ class TBodyCount extends Component {
 
   goTo(e) {
     e.preventDefault();
+    const { id, domain } = this.props.url;
     this.props.showLoading();
-    const host = URL.parse(this.props.url.shortLink).hostname;
-    Router.push(`/stats?id=${this.props.url.id}${`&domain=${host}`}`);
+    Router.push(`/stats?id=${id}${domain ? `&domain=${domain}`: ''}`);
   }
 
   render() {
@@ -61,10 +61,10 @@ class TBodyCount extends Component {
 
     return (
       <Wrapper>
-        {url.count || 0}
+        {url.visit_count || 0}
         <Actions>
           {url.password && <Icon src="/images/lock.svg" lowopacity />}
-          {url.count > 0 && (
+          {url.visit_count > 0 && (
             <TBodyButton withText onClick={this.goTo}>
               <Icon src="/images/chart.svg" />
               Stats

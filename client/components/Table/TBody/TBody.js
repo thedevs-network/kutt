@@ -93,13 +93,13 @@ const TableBody = ({ copiedIndex, handleCopy, tableLoading, showModal, urls }) =
         <a href={url.target}>{url.target}</a>
       </Td>
       <Td flex="1" date>
-        {`${distanceInWordsToNow(url.createdAt)} ago`}
+        {`${distanceInWordsToNow(url.created_at)} ago`}
       </Td>
       <Td flex="1" withFade>
         <TBodyShortUrl index={index} copiedIndex={copiedIndex} handleCopy={handleCopy} url={url} />
       </Td>
       <Td flex="1">
-        <TBodyCount url={url} showModal={showModal} />
+        <TBodyCount url={url} showModal={showModal(url)} />
       </Td>
     </tr>
   );

@@ -1,37 +1,36 @@
-import { RequestHandler } from 'express';
-import { promisify } from 'util';
-import dns from 'dns';
-import axios from 'axios';
-import URL from 'url';
-import urlRegex from 'url-regex';
-import validator from 'express-validator/check';
-import { differenceInMinutes, subHours, subDays } from 'date-fns';
-import { validationResult } from 'express-validator/check';
+import { RequestHandler } from "express";
+import { promisify } from "util";
+import dns from "dns";
+import axios from "axios";
+import URL from "url";
+import urlRegex from "url-regex";
+import validator from "express-validator/check";
+import { differenceInMinutes, subHours, subDays, isAfter } from "date-fns";
+import { validationResult } from "express-validator/check";
 
-import { IUser } from '../models/user';
-import { addCooldown, banUser } from '../db/user';
-import { getIP } from '../db/ip';
-import { getUserLinksCount } from '../db/link';
-import { getDomain } from '../db/domain';
-import { getHost } from '../db/host';
-import { addProtocol } from '../utils';
+import { addCooldown, banUser } from "../db/user";
+import { getIP } from "../db/ip";
+import { getUserLinksCount } from "../db/link";
+import { getDomain } from "../db/domain";
+import { getHost } from "../db/host";
+import { addProtocol } from "../utils";
 
 const dnsLookup = promisify(dns.lookup);
 
 export const validationCriterias = [
   validator
-    .body('email')
+    .body("email")
     .exists()
-    .withMessage('Email must be provided.')
+    .withMessage("Email must be provided.")
     .isEmail()
-    .withMessage('Email is not valid.')
+    .withMessage("Email is not valid.")
     .trim()
     .normalizeEmail(),
   validator
-    .body('password', 'Password must be at least 8 chars long.')
+    .body("password", "Password must be at least 8 chars long.")
     .exists()
-    .withMessage('Password must be provided.')
-    .isLength({ min: 8 }),
+    .withMessage("Password must be provided.")
+    .isLength({ min: 8 })
 ];
 
 export const validateBody = (req, res, next) => {
@@ -46,35 +45,35 @@ export const validateBody = (req, res, next) => {
 };
 
 export const preservedUrls = [
-  'login',
-  'logout',
-  'signup',
-  'reset-password',
-  'resetpassword',
-  'url-password',
-  'url-info',
-  'settings',
-  'stats',
-  'verify',
-  'api',
-  '404',
-  'static',
-  'images',
-  'banned',
-  'terms',
-  'privacy',
-  'report',
-  'pricing',
+  "login",
+  "logout",
+  "signup",
+  "reset-password",
+  "resetpassword",
+  "url-password",
+  "url-info",
+  "settings",
+  "stats",
+  "verify",
+  "api",
+  "404",
+  "static",
+  "images",
+  "banned",
+  "terms",
+  "privacy",
+  "report",
+  "pricing"
 ];
 
 export const validateUrl: RequestHandler = async (req, res, next) => {
   // Validate URL existence
   if (!req.body.target)
-    return res.status(400).json({ error: 'No target has been provided.' });
+    return res.status(400).json({ error: "No target has been provided." });
 
   // validate URL length
   if (req.body.target.length > 3000) {
-    return res.status(400).json({ error: 'Maximum URL length is 3000.' });
+    return res.status(400).json({ error: "Maximum URL length is 3000." });
   }
 
   // Validate URL
@@ -82,7 +81,7 @@ export const validateUrl: RequestHandler = async (req, res, next) => {
     req.body.target
   );
   if (!isValidUrl && !/^\w+:\/\//.test(req.body.target))
-    return res.status(400).json({ error: 'URL is not valid.' });
+    return res.status(400).json({ error: "URL is not valid." });
 
   // If target is the URL shortener itself
   const { host } = URL.parse(addProtocol(req.body.target));
@@ -94,14 +93,14 @@ export const validateUrl: RequestHandler = async (req, res, next) => {
 
   // Validate password length
   if (req.body.password && req.body.password.length > 64) {
-    return res.status(400).json({ error: 'Maximum password length is 64.' });
+    return res.status(400).json({ error: "Maximum password length is 64." });
   }
 
   // Custom URL validations
   if (req.user && req.body.customurl) {
     // Validate custom URL
     if (!/^[a-zA-Z0-9-_]+$/g.test(req.body.customurl.trim())) {
-      return res.status(400).json({ error: 'Custom URL is not valid.' });
+      return res.status(400).json({ error: "Custom URL is not valid." });
     }
 
     // Prevent from using preserved URLs
@@ -115,24 +114,24 @@ export const validateUrl: RequestHandler = async (req, res, next) => {
     if (req.body.customurl.length > 64) {
       return res
         .status(400)
-        .json({ error: 'Maximum custom URL length is 64.' });
+        .json({ error: "Maximum custom URL length is 64." });
     }
   }
 
   return next();
 };
 
-export const cooldownCheck = async (user: IUser) => {
+export const cooldownCheck = async (user: User) => {
   if (user && user.cooldowns) {
     if (user.cooldowns.length > 4) {
-      await banUser(user._id);
-      throw new Error('Too much malware requests. You are now banned.');
+      await banUser(user.id);
+      throw new Error("Too much malware requests. You are now banned.");
     }
-    const hasCooldownNow = user.cooldowns.some(
-      cooldown => cooldown.toJSON() > subHours(new Date(), 12).toJSON()
+    const hasCooldownNow = user.cooldowns.some(cooldown =>
+      isAfter(subHours(new Date(), 12), cooldown)
     );
     if (hasCooldownNow) {
-      throw new Error('Cooldown because of a malware URL. Wait 12h');
+      throw new Error("Cooldown because of a malware URL. Wait 12h");
     }
   }
 };
@@ -143,72 +142,68 @@ export const ipCooldownCheck: RequestHandler = async (req, res, next) => {
   const ip = await getIP(req.realIP);
   if (ip) {
     const timeToWait =
-      cooldownConfig - differenceInMinutes(new Date(), ip.createdAt);
+      cooldownConfig - differenceInMinutes(new Date(), ip.created_at);
     return res.status(400).json({
       error:
         `Non-logged in users are limited. Wait ${timeToWait} ` +
-        'minutes or log in.',
+        "minutes or log in."
     });
   }
   next();
 };
 
-export const malwareCheck = async (user: IUser, target: string) => {
+export const malwareCheck = async (user: User, target: string) => {
   const isMalware = await axios.post(
-    `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${
-      process.env.GOOGLE_SAFE_BROWSING_KEY
-    }`,
+    `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${process.env.GOOGLE_SAFE_BROWSING_KEY}`,
     {
       client: {
-        clientId: process.env.DEFAULT_DOMAIN.toLowerCase().replace('.', ''),
-        clientVersion: '1.0.0',
+        clientId: process.env.DEFAULT_DOMAIN.toLowerCase().replace(".", ""),
+        clientVersion: "1.0.0"
       },
       threatInfo: {
         threatTypes: [
-          'THREAT_TYPE_UNSPECIFIED',
-          'MALWARE',
-          'SOCIAL_ENGINEERING',
-          'UNWANTED_SOFTWARE',
-          'POTENTIALLY_HARMFUL_APPLICATION',
+          "THREAT_TYPE_UNSPECIFIED",
+          "MALWARE",
+          "SOCIAL_ENGINEERING",
+          "UNWANTED_SOFTWARE",
+          "POTENTIALLY_HARMFUL_APPLICATION"
         ],
-        platformTypes: ['ANY_PLATFORM', 'PLATFORM_TYPE_UNSPECIFIED'],
+        platformTypes: ["ANY_PLATFORM", "PLATFORM_TYPE_UNSPECIFIED"],
         threatEntryTypes: [
-          'EXECUTABLE',
-          'URL',
-          'THREAT_ENTRY_TYPE_UNSPECIFIED',
+          "EXECUTABLE",
+          "URL",
+          "THREAT_ENTRY_TYPE_UNSPECIFIED"
         ],
-        threatEntries: [{ url: target }],
-      },
+        threatEntries: [{ url: target }]
+      }
     }
   );
   if (isMalware.data && isMalware.data.matches) {
     if (user) {
-      await addCooldown(user._id);
+      await addCooldown(user.id);
     }
     throw new Error(
-      user ? 'Malware detected! Cooldown for 12h.' : 'Malware detected!'
+      user ? "Malware detected! Cooldown for 12h." : "Malware detected!"
     );
   }
 };
 
-export const urlCountsCheck = async (user: IUser) => {
+export const urlCountsCheck = async (user: User) => {
   const count = await getUserLinksCount({
-    user: user._id,
-    date: subDays(new Date(), 1),
+    user_id: user.id,
+    date: subDays(new Date(), 1)
   });
   if (count > Number(process.env.USER_LIMIT_PER_DAY)) {
     throw new Error(
-      `You have reached your daily limit (${
-        process.env.USER_LIMIT_PER_DAY
-      }). Please wait 24h.`
+      `You have reached your daily limit (${process.env.USER_LIMIT_PER_DAY}). Please wait 24h.`
     );
   }
 };
 
 export const checkBannedDomain = async (domain: string) => {
-  const bannedDomain = await getDomain({ name: domain, banned: true });
+  const bannedDomain = await getDomain({ address: domain, banned: true });
   if (bannedDomain) {
-    throw new Error('URL is containing malware/scam.');
+    throw new Error("URL is containing malware/scam.");
   }
 };
 
@@ -218,12 +213,12 @@ export const checkBannedHost = async (domain: string) => {
     const dnsRes = await dnsLookup(domain);
     isHostBanned = await getHost({
       address: dnsRes && dnsRes.address,
-      banned: true,
+      banned: true
     });
   } catch (error) {
     isHostBanned = null;
   }
   if (isHostBanned) {
-    throw new Error('URL is containing malware/scam.');
+    throw new Error("URL is containing malware/scam.");
   }
 };

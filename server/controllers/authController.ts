@@ -1,13 +1,14 @@
-import { RequestHandler } from 'express';
-import fs from 'fs';
-import path from 'path';
-import passport from 'passport';
-import JWT from 'jsonwebtoken';
-import axios from 'axios';
+import { Handler } from "express";
+import fs from "fs";
+import path from "path";
+import passport from "passport";
+import JWT from "jsonwebtoken";
+import axios from "axios";
+import { addDays } from "date-fns";
 
-import { isAdmin } from '../utils';
-import transporter from '../mail/mail';
-import { resetMailText, verifyMailText } from '../mail/text';
+import { isAdmin } from "../utils";
+import transporter from "../mail/mail";
+import { resetMailText, verifyMailText } from "../mail/text";
 import {
   createUser,
   changePassword,
@@ -15,45 +16,44 @@ import {
   getUser,
   verifyUser,
   requestPasswordReset,
-  resetPassword,
-} from '../db/user';
-import { IUser } from '../models/user';
+  resetPassword
+} from "../db/user";
 
 /* Read email template */
 const resetEmailTemplatePath = path.join(
   __dirname,
-  '../mail/template-reset.html'
+  "../mail/template-reset.html"
 );
 const verifyEmailTemplatePath = path.join(
   __dirname,
-  '../mail/template-verify.html'
+  "../mail/template-verify.html"
 );
 const resetEmailTemplate = fs
-  .readFileSync(resetEmailTemplatePath, { encoding: 'utf-8' })
+  .readFileSync(resetEmailTemplatePath, { encoding: "utf-8" })
   .replace(/{{domain}}/gm, process.env.DEFAULT_DOMAIN);
 const verifyEmailTemplate = fs
-  .readFileSync(verifyEmailTemplatePath, { encoding: 'utf-8' })
+  .readFileSync(verifyEmailTemplatePath, { encoding: "utf-8" })
   .replace(/{{domain}}/gm, process.env.DEFAULT_DOMAIN);
 
 /* Function to generate JWT */
-const signToken = (user: IUser) =>
+const signToken = (user: UserJoined) =>
   JWT.sign(
     {
-      iss: 'ApiAuth',
-      sub: () => user.email,
-      domain: (user.domain && user.domain.name) || '',
+      iss: "ApiAuth",
+      sub: user.email,
+      domain: user.domain || "",
       admin: isAdmin(user.email),
-      iat: new Date().getTime(),
-      exp: new Date().setDate(new Date().getDate() + 7),
-    },
+      iat: parseInt((new Date().getTime() / 1000).toFixed(0)),
+      exp: parseInt((addDays(new Date(), 7).getTime() / 1000).toFixed(0))
+    } as Record<string, any>,
     process.env.JWT_SECRET
   );
 
 /* Passport.js authentication controller */
 const authenticate = (
-  type: 'jwt' | 'local' | 'localapikey',
+  type: "jwt" | "local" | "localapikey",
   error: string,
-  isStrict: boolean = true
+  isStrict = true
 ) =>
   function auth(req, res, next) {
     if (req.user) return next();
@@ -63,19 +63,19 @@ const authenticate = (
       if (user && isStrict && !user.verified) {
         return res.status(400).json({
           error:
-            'Your email address is not verified.' +
-            'Click on signup to get the verification link again.',
+            "Your email address is not verified. " +
+            "Click on signup to get the verification link again."
         });
       }
       if (user && user.banned) {
         return res
           .status(400)
-          .json({ error: 'Your are banned from using this website.' });
+          .json({ error: "Your are banned from using this website." });
       }
       if (user) {
         req.user = {
           ...user,
-          admin: isAdmin(user.email),
+          admin: isAdmin(user.email)
         };
         return next();
       }
@@ -84,84 +84,85 @@ const authenticate = (
   };
 
 export const authLocal = authenticate(
-  'local',
-  'Login email and/or password are wrong.'
+  "local",
+  "Login email and/or password are wrong."
 );
-export const authJwt = authenticate('jwt', 'Unauthorized.');
-export const authJwtLoose = authenticate('jwt', 'Unauthorized.', false);
+export const authJwt = authenticate("jwt", "Unauthorized.");
+export const authJwtLoose = authenticate("jwt", "Unauthorized.", false);
 export const authApikey = authenticate(
-  'localapikey',
-  'API key is not correct.',
+  "localapikey",
+  "API key is not correct.",
   false
 );
 
 /* reCaptcha controller */
-export const recaptcha: RequestHandler = async (req, res, next) => {
-  if (process.env.NODE_ENV === 'production' && !req.user) {
+export const recaptcha: Handler = async (req, res, next) => {
+  if (process.env.NODE_ENV === "production" && !req.user) {
     const isReCaptchaValid = await axios({
-      method: 'post',
-      url: 'https://www.google.com/recaptcha/api/siteverify',
+      method: "post",
+      url: "https://www.google.com/recaptcha/api/siteverify",
       headers: {
-        'Content-type': 'application/x-www-form-urlencoded',
+        "Content-type": "application/x-www-form-urlencoded"
       },
       params: {
         secret: process.env.RECAPTCHA_SECRET_KEY,
         response: req.body.reCaptchaToken,
-        remoteip: req.realIP,
-      },
+        remoteip: req.realIP
+      }
     });
     if (!isReCaptchaValid.data.success) {
       return res
         .status(401)
-        .json({ error: 'reCAPTCHA is not valid. Try again.' });
+        .json({ error: "reCAPTCHA is not valid. Try again." });
     }
   }
   return next();
 };
 
-export const authAdmin: RequestHandler = async (req, res, next) => {
+export const authAdmin: Handler = async (req, res, next) => {
   if (!req.user.admin) {
-    return res.status(401).json({ error: 'Unauthorized.' });
+    return res.status(401).json({ error: "Unauthorized." });
   }
   return next();
 };
 
-export const signup: RequestHandler = async (req, res) => {
+export const signup: Handler = async (req, res) => {
   const { email, password } = req.body;
 
   if (password.length > 64) {
-    return res.status(400).json({ error: 'Maximum password length is 64.' });
+    return res.status(400).json({ error: "Maximum password length is 64." });
   }
 
-  if (email.length > 64) {
-    return res.status(400).json({ error: 'Maximum email length is 64.' });
+  if (email.length > 255) {
+    return res.status(400).json({ error: "Maximum email length is 255." });
   }
 
   const user = await getUser(email);
 
-  if (user && user.verified)
-    return res.status(403).json({ error: 'Email is already in use.' });
+  if (user && user.verified) {
+    return res.status(403).json({ error: "Email is already in use." });
+  }
 
-  const newUser = await createUser(email, password);
+  const newUser = await createUser(email, password, user);
 
   const mail = await transporter.sendMail({
     from: process.env.MAIL_FROM || process.env.MAIL_USER,
     to: newUser.email,
-    subject: 'Verify your account',
+    subject: "Verify your account",
     text: verifyMailText.replace(
       /{{verification}}/gim,
-      newUser.verificationToken
+      newUser.verification_token
     ),
     html: verifyEmailTemplate.replace(
       /{{verification}}/gim,
-      newUser.verificationToken
-    ),
+      newUser.verification_token
+    )
   });
 
   if (mail.accepted.length) {
     return res
       .status(201)
-      .json({ email, message: 'Verification email has been sent.' });
+      .json({ email, message: "Verification email has been sent." });
   }
 
   return res
@@ -169,42 +170,42 @@ export const signup: RequestHandler = async (req, res) => {
     .json({ error: "Couldn't send verification email. Try again." });
 };
 
-export const login: RequestHandler = (req, res) => {
+export const login: Handler = (req, res) => {
   const token = signToken(req.user);
   return res.status(200).json({ token });
 };
 
-export const renew: RequestHandler = (req, res) => {
+export const renew: Handler = (req, res) => {
   const token = signToken(req.user);
   return res.status(200).json({ token });
 };
 
-export const verify: RequestHandler = async (req, _res, next) => {
+export const verify: Handler = async (req, _res, next) => {
   const user = await verifyUser(req.params.verificationToken);
   if (user) {
     const token = signToken(user);
-    req.user = { token };
+    req.token = token;
   }
   return next();
 };
 
-export const changeUserPassword: RequestHandler = async (req, res) => {
+export const changeUserPassword: Handler = async (req, res) => {
   if (req.body.password.length < 8) {
     return res
       .status(400)
-      .json({ error: 'Password must be at least 8 chars long.' });
+      .json({ error: "Password must be at least 8 chars long." });
   }
 
   if (req.body.password.length > 64) {
-    return res.status(400).json({ error: 'Maximum password length is 64.' });
+    return res.status(400).json({ error: "Maximum password length is 64." });
   }
 
-  const changedUser = await changePassword(req.user._id, req.body.password);
+  const changedUser = await changePassword(req.user.id, req.body.password);
 
   if (changedUser) {
     return res
       .status(200)
-      .json({ message: 'Your password has been changed successfully.' });
+      .json({ message: "Your password has been changed successfully." });
   }
 
   return res
@@ -212,26 +213,26 @@ export const changeUserPassword: RequestHandler = async (req, res) => {
     .json({ error: "Couldn't change the password. Try again later" });
 };
 
-export const generateUserApiKey: RequestHandler = async (req, res) => {
-  const user = await generateApiKey(req.user._id);
+export const generateUserApiKey = async (req, res) => {
+  const apikey = await generateApiKey(req.user.id);
 
-  if (user.apikey) {
-    return res.status(201).json({ apikey: user.apikey });
+  if (apikey) {
+    return res.status(201).json({ apikey });
   }
 
   return res
     .status(400)
-    .json({ error: 'Sorry, an error occured. Please try again later.' });
+    .json({ error: "Sorry, an error occured. Please try again later." });
 };
 
-export const userSettings: RequestHandler = (req, res) =>
+export const userSettings: Handler = (req, res) =>
   res.status(200).json({
-    apikey: req.user.apikey || '',
-    customDomain: req.user.domain || '',
-    homepage: req.user.homepage || '',
+    apikey: req.user.apikey || "",
+    customDomain: req.user.domain || "",
+    homepage: req.user.homepage || ""
   });
 
-export const requestUserPasswordReset: RequestHandler = async (req, res) => {
+export const requestUserPasswordReset: Handler = async (req, res) => {
   const user = await requestPasswordReset(req.body.email);
 
   if (!user) {
@@ -241,30 +242,30 @@ export const requestUserPasswordReset: RequestHandler = async (req, res) => {
   const mail = await transporter.sendMail({
     from: process.env.MAIL_USER,
     to: user.email,
-    subject: 'Reset your password',
+    subject: "Reset your password",
     text: resetMailText
-      .replace(/{{resetpassword}}/gm, user.resetPasswordToken)
+      .replace(/{{resetpassword}}/gm, user.reset_password_token)
       .replace(/{{domain}}/gm, process.env.DEFAULT_DOMAIN),
     html: resetEmailTemplate
-      .replace(/{{resetpassword}}/gm, user.resetPasswordToken)
-      .replace(/{{domain}}/gm, process.env.DEFAULT_DOMAIN),
+      .replace(/{{resetpassword}}/gm, user.reset_password_token)
+      .replace(/{{domain}}/gm, process.env.DEFAULT_DOMAIN)
   });
 
   if (mail.accepted.length) {
     return res.status(200).json({
       email: user.email,
-      message: 'Reset password email has been sent.',
+      message: "Reset password email has been sent."
     });
   }
 
   return res.status(400).json({ error: "Couldn't reset password." });
 };
 
-export const resetUserPassword: RequestHandler = async (req, _res, next) => {
-  const user = await resetPassword(req.params.resetPasswordToken);
+export const resetUserPassword: Handler = async (req, _res, next) => {
+  const user: UserJoined = await resetPassword(req.params.resetPasswordToken);
   if (user) {
-    const token = signToken(user);
-    req.user = { token };
+    const token = signToken(user as UserJoined);
+    req.token = token;
   }
   return next();
 };

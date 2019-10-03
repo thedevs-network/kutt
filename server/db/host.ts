@@ -1,31 +1,51 @@
-import { Types } from 'mongoose';
+import knex from "../knex";
+import * as redis from "../redis";
+import { getRedisKey } from "../utils";
 
-import Host, { IHost } from '../models/host';
-import * as redis from '../redis';
+export const getHost = async (data: Partial<Host>) => {
+  const getData = {
+    ...data,
+    ...(data.address && { address: data.address.toLowerCase() })
+  };
 
-export const getHost = async (data: Partial<IHost>) => {
-  const redisKey = `${data.address}-${data.banned ? 'y' : 'n'}`;
+  const redisKey = getRedisKey.host(getData.address);
   const cachedHost = await redis.get(redisKey);
 
   if (cachedHost) return JSON.parse(cachedHost);
 
-  const host = await Host.findOne(data);
+  const host = await knex<Host>("hosts")
+    .where(getData)
+    .first();
 
-  redis.set(redisKey, JSON.stringify(host), 'EX', 60 * 60 * 6);
+  if (host) {
+    redis.set(redisKey, JSON.stringify(host), "EX", 60 * 60 * 6);
+  }
 
   return host;
 };
 
-export const banHost = async (address: string, bannedBy?: Types.ObjectId) => {
-  const host = await Host.findOneAndUpdate(
-    { address },
-    { banned: true, bannedBy },
-    { upsert: true }
-  );
+export const banHost = async (addressToBan: string, banned_by_id?: number) => {
+  const address = addressToBan.toLowerCase();
 
-  if (host) {
-    redis.del(`${host.address}-${host.banned ? 'y' : 'n'}`);
+  const currentHost = await knex<Host>("hosts")
+    .where({ address })
+    .first();
+
+  if (currentHost) {
+    await knex<Host>("hosts")
+      .where({ address })
+      .update({
+        banned: true,
+        banned_by_id,
+        updated_at: new Date().toISOString()
+      });
+  } else {
+    await knex<Host>("hosts").insert({ address, banned: true, banned_by_id });
   }
 
-  return host;
+  if (currentHost) {
+    redis.del(getRedisKey.host(currentHost.address));
+  }
+
+  return currentHost;
 };

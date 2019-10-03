@@ -1,141 +1,165 @@
-import bcrypt from 'bcryptjs';
-import _ from 'lodash';
-import { isAfter, subDays } from 'date-fns';
-import { Types } from 'mongoose';
-
-import Link, { ILink } from '../models/link';
-import Visit from '../models/visit';
-import Domain, { IDomain } from '../models/domain';
+import bcrypt from "bcryptjs";
+import { isAfter, subDays } from "date-fns";
+import knex from "../knex";
+import * as redis from "../redis";
 import {
   generateShortLink,
-  statsObjectToArray,
-  getDifferenceFunction,
+  getRedisKey,
   getUTCDate,
-} from '../utils';
-import { getDomain, banDomain } from './domain';
-import * as redis from '../redis';
-import { banHost } from './host';
-import { banUser } from './user';
+  getDifferenceFunction,
+  statsObjectToArray
+} from "../utils";
+import { banDomain } from "./domain";
+import { banHost } from "./host";
+import { banUser } from "./user";
 
-interface ICreateLink extends ILink {
+interface CreateLink extends Link {
   reuse?: boolean;
+  domainName?: string;
 }
 
-export const createShortLink = async (data: ICreateLink) => {
+export const createShortLink = async (data: CreateLink, user: UserJoined) => {
+  const { id: user_id, domain, domain_id } = user;
   let password;
+
   if (data.password) {
     const salt = await bcrypt.genSalt(12);
     password = await bcrypt.hash(data.password, salt);
   }
 
-  const link = await Link.create({
-    id: data.id,
-    password,
-    target: data.target,
-    user: data.user,
-    domain: data.domain,
-  });
+  const [link]: Link[] = await knex<Link>("links").insert(
+    {
+      domain_id,
+      address: data.address,
+      password,
+      target: data.target,
+      user_id
+    },
+    "*"
+  );
 
   return {
     ...link,
     password: !!data.password,
     reuse: !!data.reuse,
-    shortLink: generateShortLink(
-      data.id,
-      data.domain && (data.domain as IDomain).name
-    ),
+    shortLink: generateShortLink(data.address, domain)
   };
 };
 
-export const addLinkCount = async (
-  id: Types.ObjectId,
-  customDomain?: string
-) => {
-  const domain = await (customDomain && getDomain({ name: customDomain }));
-  const url = await Link.findOneAndUpdate(
-    { id, domain: domain || { $exists: false } },
-    { $inc: { count: 1 } }
-  );
-  return url;
+export const addLinkCount = async (id: number) => {
+  return knex<Link>("links")
+    .where({ id })
+    .increment("visit_count", 1);
 };
 
 interface ICreateVisit {
   browser: string;
   country: string;
   domain?: string;
-  id: string;
+  id: number;
   limit: number;
   os: string;
   referrer: string;
 }
 
 export const createVisit = async (params: ICreateVisit) => {
-  const domain = await (params.domain && getDomain({ name: params.domain }));
-  const link = await Link.findOne({
-    id: params.id,
-    domain: domain || { $exists: false },
-  });
+  const data = {
+    ...params,
+    country: params.country.toLowerCase(),
+    referrer: params.referrer.toLowerCase()
+  };
 
-  if (link.count > params.limit) return null;
+  const visit = await knex<Visit>("visits")
+    .where({ link_id: params.id })
+    .andWhere(
+      knex.raw("date_trunc('hour', created_at) = date_trunc('hour', ?)", [
+        knex.fn.now()
+      ])
+    )
+    .first();
 
-  const visit = await Visit.findOneAndUpdate(
-    {
-      data: getUTCDate().toJSON(),
-      link,
-    },
-    {
-      $inc: {
-        [`browser.${params.browser}`]: 1,
-        [`country.${params.country}`]: 1,
-        [`os.${params.os}`]: 1,
-        [`referrer.${params.referrer}`]: 1,
-        total: 1,
-      },
-    },
-    { upsert: true }
-  );
+  if (visit) {
+    const a = await knex("visits")
+      .where({ id: visit.id })
+      .increment(`br_${data.browser}`, 1)
+      .increment(`os_${data.os}`, 1)
+      .increment("total", 1)
+      .update({
+        updated_at: new Date().toISOString(),
+        countries: knex.raw(
+          "jsonb_set(countries, '{??}', (COALESCE(countries->>?,'0')::int + 1)::text::jsonb)",
+          [data.country, data.country]
+        ),
+        referrers: knex.raw(
+          "jsonb_set(referrers, '{??}', (COALESCE(referrers->>?,'0')::int + 1)::text::jsonb)",
+          [data.referrer, data.referrer]
+        )
+      });
+  } else {
+    await knex<Visit>("visits").insert({
+      [`br_${data.browser}`]: 1,
+      countries: { [data.country]: 1 },
+      referrers: { [data.referrer]: 1 },
+      [`os_${data.os}`]: 1,
+      total: 1,
+      link_id: data.id
+    });
+  }
+
   return visit;
 };
 
 interface IFindLink {
-  id?: string;
-  domain?: Types.ObjectId | string;
-  user?: Types.ObjectId | string;
+  address?: string;
+  domain_id?: number | null;
+  user_id?: number | null;
   target?: string;
 }
 
-export const findLink = async (
-  { id = '', domain = '', user = '', target }: IFindLink,
-  options?: { forceDomainCheck?: boolean }
-) => {
-  const redisKey = id + domain.toString() + user.toString();
+export const findLink = async ({
+  address,
+  domain_id,
+  user_id,
+  target
+}: IFindLink): Promise<Link> => {
+  const redisKey = getRedisKey.link(address, domain_id, user_id);
   const cachedLink = await redis.get(redisKey);
 
   if (cachedLink) return JSON.parse(cachedLink);
 
-  const link = await Link.findOne({
-    ...(id && { id }),
-    ...(domain && { domain }),
-    ...(options.forceDomainCheck && { domain: domain || { $exists: false } }),
-    ...(user && { user }),
-    ...(target && { target }),
-  }).populate('domain');
+  const link = await knex<Link>("links")
+    .where({
+      ...(address && { address }),
+      ...(domain_id && { domain_id }),
+      ...(user_id && { user_id }),
+      ...(target && { target })
+    })
+    .first();
 
-  redis.set(redisKey, JSON.stringify(link), 'EX', 60 * 60 * 2);
+  if (link) {
+    redis.set(redisKey, JSON.stringify(link), "EX", 60 * 60 * 2);
+  }
 
-  // TODO: Get user?
   return link;
 };
 
 export const getUserLinksCount = async (params: {
-  user: Types.ObjectId;
+  user_id: number;
   date?: Date;
 }) => {
-  const count = await Link.find({
-    user: params.user,
-    ...(params.date && { createdAt: { $gt: params.date } }),
-  }).count();
-  return count;
+  const model = knex<Link>("links").where({ user_id: params.user_id });
+
+  // TODO: Test counts;
+  let res;
+  if (params.date) {
+    res = await model
+      .andWhere("created_at", ">", params.date.toISOString())
+      .count("id");
+  } else {
+    res = await model.count("id");
+  }
+
+  return res[0] && res[0].count;
 };
 
 interface IGetLinksOptions {
@@ -145,321 +169,334 @@ interface IGetLinksOptions {
 }
 
 export const getLinks = async (
-  user: Types.ObjectId,
+  user_id: number,
   options: IGetLinksOptions = {}
 ) => {
-  const { count = '5', page = '1', search = '' } = options;
-  const limit = parseInt(count, 10);
-  const skip = parseInt(page, 10);
-  const $regex = new RegExp(`.*${search}.*`, 'i');
+  const { count = "5", page = "1", search = "" } = options;
+  const limit = parseInt(count) > 50 ? parseInt(count) : 50;
+  const offset = (parseInt(page) - 1) * limit;
 
-  const matchedLinks = await Link.find({
-    user,
-    $or: [{ id: { $regex } }, { target: { $regex } }],
-  })
-    .sort({ createdAt: -1 })
-    .skip(skip)
+  const model = knex<LinkJoinedDomain>("links")
+    .select(
+      "links.id",
+      "links.address",
+      "links.banned",
+      "links.created_at",
+      "links.domain_id",
+      "links.updated_at",
+      "links.password",
+      "links.target",
+      "links.visit_count",
+      "links.user_id",
+      "domains.address as domain"
+    )
+    .offset(offset)
     .limit(limit)
-    .populate('domain');
+    .orderBy("created_at", "desc")
+    .where("links.user_id", user_id);
+
+  if (search) {
+    model.andWhereRaw("links.address || ' ' || target ILIKE '%' || ? || '%'", [
+      search
+    ]);
+  }
+
+  const matchedLinks = await model.leftJoin(
+    "domains",
+    "links.domain_id",
+    "domains.id"
+  );
 
   const links = matchedLinks.map(link => ({
     ...link,
+    id: link.address,
     password: !!link.password,
-    shortLink: generateShortLink(
-      link.id,
-      link.domain && (link.domain as IDomain).name
-    ),
+    shortLink: generateShortLink(link.address, link.domain)
   }));
 
   return links;
 };
 
 interface IDeleteLink {
-  id: string;
-  user: Types.ObjectId;
-  domain?: Types.ObjectId;
+  address: string;
+  user_id: number;
+  domain?: string;
 }
 
 export const deleteLink = async (data: IDeleteLink) => {
-  const link = await Link.findOneAndDelete({
-    id: data.id,
-    user: data.user,
-    domain: data.domain || { $exists: false },
-  });
-  await Visit.deleteMany({ link });
+  const link: LinkJoinedDomain = await knex<LinkJoinedDomain>("links")
+    .select("links.id", "domains.address as domain")
+    .where({
+      "links.address": data.address,
+      "links.user_id": data.user_id,
+      ...(!data.domain && { domain_id: null })
+    })
+    .leftJoin("domains", "links.domain_id", "domains.id")
+    .first();
 
-  const domainKey = link.domain ? link.domain.toString() : '';
-  const userKey = link.user ? link.user.toString() : '';
-  redis.del(link.id + domainKey);
-  redis.del(link.id + domainKey + userKey);
+  if (!link) return;
 
-  return link;
+  if (link.domain !== data.domain) {
+    return;
+  }
+
+  const deletedLink = await knex<Link>("links")
+    .where("id", link.id)
+    .delete();
+
+  redis.del(getRedisKey.link(link.address, link.domain_id, link.user_id));
+
+  return !!deletedLink;
 };
 
 /*
  ** Collecting stats
  */
 
-interface IStats {
-  browser: Record<
-    'chrome' | 'edge' | 'firefox' | 'ie' | 'opera' | 'other' | 'safari',
-    number
-  >;
-  os: Record<
-    'android' | 'ios' | 'linux' | 'macos' | 'other' | 'windows',
-    number
-  >;
-  country: Record<string, number>;
-  referrer: Record<string, number>;
-  dates: Date[];
-}
-
-interface Stats {
-  stats: IStats;
+interface StatsResult {
+  stats: {
+    browser: { name: string; value: number }[];
+    os: { name: string; value: number }[];
+    country: { name: string; value: number }[];
+    referrer: { name: string; value: number }[];
+  };
   views: number[];
 }
 
-const INIT_STATS: IStats = {
-  browser: {
-    chrome: 0,
-    edge: 0,
-    firefox: 0,
-    ie: 0,
-    opera: 0,
-    other: 0,
-    safari: 0,
-  },
-  os: {
-    android: 0,
-    ios: 0,
-    linux: 0,
-    macos: 0,
-    other: 0,
-    windows: 0,
-  },
-  country: {},
-  referrer: {},
-  dates: [],
-};
+const getInitStats = (): Stats =>
+  Object.create({
+    browser: {
+      chrome: 0,
+      edge: 0,
+      firefox: 0,
+      ie: 0,
+      opera: 0,
+      other: 0,
+      safari: 0
+    },
+    os: {
+      android: 0,
+      ios: 0,
+      linux: 0,
+      macos: 0,
+      other: 0,
+      windows: 0
+    },
+    country: {},
+    referrer: {}
+  });
 
-const STATS_PERIODS: [number, 'lastDay' | 'lastWeek' | 'lastMonth'][] = [
-  [1, 'lastDay'],
-  [7, 'lastWeek'],
-  [30, 'lastMonth'],
+const STATS_PERIODS: [number, "lastDay" | "lastWeek" | "lastMonth"][] = [
+  [1, "lastDay"],
+  [7, "lastWeek"],
+  [30, "lastMonth"]
 ];
 
-interface IGetStats {
-  domain: Types.ObjectId;
-  id: string;
-  user: Types.ObjectId;
-}
-
 interface IGetStatsResponse {
-  allTime: Stats;
+  allTime: StatsResult;
   id: string;
-  lastDay: Stats;
-  lastMonth: Stats;
-  lastWeek: Stats;
+  lastDay: StatsResult;
+  lastMonth: StatsResult;
+  lastWeek: StatsResult;
   shortLink: string;
   target: string;
   total: number;
   updatedAt: string;
 }
 
-export const getStats = async (data: IGetStats) => {
+export const getStats = async (link: Link, domain: Domain) => {
   const stats = {
     lastDay: {
-      stats: _.cloneDeep(INIT_STATS),
-      views: new Array(24).fill(0),
+      stats: getInitStats(),
+      views: new Array(24).fill(0)
     },
     lastWeek: {
-      stats: _.cloneDeep(INIT_STATS),
-      views: new Array(7).fill(0),
+      stats: getInitStats(),
+      views: new Array(7).fill(0)
     },
     lastMonth: {
-      stats: _.cloneDeep(INIT_STATS),
-      views: new Array(30).fill(0),
+      stats: getInitStats(),
+      views: new Array(30).fill(0)
     },
     allTime: {
-      stats: _.cloneDeep(INIT_STATS),
-      views: new Array(18).fill(0),
-    },
+      stats: getInitStats(),
+      views: new Array(18).fill(0)
+    }
   };
 
-  const domain = await (data.domain && Domain.findOne({ name: data.domain }));
-  const link = await Link.findOne({
-    id: data.id,
-    user: data.user,
-    ...(domain && { domain }),
-  });
+  const visitsStream: any = knex<Visit>("visits")
+    .where("link_id", link.id)
+    .stream();
+  const nowUTC = getUTCDate();
+  const now = new Date();
 
-  if (!link) throw new Error("Couldn't get stats for this link.");
-
-  const visits = await Visit.find({
-    link: link.id,
-  });
-
-  visits.forEach(visit => {
+  for await (const visit of visitsStream as Visit[]) {
     STATS_PERIODS.forEach(([days, type]) => {
-      const isIncluded = isAfter(visit.date, subDays(getUTCDate(), days));
+      const isIncluded = isAfter(visit.created_at, subDays(nowUTC, days));
       if (isIncluded) {
         const diffFunction = getDifferenceFunction(type);
-        const now = new Date();
-        const diff = diffFunction(now, visit.date);
+        const diff = diffFunction(now, visit.created_at);
         const index = stats[type].views.length - diff - 1;
         const view = stats[type].views[index];
         const period = stats[type].stats;
         stats[type].stats = {
           browser: {
-            chrome: period.chrome + visit.browser.chrome,
-            edge: period.edge + visit.browser.edge,
-            firefox: period.firefox + visit.browser.firefox,
-            ie: period.ie + visit.browser.ie,
-            opera: period.opera + visit.browser.opera,
-            other: period.other + visit.browser.other,
-            safari: period.safari + visit.browser.safari,
+            chrome: period.browser.chrome + visit.br_chrome,
+            edge: period.browser.edge + visit.br_edge,
+            firefox: period.browser.firefox + visit.br_firefox,
+            ie: period.browser.ie + visit.br_ie,
+            opera: period.browser.opera + visit.br_opera,
+            other: period.browser.other + visit.br_other,
+            safari: period.browser.safari + visit.br_safari
           },
           os: {
-            android: period.android + visit.os.android,
-            ios: period.ios + visit.os.ios,
-            linux: period.linux + visit.os.linux,
-            macos: period.macos + visit.os.macos,
-            other: period.other + visit.os.other,
-            windows: period.windows + visit.os.windows,
+            android: period.os.android + visit.os_android,
+            ios: period.os.ios + visit.os_ios,
+            linux: period.os.linux + visit.os_linux,
+            macos: period.os.macos + visit.os_macos,
+            other: period.os.other + visit.os_other,
+            windows: period.os.windows + visit.os_windows
           },
           country: {
             ...period.country,
-            ...Object.keys(visit.country).reduce(
-              (obj, key) => ({
+            ...Object.entries(visit.countries).reduce(
+              (obj, [country, count]) => ({
                 ...obj,
-                [key]: period.country[key] + visit.country[key],
+                [country]: (period.country[country] || 0) + count
               }),
               {}
-            ),
+            )
           },
           referrer: {
             ...period.referrer,
-            ...Object.keys(visit.referrer).reduce(
-              (obj, key) => ({
+            ...Object.entries(visit.referrers).reduce(
+              (obj, [referrer, count]) => ({
                 ...obj,
-                [key]: period.referrer[key] + visit.referrer[key],
+                [referrer]: (period.referrer[referrer] || 0) + count
               }),
               {}
-            ),
-          },
+            )
+          }
         };
-        stats[type].views[index] = view + 1 || 1;
+        stats[type].views[index] = view + visit.total;
       }
     });
 
     const allTime = stats.allTime.stats;
-    const diffFunction = getDifferenceFunction('allTime');
-    const now = new Date();
-    const diff = diffFunction(now, visit.date);
+    const diffFunction = getDifferenceFunction("allTime");
+    const diff = diffFunction(now, visit.created_at);
     const index = stats.allTime.views.length - diff - 1;
     const view = stats.allTime.views[index];
     stats.allTime.stats = {
       browser: {
-        chrome: allTime.chrome + visit.browser.chrome,
-        edge: allTime.edge + visit.browser.edge,
-        firefox: allTime.firefox + visit.browser.firefox,
-        ie: allTime.ie + visit.browser.ie,
-        opera: allTime.opera + visit.browser.opera,
-        other: allTime.other + visit.browser.other,
-        safari: allTime.safari + visit.browser.safari,
+        chrome: allTime.browser.chrome + visit.br_chrome,
+        edge: allTime.browser.edge + visit.br_edge,
+        firefox: allTime.browser.firefox + visit.br_firefox,
+        ie: allTime.browser.ie + visit.br_ie,
+        opera: allTime.browser.opera + visit.br_opera,
+        other: allTime.browser.other + visit.br_other,
+        safari: allTime.browser.safari + visit.br_safari
       },
       os: {
-        android: allTime.android + visit.os.android,
-        ios: allTime.ios + visit.os.ios,
-        linux: allTime.linux + visit.os.linux,
-        macos: allTime.macos + visit.os.macos,
-        other: allTime.other + visit.os.other,
-        windows: allTime.windows + visit.os.windows,
+        android: allTime.os.android + visit.os_android,
+        ios: allTime.os.ios + visit.os_ios,
+        linux: allTime.os.linux + visit.os_linux,
+        macos: allTime.os.macos + visit.os_macos,
+        other: allTime.os.other + visit.os_other,
+        windows: allTime.os.windows + visit.os_windows
       },
       country: {
         ...allTime.country,
-        ...Object.keys(visit.country).reduce(
-          (obj, key) => ({
+        ...Object.entries(visit.countries).reduce(
+          (obj, [country, count]) => ({
             ...obj,
-            [key]: allTime.country[key] + visit.country[key],
+            [country]: (allTime.country[country] || 0) + count
           }),
           {}
-        ),
+        )
       },
       referrer: {
         ...allTime.referrer,
-        ...Object.keys(visit.referrer).reduce(
-          (obj, key) => ({
+        ...Object.entries(visit.referrers).reduce(
+          (obj, [referrer, count]) => ({
             ...obj,
-            [key]: allTime.referrer[key] + visit.referrer[key],
+            [referrer]: (allTime.referrer[referrer] || 0) + count
           }),
           {}
-        ),
-      },
+        )
+      }
     };
-    stats.allTime.views[index] = view + 1 || 1;
-  });
+    stats.allTime.views[index] = view + visit.total;
+  }
 
-  stats.lastDay.stats = statsObjectToArray(stats.lastDay.stats);
-  stats.lastWeek.stats = statsObjectToArray(stats.lastWeek.stats);
-  stats.lastMonth.stats = statsObjectToArray(stats.lastMonth.stats);
-  stats.allTime.stats = statsObjectToArray(stats.allTime.stats);
   const response: IGetStatsResponse = {
-    allTime: stats.allTime,
-    id: link.id,
-    lastDay: stats.lastDay,
-    lastMonth: stats.lastMonth,
-    lastWeek: stats.lastWeek,
-    shortLink: generateShortLink(
-      link.id,
-      link.domain && (link.domain as IDomain).name
-    ),
+    allTime: {
+      stats: statsObjectToArray(stats.allTime.stats),
+      views: stats.allTime.views
+    },
+    id: link.address,
+    lastDay: {
+      stats: statsObjectToArray(stats.lastDay.stats),
+      views: stats.lastDay.views
+    },
+    lastMonth: {
+      stats: statsObjectToArray(stats.lastDay.stats),
+      views: stats.lastDay.views
+    },
+    lastWeek: {
+      stats: statsObjectToArray(stats.lastWeek.stats),
+      views: stats.lastWeek.views
+    },
+    shortLink: generateShortLink(link.address, domain.address),
     target: link.target,
-    total: link.count,
-    updatedAt: new Date().toISOString(),
+    total: link.visit_count,
+    updatedAt: new Date().toISOString()
   };
   return response;
 };
 
 interface IBanLink {
-  adminId?: Types.ObjectId;
+  adminId?: number;
   banUser?: boolean;
   domain?: string;
   host?: string;
-  id: string;
+  address: string;
 }
 
 export const banLink = async (data: IBanLink) => {
   const tasks = [];
-  const bannedBy = data.adminId;
+  const banned_by_id = data.adminId;
 
   // Ban link
-  const link = await Link.findOneAndUpdate(
-    { id: data.id },
-    { banned: true, bannedBy },
-    { new: true }
-  );
+  const [link]: Link[] = await knex<Link>("links")
+    .where({ address: data.address, domain_id: null })
+    .update(
+      { banned: true, banned_by_id, updated_at: new Date().toISOString() },
+      "*"
+    );
 
-  if (!link) throw new Error('No link has been found.');
+  if (!link) throw new Error("No link has been found.");
 
   // If user, ban user and all of their links.
-  if (data.banUser && link.user) {
-    tasks.push(banUser(link.user, bannedBy));
+  if (data.banUser && link.user_id) {
+    tasks.push(banUser(link.user_id, banned_by_id));
     tasks.push(
-      Link.updateMany({ user: link.user }, { banned: true, bannedBy })
+      knex<Link>("links")
+        .where({ user_id: link.user_id })
+        .update(
+          { banned: true, banned_by_id, updated_at: new Date().toISOString() },
+          "*"
+        )
     );
   }
 
   // Ban host
-  if (data.host) tasks.push(banHost(data.host, bannedBy));
+  if (data.host) tasks.push(banHost(data.host, banned_by_id));
 
   // Ban domain
-  if (data.domain) tasks.push(banDomain(data.domain, bannedBy));
+  if (data.domain) tasks.push(banDomain(data.domain, banned_by_id));
 
-  const domainKey = link.domain ? link.domain.toString() : '';
-  const userKey = link.user ? link.user.toString() : '';
-  redis.del(link.id + domainKey);
-  redis.del(link.id + domainKey + userKey);
+  redis.del(getRedisKey.link(link.address, link.domain_id, link.user_id));
 
   return Promise.all(tasks);
 };

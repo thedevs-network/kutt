@@ -1,6 +1,6 @@
 {
   "watch": ["server/**/*.ts"],
   "execMap": {
-    "ts": "rm -rf production-server && tsc --project tsconfig.server.json && cp server/mail/template-reset.html production-server/mail/template-reset.html && cp server/mail/template-verify.html production-server/mail/template-verify.html && node production-server/server.js"
+    "ts": "rimraf production-server && tsc --project tsconfig.server.json && copyfiles -f \"server/mail/*.html\" production-server/mail && node production-server/server.js"
   }
 }
