@@ -5,7 +5,7 @@ import PQueue from "p-queue";
 import { startOfHour } from "date-fns";
 
 let count = 0;
-const queue = new PQueue({ concurrency: 10 });
+const queue = new PQueue({ concurrency: 5 });
 
 queue.on("active", () =>
   Math.random() > 0.7 ? console.log(count++) : count++
@@ -101,7 +101,7 @@ const postgres = knex({
                           ...((visits[dateHour] || {}).referrers as {}),
                           [referrer.toLowerCase()]:
                             ((visits[dateHour] &&
-                              visits[dateHour].countries[
+                              visits[dateHour].referrers[
                                 referrer.toLowerCase()
                               ]) ||
                               0) + 1
