@@ -79,7 +79,7 @@ export const createVisit = async (params: ICreateVisit) => {
     .first();
 
   if (visit) {
-    const a = await knex("visits")
+    await knex("visits")
       .where({ id: visit.id })
       .increment(`br_${data.browser}`, 1)
       .increment(`os_${data.os}`, 1)
