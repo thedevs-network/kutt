@@ -3,7 +3,7 @@ import { v1 as NEO4J } from "neo4j-driver";
 import knex from "knex";
 import PQueue from "p-queue";
 
-const queue = new PQueue({ concurrency: 10 });
+const queue = new PQueue({ concurrency: 1 });
 
 // 1. Connect to Neo4j database
 const neo4j = NEO4J.driver(
@@ -80,18 +80,9 @@ const postgres = knex({
         });
       },
       onError(error) {
+        console.log(error);
         session.close();
         throw error;
       }
     });
 })();
-
-// LINKS
-// 1. [NEO4J] Get all links as stream
-// 2. [Postgres] If link has user and domain, get them
-// 3. [Postgres] Upsert link
-
-// VISISTS
-// 1. [NEO4J] For every link get visists as stream
-// 2. [JAVaSCRIPT] Sum stats for each visist with the same date
-// 3. [Postgres] Create visits
