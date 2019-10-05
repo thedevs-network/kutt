@@ -20,7 +20,7 @@ export async function createLinkTable(knex: Knex) {
         .references("id")
         .inTable("domains");
       table.string("password");
-      table.string("target").notNullable();
+      table.string("target", 1023).notNullable();
       table
         .integer("user_id")
         .references("id")
