@@ -8,7 +8,7 @@ let count = 0;
 const queue = new PQueue({ concurrency: 10 });
 
 queue.on("active", () =>
-  Math.random() > 0.5 ? console.log(count++) : count++
+  Math.random() > 0.7 ? console.log(count++) : count++
 );
 
 // 1. Connect to Neo4j database
@@ -44,7 +44,7 @@ const postgres = knex({
         new Promise((resolve, reject) => {
           session
             .run(
-              "MATCH (l:URL) WITH l LIMIT $limit " +
+              "MATCH (l:URL) WITH l SKIP $skip LIMIT $limit " +
                 "OPTIONAL MATCH (l)-[:USES]->(d) " +
                 "OPTIONAL MATCH (l)<-[:CREATED]-(u) " +
                 "OPTIONAL MATCH (v)-[:VISITED]->(l) " +
@@ -55,14 +55,10 @@ const postgres = knex({
                 "OPTIONAL MATCH (v)-[:VISITED_IN]->(dd) " +
                 "WITH l, u, d, COLLECT([b.browser, o.os, c.country, r.referrer, dd.date]) as stats " +
                 "RETURN l, u.email as email, d.name as domain, stats",
-              { limit: (index + 1) * limit }
+              { limit: (index + 1) * limit, skip: index * limit }
             )
             .subscribe({
               onNext(record) {
-                const endTime = Date.now();
-                console.log(
-                  `✅ Done! It took ${(endTime - startTime) / 1000} seconds.`
-                );
                 queue.add(async () => {
                   const link = record.get("l").properties;
                   const email = record.get("email");
