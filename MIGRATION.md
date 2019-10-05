@@ -1,8 +1,8 @@
-- [Migrate database from Neo4j to Postgres](migrate-database-from-neo4j-to-postgres)
-
 # Migrate database from Neo4j to Postgres
 
 As explained in issue #197, Kutt is ditching Neo4j in favor of Postgres in version 2. But what happens to old data? Well, I have created migration scripts that you can use to transfer data from your Neo4j database to your new Postgres database.
+
+### 🚧 IMPORTANT: v2 is still in beta, proceed carefully!!1!
 
 ## General recommendations
 
