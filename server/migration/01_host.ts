@@ -3,7 +3,7 @@ import { v1 as NEO4J } from "neo4j-driver";
 import knex from "knex";
 import PQueue from "p-queue";
 
-const queue = new PQueue({ concurrency: 1 });
+const queue = new PQueue({ concurrency: 10 });
 
 // 1. Connect to Neo4j database
 const neo4j = NEO4J.driver(

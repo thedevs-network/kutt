@@ -3,7 +3,7 @@ import { v1 as NEO4J } from "neo4j-driver";
 import knex from "knex";
 import PQuque from "p-queue";
 
-const queue = new PQuque({ concurrency: 1 });
+const queue = new PQuque({ concurrency: 10 });
 
 // 1. Connect to Neo4j database
 const neo4j = NEO4J.driver(
@@ -83,4 +83,3 @@ const postgres = knex({
       }
     });
 })();
-// 5. TODO: [Postgres] Update bannedBy
