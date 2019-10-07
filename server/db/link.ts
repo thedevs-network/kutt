@@ -19,7 +19,8 @@ interface CreateLink extends Link {
 }
 
 export const createShortLink = async (data: CreateLink, user: UserJoined) => {
-  const { id: user_id, domain, domain_id } = user;
+  const { id: user_id = null, domain, domain_id = null } =
+    user || ({} as UserJoined);
   let password;
 
   if (data.password) {
