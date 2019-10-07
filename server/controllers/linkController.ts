@@ -89,7 +89,7 @@ export const shortener: Handler = async (req, res) => {
         password: !!link.password,
         reuse: true,
         shortLink,
-        shortUrl: shortLink,
+        shortUrl: shortLink
       };
       return res.json(data);
     }

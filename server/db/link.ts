@@ -208,8 +208,6 @@ export const getLinks = async (
     "domains.id"
   );
 
-
-
   const links = matchedLinks.map(link => ({
     ...link,
     id: link.address,
