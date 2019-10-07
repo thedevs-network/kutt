@@ -82,12 +82,14 @@ export const shortener: Handler = async (req, res) => {
     // the existent URL without creating one
     if (queries[3]) {
       const { domain_id: d, user_id: u, ...link } = queries[3];
+      const shortLink = generateShortLink(link.address, req.user.domain);
       const data = {
         ...link,
         id: link.address,
         password: !!link.password,
         reuse: true,
-        shortLink: generateShortLink(link.address, req.user.domain)
+        shortLink,
+        shortUrl: shortLink,
       };
       return res.json(data);
     }

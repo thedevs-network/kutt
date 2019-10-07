@@ -42,7 +42,8 @@ export const createShortLink = async (data: CreateLink, user: UserJoined) => {
     ...link,
     password: !!data.password,
     reuse: !!data.reuse,
-    shortLink: generateShortLink(data.address, domain)
+    shortLink: generateShortLink(data.address, domain),
+    shortUrl: generateShortLink(data.address, domain)
   };
 };
 
@@ -207,11 +208,14 @@ export const getLinks = async (
     "domains.id"
   );
 
+
+
   const links = matchedLinks.map(link => ({
     ...link,
     id: link.address,
     password: !!link.password,
-    shortLink: generateShortLink(link.address, link.domain)
+    shortLink: generateShortLink(link.address, link.domain),
+    shortUrl: generateShortLink(link.address, link.domain)
   }));
 
   return links;
@@ -299,6 +303,7 @@ interface IGetStatsResponse {
   lastMonth: StatsResult;
   lastWeek: StatsResult;
   shortLink: string;
+  shortUrl: string;
   target: string;
   total: number;
   updatedAt: string;
@@ -448,6 +453,7 @@ export const getStats = async (link: Link, domain: Domain) => {
       views: stats.lastWeek.views
     },
     shortLink: generateShortLink(link.address, domain.address),
+    shortUrl: generateShortLink(link.address, domain.address),
     target: link.target,
     total: link.visit_count,
     updatedAt: new Date().toISOString()
