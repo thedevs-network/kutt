@@ -121,7 +121,7 @@ TableBody.propTypes = {
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       count: PropTypes.number,
-      createdAt: PropTypes.string.isRequired,
+      created_at: PropTypes.string.isRequired,
       password: PropTypes.bool,
       target: PropTypes.string.isRequired,
     })
