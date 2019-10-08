@@ -96,10 +96,10 @@ class ShortenerResult extends Component {
     return (
       <Wrapper>
         {isCopied && <CopyMessage>Copied to clipboard.</CopyMessage>}
-        <CopyToClipboard text={url.list[0].shortUrl} onCopy={copyHandler}>
-          <Url>{url.list[0].shortUrl.replace(/^https?:\/\//, '')}</Url>
+        <CopyToClipboard text={url.list[0].shortLink} onCopy={copyHandler}>
+          <Url>{url.list[0].shortLink.replace(/^https?:\/\//, '')}</Url>
         </CopyToClipboard>
-        <CopyToClipboard text={url.list[0].shortUrl} onCopy={copyHandler}>
+        <CopyToClipboard text={url.list[0].shortLink} onCopy={copyHandler}>
           <Button icon="copy">Copy</Button>
         </CopyToClipboard>
         {showQrCode && (
@@ -108,7 +108,7 @@ class ShortenerResult extends Component {
           </QRButton>
         )}
         <Modal show={this.state.showQrCodeModal} close={this.toggleQrCodeModal}>
-          <QRCode value={url.list[0].shortUrl} size={196} />
+          <QRCode value={url.list[0].shortLink} size={196} />
         </Modal>
       </Wrapper>
     );

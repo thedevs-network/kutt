@@ -50,9 +50,9 @@ class TBodyCount extends Component {
 
   goTo(e) {
     e.preventDefault();
+    const { id, domain } = this.props.url;
     this.props.showLoading();
-    const host = URL.parse(this.props.url.shortUrl).hostname;
-    Router.push(`/stats?id=${this.props.url.id}${`&domain=${host}`}`);
+    Router.push(`/stats?id=${id}${domain ? `&domain=${domain}`: ''}`);
   }
 
   render() {
@@ -61,10 +61,10 @@ class TBodyCount extends Component {
 
     return (
       <Wrapper>
-        {url.count || 0}
+        {url.visit_count || 0}
         <Actions>
           {url.password && <Icon src="/images/lock.svg" lowopacity />}
-          {url.count > 0 && (
+          {url.visit_count > 0 && (
             <TBodyButton withText onClick={this.goTo}>
               <Icon src="/images/chart.svg" />
               Stats
@@ -77,14 +77,14 @@ class TBodyCount extends Component {
           )}
           <TBodyButton
             data-id={url.id}
-            data-host={URL.parse(url.shortUrl).hostname}
+            data-host={URL.parse(url.shortLink).hostname}
             onClick={showModal}
           >
             <Icon src="/images/trash.svg" />
           </TBodyButton>
         </Actions>
         <Modal show={this.state.showQrCodeModal} close={this.toggleQrCodeModal}>
-          <QRCode value={url.shortUrl} size={196} />
+          <QRCode value={url.shortLink} size={196} />
         </Modal>
       </Wrapper>
     );
@@ -98,7 +98,7 @@ TBodyCount.propTypes = {
     count: PropTypes.number,
     id: PropTypes.string,
     password: PropTypes.bool,
-    shortUrl: PropTypes.string,
+    shortLink: PropTypes.string,
   }).isRequired,
 };
 

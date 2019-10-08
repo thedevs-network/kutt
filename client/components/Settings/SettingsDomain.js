@@ -92,7 +92,6 @@ const SettingsDomain = ({
   loading,
   showDomainInput,
   showModal,
-  useHttps,
   handleCheckbox,
 }) => (
   <div>
@@ -110,7 +109,6 @@ const SettingsDomain = ({
           <Domain>
             <span>{settings.customDomain}</span>
           </Domain>
-          {settings.useHttps && <Homepage>(With HTTPS)</Homepage>}
           <Homepage>
             (Homepage redirects to <span>{settings.homepage || window.location.hostname}</span>)
           </Homepage>
@@ -153,14 +151,6 @@ const SettingsDomain = ({
             />
           </LabelWrapper>
         </InputWrapper>
-        <Checkbox
-          checked={useHttps === null ? settings.useHttps : useHttps}
-          id="useHttps"
-          name="useHttps"
-          onClick={handleCheckbox}
-          withMargin={false}
-          label="Use HTTPS (We don't handle the SSL, you should take care of it)"
-        />
         <Button type="submit" color="purple" icon={loading ? 'loader' : ''}>
           Set domain
         </Button>
@@ -179,7 +169,6 @@ SettingsDomain.propTypes = {
   showDomainInput: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
   handleCheckbox: PropTypes.func.isRequired,
-  useHttps: PropTypes.bool.isRequired,
 };
 
 export default SettingsDomain;

@@ -64,6 +64,7 @@ class UrlPasswordPage extends Component {
   requestUrl(e) {
     e.preventDefault();
     const { password } = this.state;
+    const { protectedLink } = this.props.query;
     if (!password) {
       return this.setState({
         error: 'Password must not be empty',
@@ -72,7 +73,7 @@ class UrlPasswordPage extends Component {
     this.setState({ error: '' });
     this.setState({ loading: true });
     return axios
-      .post('/api/url/requesturl', { id: this.props.query, password })
+      .post('/api/url/requesturl', { id: protectedLink, password })
       .then(({ data }) => window.location.replace(data.target))
       .catch(({ response }) =>
         this.setState({
@@ -83,7 +84,7 @@ class UrlPasswordPage extends Component {
   }
 
   render() {
-    if (!this.props.query) {
+    if (!this.props.query.protectedLink) {
       return (
         <BodyWrapper>
           <Title>404 | Not found.</Title>
@@ -107,12 +108,12 @@ class UrlPasswordPage extends Component {
 
 UrlPasswordPage.propTypes = {
   query: PropTypes.shape({
-    id: PropTypes.string,
+    protectedLink: PropTypes.string,
   }),
 };
 
 UrlPasswordPage.defaultProps = {
-  query: null,
+  query: {},
 };
 
 export default UrlPasswordPage;

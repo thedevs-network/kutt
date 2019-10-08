@@ -56,7 +56,7 @@ class ReportPage extends Component {
     e.preventDefault();
     this.setState({ loading: true });
     try {
-      await axios.post('/api/url/report', { url: this.state.url });
+      await axios.post('/api/url/report', { link: this.state.url });
       this.setState({
         loading: false,
         message: {

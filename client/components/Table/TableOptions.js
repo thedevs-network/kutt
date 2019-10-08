@@ -124,11 +124,13 @@ class TableOptions extends Component {
     this.props.getUrlsList({ count });
   }
 
-  handleNav(e) {
-    const { active, type } = e.target.dataset;
-    if (active === 'false') return null;
-    const number = type === 'next' ? 1 : -1;
-    return this.props.getUrlsList({ page: this.props.url.page + number });
+  handleNav(num) {
+    return (e) => {
+      const { active } = e.target.dataset;
+      if (active === 'false') return null;
+      console.log({ page: this.props.url.page, num });
+      return this.props.getUrlsList({ page: this.props.url.page + num });
+    }
   }
 
   render() {

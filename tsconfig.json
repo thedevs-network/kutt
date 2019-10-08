@@ -1,0 +1,23 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "jsx": "preserve",
+    "lib": ["dom", "es2017"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "preserveConstEnums": true,
+    "removeComments": false,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "target": "esnext",
+    "typeRoots": ["./node_modules/@types"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true    
+  },
+}

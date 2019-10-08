@@ -1,20 +1,20 @@
-const passport = require('passport');
-const JwtStrategy = require('passport-jwt').Strategy;
-const { ExtractJwt } = require('passport-jwt');
-const LocalStratergy = require('passport-local').Strategy;
-const LocalAPIKeyStrategy = require('passport-localapikey-update').Strategy;
-const bcrypt = require('bcryptjs');
-const { getUser } = require('./db/user');
+import passport from "passport";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import { Strategy as LocalStratergy } from "passport-local";
+import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey-update";
+import bcrypt from "bcryptjs";
+
+import { getUser } from "./db/user";
 
 const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-  secretOrKey: process.env.JWT_SECRET,
+  jwtFromRequest: ExtractJwt.fromHeader("authorization"),
+  secretOrKey: process.env.JWT_SECRET
 };
 
 passport.use(
   new JwtStrategy(jwtOptions, async (payload, done) => {
     try {
-      const user = await getUser({ email: payload.sub });
+      const user = await getUser(payload.sub);
       if (!user) return done(null, false);
       return done(null, user);
     } catch (err) {
@@ -24,13 +24,13 @@ passport.use(
 );
 
 const localOptions = {
-  usernameField: 'email',
+  usernameField: "email"
 };
 
 passport.use(
   new LocalStratergy(localOptions, async (email, password, done) => {
     try {
-      const user = await getUser({ email });
+      const user = await getUser(email);
       if (!user) {
         return done(null, false);
       }
@@ -46,14 +46,14 @@ passport.use(
 );
 
 const localAPIKeyOptions = {
-  apiKeyField: 'apikey',
-  apiKeyHeader: 'x-api-key',
+  apiKeyField: "apikey",
+  apiKeyHeader: "x-api-key"
 };
 
 passport.use(
   new LocalAPIKeyStrategy(localAPIKeyOptions, async (apikey, done) => {
     try {
-      const user = await getUser({ apikey });
+      const user = await getUser(apikey);
       if (!user) {
         return done(null, false);
       }
