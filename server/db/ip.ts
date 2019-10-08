@@ -24,9 +24,14 @@ export const addIP = async (ipToGet: string) => {
   return ip;
 };
 export const getIP = async (ip: string) => {
+  const cooldownConfig = Number(process.env.NON_USER_COOLDOWN);
   const matchedIp = await knex<IP>("ips")
     .where({ ip: ip.toLowerCase() })
-    .andWhere("created_at", ">", new Date().toISOString())
+    .andWhere(
+      "created_at",
+      ">",
+      subMinutes(new Date(), cooldownConfig).toISOString()
+    )
     .first();
 
   return matchedIp;
