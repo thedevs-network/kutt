@@ -10,6 +10,7 @@ export async function createVisitTable(knex: Knex) {
         .dateTime("created_at")
         .notNullable()
         .defaultTo(knex.fn.now());
+      table.dateTime("updated_at").defaultTo(knex.fn.now());
       table
         .integer("link_id")
         .references("id")
@@ -72,6 +73,13 @@ export async function createVisitTable(knex: Knex) {
         .integer("os_windows")
         .notNullable()
         .defaultTo(0);
+    });
+  }
+
+  const hasUpdatedAt = await knex.schema.hasColumn("visits", "updated_at");
+  if (!hasUpdatedAt) {
+    await knex.schema.alterTable("visits", table => {
+      table.dateTime("updated_at").defaultTo(knex.fn.now());
     });
   }
 }
