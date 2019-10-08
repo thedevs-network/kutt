@@ -218,7 +218,6 @@ export const goToLink: Handler = async (req, res, next) => {
 };
 
 export const getUserLinks: Handler = async (req, res) => {
-  // TODO: Use aggregation
   const [countAll, list] = await Promise.all([
     getUserLinksCount({ user_id: req.user.id }),
     getLinks(req.user.id, req.query)

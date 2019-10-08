@@ -175,7 +175,7 @@ export const getLinks = async (
   options: IGetLinksOptions = {}
 ) => {
   const { count = "5", page = "1", search = "" } = options;
-  const limit = parseInt(count) > 50 ? parseInt(count) : 50;
+  const limit = parseInt(count) < 50 ? parseInt(count) : 50;
   const offset = (parseInt(page) - 1) * limit;
 
   const model = knex<LinkJoinedDomain>("links")
