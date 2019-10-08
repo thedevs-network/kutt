@@ -15,17 +15,19 @@ Set up a Postgres database, either on your own server or using a SaaS service.
 
 ## 2. Pull and run Kutt's new version
 
-Right now version 2 is in beta. Therefore, pull from `v2-beta` branch and create and fill the `.env` file based on `.example.env`. 
+Right now version 2 is in beta. Therefore, pull from `v2-beta` branch and create and fill the `.env` file based on `.example.env`.
 
 **NOTE**: Run the app at least once and let it create and initialize tables in the database. You just need to do `npm run dev` and wait for it to create tables. Then check your database to make sure tables have been created. (If your production database is separate, you need to initialize it too).
 
 ## 3. Migrate data using scripts
 
-First, do `npm run build` to build the files. Now if you check `production-server/migration` folder you will fine 4 files. You can now run these scripts one by one. 
+First, do `npm run build` to build the files. Now if you check `production-server/migration` folder you will fine 4 files. You can now run these scripts one by one.
 
 **NOTE:** that the order of running the scripts is important.
 
 **NOTE:** Step 4 is going to take a good chunk of time.
+
+**NOTE:** If step 4 fails at any stage, you should delete links and visits data from the database and try again.
 
 ```
 // 1. Migrate data: Hosts
