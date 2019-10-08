@@ -2,7 +2,7 @@
   "name": "kutt",
   "version": "2.0.0",
   "description": "Modern URL shortener.",
-  "main": "./server/server.js",
+  "main": "./production-server/server.js",
   "scripts": {
     "test": "mocha --compilers js:@babel/register ./client/**/__test__/*.js",
     "docker:build": "docker build -t kutt .",
