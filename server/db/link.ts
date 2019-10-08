@@ -243,6 +243,10 @@ export const deleteLink = async (data: IDeleteLink) => {
     return;
   }
 
+  await knex<Visit>("visits")
+    .where("link_id", link.id)
+    .delete();
+
   const deletedLink = await knex<Link>("links")
     .where("id", link.id)
     .delete();
