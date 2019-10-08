@@ -222,7 +222,7 @@ export const getUserLinks: Handler = async (req, res) => {
     getUserLinksCount({ user_id: req.user.id }),
     getLinks(req.user.id, req.query)
   ]);
-  return res.json({ list, countAll });
+  return res.json({ list, countAll: parseInt(countAll) });
 };
 
 export const setCustomDomain: Handler = async (req, res) => {
