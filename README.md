@@ -127,9 +127,9 @@ You can use Kutt as your default URL shortener in [ShareX](https://getsharex.com
 Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app from [alfred-kutt](https://github.com/thedevs-network/alfred-kutt) repository.
 
 ### Visual Studio Code
-You can download [Kutt for VSCode](https://github.com/mehrad77/kutt-vscode) from [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=mehrad.kutt). 
+You can download [Kutt for VSCode](https://github.com/mehrad77/kutt-vscode) from [ Marketplace](https://marketplace.visualstudio.com/items?itemName=mehrad.kutt). 
 
-## 3rd Party API packages
+## 3rd Party packages
 | Language  | Link                                                       | Description                                       |
 |-----------|------------------------------------------------------------|---------------------------------------------------|
 | C# (.NET) | [KuttSharp](https://github.com/0xaryan/KuttSharp)          | .NET package for Kutt.it url shortener            |
@@ -137,7 +137,8 @@ You can download [Kutt for VSCode](https://github.com/mehrad77/kutt-vscode) from
 | Ruby      | [kutt.rb](https://github.com/univa64/kutt.rb)              | Kutt library written in Ruby                      |
 | Rust      | [kutt-rs](https://github.com/robatipoor/kutt-rs)           | Command line tool written in Rust                 |
 | Node.js   | [node-kutt](https://github.com/ardalanamini/node-kutt)     | Node.js client for Kutt.it url shortener          |
-| Bash      | [kutt-bash](https://git.fossdaily.xyz/caltlgin/kutt-bash)     | Simple command line program for Kutt              |
+| Bash      | [kutt-bash](https://git.fossdaily.xyz/caltlgin/kutt-bash)  | Simple command line program for Kutt              |
+| Jacascript| [kutt-vscode](https://github.com/mehrad77/kutt-vscode)     | Visual Studio Code extention for Kutt             |
 
 ## Contributing
 Pull requests are welcome. You'll probably find lots of improvements to be made.
