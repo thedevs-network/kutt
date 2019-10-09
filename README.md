@@ -138,7 +138,7 @@ You can download [Kutt for VSCode](https://github.com/mehrad77/kutt-vscode) from
 | Rust      | [kutt-rs](https://github.com/robatipoor/kutt-rs)           | Command line tool written in Rust                 |
 | Node.js   | [node-kutt](https://github.com/ardalanamini/node-kutt)     | Node.js client for Kutt.it url shortener          |
 | Bash      | [kutt-bash](https://git.fossdaily.xyz/caltlgin/kutt-bash)  | Simple command line program for Kutt              |
-| Jacascript| [kutt-vscode](https://github.com/mehrad77/kutt-vscode)     | Visual Studio Code extention for Kutt             |
+| JacaScript| [kutt-vscode](https://github.com/mehrad77/kutt-vscode)     | Visual Studio Code extention for Kutt             |
 
 ## Contributing
 Pull requests are welcome. You'll probably find lots of improvements to be made.
