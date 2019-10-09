@@ -29,7 +29,7 @@ You can still find the stable version (v1) in the [v1](https://github.com/thedev
 - [Browser Extensions](#browser-extensions)
 - [API](#api)
 - [Integrations](#integrations)
-- [3rd Party API Packages](#3rd-party-api-packages)
+- [3rd Party Packages](#3rd-party-packages)
 - [Contributing](#contributing)
 
 ## Key Features
@@ -148,15 +148,16 @@ You can use Kutt as your default URL shortener in [ShareX](https://getsharex.com
 
 Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app from [alfred-kutt](https://github.com/thedevs-network/alfred-kutt) repository.
 
-## 3rd Party API packages
-| Language  | Link                                                      | Description                                    |
-|-----------|-----------------------------------------------------------|------------------------------------------------|
-| C# (.NET) | [KuttSharp](https://github.com/0xaryan/KuttSharp)         | .NET package for Kutt.it url shortener         |
-| Python    | [kutt-cli](https://github.com/RealAmirali/kutt-cli)       | Command-line client for Kutt written in Python |
-| Ruby      | [kutt.rb](https://github.com/RealAmirali/kutt.rb)         | Kutt library written in Ruby                   |
-| Rust      | [kutt-rs](https://github.com/robatipoor/kutt-rs)          | Command line tool written in Rust              |
-| Node.js   | [node-kutt](https://github.com/ardalanamini/node-kutt)    | Node.js client for Kutt.it url shortener       |
-| Bash      | [kutt-bash](https://git.fossdaily.xyz/caltlgin/kutt-bash) | Simple command line program for Kutt           |
+## 3rd Party packages
+| Language  | Link                                                       | Description                                       |
+|-----------|------------------------------------------------------------|---------------------------------------------------|
+| C# (.NET) | [KuttSharp](https://github.com/0xaryan/KuttSharp)          | .NET package for Kutt.it url shortener            |
+| Python    | [kutt-cli](https://github.com/RealAmirali/kutt-cli)        | Command-line client for Kutt written in Python    |
+| Ruby      | [kutt.rb](https://github.com/RealAmirali/kutt.rb)          | Kutt library written in Ruby                      |
+| Rust      | [kutt-rs](https://github.com/robatipoor/kutt-rs)           | Command line tool written in Rust                 |
+| Node.js   | [node-kutt](https://github.com/ardalanamini/node-kutt)     | Node.js client for Kutt.it url shortener          |
+| Bash      | [kutt-bash](https://git.fossdaily.xyz/caltlgin/kutt-bash)  | Simple command line program for Kutt              |
+| JacaScript| [kutt-vscode](https://github.com/mehrad77/kutt-vscode)     | Visual Studio Code extention for Kutt             |
 
 ## Contributing
 
