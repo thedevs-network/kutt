@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled, { css } from 'styled-components';
-import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
+import distanceInWordsToNow from 'date-fns/formatDistanceToNow';
 import TBodyShortUrl from './TBodyShortUrl';
 import TBodyCount from './TBodyCount';
 
@@ -93,7 +93,7 @@ const TableBody = ({ copiedIndex, handleCopy, tableLoading, showModal, urls }) =
         <a href={url.target}>{url.target}</a>
       </Td>
       <Td flex="1" date>
-        {`${distanceInWordsToNow(url.created_at)} ago`}
+        {`${distanceInWordsToNow(new Date(url.created_at))} ago`}
       </Td>
       <Td flex="1" withFade>
         <TBodyShortUrl index={index} copiedIndex={copiedIndex} handleCopy={handleCopy} url={url} />

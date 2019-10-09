@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { isAfter, subDays } from "date-fns";
+import { isAfter, subDays, set } from "date-fns";
 import knex from "../knex";
 import * as redis from "../redis";
 import {
@@ -340,7 +340,10 @@ export const getStats = async (link: Link, domain: Domain) => {
 
   for await (const visit of visitsStream as Visit[]) {
     STATS_PERIODS.forEach(([days, type]) => {
-      const isIncluded = isAfter(visit.created_at, subDays(nowUTC, days));
+      const isIncluded = isAfter(
+        new Date(visit.created_at),
+        subDays(nowUTC, days)
+      );
       if (isIncluded) {
         const diffFunction = getDifferenceFunction(type);
         const diff = diffFunction(now, visit.created_at);
@@ -392,7 +395,11 @@ export const getStats = async (link: Link, domain: Domain) => {
 
     const allTime = stats.allTime.stats;
     const diffFunction = getDifferenceFunction("allTime");
-    const diff = diffFunction(now, visit.created_at);
+    const diff = diffFunction(
+      set(new Date(), { date: 1 }),
+      set(new Date(visit.created_at), { date: 1 })
+    );
+    console.log(diff);
     const index = stats.allTime.views.length - diff - 1;
     const view = stats.allTime.views[index];
     stats.allTime.stats = {
@@ -448,8 +455,8 @@ export const getStats = async (link: Link, domain: Domain) => {
       views: stats.lastDay.views
     },
     lastMonth: {
-      stats: statsObjectToArray(stats.lastDay.stats),
-      views: stats.lastDay.views
+      stats: statsObjectToArray(stats.lastMonth.stats),
+      views: stats.lastMonth.views
     },
     lastWeek: {
       stats: statsObjectToArray(stats.lastWeek.stats),

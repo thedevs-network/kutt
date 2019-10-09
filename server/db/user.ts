@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import nanoid from "nanoid";
 import uuid from "uuid/v4";
-import addMinutes from "date-fns/add_minutes";
+import { addMinutes } from "date-fns";
 
 import knex from "../knex";
 import * as redis from "../redis";

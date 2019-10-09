@@ -128,7 +128,7 @@ export const cooldownCheck = async (user: User) => {
       throw new Error("Too much malware requests. You are now banned.");
     }
     const hasCooldownNow = user.cooldowns.some(cooldown =>
-      isAfter(subHours(new Date(), 12), cooldown)
+      isAfter(subHours(new Date(), 12), new Date(cooldown))
     );
     if (hasCooldownNow) {
       throw new Error("Cooldown because of a malware URL. Wait 12h");
@@ -142,7 +142,7 @@ export const ipCooldownCheck: RequestHandler = async (req, res, next) => {
   const ip = await getIP(req.realIP);
   if (ip) {
     const timeToWait =
-      cooldownConfig - differenceInMinutes(new Date(), ip.created_at);
+      cooldownConfig - differenceInMinutes(new Date(), new Date(ip.created_at));
     return res.status(400).json({
       error:
         `Non-logged in users are limited. Wait ${timeToWait} ` +

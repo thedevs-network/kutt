@@ -128,7 +128,6 @@ class TableOptions extends Component {
     return (e) => {
       const { active } = e.target.dataset;
       if (active === 'false') return null;
-      console.log({ page: this.props.url.page, num });
       return this.props.getUrlsList({ page: this.props.url.page + num });
     }
   }

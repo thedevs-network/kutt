@@ -7,7 +7,7 @@ import Footer from '../components/Footer';
 import { authUser } from '../actions';
 import Settings from '../components/Settings';
 
-const SettingsPage = ({ auth, isAuthenticated }) => console.log({auth}) || (
+const SettingsPage = ({ auth, isAuthenticated }) => (
   <BodyWrapper>
     {isAuthenticated ? <Settings /> : <PageLoading />}
     <Footer />

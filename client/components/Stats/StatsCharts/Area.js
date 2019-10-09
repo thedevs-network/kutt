@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import subHours from 'date-fns/sub_hours';
-import subDays from 'date-fns/sub_days';
-import subMonths from 'date-fns/sub_months';
+import subHours from 'date-fns/subHours';
+import subDays from 'date-fns/subDays';
+import subMonths from 'date-fns/subMonths';
 import formatDate from 'date-fns/format';
 import {
   AreaChart,
@@ -20,13 +20,13 @@ const ChartArea = ({ data: rawData, period }) => {
   const getDate = index => {
     switch (period) {
       case 'allTime':
-        return formatDate(subMonths(now, rawData.length - index), 'MMM YY');
+        return formatDate(subMonths(now, rawData.length - index - 1), 'MMM yyy');
       case 'lastDay':
-        return formatDate(subHours(now, rawData.length - index), 'HH:00');
+        return formatDate(subHours(now, rawData.length - index - 1), 'HH:00');
       case 'lastMonth':
       case 'lastWeek':
       default:
-        return formatDate(subDays(now, rawData.length - index), 'MMM DD');
+        return formatDate(subDays(now, rawData.length - index - 1), 'MMM dd');
     }
   };
   const data = rawData.map((view, index) => ({

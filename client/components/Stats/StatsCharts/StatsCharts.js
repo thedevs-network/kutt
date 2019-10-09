@@ -45,13 +45,13 @@ const StatsCharts = ({ stats, period, updatedAt }) => {
   const periodText = period.includes('last')
     ? `the last ${period.replace('last', '').toLocaleLowerCase()}`
     : 'all time';
-  const hasView = stats.views.filter(view => view > 0);
+  const hasView = stats.views.some(view => view > 0);
   return (
     <ChartsWrapper>
       <Row>
         <Area data={stats.views} period={period} updatedAt={updatedAt} periodText={periodText} />
       </Row>
-      {hasView.length
+      {hasView
         ? [
             <Row key="second-row">
               <Pie data={stats.stats.referrer} updatedAt={updatedAt} title="Referrals" />
