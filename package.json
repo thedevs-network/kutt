@@ -36,7 +36,7 @@
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
-    "date-fns": "^1.30.1",
+    "date-fns": "^2.4.1",
     "dotenv": "^8.0.0",
     "email-validator": "^1.2.3",
     "express": "^4.17.1",
