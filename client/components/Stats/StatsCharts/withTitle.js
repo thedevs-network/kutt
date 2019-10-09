@@ -49,7 +49,7 @@ const withTitle = ChartComponent => {
           {props.periodText ? ` tracked clicks in ${props.periodText}` : props.title}.
         </Title>
         {props.periodText && props.updatedAt && (
-          <SubTitle>Last update in {formatDate(props.updatedAt, 'dddd, hh:mm aa')}.</SubTitle>
+          <SubTitle>Last update in {formatDate(new Date(props.updatedAt), 'dddd, hh:mm aa')}.</SubTitle>
         )}
         <ChartComponent {...props} />
       </Wrapper>

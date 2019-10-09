@@ -48,7 +48,7 @@ class Footer extends Component {
           <a
             href="https://github.com/thedevs-network/kutt"
             title="GitHub"
-            target="_blank" // eslint-disable-line react/jsx-no-target-blank
+            target="_blank"
           >
             GitHub
           </a>

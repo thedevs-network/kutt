@@ -35,7 +35,7 @@ describe('url actions', () => {
         target: url,
         password: false,
         reuse: false,
-        shortUrl: 'http://kutt.it/123'
+        shortLink: 'http://kutt.it/123'
       };
 
       nock('http://localhost', {
@@ -83,7 +83,7 @@ describe('url actions', () => {
             target: 'https://kutt.it/',
             password: false,
             count: 0,
-            shortUrl: 'http://test.com/UkEs33'
+            shortLink: 'http://test.com/UkEs33'
           }
         ],
         countAll: 1
@@ -128,7 +128,7 @@ describe('url actions', () => {
           target: 'test.com',
           password: false,
           reuse: false,
-          shortUrl: 'http://kutt.it/123'
+          shortLink: 'http://kutt.it/123'
         }
       ];
 

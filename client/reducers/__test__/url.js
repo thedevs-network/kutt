@@ -36,7 +36,7 @@ describe('url reducer', () => {
       target: 'https://kutt.it/',
       password: false,
       reuse: false,
-      shortUrl: 'https://kutt.it/YufjdS'
+      shortLink: 'https://kutt.it/YufjdS'
     };
 
     const state = reducer(initialState, {
@@ -105,7 +105,7 @@ describe('url reducer', () => {
         target: 'https://kutt.it/',
         password: false,
         reuse: false,
-        shortUrl: 'https://kutt.it/YufjdS'
+        shortLink: 'https://kutt.it/YufjdS'
       },
       {
         createdAt: '2018-06-12T19:51:56.435Z',
@@ -113,7 +113,7 @@ describe('url reducer', () => {
         target: 'https://kutt.it/',
         password: false,
         reuse: false,
-        shortUrl: 'https://kutt.it/1gCdbC'
+        shortLink: 'https://kutt.it/1gCdbC'
       }
     ];
 
@@ -140,7 +140,7 @@ describe('url reducer', () => {
           target: 'https://kutt.it/',
           password: false,
           reuse: false,
-          shortUrl: 'https://kutt.it/YufjdS'
+          shortLink: 'https://kutt.it/YufjdS'
         },
         {
           createdAt: '2018-06-12T19:51:56.435Z',
@@ -148,7 +148,7 @@ describe('url reducer', () => {
           target: 'https://kutt.it/',
           password: false,
           reuse: false,
-          shortUrl: 'https://kutt.it/1gCdbC'
+          shortLink: 'https://kutt.it/1gCdbC'
         }
       ],
       isShortened: true,
@@ -173,7 +173,7 @@ describe('url reducer', () => {
       target: 'https://kutt.it/',
       password: false,
       reuse: false,
-      shortUrl: 'https://kutt.it/YufjdS'
+      shortLink: 'https://kutt.it/YufjdS'
     });
   });
 

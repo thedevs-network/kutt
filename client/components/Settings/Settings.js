@@ -78,7 +78,6 @@ class Settings extends Component {
       showModal: false,
       passwordMessage: '',
       passwordError: '',
-      useHttps: null,
       isCopied: false,
       ban: {
         domain: false,
@@ -175,10 +174,9 @@ class Settings extends Component {
   handleCustomDomain(e) {
     e.preventDefault();
     if (this.props.domainLoading) return null;
-    const { useHttps } = this.state;
     const customDomain = e.currentTarget.elements.customdomain.value;
     const homepage = e.currentTarget.elements.homepage.value;
-    return this.props.setCustomDomain({ customDomain, homepage, useHttps });
+    return this.props.setCustomDomain({ customDomain, homepage });
   }
 
   handleCheckbox({ target: { id, checked } }) {
@@ -257,7 +255,6 @@ class Settings extends Component {
         <SettingsDomain
           handleCustomDomain={this.handleCustomDomain}
           handleCheckbox={this.handleCheckbox}
-          useHttps={this.state.useHttps}
           loading={this.props.domainLoading}
           settings={this.props.settings}
           showDomainInput={this.props.showDomainInput}

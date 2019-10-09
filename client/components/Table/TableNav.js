@@ -16,16 +16,16 @@ const Nav = styled.button`
   box-shadow: 0 0px 10px rgba(100, 100, 100, 0.1);
   transition: all 0.2s ease-out;
 
-  ${({ active }) =>
-    active &&
+  ${({ disabled }) =>
+    !disabled &&
     css`
       background-color: white;
       cursor: pointer;
     `};
 
   :hover {
-    ${({ active }) =>
-      active &&
+    ${({ disabled }) =>
+      !disabled &&
       css`
         transform: translateY(-2px);
         box-shadow: 0 5px 25px rgba(50, 50, 50, 0.1);
@@ -49,10 +49,10 @@ const Icon = styled.img`
 
 const TableNav = ({ handleNav, next, prev }) => (
   <Wrapper>
-    <Nav active={prev} data-active={prev} data-type="prev" onClick={handleNav}>
+    <Nav disabled={!prev} onClick={handleNav(-1)}>
       <Icon src="/images/nav-left.svg" />
     </Nav>
-    <Nav active={next} data-active={next} data-type="next" onClick={handleNav}>
+    <Nav disabled={!next} onClick={handleNav(1)}>
       <Icon src="/images/nav-right.svg" />
     </Nav>
   </Wrapper>

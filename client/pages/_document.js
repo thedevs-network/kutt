@@ -1,4 +1,3 @@
-/* eslint-disable react/no-danger */
 import React from 'react';
 import Document, { Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
@@ -60,20 +59,8 @@ class AppDocument extends Document {
             }}
           />
 
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                if('serviceWorker' in navigator) {
-                  navigator.serviceWorker.register('sw.js', {
-                      scope: './'
-                    })
-                  }
-                `,
-            }}
-          />
-
           <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer />
-          <script src="/analytics.js" />
+          <script src="static/analytics.js" />
         </Head>
         <body style={style}>
           <Main />
