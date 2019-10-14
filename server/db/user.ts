@@ -29,7 +29,7 @@ export const getUser = async (emailOrKey = ""): Promise<User> => {
       "domains.homepage as homepage",
       "domains.address as domain"
     )
-    .where({ email: emailOrKey.toLowerCase() })
+    .where("email", "ILIKE", emailOrKey)
     .orWhere({ apikey: emailOrKey })
     .leftJoin("domains", "users.id", "domains.user_id")
     .first();
