@@ -66,6 +66,10 @@ You need to have [Node.js](https://nodejs.org/), [PostgreSQL](https://www.postgr
 
 **[Visit our wiki for a more complete setup and development guide.](https://github.com/thedevs-network/kutt/wiki/Setup-and-deployment)**
 
+### Docker
+
+You can use Docker to start the app. The simplest way is to just run `docker-compose up` command and then the app should be ready on port "3000".
+
 ## Browser Extensions
 
 Download Kutt's extension for web browsers via below links. You can also find the source code on [kutt-extension](https://github.com/abhijithvijayan/kutt-extension).
