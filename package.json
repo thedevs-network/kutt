@@ -47,7 +47,7 @@
     "js-cookie": "^2.2.0",
     "jsonwebtoken": "^8.4.0",
     "jwt-decode": "^2.2.0",
-    "knex": "^0.19.2",
+    "knex": "^0.19.5",
     "lodash": "^4.17.15",
     "mongoose": "^5.6.4",
     "morgan": "^1.9.1",
