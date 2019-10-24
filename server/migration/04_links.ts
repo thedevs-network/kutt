@@ -72,7 +72,9 @@ const postgres = knex({
 
                   stats.forEach(([b, o, country, referrer, date]) => {
                     if (b && o && country && referrer && date) {
-                      const dateHour = startOfHour(date).toISOString();
+                      const dateHour = startOfHour(
+                        new Date(date)
+                      ).toISOString();
                       const browser = b.toLowerCase();
                       const os = o === "Mac Os X" ? "macos" : o.toLowerCase();
                       visits[dateHour] = {
