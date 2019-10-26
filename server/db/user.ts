@@ -59,8 +59,8 @@ export const createUser = async (
 
   if (user) {
     await knex<User>("users")
-      .where({ email, updated_at: new Date().toISOString() })
-      .update(data);
+      .where({ email })
+      .update({ ...data, updated_at: new Date().toISOString() });
   } else {
     await knex<User>("users").insert(data);
   }
