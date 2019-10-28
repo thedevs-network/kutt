@@ -376,8 +376,8 @@ export const reportLink: Handler = async (req, res) => {
     from: process.env.MAIL_USER,
     to: process.env.REPORT_MAIL,
     subject: "[REPORT]",
-    text: req.body.url,
-    html: req.body.url
+    text: req.body.link,
+    html: req.body.link
   });
   if (mail.accepted.length) {
     return res
