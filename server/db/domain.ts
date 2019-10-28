@@ -58,8 +58,8 @@ export const setDomain = async (
     domain = response;
   }
 
-  redis.del(user.email);
-  redis.del(user.email);
+  redis.del(getRedisKey.user(user.email));
+  redis.del(getRedisKey.user(user.apikey));
   redis.del(getRedisKey.domain(updateDate.address));
 
   return domain;
@@ -75,8 +75,8 @@ export const deleteDomain = async (user: UserJoined) => {
     redis.del(getRedisKey.domain(domain.address));
   }
 
-  redis.del(user.email);
-  redis.del(user.apikey);
+  redis.del(getRedisKey.user(user.email));
+  redis.del(getRedisKey.user(user.apikey));
 
   return domain;
 };

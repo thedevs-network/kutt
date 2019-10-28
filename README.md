@@ -64,8 +64,6 @@ You need to have [Node.js](https://nodejs.org/), [PostgreSQL](https://www.postgr
 4. Run for development: `npm run dev`.
 5. Run for production: `npm run build` then `npm start`.
 
-**[Visit our wiki for a more complete setup and development guide.](https://github.com/thedevs-network/kutt/wiki/Setup-and-deployment)**
-
 ### Docker
 
 You can use Docker to start the app. The simplest way is to just run `docker-compose up` command and then the app should be ready on port "3000".
