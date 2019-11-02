@@ -4,6 +4,7 @@ import geoip from "geoip-lite";
 import URL from "url";
 
 import { createVisit, addLinkCount } from "./db/link";
+import { getStatsLimit } from "./utils";
 
 const redis = {
   port: Number(process.env.REDIS_PORT) || 6379,
@@ -30,13 +31,14 @@ visitQueue.process(({ data }) => {
 
   return Promise.all([
     addLinkCount(data.link.id),
-    createVisit({
-      browser: browser.toLowerCase(),
-      country: country || "Unknown",
-      domain: data.customDomain,
-      id: data.link.id,
-      os: os.toLowerCase().replace(/\s/gi, ""),
-      referrer: (referrer && referrer.replace(/\./gi, "[dot]")) || "Direct"
-    })
+    data.link.visit_count < getStatsLimit() &&
+      createVisit({
+        browser: browser.toLowerCase(),
+        country: country || "Unknown",
+        domain: data.customDomain,
+        id: data.link.id,
+        os: os.toLowerCase().replace(/\s/gi, ""),
+        referrer: (referrer && referrer.replace(/\./gi, "[dot]")) || "Direct"
+      })
   ]);
 });
