@@ -22,16 +22,18 @@ const filterInOs = agent => item =>
   agent.os.family.toLowerCase().includes(item.toLocaleLowerCase());
 
 visitQueue.process(({ data }) => {
-  const agent = useragent.parse(data.headers["user-agent"]);
-  const [browser = "Other"] = browsersList.filter(filterInBrowser(agent));
-  const [os = "Other"] = osList.filter(filterInOs(agent));
-  const referrer = data.referrer && URL.parse(data.referrer).hostname;
-  const location = geoip.lookup(data.realIP);
-  const country = location && location.country;
+  const tasks = [];
 
-  return Promise.all([
-    addLinkCount(data.link.id),
-    data.link.visit_count < getStatsLimit() &&
+  tasks.push(addLinkCount(data.link.id));
+
+  if (data.link.visit_count < getStatsLimit()) {
+    const agent = useragent.parse(data.headers["user-agent"]);
+    const [browser = "Other"] = browsersList.filter(filterInBrowser(agent));
+    const [os = "Other"] = osList.filter(filterInOs(agent));
+    const referrer = data.referrer && URL.parse(data.referrer).hostname;
+    const location = geoip.lookup(data.realIP);
+    const country = location && location.country;
+    tasks.push(
       createVisit({
         browser: browser.toLowerCase(),
         country: country || "Unknown",
@@ -40,5 +42,8 @@ visitQueue.process(({ data }) => {
         os: os.toLowerCase().replace(/\s/gi, ""),
         referrer: (referrer && referrer.replace(/\./gi, "[dot]")) || "Direct"
       })
-  ]);
+    );
+  }
+
+  return Promise.all(tasks);
 });
