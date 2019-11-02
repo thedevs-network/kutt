@@ -136,7 +136,6 @@ export const signup: Handler = async (req, res) => {
   if (email.length > 255) {
     return res.status(400).json({ error: "Maximum email length is 255." });
   }
-
   const user = await getUser(email);
 
   if (user && user.verified) {
@@ -145,29 +144,35 @@ export const signup: Handler = async (req, res) => {
 
   const newUser = await createUser(email, password, user);
 
-  const mail = await transporter.sendMail({
-    from: process.env.MAIL_FROM || process.env.MAIL_USER,
-    to: newUser.email,
-    subject: "Verify your account",
-    text: verifyMailText.replace(
-      /{{verification}}/gim,
-      newUser.verification_token
-    ),
-    html: verifyEmailTemplate.replace(
-      /{{verification}}/gim,
-      newUser.verification_token
-    )
-  });
+  try {
 
-  if (mail.accepted.length) {
+
+    const mail = await transporter.sendMail({
+      from: process.env.MAIL_FROM || process.env.MAIL_USER,
+      to: newUser.email,
+      subject: "Verify your account",
+      text: verifyMailText.replace(
+        /{{verification}}/gim,
+        newUser.verification_token
+      ),
+      html: verifyEmailTemplate.replace(
+        /{{verification}}/gim,
+        newUser.verification_token
+      )
+    });
+
+    if (mail.accepted.length) {
+      return res
+        .status(201)
+        .json({ email, message: "Verification email has been sent." });
+    }
+
     return res
-      .status(201)
-      .json({ email, message: "Verification email has been sent." });
+      .status(400)
+      .json({ error: "Couldn't send verification email. Try again." });
+  } catch (error) {
+    console.log({ error });
   }
-
-  return res
-    .status(400)
-    .json({ error: "Couldn't send verification email. Try again." });
 };
 
 export const login: Handler = (req, res) => {
