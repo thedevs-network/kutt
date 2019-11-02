@@ -29,6 +29,8 @@ visitQueue.process(({ data }) => {
   const location = geoip.lookup(data.realIP);
   const country = location && location.country;
 
+  if (data.visit_count > getStatsLimit()) return;
+
   return Promise.all([
     addLinkCount(data.link.id),
     createVisit({
