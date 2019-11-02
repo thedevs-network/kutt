@@ -42,7 +42,3 @@ visitQueue.process(({ data }) => {
     })
   ]);
 });
-
-visitQueue.on("active", (job, prom) => {
-  console.dir({ job, prom }, Infinity);
-});
