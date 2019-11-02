@@ -20,7 +20,12 @@ import {
 } from "../db/link";
 import transporter from "../mail/mail";
 import * as redis from "../redis";
-import { addProtocol, generateShortLink, getStatsCacheTime } from "../utils";
+import {
+  addProtocol,
+  generateShortLink,
+  getStatsCacheTime,
+  getStatsLimit
+} from "../utils";
 import {
   checkBannedDomain,
   checkBannedHost,
@@ -155,7 +160,7 @@ export const goToLink: Handler = async (req, res, next) => {
     if (!isMatch) {
       return res.status(401).json({ error: "Password is not correct" });
     }
-    if (link.user_id && !isBot) {
+    if (link.visit_count < getStatsLimit() && link.user_id && !isBot) {
       visitQueue.add({
         headers: req.headers,
         realIP: req.realIP,
@@ -167,7 +172,7 @@ export const goToLink: Handler = async (req, res, next) => {
     return res.status(200).json({ target: link.target });
   }
 
-  if (link.user_id && !isBot) {
+  if (link.visit_count < getStatsLimit() && link.user_id && !isBot) {
     visitQueue.add({
       headers: req.headers,
       realIP: req.realIP,

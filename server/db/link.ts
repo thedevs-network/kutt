@@ -59,7 +59,6 @@ interface ICreateVisit {
   country: string;
   domain?: string;
   id: number;
-  limit: number;
   os: string;
   referrer: string;
 }
