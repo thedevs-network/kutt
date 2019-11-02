@@ -160,7 +160,7 @@ export const goToLink: Handler = async (req, res, next) => {
     if (!isMatch) {
       return res.status(401).json({ error: "Password is not correct" });
     }
-    if (link.visit_count < getStatsLimit() && link.user_id && !isBot) {
+    if (link.user_id && !isBot && link.visit_count < getStatsLimit()) {
       visitQueue.add({
         headers: req.headers,
         realIP: req.realIP,
@@ -172,7 +172,7 @@ export const goToLink: Handler = async (req, res, next) => {
     return res.status(200).json({ target: link.target });
   }
 
-  if (link.visit_count < getStatsLimit() && link.user_id && !isBot) {
+  if (link.user_id && !isBot && link.visit_count < getStatsLimit()) {
     visitQueue.add({
       headers: req.headers,
       realIP: req.realIP,
