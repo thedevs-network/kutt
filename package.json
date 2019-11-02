@@ -34,6 +34,7 @@
   "dependencies": {
     "axios": "^0.19.0",
     "bcryptjs": "^2.4.3",
+    "bull": "^3.11.0",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "date-fns": "^2.4.1",
@@ -94,6 +95,7 @@
     "@babel/register": "^7.0.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/body-parser": "^1.17.0",
+    "@types/bull": "^3.10.5",
     "@types/cookie-parser": "^1.4.1",
     "@types/cors": "^2.8.5",
     "@types/date-fns": "^2.6.0",
