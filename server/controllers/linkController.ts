@@ -1,21 +1,17 @@
 import bcrypt from "bcryptjs";
 import dns from "dns";
 import { Handler } from "express";
-import geoip from "geoip-lite";
 import isbot from "isbot";
 import generate from "nanoid/generate";
 import ua from "universal-analytics";
 import URL from "url";
 import urlRegex from "url-regex";
-import useragent from "useragent";
 import { promisify } from "util";
 import { deleteDomain, getDomain, setDomain } from "../db/domain";
 import { addIP } from "../db/ip";
 import {
-  addLinkCount,
   banLink,
   createShortLink,
-  createVisit,
   deleteLink,
   findLink,
   getLinks,
@@ -24,12 +20,7 @@ import {
 } from "../db/link";
 import transporter from "../mail/mail";
 import * as redis from "../redis";
-import {
-  addProtocol,
-  generateShortLink,
-  getStatsCacheTime,
-  getStatsLimit
-} from "../utils";
+import { addProtocol, generateShortLink, getStatsCacheTime } from "../utils";
 import {
   checkBannedDomain,
   checkBannedHost,
@@ -38,6 +29,7 @@ import {
   preservedUrls,
   urlCountsCheck
 } from "./validateBodyController";
+import { visitQueue } from "../queues";
 
 const dnsLookup = promisify(dns.lookup);
 
@@ -119,29 +111,17 @@ export const shortener: Handler = async (req, res) => {
   }
 };
 
-const browsersList = ["IE", "Firefox", "Chrome", "Opera", "Safari", "Edge"];
-const osList = ["Windows", "Mac OS", "Linux", "Android", "iOS"];
-const filterInBrowser = agent => item =>
-  agent.family.toLowerCase().includes(item.toLocaleLowerCase());
-const filterInOs = agent => item =>
-  agent.os.family.toLowerCase().includes(item.toLocaleLowerCase());
-
 export const goToLink: Handler = async (req, res, next) => {
   const { host } = req.headers;
   const reqestedId = req.params.id || req.body.id;
   const address = reqestedId.replace("+", "");
   const customDomain = host !== process.env.DEFAULT_DOMAIN && host;
-  // TODO: Extract parsing into their own function
-  const agent = useragent.parse(req.headers["user-agent"]);
-  const [browser = "Other"] = browsersList.filter(filterInBrowser(agent));
-  const [os = "Other"] = osList.filter(filterInOs(agent));
-  const referrer =
-    req.header("Referer") && URL.parse(req.header("Referer")).hostname;
-  const location = geoip.lookup(req.realIP);
-  const country = location && location.country;
   const isBot = isbot(req.headers["user-agent"]);
 
-  const domain = await (customDomain && getDomain({ address: customDomain }));
+  let domain;
+  if (customDomain) {
+    domain = await getDomain({ address: customDomain });
+  }
 
   const link = await findLink({ address, domain_id: domain && domain.id });
 
@@ -176,29 +156,24 @@ export const goToLink: Handler = async (req, res, next) => {
       return res.status(401).json({ error: "Password is not correct" });
     }
     if (link.user_id && !isBot) {
-      addLinkCount(link.id);
-      createVisit({
-        browser: browser.toLowerCase(),
-        country: country || "Unknown",
-        domain: customDomain,
-        id: link.id,
-        os: os.toLowerCase().replace(/\s/gi, ""),
-        referrer: referrer.replace(/\./gi, "[dot]") || "Direct",
-        limit: getStatsLimit()
+      visitQueue.add({
+        headers: req.headers,
+        realIP: req.realIP,
+        referrer: req.get("Referrer"),
+        link,
+        customDomain
       });
     }
     return res.status(200).json({ target: link.target });
   }
+
   if (link.user_id && !isBot) {
-    addLinkCount(link.id);
-    createVisit({
-      browser: browser.toLowerCase(),
-      country: (country && country.toLocaleLowerCase()) || "unknown",
-      domain: customDomain,
-      id: link.id,
-      os: os.toLowerCase().replace(/\s/gi, ""),
-      referrer: (referrer && referrer.replace(/\./gi, "[dot]")) || "direct",
-      limit: getStatsLimit()
+    visitQueue.add({
+      headers: req.headers,
+      realIP: req.realIP,
+      referrer: req.get("Referrer"),
+      link,
+      customDomain
     });
   }
 

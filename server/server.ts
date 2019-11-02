@@ -56,7 +56,6 @@ app.prepare().then(async () => {
   server.use(express.static("static"));
 
   server.use((error, req, res, next) => {
-    console.log({ error });
     res
       .status(500)
       .json({ error: "Sorry an error ocurred. Please try again later." });
