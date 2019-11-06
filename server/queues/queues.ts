@@ -14,7 +14,7 @@ export const visitQueue = new Queue("visit", { redis });
 visitQueue.clean(5000, "completed");
 visitQueue.clean(5000, "failed");
 
-visitQueue.process(path.resolve(__dirname, "visitQueue.js"));
+visitQueue.process(4, path.resolve(__dirname, "visitQueue.js"));
 
 visitQueue.on("completed", removeJob);
 visitQueue.on("failed", removeJob);
