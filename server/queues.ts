@@ -14,6 +14,9 @@ const redis = {
 
 export const visitQueue = new Queue("visit", { redis });
 
+visitQueue.clean(5000, "completed");
+visitQueue.clean(5000, "failed");
+
 const browsersList = ["IE", "Firefox", "Chrome", "Opera", "Safari", "Edge"];
 const osList = ["Windows", "Mac OS", "Linux", "Android", "iOS"];
 const filterInBrowser = agent => item =>
@@ -47,3 +50,8 @@ visitQueue.process(({ data }) => {
 
   return Promise.all(tasks);
 });
+
+const removeJob = job => job.remove();
+
+visitQueue.on("completed", removeJob);
+visitQueue.on("failed", removeJob);
