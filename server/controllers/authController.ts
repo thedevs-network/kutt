@@ -136,7 +136,6 @@ export const signup: Handler = async (req, res) => {
   if (email.length > 255) {
     return res.status(400).json({ error: "Maximum email length is 255." });
   }
-
   const user = await getUser(email);
 
   if (user && user.verified) {

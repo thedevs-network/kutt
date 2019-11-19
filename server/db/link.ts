@@ -59,7 +59,6 @@ interface ICreateVisit {
   country: string;
   domain?: string;
   id: number;
-  limit: number;
   os: string;
   referrer: string;
 }
@@ -399,7 +398,6 @@ export const getStats = async (link: Link, domain: Domain) => {
       set(new Date(), { date: 1 }),
       set(new Date(visit.created_at), { date: 1 })
     );
-    console.log(diff);
     const index = stats.allTime.views.length - diff - 1;
     const view = stats.allTime.views[index];
     stats.allTime.stats = {
