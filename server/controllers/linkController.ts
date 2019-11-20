@@ -285,7 +285,7 @@ export const deleteUserLink: Handler = async (req, res) => {
 
   const response = await deleteLink({
     address: id,
-    domain: domain !== process.env.DEFAULT_DOMAIN && domain,
+    domain: !domain || domain === process.env.DEFAULT_DOMAIN ? null : domain,
     user_id: req.user.id
   });
 
