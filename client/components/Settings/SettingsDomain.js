@@ -101,7 +101,7 @@ const SettingsDomain = ({
       have <b>example.com/shorturl.</b>
     </p>
     <p>
-      Point your domain A record to <b>164.132.153.221</b> then add the domain via form below:
+      Point your domain A record to <b>192.64.116.170</b> then add the domain via form below:
     </p>
     {settings.customDomain && !settings.domainInput ? (
       <div>
