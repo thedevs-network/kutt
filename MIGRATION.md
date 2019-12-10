@@ -2,7 +2,7 @@
 
 As explained in issue #197, Kutt is ditching Neo4j in favor of Postgres in version 2. But what happens to old data? Well, I have created migration scripts that you can use to transfer data from your Neo4j database to your new Postgres database.
 
-### 🚧 IMPORTANT: v2 is still in beta, proceed carefully!!1!
+### 🚧 IMPORTANT: v2 is still in beta (but somehow more stable than v1)
 
 ## General recommendations
 
@@ -15,7 +15,7 @@ Set up a Postgres database, either on your own server or using a SaaS service.
 
 ## 2. Pull and run Kutt's new version
 
-Right now version 2 is in beta. Therefore, pull from `v2-beta` branch and create and fill the `.env` file based on `.example.env`.
+Right now version 2 is in beta. Therefore, pull from `develop` branch and create and fill the `.env` file based on `.example.env`.
 
 **NOTE**: Run the app at least once and let it create and initialize tables in the database. You just need to do `npm run dev` and wait for it to create tables. Then check your database to make sure tables have been created. (If your production database is separate, you need to initialize it too).
 
