@@ -1,0 +1,138 @@
+import React, { FC } from "react";
+import styled, { css } from "styled-components";
+import { switchProp, prop, ifProp } from "styled-tools";
+import { Flex, BoxProps } from "reflexbox/styled-components";
+
+// TODO: another solution for inline SVG
+import SVG from "react-inlinesvg";
+
+import { spin } from "../helpers/animations";
+
+interface Props extends BoxProps {
+  color?: "purple" | "gray" | "blue";
+  disabled?: boolean;
+  icon?: string; // TODO: better typing
+  isRound?: boolean;
+  onClick?: any; // TODO: better typing
+  type?: "button" | "submit" | "reset";
+}
+
+const StyledButton = styled(Flex)<Props>`
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  font-weight: normal;
+  text-align: center;
+  line-height: 1;
+  word-break: keep-all;
+  color: white;
+  background: ${switchProp(prop("color", "blue"), {
+    blue: "linear-gradient(to right, #42a5f5, #2979ff)",
+    purple: "linear-gradient(to right, #7e57c2, #6200ea)",
+    gray: "linear-gradient(to right, #e0e0e0, #bdbdbd)"
+  })};
+  box-shadow: ${switchProp(prop("color", "blue"), {
+    blue: "0 5px 6px rgba(66, 165, 245, 0.5)",
+    purple: "0 5px 6px rgba(81, 45, 168, 0.5)",
+    gray: "0 5px 6px rgba(160, 160, 160, 0.5)"
+  })};
+  border: none;
+  border-radius: 100px;
+  transition: all 0.4s ease-out;
+  cursor: pointer;
+  overflow: hidden;
+
+  :hover,
+  :focus {
+    outline: none;
+    box-shadow: ${switchProp(prop("color", "blue"), {
+      blue: "0 6px 15px rgba(66, 165, 245, 0.5)",
+      purple: "0 6px 15px rgba(81, 45, 168, 0.5)",
+      gray: "0 6px 15px rgba(160, 160, 160, 0.5)"
+    })};
+    transform: translateY(-2px) scale(1.02, 1.02);
+  }
+
+  a & {
+    text-decoration: none;
+    border: none;
+  }
+
+  ${ifProp(
+    { size: "big" },
+    css`
+      height: 56px;
+      @media only screen and (max-width: 448px) {
+        height: 40px;
+      }
+    `
+  )}
+`;
+
+const Icon = styled(SVG)`
+  svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 12px;
+    stroke: ${ifProp({ color: "gray" }, "#444", "#fff")};
+
+    ${ifProp(
+      { icon: "loader" },
+      css`
+        width: 20px;
+        height: 20px;
+        margin: 0;
+        animation: ${spin} 1s linear infinite;
+      `
+    )}
+
+    ${ifProp(
+      "isRound",
+      css`
+        width: 15px;
+        height: 15px;
+        margin: 0;
+      `
+    )}
+
+    @media only screen and (max-width: 768px) {
+      width: 12px;
+      height: 12px;
+      margin-right: 6px;
+    }
+  }
+`;
+
+const Button: FC<Props> = props => {
+  const SVGIcon = props.icon ? (
+    <Icon
+      icon={props.icon}
+      isRound={props.isRound}
+      color={props.color}
+      src={`/images/${props.icon}.svg`}
+    />
+  ) : (
+    ""
+  );
+  return (
+    <StyledButton {...props}>
+      {SVGIcon}
+      {props.icon !== "loader" && props.children}
+    </StyledButton>
+  );
+};
+
+Button.defaultProps = {
+  as: "button",
+  width: "auto",
+  flex: "0 0 auto",
+  height: [32, 40],
+  py: 0,
+  px: [24, 32],
+  fontSize: [12, 13],
+  color: "blue",
+  icon: "",
+  isRound: false
+};
+
+export default Button;

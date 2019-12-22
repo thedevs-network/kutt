@@ -8,7 +8,7 @@ import Features from '../components/Features';
 import Extensions from '../components/Extensions';
 import Table from '../components/Table';
 import NeedToLogin from '../components/NeedToLogin';
-import Footer from '../components/Footer/Footer';
+import Footer from '../components/Footer';
 import { authUser, getUrlsList } from '../actions';
 
 class Homepage extends Component {
@@ -48,7 +48,9 @@ Homepage.propTypes = {
   getUrlsList: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = ({ auth: { isAuthenticated } }) => ({ isAuthenticated });
+const mapStateToProps = ({ auth: { isAuthenticated } }) => ({
+  isAuthenticated,
+});
 
 const mapDispatchToProps = dispatch => ({
   getUrlsList: bindActionCreators(getUrlsList, dispatch),

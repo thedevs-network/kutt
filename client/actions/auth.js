@@ -1,7 +1,7 @@
-import Router from 'next/router';
-import axios from 'axios';
-import cookie from 'js-cookie';
-import decodeJwt from 'jwt-decode';
+import Router from "next/router";
+import axios from "axios";
+import cookie from "js-cookie";
+import decodeJwt from "jwt-decode";
 import {
   SET_DOMAIN,
   SHOW_PAGE_LOADING,
@@ -12,8 +12,8 @@ import {
   AUTH_ERROR,
   LOGIN_LOADING,
   SIGNUP_LOADING,
-  AUTH_RENEW,
-} from './actionTypes';
+  AUTH_RENEW
+} from "./actionTypes";
 
 const setDomain = payload => ({ type: SET_DOMAIN, payload });
 
@@ -23,7 +23,7 @@ export const authUser = payload => ({ type: AUTH_USER, payload });
 export const unauthUser = () => ({ type: UNAUTH_USER });
 export const sentVerification = payload => ({
   type: SENT_VERIFICATION,
-  payload,
+  payload
 });
 export const showAuthError = payload => ({ type: AUTH_ERROR, payload });
 export const showLoginLoading = () => ({ type: LOGIN_LOADING });
@@ -34,8 +34,8 @@ export const signupUser = payload => async dispatch => {
   dispatch(showSignupLoading());
   try {
     const {
-      data: { email },
-    } = await axios.post('/api/auth/signup', payload);
+      data: { email }
+    } = await axios.post("/api/auth/signup", payload);
     dispatch(sentVerification(email));
   } catch ({ response }) {
     dispatch(showAuthError(response.data.error));
@@ -46,14 +46,14 @@ export const loginUser = payload => async dispatch => {
   dispatch(showLoginLoading());
   try {
     const {
-      data: { token },
-    } = await axios.post('/api/auth/login', payload);
-    cookie.set('token', token, { expires: 7 });
+      data: { token }
+    } = await axios.post("/api/auth/login", payload);
+    cookie.set("token", token, { expires: 7 });
     dispatch(authRenew());
     dispatch(authUser(decodeJwt(token)));
     dispatch(setDomain({ customDomain: decodeJwt(token).domain }));
     dispatch(showPageLoading());
-    Router.push('/');
+    Router.push("/");
   } catch ({ response }) {
     dispatch(showAuthError(response.data.error));
   }
@@ -61,9 +61,9 @@ export const loginUser = payload => async dispatch => {
 
 export const logoutUser = () => dispatch => {
   dispatch(showPageLoading());
-  cookie.remove('token');
+  cookie.remove("token");
   dispatch(unauthUser());
-  Router.push('/login');
+  Router.push("/login");
 };
 
 export const renewAuthUser = () => async (dispatch, getState) => {
@@ -72,21 +72,21 @@ export const renewAuthUser = () => async (dispatch, getState) => {
   }
 
   const options = {
-    method: 'POST',
-    headers: { Authorization: cookie.get('token') },
-    url: '/api/auth/renew',
+    method: "POST",
+    headers: { Authorization: cookie.get("token") },
+    url: "/api/auth/renew"
   };
 
   try {
     const {
-      data: { token },
+      data: { token }
     } = await axios(options);
-    cookie.set('token', token, { expires: 7 });
+    cookie.set("token", token, { expires: 7 });
     dispatch(authRenew());
     dispatch(authUser(decodeJwt(token)));
     dispatch(setDomain({ customDomain: decodeJwt(token).domain }));
   } catch (error) {
-    cookie.remove('token');
+    cookie.remove("token");
     dispatch(unauthUser());
   }
 };
