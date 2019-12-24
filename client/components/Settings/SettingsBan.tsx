@@ -4,12 +4,13 @@ import { useFormState } from "react-use-form-state";
 import axios from "axios";
 
 import { getAxiosConfig } from "../../utils";
+import { useMessage } from "../../hooks";
 import TextInput from "../TextInput";
 import Checkbox from "../Checkbox";
-import { API } from '../../consts';
+import { API } from "../../consts";
 import Button from "../Button";
+import Icon from "../Icon";
 import Text from "../Text";
-import { useMessage } from "../../hooks";
 
 interface BanForm {
   id: string;
@@ -26,9 +27,13 @@ const SettingsBan: FC = () => {
   const onSubmit = async e => {
     e.preventDefault();
     setSubmitting(true);
-    setMessage()
+    setMessage();
     try {
-      const { data } = await axios.post(API.BAN_LINK, formState.values, getAxiosConfig());
+      const { data } = await axios.post(
+        API.BAN_LINK,
+        formState.values,
+        getAxiosConfig()
+      );
       setMessage(data.message, "green");
       formState.clear();
     } catch (err) {
@@ -39,8 +44,15 @@ const SettingsBan: FC = () => {
 
   return (
     <Flex flexDirection="column">
-      <Text as="h2" fontWeight={700} mb={4}>Ban link</Text>
-      <Flex as="form" flexDirection="column" onSubmit={onSubmit} alignItems="flex-start">
+      <Text as="h2" fontWeight={700} mb={4}>
+        Ban link
+      </Text>
+      <Flex
+        as="form"
+        flexDirection="column"
+        onSubmit={onSubmit}
+        alignItems="flex-start"
+      >
         <Flex mb={24} alignItems="center">
           <TextInput
             {...text("id")}
@@ -53,11 +65,8 @@ const SettingsBan: FC = () => {
             pr={24}
             width={[1, 3 / 5]}
           />
-          <Button
-            type="submit"
-            icon={submitting ? "loader" : "lock"}
-            disabled={submitting}
-          >
+          <Button type="submit" disabled={submitting}>
+            <Icon name={submitting ? "spinner" : "lock"} color="white" mr={2} />
             {submitting ? "Banning..." : "Ban"}
           </Button>
         </Flex>
@@ -68,7 +77,9 @@ const SettingsBan: FC = () => {
         />
         <Checkbox {...checkbox("domain")} label="Ban Domain" mb={12} />
         <Checkbox {...checkbox("host")} label="Ban Host/IP" />
-        <Text color={message.color} mt={3}>{message.text}</Text>
+        <Text color={message.color} mt={3}>
+          {message.text}
+        </Text>
       </Flex>
     </Flex>
   );

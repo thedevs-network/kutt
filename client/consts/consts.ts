@@ -6,5 +6,6 @@ export enum API {
   CHANGE_PASSWORD = "/api/auth/changepassword",
   BAN_LINK = "/api/url/admin/ban",
   CUSTOM_DOMAIN = "/api/url/customdomain",
-  GENERATE_APIKEY = "/api/auth/generateapikey"
+  GENERATE_APIKEY = "/api/auth/generateapikey",
+  SETTINGS = "/api/auth/usersettings"
 }

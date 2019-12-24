@@ -1,14 +1,14 @@
-import React, { Component, FC, useState } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import styled from 'styled-components';
-import { Flex } from 'reflexbox/styled-components';
+import React, { Component, FC, useState } from "react";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import styled from "styled-components";
+import { Flex } from "reflexbox/styled-components";
 
-import THead from './Table/THead';
-import TBody from './Table/TBody';
-import TableOptions from './TableOptions';
-import { deleteShortUrl, getUrlsList } from '../actions';
-import Modal from './Modal';
+import THead from "./Table/THead";
+import TBody from "./Table/TBody";
+import TableOptions from "./TableOptions";
+import { deleteShortUrl, getUrlsList } from "../actions";
+import Modal from "./Modal";
 
 interface Props {
   deleteShortUrl: any; // TODO: types
@@ -72,9 +72,9 @@ const TFoot = styled.tfoot`
 `;
 
 const defualtModal = {
-  id: '',
-  domain: '',
-  show: false,
+  id: "",
+  domain: "",
+  show: false
 };
 
 const Table: FC<Props> = ({ deleteShortUrl, url }) => {
@@ -94,7 +94,7 @@ const Table: FC<Props> = ({ deleteShortUrl, url }) => {
       setModal({
         id: url.address,
         domain: url.domain,
-        show: true,
+        show: true
       });
     };
   }
@@ -126,7 +126,7 @@ const Table: FC<Props> = ({ deleteShortUrl, url }) => {
           <TableOptions nosearch />
         </TFoot>
       </TableWrapper>
-      <Modal show={modal.show} handler={deleteUrl} close={closeModal}>
+      <Modal show={modal.show}>
         Are you sure do you want to delete the short URL and its stats?
       </Modal>
     </Flex>
@@ -137,10 +137,7 @@ const mapStateToProps = ({ url }) => ({ url });
 
 const mapDispatchToProps = dispatch => ({
   deleteShortUrl: bindActionCreators(deleteShortUrl, dispatch),
-  getUrlsList: bindActionCreators(getUrlsList, dispatch),
+  getUrlsList: bindActionCreators(getUrlsList, dispatch)
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Table);
+export default connect(mapStateToProps, mapDispatchToProps)(Table);

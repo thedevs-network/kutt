@@ -1,14 +1,14 @@
-import React, { FC, useState } from 'react';
-import styled from 'styled-components';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import QRCode from 'qrcode.react';
-import { Flex } from 'reflexbox/styled-components';
+import React, { FC, useState } from "react";
+import styled from "styled-components";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import QRCode from "qrcode.react";
+import { Flex } from "reflexbox/styled-components";
 
-import Button from '../Button';
-import Loading from '../PageLoading';
-import { fadeIn } from '../../helpers/animations';
-import TBodyButton from '../Table/TBody/TBodyButton';
-import Modal from '../Modal';
+import Button from "../Button";
+import Loading from "../PageLoading";
+import { fadeIn } from "../../helpers/animations";
+import TBodyButton from "../Table/TBody/TBodyButton";
+import Modal from "../Modal";
 
 // TODO: types
 interface Props {
@@ -21,8 +21,8 @@ interface Props {
 }
 
 const Wrapper = styled(Flex).attrs({
-  justifyContent: 'center',
-  alignItems: 'center',
+  justifyContent: "center",
+  alignItems: "center"
 })`
   position: relative;
 
@@ -87,7 +87,7 @@ const ShortenerResult: FC<Props> = ({
   copyHandler,
   isCopied,
   loading,
-  url,
+  url
 }) => {
   const [qrModal, setQrModal] = useState(false);
   const toggleQrCodeModal = () => setQrModal(current => !current);
@@ -100,7 +100,7 @@ const ShortenerResult: FC<Props> = ({
     <Wrapper>
       {isCopied && <CopyMessage>Copied to clipboard.</CopyMessage>}
       <CopyToClipboard text={url.list[0].shortLink} onCopy={copyHandler}>
-        <Url>{url.list[0].shortLink.replace(/^https?:\/\//, '')}</Url>
+        <Url>{url.list[0].shortLink.replace(/^https?:\/\//, "")}</Url>
       </CopyToClipboard>
       <CopyToClipboard text={url.list[0].shortLink} onCopy={copyHandler}>
         <Button icon="copy">Copy</Button>
@@ -110,7 +110,7 @@ const ShortenerResult: FC<Props> = ({
           <Icon src="/images/qrcode.svg" />
         </QRButton>
       )}
-      <Modal show={qrModal} close={toggleQrCodeModal}>
+      <Modal show={qrModal}>
         <QRCode value={url.list[0].shortLink} size={196} />
       </Modal>
     </Wrapper>

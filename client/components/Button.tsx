@@ -25,7 +25,11 @@ const StyledButton = styled(Flex)<Props>`
   text-align: center;
   line-height: 1;
   word-break: keep-all;
-  color: white;
+  color: ${switchProp(prop("color", "blue"), {
+    blue: "white",
+    purple: "white",
+    gray: "#444"
+  })};
   background: ${switchProp(prop("color", "blue"), {
     blue: "linear-gradient(to right, #42a5f5, #2979ff)",
     purple: "linear-gradient(to right, #7e57c2, #6200ea)",

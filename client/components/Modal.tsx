@@ -1,13 +1,11 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { Flex } from 'reflexbox/styled-components';
-
-import Button from './Button';
+import React, { FC } from "react";
+import styled from "styled-components";
+import { Flex } from "reflexbox/styled-components";
 
 interface Props {
-  close: any; // TODO: typing
-  handler?: any; // TODO: typing
-  show?: boolean;
+  show: boolean;
+  id?: string;
+  closeHandler?: () => unknown;
 }
 
 const Wrapper = styled.div`
@@ -23,45 +21,31 @@ const Wrapper = styled.div`
   z-index: 1000;
 `;
 
-const Content = styled.div`
-  padding: 48px 64px;
-  text-align: center;
-  border-radius: 8px;
-  background-color: white;
+const Modal: FC<Props> = ({ children, id, show, closeHandler }) => {
+  if (!show) return null;
 
-  @media only screen and (max-width: 768px) {
-    width: 90%;
-    padding: 32px;
-  }
-`;
+  const onClickOutside = e => {
+    if (e.target.id === id) closeHandler();
+  };
 
-const ButtonsWrapper = styled(Flex).attrs({
-  justifyContent: 'center',
-  mt: 40,
-})`
-  button {
-    margin: 0 16px;
-  }
-`;
-
-const Modal: FC<Props> = ({ children, handler, show, close }) =>
-  show ? (
-    <Wrapper>
-      <Content>
+  return (
+    <Wrapper id={id} onClick={onClickOutside}>
+      <Flex
+        minWidth={[400, 450]}
+        maxWidth={0.9}
+        py={[32, 32, 48]}
+        px={[24, 24, 32]}
+        style={{ borderRadius: 8, backgroundColor: "white" }}
+        flexDirection="column"
+      >
         {children}
-        <ButtonsWrapper>
-          <Button color="gray" onClick={close}>
-            {handler ? 'No' : 'Close'}
-          </Button>
-          {handler && <Button onClick={handler}>Yes</Button>}
-        </ButtonsWrapper>
-      </Content>
+      </Flex>
     </Wrapper>
-  ) : null;
+  );
+};
 
 Modal.defaultProps = {
-  show: false,
-  handler: null,
+  show: false
 };
 
 export default Modal;

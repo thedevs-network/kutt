@@ -8,6 +8,7 @@ import { useMessage } from "../../hooks";
 import TextInput from "../TextInput";
 import { API } from "../../consts";
 import Button from "../Button";
+import Icon from "../Icon";
 import Text from "../Text";
 
 const SettingsPassword: FC = () => {
@@ -62,11 +63,12 @@ const SettingsPassword: FC = () => {
           mr={3}
           required
         />
-        <Button type="submit" icon={loading ? "loader" : "refresh"}>
+        <Button type="submit" disabled={loading}>
+          <Icon name={loading ? "spinner" : "refresh"} mr={2} color="white" />
           {loading ? "Updating..." : "Update"}
         </Button>
       </Flex>
-      <Text color={message.color} mt={3} fontSize={14}>
+      <Text color={message.color} mt={3} fontSize={15}>
         {message.text}
       </Text>
     </Flex>

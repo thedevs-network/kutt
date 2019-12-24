@@ -70,7 +70,7 @@ const TBodyCount: FC<Props> = ({ url }) => {
           <Icon src="/images/trash.svg" />
         </TBodyButton>
       </Actions>
-      <Modal show={showModal} close={toggleQrCodeModal}>
+      <Modal show={showModal}>
         <QRCode value={url.shortLink} size={196} />
       </Modal>
     </Flex>

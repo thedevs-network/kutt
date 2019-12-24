@@ -1,17 +1,24 @@
 import { action, Action, thunk, Thunk } from "easy-peasy";
 import axios from "axios";
 
-import { API } from "../consts";
 import { getAxiosConfig } from "../utils";
+import { StoreModel } from "./store";
+import { API } from "../consts";
 
-interface Domain {
+export interface Domain {
   customDomain: string;
   homepage: string;
+}
+
+export interface SettingsResp extends Domain {
+  apikey: string;
 }
 
 export interface Settings {
   domains: Array<Domain>;
   apikey: string;
+  setSettings: Action<Settings, SettingsResp>;
+  getSettings: Thunk<Settings, null, null, StoreModel>;
   setApiKey: Action<Settings, string>;
   generateApiKey: Thunk<Settings>;
   addDomain: Action<Settings, Domain>;
@@ -23,6 +30,23 @@ export interface Settings {
 export const settings: Settings = {
   domains: [],
   apikey: null,
+  setSettings: action((state, payload) => {
+    state.apikey = payload.apikey;
+    if (payload.customDomain) {
+      state.domains = [
+        {
+          customDomain: payload.customDomain,
+          homepage: payload.homepage
+        }
+      ];
+    }
+  }),
+  getSettings: thunk(async (actions, payload, { getStoreActions }) => {
+    getStoreActions().loading.show();
+    const res = await axios.get(API.SETTINGS, getAxiosConfig());
+    actions.setSettings(res.data);
+    getStoreActions().loading.hide();
+  }),
   setApiKey: action((state, payload) => {
     state.apikey = payload;
   }),

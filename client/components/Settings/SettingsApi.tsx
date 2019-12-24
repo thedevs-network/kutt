@@ -1,12 +1,13 @@
-import React, { FC, useState } from "react";
-import styled from "styled-components";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Flex } from "reflexbox/styled-components";
+import React, { FC, useState } from "react";
+import styled from "styled-components";
 
-import Button from "../Button";
-import Text from "../Text";
-import ALink from "../ALink";
 import { useStoreState, useStoreActions } from "../../store";
+import Button from "../Button";
+import ALink from "../ALink";
+import Icon from "../Icon";
+import Text from "../Text";
 
 const ApiKey = styled(Text).attrs({
   mr: 3,
@@ -31,6 +32,7 @@ const SettingsApi: FC = () => {
   };
 
   const onSubmit = async () => {
+    if (loading) return;
     setLoading(true);
     await generateApiKey();
     setLoading(false);
@@ -82,11 +84,8 @@ const SettingsApi: FC = () => {
           </Flex>
         </Flex>
       )}
-      <Button
-        color="purple"
-        icon={loading ? "loader" : "zap"}
-        onClick={onSubmit}
-      >
+      <Button color="purple" onClick={onSubmit} disabled={loading}>
+        <Icon name={loading ? "spinner" : "zap"} mr={2} color="white" />
         {loading ? "Generating..." : apikey ? "Regenerate" : "Generate"} key
       </Button>
     </Flex>

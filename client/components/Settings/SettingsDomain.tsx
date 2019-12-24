@@ -1,70 +1,33 @@
+import { Flex } from "reflexbox/styled-components";
 import React, { FC, useState } from "react";
 import styled from "styled-components";
-import { Flex } from "reflexbox/styled-components";
 
 import { useStoreState, useStoreActions } from "../../store";
 import { useFormState } from "react-use-form-state";
+import { Domain } from "../../store/settings";
 import { useMessage } from "../../hooks";
 import TextInput from "../TextInput";
+import Table from "../CustomTable";
 import Button from "../Button";
+import Modal from "../Modal";
+import Icon from "../Icon";
 import Text from "../Text";
 
-// TODO: types
-interface Props {
-  settings: {
-    customDomain: string;
-    domainInput: boolean;
-    homepage: string;
-  };
-  handleCustomDomain: any;
-  loading: boolean;
-  showDomainInput: any;
-  showModal: any;
-}
-
-const ButtonWrapper = styled(Flex).attrs({
-  justifyContent: ["column", "column", "row"],
-  alignItems: ["flex-start", "flex-start", "center"],
-  my: 32
-})`
-  display: flex;
-
-  button {
-    margin-right: 16px;
-  }
-
-  @media only screen and (max-width: 768px) {
-    > * {
-      margin: 8px 0;
-    }
-  }
+const Th = styled(Flex).attrs({ as: "th", py: 3, px: 3 })`
+  font-size: 15px;
+`;
+const Td = styled(Flex).attrs({ as: "td", py: 12, px: 3 })`
+  font-size: 15px;
 `;
 
-const Domain = styled.h4`
-  margin: 0 16px 0 0;
-  font-size: 20px;
-  font-weight: bold;
-
-  span {
-    border-bottom: 2px dotted #999;
-  }
-`;
-
-const Homepage = styled.h6`
-  margin: 0 16px 0 0;
-  font-size: 14px;
-  font-weight: 300;
-
-  span {
-    border-bottom: 2px dotted #999;
-  }
-`;
-
-const SettingsDomain: FC<Props> = ({ showDomainInput, showModal }) => {
+const SettingsDomain: FC = () => {
+  const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [domainToDelete, setDomainToDelete] = useState<Domain>(null);
   const [message, setMessage] = useMessage(2000);
   const domains = useStoreState(s => s.settings.domains);
-  const { saveDomain } = useStoreActions(s => s.settings);
+  const { saveDomain, deleteDomain } = useStoreActions(s => s.settings);
   const [formState, { text }] = useFormState<{
     customDomain: string;
     homepage: string;
@@ -79,7 +42,25 @@ const SettingsDomain: FC<Props> = ({ showDomainInput, showModal }) => {
     } catch (err) {
       setMessage(err?.response?.data?.error || "Couldn't add domain.");
     }
+    formState.clear();
     setLoading(false);
+  };
+
+  const closeModal = () => {
+    setDomainToDelete(null);
+    setModal(false);
+  };
+
+  const onDelete = async () => {
+    setDeleteLoading(true);
+    try {
+      await deleteDomain();
+      setMessage("Domain has been deleted successfully.", "green");
+    } catch (err) {
+      setMessage(err?.response?.data?.error || "Couldn't delete the domain.");
+    }
+    closeModal();
+    setDeleteLoading(false);
   };
 
   return (
@@ -96,27 +77,37 @@ const SettingsDomain: FC<Props> = ({ showDomainInput, showModal }) => {
         via form below:
       </Text>
       {domains.length ? (
-        domains.map(d => (
-          <Flex key={d.customDomain}>
-            <Flex alignItems="center">
-              <Domain>
-                <span>{d.customDomain}</span>
-              </Domain>
-              <Homepage>
-                (Homepage redirects to{" "}
-                <span>{d.homepage || window.location.hostname}</span>)
-              </Homepage>
-            </Flex>
-            <ButtonWrapper>
-              <Button icon="edit" onClick={showDomainInput}>
-                Change
-              </Button>
-              <Button color="gray" icon="x" onClick={showModal}>
-                Delete
-              </Button>
-            </ButtonWrapper>
-          </Flex>
-        ))
+        <Table my={3}>
+          <thead>
+            <tr>
+              <Th width={2 / 5}>Domain</Th>
+              <Th width={2 / 5}>Homepage</Th>
+              <Th width={1 / 5}></Th>
+            </tr>
+          </thead>
+          <tbody>
+            {domains.map(d => (
+              <tr>
+                <Td width={2 / 5}>{d.customDomain}</Td>
+                <Td width={2 / 5}>{d.homepage || "default"}</Td>
+                <Td width={1 / 5} justifyContent="center">
+                  <Icon
+                    as="button"
+                    name="trash"
+                    color="#f2392c"
+                    py={0}
+                    px="2px"
+                    size={15}
+                    onClick={() => {
+                      setDomainToDelete(d);
+                      setModal(true);
+                    }}
+                  />
+                </Td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       ) : (
         <Flex
           alignItems="flex-start"
@@ -155,17 +146,43 @@ const SettingsDomain: FC<Props> = ({ showDomainInput, showModal }) => {
               />
             </Flex>
           </Flex>
-          <Button
-            type="submit"
-            color="purple"
-            icon={loading ? "loader" : ""}
-            mt={3}
-          >
-            Set domain
+          <Button type="submit" color="purple" mt={3} disabled={loading}>
+            <Icon name={loading ? "spinner" : "plus"} mr={2} color="white" />
+            {loading ? "Setting..." : "Set domain"}
           </Button>
         </Flex>
       )}
       <Text color={message.color}>{message.text}</Text>
+      <Modal id="delete-custom-domain" show={modal} closeHandler={closeModal}>
+        <Text as="h2" fontWeight={700} mb={24} textAlign="center">
+          Delete domain?
+        </Text>
+        <Text as="p" textAlign="center">
+          Are you sure do you want to delete the domain{" "}
+          <Text as="span" fontWeight={700}>
+            "{domainToDelete && domainToDelete.customDomain}""
+          </Text>
+          ?
+        </Text>
+        {/* FIXME: user a proper loading */}
+        <Flex justifyContent="center" mt={44}>
+          {deleteLoading ? (
+            <>
+              <Icon name="spinner" size={20} />
+            </>
+          ) : (
+            <>
+              <Button color="gray" mr={3} onClick={closeModal}>
+                Cancel
+              </Button>
+              <Button color="blue" ml={3} onClick={onDelete}>
+                <Icon name="trash" color="white" mr={2} />
+                Delete
+              </Button>
+            </>
+          )}
+        </Flex>
+      </Modal>
     </Flex>
   );
 };

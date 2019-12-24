@@ -1,5 +1,5 @@
-import axios from 'axios';
-import cookie from 'js-cookie';
+import axios from "axios";
+import cookie from "js-cookie";
 import {
   DELETE_DOMAIN,
   DOMAIN_ERROR,
@@ -8,8 +8,8 @@ import {
   SET_DOMAIN,
   SET_APIKEY,
   SHOW_DOMAIN_INPUT,
-  BAN_URL,
-} from './actionTypes';
+  BAN_URL
+} from "./actionTypes";
 
 const deleteDomain = () => ({ type: DELETE_DOMAIN });
 const setDomainError = payload => ({ type: DOMAIN_ERROR, payload });
@@ -24,9 +24,9 @@ export const showDomainInput = () => ({ type: SHOW_DOMAIN_INPUT });
 export const getUserSettings = () => async dispatch => {
   try {
     const {
-      data: { apikey, customDomain, homepage },
-    } = await axios.get('/api/auth/usersettings', {
-      headers: { Authorization: cookie.get('token') },
+      data: { apikey, customDomain, homepage }
+    } = await axios.get("/api/auth/usersettings", {
+      headers: { Authorization: cookie.get("token") }
     });
     dispatch(setDomain({ customDomain, homepage }));
     dispatch(setApiKey(apikey));
@@ -39,9 +39,9 @@ export const setCustomDomain = params => async dispatch => {
   dispatch(showDomainLoading());
   try {
     const {
-      data: { customDomain, homepage },
-    } = await axios.post('/api/url/customdomain', params, {
-      headers: { Authorization: cookie.get('token') },
+      data: { customDomain, homepage }
+    } = await axios.post("/api/url/customdomain", params, {
+      headers: { Authorization: cookie.get("token") }
     });
     dispatch(setDomain({ customDomain, homepage }));
   } catch ({ response }) {
@@ -49,22 +49,26 @@ export const setCustomDomain = params => async dispatch => {
   }
 };
 
-export const deleteCustomDomain = () => async dispatch => {
-  try {
-    await axios.delete('/api/url/customdomain', {
-      headers: { Authorization: cookie.get('token') },
-    });
-    dispatch(deleteDomain());
-  } catch ({ response }) {
-    dispatch(setDomainError(response.data.error));
-  }
-};
+export const deleteCustomDomain = () => dispatch =>
+  new Promise(async (res, rej) => {
+    try {
+      await axios.delete("/api/url/customdomain", {
+        headers: { Authorization: cookie.get("token") }
+      });
+      setTimeout(() => {
+        res();
+      }, 4000);
+      dispatch(deleteDomain());
+    } catch ({ response }) {
+      dispatch(setDomainError(response.data.error));
+    }
+  });
 
 export const generateApiKey = () => async dispatch => {
   dispatch(showApiLoading());
   try {
-    const { data } = await axios.post('/api/auth/generateapikey', null, {
-      headers: { Authorization: cookie.get('token') },
+    const { data } = await axios.post("/api/auth/generateapikey", null, {
+      headers: { Authorization: cookie.get("token") }
     });
     dispatch(setApiKey(data.apikey));
   } catch (error) {
@@ -74,8 +78,8 @@ export const generateApiKey = () => async dispatch => {
 
 export const banUrl = params => async dispatch => {
   try {
-    const { data } = await axios.post('/api/url/admin/ban', params, {
-      headers: { Authorization: cookie.get('token') },
+    const { data } = await axios.post("/api/url/admin/ban", params, {
+      headers: { Authorization: cookie.get("token") }
     });
     dispatch(urlBanned());
     return data.message;
