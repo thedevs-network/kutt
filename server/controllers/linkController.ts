@@ -193,6 +193,7 @@ export const goToLink: Handler = async (req, res, next) => {
 };
 
 export const getUserLinks: Handler = async (req, res) => {
+  req.query.isAdmin = req.user.admin;
   const [countAll, list] = await Promise.all([
     getUserLinksCount({ user_id: req.user.id }),
     getLinks(req.user.id, req.query)
@@ -286,7 +287,8 @@ export const deleteUserLink: Handler = async (req, res) => {
   const response = await deleteLink({
     address: id,
     domain: !domain || domain === process.env.DEFAULT_DOMAIN ? null : domain,
-    user_id: req.user.id
+    user_id: req.user.id,
+    isAdmin: req.user.admin
   });
 
   if (response) {
@@ -315,7 +317,8 @@ export const getLinkStats: Handler = async (req, res) => {
   const link = await findLink({
     address: req.query.id,
     domain_id: hasCustomDomain ? customDomain.id : null,
-    user_id: req.user && req.user.id
+    user_id: req.user && req.user.id,
+    isAdmin: req.user && req.user.admin
   });
 
   if (!link) {

@@ -115,13 +115,15 @@ interface IFindLink {
   domain_id?: number | null;
   user_id?: number | null;
   target?: string;
+  isAdmin?: boolean;
 }
 
 export const findLink = async ({
   address,
   domain_id,
   user_id,
-  target
+  target,
+  isAdmin
 }: IFindLink): Promise<Link> => {
   const redisKey = getRedisKey.link(address, domain_id, user_id);
   const cachedLink = await redis.get(redisKey);
@@ -132,7 +134,7 @@ export const findLink = async ({
     .where({
       ...(address && { address }),
       ...(domain_id && { domain_id }),
-      ...(user_id && { user_id }),
+      ...(user_id && !isAdmin && { user_id }),
       ...(target && { target })
     })
     .first();
@@ -167,13 +169,14 @@ interface IGetLinksOptions {
   count?: string;
   page?: string;
   search?: string;
+  isAdmin?: boolean;
 }
 
 export const getLinks = async (
   user_id: number,
   options: IGetLinksOptions = {}
 ) => {
-  const { count = "5", page = "1", search = "" } = options;
+  const { count = "5", page = "1", search = "", isAdmin = false } = options;
   const limit = parseInt(count) < 50 ? parseInt(count) : 50;
   const offset = (parseInt(page) - 1) * limit;
 
@@ -193,8 +196,9 @@ export const getLinks = async (
     )
     .offset(offset)
     .limit(limit)
-    .orderBy("created_at", "desc")
-    .where("links.user_id", user_id);
+    .orderBy("created_at", "desc");
+
+  if (!isAdmin) model.where("links.user_id", user_id);
 
   if (search) {
     model.andWhereRaw("links.address || ' ' || target ILIKE '%' || ? || '%'", [
@@ -222,6 +226,7 @@ export const getLinks = async (
 interface IDeleteLink {
   address: string;
   user_id: number;
+  isAdmin: boolean;
   domain?: string;
 }
 
@@ -230,9 +235,15 @@ export const deleteLink = async (data: IDeleteLink) => {
     .select("links.id", "domains.address as domain")
     .where({
       "links.address": data.address,
-      "links.user_id": data.user_id,
       ...(!data.domain && { domain_id: null })
     })
+    .where(
+      data.isAdmin
+        ? true
+        : {
+            "links.user_id": data.user_id
+          }
+    )
     .leftJoin("domains", "links.domain_id", "domains.id")
     .first();
 
