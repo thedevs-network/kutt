@@ -104,7 +104,10 @@ class ReportPage extends Component {
           <Form onSubmit={this.onSubmit}>
             <TextInput
               type="text"
-              placeholder="kutt.it/example"
+              placeholder= {
+                ((process.env.CUSTOM_DOMAIN_USE_HTTPS && process.env.CUSTOM_DOMAIN_USE_HTTPS === "false") ? "http" : "https")
+                  + "://" + (process.env.DEFAULT_DOMAIN || "kutt.it") + "/example"
+              }
               value={url}
               onChange={this.onChange}
               height={44}

@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-export const verifyMailText = `Thanks for creating an account on Kutt.it.
+export const verifyMailText = `Thanks for creating an account on {{domain}}.
 
 Please verify your email address using the link below.
 
