@@ -340,7 +340,8 @@ export const reportLink: Handler = async (req, res) => {
     return res.status(400).json({ error: "No URL has been provided." });
   }
 
-  const { hostname } = URL.parse(req.body.link);
+  var { hostname } = URL.parse(req.body.link);
+  if (!hostname || Number(hostname)) hostname = req.body.link.split("/")[0];
   if (hostname !== process.env.DEFAULT_DOMAIN) {
     return res.status(400).json({
       error: `You can only report a ${process.env.DEFAULT_DOMAIN} link`
