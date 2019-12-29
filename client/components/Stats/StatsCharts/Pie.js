@@ -6,7 +6,10 @@ import withTitle from './withTitle';
 const renderCustomLabel = ({ name }) => name;
 
 const ChartPie = ({ data }) => (
-  <ResponsiveContainer width="100%" height={window.innerWidth < 468 ? 240 : 320}>
+  <ResponsiveContainer
+    width="100%"
+    height={window.innerWidth < 468 ? 240 : 320}
+  >
     <PieChart
       margin={{
         top: window.innerWidth < 468 ? 56 : 0,

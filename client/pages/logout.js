@@ -17,9 +17,8 @@ LogoutPage.propTypes = {
   logoutUser: PropTypes.func.isRequired,
 };
 
-const mapDispatchToProps = dispatch => ({ logoutUser: bindActionCreators(logoutUser, dispatch) });
+const mapDispatchToProps = dispatch => ({
+  logoutUser: bindActionCreators(logoutUser, dispatch),
+});
 
-export default connect(
-  null,
-  mapDispatchToProps
-)(LogoutPage);
+export default connect(null, mapDispatchToProps)(LogoutPage);

@@ -45,7 +45,7 @@ export const getUrlsList = params => async (dispatch, getState) => {
   const { list, ...queryParams } = url;
   const query = Object.keys(queryParams).reduce(
     (string, item) => `${string + item}=${queryParams[item]}&`,
-    '?'
+    '?',
   );
 
   try {

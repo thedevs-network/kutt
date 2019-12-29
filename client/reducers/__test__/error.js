@@ -10,7 +10,7 @@ import {
   UPDATE_URL,
   AUTH_ERROR,
   AUTH_USER,
-  HIDE_PAGE_LOADING
+  HIDE_PAGE_LOADING,
 } from '../../actions/actionTypes';
 
 import reducer from '../error';
@@ -20,7 +20,7 @@ describe('error reducer', () => {
     auth: '',
     domain: '',
     shortener: '',
-    urlOptions: ''
+    urlOptions: '',
   };
 
   beforeEach(() => {
@@ -36,7 +36,7 @@ describe('error reducer', () => {
 
     const state = reducer(initialState, {
       type: SHORTENER_ERROR,
-      payload: error
+      payload: error,
     });
 
     expect(state).not.to.be.undefined;
@@ -48,7 +48,7 @@ describe('error reducer', () => {
 
     const state = reducer(initialState, {
       type: DOMAIN_ERROR,
-      payload: error
+      payload: error,
     });
 
     expect(state).not.to.be.undefined;
@@ -57,7 +57,7 @@ describe('error reducer', () => {
 
   it('should handle SET_DOMAIN', () => {
     const state = reducer(initialState, {
-      type: SET_DOMAIN
+      type: SET_DOMAIN,
     });
 
     expect(state).not.to.be.undefined;
@@ -66,7 +66,7 @@ describe('error reducer', () => {
 
   it('should handle SHOW_DOMAIN_INPUT', () => {
     const state = reducer(initialState, {
-      type: SHOW_DOMAIN_INPUT
+      type: SHOW_DOMAIN_INPUT,
     });
 
     expect(state).not.to.be.undefined;
@@ -75,7 +75,7 @@ describe('error reducer', () => {
 
   it('should handle ADD_URL', () => {
     const state = reducer(initialState, {
-      type: ADD_URL
+      type: ADD_URL,
     });
 
     expect(state).not.to.be.undefined;
@@ -84,7 +84,7 @@ describe('error reducer', () => {
 
   it('should handle UPDATE_URL', () => {
     const state = reducer(initialState, {
-      type: UPDATE_URL
+      type: UPDATE_URL,
     });
 
     expect(state).not.to.be.undefined;
@@ -96,7 +96,7 @@ describe('error reducer', () => {
 
     const state = reducer(initialState, {
       type: AUTH_ERROR,
-      payload: error
+      payload: error,
     });
 
     expect(state).not.to.be.undefined;
@@ -105,7 +105,7 @@ describe('error reducer', () => {
 
   it('should handle AUTH_USER', () => {
     const state = reducer(initialState, {
-      type: AUTH_USER
+      type: AUTH_USER,
     });
 
     expect(state).not.to.be.undefined;
@@ -114,7 +114,7 @@ describe('error reducer', () => {
 
   it('should handle HIDE_PAGE_LOADING', () => {
     const state = reducer(initialState, {
-      type: HIDE_PAGE_LOADING
+      type: HIDE_PAGE_LOADING,
     });
 
     expect(state).not.to.be.undefined;
@@ -125,7 +125,7 @@ describe('error reducer', () => {
 
   it('should not handle other action types', () => {
     const state = reducer(initialState, {
-      type: 'ANOTHER_ACTION'
+      type: 'ANOTHER_ACTION',
     });
 
     expect(state).not.to.be.undefined;

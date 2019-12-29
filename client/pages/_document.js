@@ -13,7 +13,9 @@ const style = {
 class AppDocument extends Document {
   static getInitialProps({ renderPage }) {
     const sheet = new ServerStyleSheet();
-    const page = renderPage(App => props => sheet.collectStyles(<App {...props} />));
+    const page = renderPage(App => props =>
+      sheet.collectStyles(<App {...props} />),
+    );
     const styleTags = sheet.getStyleElement();
     return { ...page, styleTags };
   }
@@ -23,7 +25,10 @@ class AppDocument extends Document {
       <html lang="en">
         <Head>
           <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, viewport-fit=cover"
+          />
           <meta
             name="description"
             content="Kutt.it is a free and open source URL shortener with custom domains and stats."
@@ -45,11 +50,20 @@ class AppDocument extends Document {
           <meta property="og:type" content="website" />
           <meta property="og:title" content="Kutt.it" />
           <meta property="og:image" content="https://kutt.it/images/card.png" />
-          <meta property="og:description" content="Free & Open Source Modern URL Shortener" />
+          <meta
+            property="og:description"
+            content="Free & Open Source Modern URL Shortener"
+          />
           <meta name="twitter:url" content="https://kutt.it" />
           <meta name="twitter:title" content="Kutt.it" />
-          <meta name="twitter:description" content="Free & Open Source Modern URL Shortener" />
-          <meta name="twitter:image" content="https://kutt.it/images/card.png" />
+          <meta
+            name="twitter:description"
+            content="Free & Open Source Modern URL Shortener"
+          />
+          <meta
+            name="twitter:image"
+            content="https://kutt.it/images/card.png"
+          />
 
           {this.props.styleTags}
 
@@ -59,7 +73,11 @@ class AppDocument extends Document {
             }}
           />
 
-          <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer />
+          <script
+            src="https://www.google.com/recaptcha/api.js?render=explicit"
+            async
+            defer
+          />
           <script src="static/analytics.js" />
         </Head>
         <body style={style}>

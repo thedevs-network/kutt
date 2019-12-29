@@ -34,6 +34,8 @@ LoginPage.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = ({ auth: { isAuthenticated } }) => ({ isAuthenticated });
+const mapStateToProps = ({ auth: { isAuthenticated } }) => ({
+  isAuthenticated,
+});
 
 export default connect(mapStateToProps)(LoginPage);

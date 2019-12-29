@@ -24,6 +24,9 @@ SettingsPage.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = ({ auth }) => ({ isAuthenticated: auth.isAuthenticated, auth });
+const mapStateToProps = ({ auth }) => ({
+  isAuthenticated: auth.isAuthenticated,
+  auth,
+});
 
 export default connect(mapStateToProps)(SettingsPage);

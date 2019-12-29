@@ -49,16 +49,33 @@ const StatsCharts = ({ stats, period, updatedAt }) => {
   return (
     <ChartsWrapper>
       <Row>
-        <Area data={stats.views} period={period} updatedAt={updatedAt} periodText={periodText} />
+        <Area
+          data={stats.views}
+          period={period}
+          updatedAt={updatedAt}
+          periodText={periodText}
+        />
       </Row>
       {hasView
         ? [
             <Row key="second-row">
-              <Pie data={stats.stats.referrer} updatedAt={updatedAt} title="Referrals" />
-              <Bar data={stats.stats.browser} updatedAt={updatedAt} title="Browsers" />
+              <Pie
+                data={stats.stats.referrer}
+                updatedAt={updatedAt}
+                title="Referrals"
+              />
+              <Bar
+                data={stats.stats.browser}
+                updatedAt={updatedAt}
+                title="Browsers"
+              />
             </Row>,
             <Row key="third-row">
-              <Pie data={stats.stats.country} updatedAt={updatedAt} title="Country" />
+              <Pie
+                data={stats.stats.country}
+                updatedAt={updatedAt}
+                title="Country"
+              />
               <Bar
                 data={stats.stats.os.map(o => ({
                   ...o,

@@ -1,4 +1,9 @@
-import { AUTH_USER, AUTH_RENEW, UNAUTH_USER, SENT_VERIFICATION } from '../actions/actionTypes';
+import {
+  AUTH_USER,
+  AUTH_RENEW,
+  UNAUTH_USER,
+  SENT_VERIFICATION,
+} from '../actions/actionTypes';
 
 const initialState = {
   admin: false,

@@ -1,24 +1,27 @@
-require("dotenv").config();
-import { v1 as NEO4J } from "neo4j-driver";
-import knex from "knex";
-import PQueue from "p-queue";
+require('dotenv').config();
+import { v1 as NEO4J } from 'neo4j-driver';
+import knex from 'knex';
+import PQueue from 'p-queue';
 
 const queue = new PQueue({ concurrency: 1 });
 
 // 1. Connect to Neo4j database
 const neo4j = NEO4J.driver(
   process.env.NEO4J_DB_URI,
-  NEO4J.auth.basic(process.env.NEO4J_DB_USERNAME, process.env.NEO4J_DB_PASSWORD)
+  NEO4J.auth.basic(
+    process.env.NEO4J_DB_USERNAME,
+    process.env.NEO4J_DB_PASSWORD,
+  ),
 );
 // 2. Connect to Postgres database
 const postgres = knex({
-  client: "postgres",
+  client: 'postgres',
   connection: {
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD
-  }
+    password: process.env.DB_PASSWORD,
+  },
 });
 
 (async function() {
@@ -28,18 +31,18 @@ const postgres = knex({
   const session = neo4j.session();
   session
     .run(
-      "MATCH (d:DOMAIN) OPTIONAL MATCH (u)-[:OWNS]->(d) RETURN d as domain, u.email as email"
+      'MATCH (d:DOMAIN) OPTIONAL MATCH (u)-[:OWNS]->(d) RETURN d as domain, u.email as email',
     )
     .subscribe({
       onNext(record) {
         queue.add(async () => {
-          const domain = record.get("domain").properties;
-          const email = record.get("email");
+          const domain = record.get('domain').properties;
+          const email = record.get('email');
 
           // 4. [Postgres] Get user ID
           const user =
             email &&
-            (await postgres<User>("users")
+            (await postgres<User>('users')
               .where({ email })
               .first());
 
@@ -53,20 +56,20 @@ const postgres = knex({
             banned,
             address,
             ...(homepage && { homepage }),
-            ...(user_id && { user_id })
+            ...(user_id && { user_id }),
           };
 
-          const exists = await postgres<Domain>("domains")
+          const exists = await postgres<Domain>('domains')
             .where({
-              address
+              address,
             })
             .first();
           if (exists) {
-            await postgres<Domain>("domains")
-              .where("id", exists.id)
+            await postgres<Domain>('domains')
+              .where('id', exists.id)
               .update(data);
           } else {
-            await postgres<Domain>("domains").insert(data);
+            await postgres<Domain>('domains').insert(data);
           }
         });
       },
@@ -75,7 +78,7 @@ const postgres = knex({
         queue.add(() => {
           const endTime = Date.now();
           console.log(
-            `✅ Done! It took ${(endTime - startTime) / 1000} seconds.`
+            `✅ Done! It took ${(endTime - startTime) / 1000} seconds.`,
           );
         });
       },
@@ -83,6 +86,6 @@ const postgres = knex({
         console.log(error);
         session.close();
         throw error;
-      }
+      },
     });
 })();

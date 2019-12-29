@@ -101,7 +101,7 @@ class Table extends Component {
         modalUrlDomain: url.domain,
         showModal: true,
       });
-    }
+    };
   }
 
   closeModal() {
@@ -136,7 +136,11 @@ class Table extends Component {
             <TableOptions nosearch />
           </TFoot>
         </TableWrapper>
-        <Modal show={this.state.showModal} handler={this.deleteUrl} close={this.closeModal}>
+        <Modal
+          show={this.state.showModal}
+          handler={this.deleteUrl}
+          close={this.closeModal}
+        >
           Are you sure do you want to delete the short URL and its stats?
         </Modal>
       </Wrapper>
@@ -158,7 +162,4 @@ const mapDispatchToProps = dispatch => ({
   getUrlsList: bindActionCreators(getUrlsList, dispatch),
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Table);
+export default connect(mapStateToProps, mapDispatchToProps)(Table);

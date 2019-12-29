@@ -63,7 +63,10 @@ class Footer extends Component {
           {process.env.CONTACT_EMAIL && (
             <Fragment>
               {' | '}
-              <a href={`mailto:${process.env.CONTACT_EMAIL}`} title="Contact us">
+              <a
+                href={`mailto:${process.env.CONTACT_EMAIL}`}
+                title="Contact us"
+              >
                 Contact us
               </a>
             </Fragment>
@@ -79,6 +82,8 @@ Footer.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = ({ auth: { isAuthenticated } }) => ({ isAuthenticated });
+const mapStateToProps = ({ auth: { isAuthenticated } }) => ({
+  isAuthenticated,
+});
 
 export default connect(mapStateToProps)(Footer);

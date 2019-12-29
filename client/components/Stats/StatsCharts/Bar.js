@@ -1,10 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import withTitle from './withTitle';
 
 const ChartBar = ({ data }) => (
-  <ResponsiveContainer width="100%" height={window.innerWidth < 468 ? 240 : 320}>
+  <ResponsiveContainer
+    width="100%"
+    height={window.innerWidth < 468 ? 240 : 320}
+  >
     <BarChart
       data={data}
       layout="vertical"

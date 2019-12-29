@@ -86,7 +86,13 @@ const Td = styled.td`
   }
 `;
 
-const TableBody = ({ copiedIndex, handleCopy, tableLoading, showModal, urls }) => {
+const TableBody = ({
+  copiedIndex,
+  handleCopy,
+  tableLoading,
+  showModal,
+  urls,
+}) => {
   const showList = (url, index) => (
     <tr key={`tbody-${index}`}>
       <Td flex="2" withFade>
@@ -96,7 +102,12 @@ const TableBody = ({ copiedIndex, handleCopy, tableLoading, showModal, urls }) =
         {`${distanceInWordsToNow(new Date(url.created_at))} ago`}
       </Td>
       <Td flex="1" withFade>
-        <TBodyShortUrl index={index} copiedIndex={copiedIndex} handleCopy={handleCopy} url={url} />
+        <TBodyShortUrl
+          index={index}
+          copiedIndex={copiedIndex}
+          handleCopy={handleCopy}
+          url={url}
+        />
       </Td>
       <Td flex="1">
         <TBodyCount url={url} showModal={showModal(url)} />
@@ -124,7 +135,7 @@ TableBody.propTypes = {
       created_at: PropTypes.string.isRequired,
       password: PropTypes.bool,
       target: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   copiedIndex: PropTypes.number.isRequired,
   showModal: PropTypes.func.isRequired,
@@ -132,6 +143,8 @@ TableBody.propTypes = {
   handleCopy: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = ({ loading: { table: tableLoading } }) => ({ tableLoading });
+const mapStateToProps = ({ loading: { table: tableLoading } }) => ({
+  tableLoading,
+});
 
 export default connect(mapStateToProps)(TableBody);

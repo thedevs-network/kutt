@@ -1,9 +1,9 @@
-import ms from "ms";
+import ms from 'ms';
 import {
   differenceInDays,
   differenceInHours,
-  differenceInMonths
-} from "date-fns";
+  differenceInMonths,
+} from 'date-fns';
 
 export const addProtocol = (url: string): string => {
   const hasProtocol = /^\w+:\/\//.test(url);
@@ -12,23 +12,23 @@ export const addProtocol = (url: string): string => {
 
 export const generateShortLink = (id: string, domain?: string): string => {
   const protocol =
-    process.env.CUSTOM_DOMAIN_USE_HTTPS === "true" || !domain
-      ? "https://"
-      : "http://";
+    process.env.CUSTOM_DOMAIN_USE_HTTPS === 'true' || !domain
+      ? 'https://'
+      : 'http://';
   return `${protocol}${domain || process.env.DEFAULT_DOMAIN}/${id}`;
 };
 
 export const isAdmin = (email: string): boolean =>
-  process.env.ADMIN_EMAILS.split(",")
+  process.env.ADMIN_EMAILS.split(',')
     .map(e => e.trim())
     .includes(email);
 
 export const getRedisKey = {
   link: (address: string, domain_id?: number, user_id?: number) =>
-    `${address}-${domain_id || ""}-${user_id || ""}`,
+    `${address}-${domain_id || ''}-${user_id || ''}`,
   domain: (address: string) => `d-${address}`,
   host: (address: string) => `h-${address}`,
-  user: (emailOrKey: string) => `u-${emailOrKey}`
+  user: (emailOrKey: string) => `u-${emailOrKey}`,
 };
 
 // TODO: Add statsLimit
@@ -39,19 +39,19 @@ export const getStatsCacheTime = (total?: number): number => {
   let durationInMs;
   switch (true) {
     case total <= 5000:
-      durationInMs = ms("5 minutes");
+      durationInMs = ms('5 minutes');
       break;
     case total > 5000 && total < 20000:
-      durationInMs = ms("10 minutes");
+      durationInMs = ms('10 minutes');
       break;
     case total < 40000:
-      durationInMs = ms("15 minutes");
+      durationInMs = ms('15 minutes');
       break;
     case total > 40000:
-      durationInMs = ms("30 minutes");
+      durationInMs = ms('30 minutes');
       break;
     default:
-      durationInMs = ms("5 minutes");
+      durationInMs = ms('5 minutes');
   }
   return durationInMs / 1000;
 };
@@ -61,26 +61,26 @@ export const statsObjectToArray = (obj: Stats) => {
     Array.from(Object.keys(obj[key]))
       .map(name => ({
         name,
-        value: obj[key][name]
+        value: obj[key][name],
       }))
       .sort((a, b) => b.value - a.value);
 
   return {
-    browser: objToArr("browser"),
-    os: objToArr("os"),
-    country: objToArr("country"),
-    referrer: objToArr("referrer")
+    browser: objToArr('browser'),
+    os: objToArr('os'),
+    country: objToArr('country'),
+    referrer: objToArr('referrer'),
   };
 };
 
 export const getDifferenceFunction = (
-  type: "lastDay" | "lastWeek" | "lastMonth" | "allTime"
+  type: 'lastDay' | 'lastWeek' | 'lastMonth' | 'allTime',
 ): Function => {
-  if (type === "lastDay") return differenceInHours;
-  if (type === "lastWeek") return differenceInDays;
-  if (type === "lastMonth") return differenceInDays;
-  if (type === "allTime") return differenceInMonths;
-  throw new Error("Unknown type.");
+  if (type === 'lastDay') return differenceInHours;
+  if (type === 'lastWeek') return differenceInDays;
+  if (type === 'lastMonth') return differenceInDays;
+  if (type === 'allTime') return differenceInMonths;
+  throw new Error('Unknown type.');
 };
 
 export const getUTCDate = (dateString?: Date) => {
@@ -89,6 +89,6 @@ export const getUTCDate = (dateString?: Date) => {
     date.getUTCFullYear(),
     date.getUTCMonth(),
     date.getUTCDate(),
-    date.getUTCHours()
+    date.getUTCHours(),
   );
 };

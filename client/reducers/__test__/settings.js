@@ -6,7 +6,7 @@ import {
   SET_APIKEY,
   DELETE_DOMAIN,
   SHOW_DOMAIN_INPUT,
-  UNAUTH_USER
+  UNAUTH_USER,
 } from '../../actions/actionTypes';
 
 import reducer from '../settings';
@@ -33,7 +33,7 @@ describe('settings reducer', () => {
 
     const state = reducer(initialState, {
       type: SET_DOMAIN,
-      payload: { customDomain, homepage }
+      payload: { customDomain, homepage },
     });
 
     expect(state).not.to.be.undefined;
@@ -46,7 +46,7 @@ describe('settings reducer', () => {
 
     const state = reducer(initialState, {
       type: SET_APIKEY,
-      payload: apikey
+      payload: apikey,
     });
 
     expect(state).not.to.be.undefined;
@@ -55,7 +55,7 @@ describe('settings reducer', () => {
 
   it('should handle DELETE_DOMAIN', () => {
     const state = reducer(initialState, {
-      type: DELETE_DOMAIN
+      type: DELETE_DOMAIN,
     });
 
     expect(state).not.to.be.undefined;
@@ -65,7 +65,7 @@ describe('settings reducer', () => {
 
   it('should handle SHOW_DOMAIN_INPUT', () => {
     const state = reducer(initialState, {
-      type: SHOW_DOMAIN_INPUT
+      type: SHOW_DOMAIN_INPUT,
     });
 
     expect(state).not.to.be.undefined;
@@ -74,7 +74,7 @@ describe('settings reducer', () => {
 
   it('should handle UNAUTH_USER', () => {
     const state = reducer(initialState, {
-      type: UNAUTH_USER
+      type: UNAUTH_USER,
     });
 
     expect(state).not.to.be.undefined;
@@ -83,7 +83,7 @@ describe('settings reducer', () => {
 
   it('should not handle other action types', () => {
     const state = reducer(initialState, {
-      type: 'ANOTHER_ACTION'
+      type: 'ANOTHER_ACTION',
     });
 
     expect(state).not.to.be.undefined;

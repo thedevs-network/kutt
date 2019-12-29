@@ -48,13 +48,12 @@ Homepage.propTypes = {
   getUrlsList: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = ({ auth: { isAuthenticated } }) => ({ isAuthenticated });
+const mapStateToProps = ({ auth: { isAuthenticated } }) => ({
+  isAuthenticated,
+});
 
 const mapDispatchToProps = dispatch => ({
   getUrlsList: bindActionCreators(getUrlsList, dispatch),
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Homepage);
+export default connect(mapStateToProps, mapDispatchToProps)(Homepage);

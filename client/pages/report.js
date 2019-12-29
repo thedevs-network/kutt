@@ -94,8 +94,8 @@ class ReportPage extends Component {
         <Wrapper>
           <h3>Report abuse</h3>
           <p>
-            Report abuses, malware and phishing links to the below email address or use the form. We
-            will take actions shortly.
+            Report abuses, malware and phishing links to the below email address
+            or use the form. We will take actions shortly.
           </p>
           <p>{(process.env.REPORT_EMAIL || '').replace('@', '[at]')}</p>
           <p>

@@ -75,18 +75,24 @@ class ResetPassword extends Component {
     return axios
       .post('/api/auth/resetpassword', { email: value })
       .then(() =>
-        this.setState({ success: 'Reset password email has been sent.', loading: false }, () => {
-          setTimeout(() => {
-            this.setState({ success: '' });
-          }, 2500);
-        })
+        this.setState(
+          { success: 'Reset password email has been sent.', loading: false },
+          () => {
+            setTimeout(() => {
+              this.setState({ success: '' });
+            }, 2500);
+          },
+        ),
       )
       .catch(() =>
-        this.setState({ error: "Couldn't reset password", loading: false }, () => {
-          setTimeout(() => {
-            this.setState({ error: '' });
-          }, 1500);
-        })
+        this.setState(
+          { error: "Couldn't reset password", loading: false },
+          () => {
+            setTimeout(() => {
+              this.setState({ error: '' });
+            }, 1500);
+          },
+        ),
       );
   }
 
@@ -95,7 +101,13 @@ class ResetPassword extends Component {
     return (
       <BodyWrapper>
         <Form id="reset-password-form" onSubmit={this.handleReset}>
-          <TextInput type="email" name="email" id="email" placeholder="Email address" autoFocus />
+          <TextInput
+            type="email"
+            name="email"
+            id="email"
+            placeholder="Email address"
+            autoFocus
+          />
           <Button onClick={this.handleReset} icon={loading ? 'loader' : ''} big>
             Reset password
           </Button>

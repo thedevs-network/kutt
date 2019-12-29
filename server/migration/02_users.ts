@@ -1,24 +1,27 @@
-require("dotenv").config();
-import { v1 as NEO4J } from "neo4j-driver";
-import knex from "knex";
-import PQuque from "p-queue";
+require('dotenv').config();
+import { v1 as NEO4J } from 'neo4j-driver';
+import knex from 'knex';
+import PQuque from 'p-queue';
 
 const queue = new PQuque({ concurrency: 10 });
 
 // 1. Connect to Neo4j database
 const neo4j = NEO4J.driver(
   process.env.NEO4J_DB_URI,
-  NEO4J.auth.basic(process.env.NEO4J_DB_USERNAME, process.env.NEO4J_DB_PASSWORD)
+  NEO4J.auth.basic(
+    process.env.NEO4J_DB_USERNAME,
+    process.env.NEO4J_DB_PASSWORD,
+  ),
 );
 // 2. Connect to Postgres database
 const postgres = knex({
-  client: "postgres",
+  client: 'postgres',
   connection: {
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD
-  }
+    password: process.env.DB_PASSWORD,
+  },
 });
 
 (async function() {
@@ -28,14 +31,14 @@ const postgres = knex({
   const session = neo4j.session();
   session
     .run(
-      "MATCH (u:USER) OPTIONAL MATCH (u)-[r:RECEIVED]->(c) WITH u, collect(c.date) as cooldowns RETURN u, cooldowns"
+      'MATCH (u:USER) OPTIONAL MATCH (u)-[r:RECEIVED]->(c) WITH u, collect(c.date) as cooldowns RETURN u, cooldowns',
     )
     .subscribe({
       onNext(record) {
         queue.add(async () => {
           // 4. [Postgres] Upsert users
-          const user = record.get("u").properties;
-          const cooldowns = record.get("cooldowns");
+          const user = record.get('u').properties;
+          const cooldowns = record.get('cooldowns');
 
           const email = user.email;
           const password = user.password;
@@ -51,20 +54,20 @@ const postgres = knex({
             banned,
             ...(apikey && { apikey }),
             ...(created_at && { created_at }),
-            ...(cooldowns && cooldowns.length && { cooldowns })
+            ...(cooldowns && cooldowns.length && { cooldowns }),
           };
 
-          const exists = await postgres<User>("users")
+          const exists = await postgres<User>('users')
             .where({
-              email
+              email,
             })
             .first();
           if (exists) {
-            await postgres<User>("users")
-              .where("id", exists.id)
+            await postgres<User>('users')
+              .where('id', exists.id)
               .update(data);
           } else {
-            await postgres<User>("users").insert(data);
+            await postgres<User>('users').insert(data);
           }
         });
       },
@@ -73,13 +76,13 @@ const postgres = knex({
         queue.add(() => {
           const endTime = Date.now();
           console.log(
-            `✅ Done! It took ${(endTime - startTime) / 1000} seconds.`
+            `✅ Done! It took ${(endTime - startTime) / 1000} seconds.`,
           );
         });
       },
       onError(error) {
         session.close();
         throw error;
-      }
+      },
     });
 })();

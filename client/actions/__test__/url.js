@@ -35,13 +35,13 @@ describe('url actions', () => {
         target: url,
         password: false,
         reuse: false,
-        shortLink: 'http://kutt.it/123'
+        shortLink: 'http://kutt.it/123',
       };
 
       nock('http://localhost', {
         reqheaders: {
-          Authorization: token
-        }
+          Authorization: token,
+        },
       })
         .post('/api/url/submit')
         .reply(200, mockedItems);
@@ -51,8 +51,8 @@ describe('url actions', () => {
       const expectedActions = [
         {
           type: ADD_URL,
-          payload: mockedItems
-        }
+          payload: mockedItems,
+        },
       ];
 
       store
@@ -72,7 +72,7 @@ describe('url actions', () => {
         count: 10,
         countAll: 1,
         page: 1,
-        search: ''
+        search: '',
       };
 
       const mockedItems = {
@@ -83,16 +83,16 @@ describe('url actions', () => {
             target: 'https://kutt.it/',
             password: false,
             count: 0,
-            shortLink: 'http://test.com/UkEs33'
-          }
+            shortLink: 'http://test.com/UkEs33',
+          },
         ],
-        countAll: 1
+        countAll: 1,
       };
 
       nock('http://localhost', {
         reqheaders: {
-          Authorization: token
-        }
+          Authorization: token,
+        },
       })
         .get('/api/url/geturls')
         .query(mockedQueryParams)
@@ -104,8 +104,8 @@ describe('url actions', () => {
         { type: TABLE_LOADING },
         {
           type: LIST_URLS,
-          payload: mockedItems
-        }
+          payload: mockedItems,
+        },
       ];
 
       store
@@ -128,14 +128,14 @@ describe('url actions', () => {
           target: 'test.com',
           password: false,
           reuse: false,
-          shortLink: 'http://kutt.it/123'
-        }
+          shortLink: 'http://kutt.it/123',
+        },
       ];
 
       nock('http://localhost', {
         reqheaders: {
-          Authorization: token
-        }
+          Authorization: token,
+        },
       })
         .post('/api/url/deleteurl')
         .reply(200, { message: 'Short URL deleted successfully' });
@@ -144,7 +144,7 @@ describe('url actions', () => {
 
       const expectedActions = [
         { type: TABLE_LOADING },
-        { type: DELETE_URL, payload: id }
+        { type: DELETE_URL, payload: id },
       ];
 
       store

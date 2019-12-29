@@ -84,14 +84,13 @@ BodyWrapper.defaultProps = {
   norenew: false,
 };
 
-const mapStateToProps = ({ loading: { page: pageLoading } }) => ({ pageLoading });
+const mapStateToProps = ({ loading: { page: pageLoading } }) => ({
+  pageLoading,
+});
 
 const mapDispatchToProps = dispatch => ({
   hidePageLoading: bindActionCreators(hidePageLoading, dispatch),
   renewAuthUser: bindActionCreators(renewAuthUser, dispatch),
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BodyWrapper);
+export default connect(mapStateToProps, mapDispatchToProps)(BodyWrapper);

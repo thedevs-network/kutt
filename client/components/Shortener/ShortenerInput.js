@@ -52,9 +52,19 @@ const Icon = styled(SVG)`
   }
 `;
 
-const ShortenerInput = ({ isAuthenticated, domain, handleSubmit, setShortenerFormError }) => (
+const ShortenerInput = ({
+  isAuthenticated,
+  domain,
+  handleSubmit,
+  setShortenerFormError,
+}) => (
   <ShortenerForm id="shortenerform" onSubmit={handleSubmit}>
-    <TextInput id="target" name="target" placeholder="Paste your long URL" autoFocus />
+    <TextInput
+      id="target"
+      name="target"
+      placeholder="Paste your long URL"
+      autoFocus
+    />
     <Submit onClick={handleSubmit}>
       <Icon src="/images/send.svg" />
     </Submit>

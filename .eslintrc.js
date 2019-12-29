@@ -1,0 +1,44 @@
+module.exports = {
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+  ],
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: './tsconfig.server.json',
+  },
+  plugins: ['@typescript-eslint'],
+  rules: {
+    eqeqeq: ['warn', 'always', { null: 'ignore' }],
+    'no-useless-return': 'warn',
+    'no-var': 'warn',
+    'no-console': 'warn',
+    'max-len': ['warn', { comments: 80 }],
+    'no-param-reassign': ['warn', { props: false }],
+    'require-atomic-updates': 0,
+    '@typescript-eslint/interface-name-prefix': 'off',
+    '@typescript-eslint/no-unused-vars': 'off', // "warn" for production
+    '@typescript-eslint/no-explicit-any': 'off', // "warn" for production
+    '@typescript-eslint/no-var-requires': 'off',
+    '@typescript-eslint/camelcase': 'off',
+    '@typescript-eslint/no-object-literal-type-assertion': 'off',
+    '@typescript-eslint/no-parameter-properties': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+  },
+  env: {
+    es6: true,
+    browser: true,
+    node: true,
+    mocha: true,
+  },
+  globals: {
+    assert: true,
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+};
+

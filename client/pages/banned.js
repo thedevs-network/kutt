@@ -50,7 +50,8 @@ class BannedPage extends Component {
       <BodyWrapper>
         <Wrapper>
           <Title>
-            Link has been banned and removed because of <span>malware or scam</span>.
+            Link has been banned and removed because of{' '}
+            <span>malware or scam</span>.
           </Title>
           <Subtitle>
             If you noticed a malware/scam link shortened by Kutt,{' '}

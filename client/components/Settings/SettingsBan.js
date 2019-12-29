@@ -49,7 +49,11 @@ const SettingsBan = props => (
           height={44}
           small
         />
-        <Button type="submit" icon={props.loading ? 'loader' : 'lock'} disabled={props.loading}>
+        <Button
+          type="submit"
+          icon={props.loading ? 'loader' : 'lock'}
+          disabled={props.loading}
+        >
           {props.loading ? 'Baning...' : 'Ban'}
         </Button>
       </InputWrapper>

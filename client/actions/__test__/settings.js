@@ -9,14 +9,14 @@ import {
   getUserSettings,
   setCustomDomain,
   deleteCustomDomain,
-  generateApiKey
+  generateApiKey,
 } from '../settings';
 import {
   DELETE_DOMAIN,
   DOMAIN_LOADING,
   API_LOADING,
   SET_DOMAIN,
-  SET_APIKEY
+  SET_APIKEY,
 } from '../actionTypes';
 
 const middlewares = [thunk];
@@ -45,8 +45,8 @@ describe('settings actions', () => {
 
       nock('http://localhost', {
         reqheaders: {
-          Authorization: token
-        }
+          Authorization: token,
+        },
       })
         .get('/api/auth/usersettings')
         .reply(200, { apikey, customDomain, homepage });
@@ -59,12 +59,12 @@ describe('settings actions', () => {
           payload: {
             customDomain,
             homepage: '',
-          }
+          },
         },
         {
           type: SET_APIKEY,
-          payload: apikey
-        }
+          payload: apikey,
+        },
       ];
 
       store
@@ -84,8 +84,8 @@ describe('settings actions', () => {
 
       nock('http://localhost', {
         reqheaders: {
-          Authorization: token
-        }
+          Authorization: token,
+        },
       })
         .post('/api/url/customdomain')
         .reply(200, { customDomain, homepage });
@@ -99,15 +99,17 @@ describe('settings actions', () => {
           payload: {
             customDomain,
             homepage: '',
-          }
-        }
+          },
+        },
       ];
 
       store
-        .dispatch(setCustomDomain({
-          customDomain,
-          homepage: '',
-        }))
+        .dispatch(
+          setCustomDomain({
+            customDomain,
+            homepage: '',
+          }),
+        )
         .then(() => {
           expect(store.getActions()).to.deep.equal(expectedActions);
           done();
@@ -122,8 +124,8 @@ describe('settings actions', () => {
 
       nock('http://localhost', {
         reqheaders: {
-          Authorization: token
-        }
+          Authorization: token,
+        },
       })
         .delete('/api/url/customdomain')
         .reply(200, { customDomain });
@@ -148,8 +150,8 @@ describe('settings actions', () => {
 
       nock('http://localhost', {
         reqheaders: {
-          Authorization: token
-        }
+          Authorization: token,
+        },
       })
         .post('/api/auth/generateapikey')
         .reply(200, { apikey });
@@ -160,8 +162,8 @@ describe('settings actions', () => {
         { type: API_LOADING },
         {
           type: SET_APIKEY,
-          payload: apikey
-        }
+          payload: apikey,
+        },
       ];
 
       store

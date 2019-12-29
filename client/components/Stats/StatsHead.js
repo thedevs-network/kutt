@@ -74,7 +74,11 @@ const Button = styled.button`
 
 const StatsHead = ({ changePeriod, period, total }) => {
   const buttonWithPeriod = (periodText, text) => (
-    <Button active={period === periodText} data-period={periodText} onClick={changePeriod}>
+    <Button
+      active={period === periodText}
+      data-period={periodText}
+      onClick={changePeriod}
+    >
       {text}
     </Button>
   );

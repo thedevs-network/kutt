@@ -1,22 +1,25 @@
-require("dotenv").config();
-import { v1 as NEO4J } from "neo4j-driver";
-import PQueue from "p-queue";
+require('dotenv').config();
+import { v1 as NEO4J } from 'neo4j-driver';
+import PQueue from 'p-queue';
 
 let count = 0;
 const queue = new PQueue({ concurrency: 1 });
-queue.on("active", () => console.log(count++));
+queue.on('active', () => console.log(count++));
 
 // 1. Connect to Neo4j database
 const neo4j = NEO4J.driver(
   process.env.NEO4J_DB_URI,
-  NEO4J.auth.basic(process.env.NEO4J_DB_USERNAME, process.env.NEO4J_DB_PASSWORD)
+  NEO4J.auth.basic(
+    process.env.NEO4J_DB_USERNAME,
+    process.env.NEO4J_DB_PASSWORD,
+  ),
 );
 
 (async function() {
   const startTime = Date.now();
 
   const nodes = [
-    ["VISITED_IN", "DATE"]
+    ['VISITED_IN', 'DATE'],
     // ['BROWSED_BY', 'BROWSER'],
     // ['OS', 'OS'],
     // ['LOCATED_IN', 'COUNTRY'],
@@ -26,9 +29,9 @@ const neo4j = NEO4J.driver(
   // 3. [NEO4J] Get all hosts
   const session = neo4j.session();
   const { records } = await session.run(
-    "MATCH (v:VISIT) WITH COUNT(v) as count RETURN count;"
+    'MATCH (v:VISIT) WITH COUNT(v) as count RETURN count;',
   );
-  const total = records[0].get("count").toNumber();
+  const total = records[0].get('count').toNumber();
   const limit = 100000;
 
   function main(index = 0) {
@@ -51,7 +54,7 @@ const neo4j = NEO4J.driver(
       queue.add(() => {
         const endTime = Date.now();
         console.log(
-          `✅ Done! It took ${(endTime - startTime) / 1000} seconds.`
+          `✅ Done! It took ${(endTime - startTime) / 1000} seconds.`,
         );
       });
     }

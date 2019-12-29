@@ -1,27 +1,27 @@
-import * as Knex from "knex";
+import * as Knex from 'knex';
 
 export async function createDomainTable(knex: Knex) {
-  const hasTable = await knex.schema.hasTable("domains");
+  const hasTable = await knex.schema.hasTable('domains');
   if (!hasTable) {
-    await knex.schema.createTable("domains", table => {
-      table.increments("id").primary();
+    await knex.schema.createTable('domains', table => {
+      table.increments('id').primary();
       table
-        .boolean("banned")
+        .boolean('banned')
         .notNullable()
         .defaultTo(false);
       table
-        .integer("banned_by_id")
-        .references("id")
-        .inTable("users");
+        .integer('banned_by_id')
+        .references('id')
+        .inTable('users');
       table
-        .string("address")
+        .string('address')
         .unique()
         .notNullable();
-      table.string("homepage").nullable();
+      table.string('homepage').nullable();
       table
-        .integer("user_id")
-        .references("id")
-        .inTable("users")
+        .integer('user_id')
+        .references('id')
+        .inTable('users')
         .unique();
       table.timestamps(false, true);
     });

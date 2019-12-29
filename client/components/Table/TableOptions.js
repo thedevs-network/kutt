@@ -125,11 +125,11 @@ class TableOptions extends Component {
   }
 
   handleNav(num) {
-    return (e) => {
+    return e => {
       const { active } = e.target.dataset;
       if (active === 'false') return null;
       return this.props.getUrlsList({ page: this.props.url.page + num });
-    }
+    };
   }
 
   render() {
@@ -171,7 +171,11 @@ class TableOptions extends Component {
             </Ul>
           </ListCount>
           <Divider />
-          <TableNav handleNav={this.handleNav} next={page * count < countAll} prev={page > 1} />
+          <TableNav
+            handleNav={this.handleNav}
+            next={page * count < countAll}
+            prev={page > 1}
+          />
         </Th>
       </Tr>
     );
@@ -198,7 +202,4 @@ const mapDispatchToProps = dispatch => ({
   getUrlsList: bindActionCreators(getUrlsList, dispatch),
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TableOptions);
+export default connect(mapStateToProps, mapDispatchToProps)(TableOptions);

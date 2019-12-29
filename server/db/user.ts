@@ -1,41 +1,41 @@
-import bcrypt from "bcryptjs";
-import nanoid from "nanoid";
-import uuid from "uuid/v4";
-import { addMinutes } from "date-fns";
+import bcrypt from 'bcryptjs';
+import nanoid from 'nanoid';
+import uuid from 'uuid/v4';
+import { addMinutes } from 'date-fns';
 
-import knex from "../knex";
-import * as redis from "../redis";
-import { getRedisKey } from "../utils";
+import knex from '../knex';
+import * as redis from '../redis';
+import { getRedisKey } from '../utils';
 
-export const getUser = async (emailOrKey = ""): Promise<User> => {
+export const getUser = async (emailOrKey = ''): Promise<User> => {
   const redisKey = getRedisKey.user(emailOrKey);
   const cachedUser = await redis.get(redisKey);
 
   if (cachedUser) return JSON.parse(cachedUser);
 
-  const user = await knex<UserJoined>("users")
+  const user = await knex<UserJoined>('users')
     .select(
-      "users.id",
-      "users.apikey",
-      "users.banned",
-      "users.banned_by_id",
-      "users.cooldowns",
-      "users.created_at",
-      "users.email",
-      "users.password",
-      "users.updated_at",
-      "users.verified",
-      "domains.id as domain_id",
-      "domains.homepage as homepage",
-      "domains.address as domain"
+      'users.id',
+      'users.apikey',
+      'users.banned',
+      'users.banned_by_id',
+      'users.cooldowns',
+      'users.created_at',
+      'users.email',
+      'users.password',
+      'users.updated_at',
+      'users.verified',
+      'domains.id as domain_id',
+      'domains.homepage as homepage',
+      'domains.address as domain',
     )
-    .where("email", "ILIKE", emailOrKey)
+    .where('email', 'ILIKE', emailOrKey)
     .orWhere({ apikey: emailOrKey })
-    .leftJoin("domains", "users.id", "domains.user_id")
+    .leftJoin('domains', 'users.id', 'domains.user_id')
     .first();
 
   if (user) {
-    redis.set(redisKey, JSON.stringify(user), "EX", 60 * 60 * 1);
+    redis.set(redisKey, JSON.stringify(user), 'EX', 60 * 60 * 1);
   }
 
   return user;
@@ -44,7 +44,7 @@ export const getUser = async (emailOrKey = ""): Promise<User> => {
 export const createUser = async (
   emailToCreate: string,
   password: string,
-  user?: User
+  user?: User,
 ) => {
   const email = emailToCreate.toLowerCase();
   const salt = await bcrypt.genSalt(12);
@@ -54,37 +54,37 @@ export const createUser = async (
     email,
     password: hashedPassword,
     verification_token: uuid(),
-    verification_expires: addMinutes(new Date(), 60).toISOString()
+    verification_expires: addMinutes(new Date(), 60).toISOString(),
   };
 
   if (user) {
-    await knex<User>("users")
+    await knex<User>('users')
       .where({ email })
       .update({ ...data, updated_at: new Date().toISOString() });
   } else {
-    await knex<User>("users").insert(data);
+    await knex<User>('users').insert(data);
   }
 
   redis.del(getRedisKey.user(email));
 
   return {
     ...user,
-    ...data
+    ...data,
   };
 };
 
 export const verifyUser = async (verification_token: string) => {
-  const [user]: User[] = await knex<User>("users")
+  const [user]: User[] = await knex<User>('users')
     .where({ verification_token })
-    .andWhere("verification_expires", ">", new Date().toISOString())
+    .andWhere('verification_expires', '>', new Date().toISOString())
     .update(
       {
         verified: true,
         verification_token: undefined,
         verification_expires: undefined,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       },
-      "*"
+      '*',
     );
 
   if (user) {
@@ -98,9 +98,9 @@ export const changePassword = async (id: number, newPassword: string) => {
   const salt = await bcrypt.genSalt(12);
   const password = await bcrypt.hash(newPassword, salt);
 
-  const [user]: User[] = await knex<User>("users")
+  const [user]: User[] = await knex<User>('users')
     .where({ id })
-    .update({ password, updated_at: new Date().toISOString() }, "*");
+    .update({ password, updated_at: new Date().toISOString() }, '*');
 
   if (user) {
     redis.del(getRedisKey.user(user.email));
@@ -113,9 +113,9 @@ export const changePassword = async (id: number, newPassword: string) => {
 export const generateApiKey = async (id: number) => {
   const apikey = nanoid(40);
 
-  const [user]: User[] = await knex<User>("users")
+  const [user]: User[] = await knex<User>('users')
     .where({ id })
-    .update({ apikey, updated_at: new Date().toISOString() }, "*");
+    .update({ apikey, updated_at: new Date().toISOString() }, '*');
 
   if (user) {
     redis.del(getRedisKey.user(user.email));
@@ -129,15 +129,15 @@ export const requestPasswordReset = async (emailToMatch: string) => {
   const email = emailToMatch.toLowerCase();
   const reset_password_token = uuid();
 
-  const [user]: User[] = await knex<User>("users")
+  const [user]: User[] = await knex<User>('users')
     .where({ email })
     .update(
       {
         reset_password_token,
         reset_password_expires: addMinutes(new Date(), 30).toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       },
-      "*"
+      '*',
     );
 
   if (user) {
@@ -149,16 +149,16 @@ export const requestPasswordReset = async (emailToMatch: string) => {
 };
 
 export const resetPassword = async (reset_password_token: string) => {
-  const [user]: User[] = await knex<User>("users")
+  const [user]: User[] = await knex<User>('users')
     .where({ reset_password_token })
-    .andWhere("reset_password_expires", ">", new Date().toISOString())
+    .andWhere('reset_password_expires', '>', new Date().toISOString())
     .update(
       {
         reset_password_expires: null,
         reset_password_token: null,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       },
-      "*"
+      '*',
     );
 
   if (user) {
@@ -170,16 +170,16 @@ export const resetPassword = async (reset_password_token: string) => {
 };
 
 export const addCooldown = async (id: number) => {
-  const [user]: User[] = await knex("users")
+  const [user]: User[] = await knex('users')
     .where({ id })
     .update(
       {
-        cooldowns: knex.raw("array_append(cooldowns, ?)", [
-          new Date().toISOString()
+        cooldowns: knex.raw('array_append(cooldowns, ?)', [
+          new Date().toISOString(),
         ]),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       },
-      "*"
+      '*',
     );
 
   if (user) {
@@ -191,11 +191,11 @@ export const addCooldown = async (id: number) => {
 };
 
 export const banUser = async (id: number, banned_by_id?: number) => {
-  const [user]: User[] = await knex<User>("users")
+  const [user]: User[] = await knex<User>('users')
     .where({ id })
     .update(
       { banned: true, banned_by_id, updated_at: new Date().toISOString() },
-      "*"
+      '*',
     );
 
   if (user) {

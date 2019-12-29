@@ -52,7 +52,7 @@ class TBodyCount extends Component {
     e.preventDefault();
     const { id, domain } = this.props.url;
     this.props.showLoading();
-    Router.push(`/stats?id=${id}${domain ? `&domain=${domain}`: ''}`);
+    Router.push(`/stats?id=${id}${domain ? `&domain=${domain}` : ''}`);
   }
 
   render() {
@@ -106,7 +106,4 @@ const mapDispatchToProps = dispatch => ({
   showLoading: bindActionCreators(showPageLoading, dispatch),
 });
 
-export default connect(
-  null,
-  mapDispatchToProps
-)(TBodyCount);
+export default connect(null, mapDispatchToProps)(TBodyCount);

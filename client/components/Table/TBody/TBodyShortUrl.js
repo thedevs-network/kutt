@@ -30,7 +30,10 @@ const TBodyShortUrl = ({ index, copiedIndex, handleCopy, url }) => (
         <Icon src="/images/copy.svg" />
       </TBodyButton>
     </CopyToClipboard>
-    <a href={`${url.shortLink}`}>{`${url.shortLink.replace(/^https?:\/\//, '')}`}</a>
+    <a href={`${url.shortLink}`}>{`${url.shortLink.replace(
+      /^https?:\/\//,
+      '',
+    )}`}</a>
   </Wrapper>
 );
 

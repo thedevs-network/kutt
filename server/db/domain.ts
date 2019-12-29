@@ -1,12 +1,12 @@
-import knex from "../knex";
-import * as redis from "../redis";
-import { getRedisKey } from "../utils";
+import knex from '../knex';
+import * as redis from '../redis';
+import { getRedisKey } from '../utils';
 
 export const getDomain = async (data: Partial<Domain>): Promise<Domain> => {
   const getData = {
     ...data,
     ...(data.address && { address: data.address.toLowerCase() }),
-    ...(data.homepage && { homepage: data.homepage.toLowerCase() })
+    ...(data.homepage && { homepage: data.homepage.toLowerCase() }),
   };
 
   const redisKey = getRedisKey.domain(getData.address);
@@ -14,12 +14,12 @@ export const getDomain = async (data: Partial<Domain>): Promise<Domain> => {
 
   if (cachedDomain) return JSON.parse(cachedDomain);
 
-  const domain = await knex<Domain>("domains")
+  const domain = await knex<Domain>('domains')
     .where(getData)
     .first();
 
   if (domain) {
-    redis.set(redisKey, JSON.stringify(domain), "EX", 60 * 60 * 6);
+    redis.set(redisKey, JSON.stringify(domain), 'EX', 60 * 60 * 6);
   }
 
   return domain;
@@ -28,10 +28,10 @@ export const getDomain = async (data: Partial<Domain>): Promise<Domain> => {
 export const setDomain = async (
   data: Partial<Domain>,
   user: UserJoined,
-  matchedDomain: Domain
+  matchedDomain: Domain,
 ) => {
   // 1. If user has domain, remove it from their possession
-  await knex<Domain>("domains")
+  await knex<Domain>('domains')
     .where({ user_id: user.id })
     .update({ user_id: null });
 
@@ -42,18 +42,18 @@ export const setDomain = async (
     address: data.address.toLowerCase(),
     homepage: data.homepage && data.homepage.toLowerCase(),
     user_id: user.id,
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   };
 
   if (matchedDomain) {
-    const [response]: Domain[] = await knex<Domain>("domains")
-      .where("id", matchedDomain.id)
-      .update(updateDate, "*");
+    const [response]: Domain[] = await knex<Domain>('domains')
+      .where('id', matchedDomain.id)
+      .update(updateDate, '*');
     domain = response;
   } else {
-    const [response]: Domain[] = await knex<Domain>("domains").insert(
+    const [response]: Domain[] = await knex<Domain>('domains').insert(
       updateDate,
-      "*"
+      '*',
     );
     domain = response;
   }
@@ -67,9 +67,9 @@ export const setDomain = async (
 
 export const deleteDomain = async (user: UserJoined) => {
   // Remove user from domain, do not actually delete the domain
-  const [domain]: Domain[] = await knex<Domain>("domains")
+  const [domain]: Domain[] = await knex<Domain>('domains')
     .where({ user_id: user.id })
-    .update({ user_id: null, updated_at: new Date().toISOString() }, "*");
+    .update({ user_id: null, updated_at: new Date().toISOString() }, '*');
 
   if (domain) {
     redis.del(getRedisKey.domain(domain.address));
@@ -83,7 +83,7 @@ export const deleteDomain = async (user: UserJoined) => {
 
 export const banDomain = async (
   addressToban: string,
-  banned_by_id?: number
+  banned_by_id?: number,
 ): Promise<Domain> => {
   const address = addressToban.toLowerCase();
 
@@ -91,17 +91,17 @@ export const banDomain = async (
 
   let domain;
   if (currentDomain) {
-    const updates: Domain[] = await knex<Domain>("domains")
+    const updates: Domain[] = await knex<Domain>('domains')
       .where({ address })
       .update(
         { banned: true, banned_by_id, updated_at: new Date().toISOString() },
-        "*"
+        '*',
       );
     domain = updates[0];
   } else {
-    const inserts: Domain[] = await knex<Domain>("domains").insert(
+    const inserts: Domain[] = await knex<Domain>('domains').insert(
       { address, banned: true, banned_by_id },
-      "*"
+      '*',
     );
     domain = inserts[0];
   }

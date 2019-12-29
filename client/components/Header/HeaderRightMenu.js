@@ -83,7 +83,4 @@ const mapDispatchToProps = dispatch => ({
   showPageLoading: bindActionCreators(showPageLoading, dispatch),
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(HeaderMenu);
+export default connect(mapStateToProps, mapDispatchToProps)(HeaderMenu);

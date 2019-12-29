@@ -148,7 +148,7 @@ class Settings extends Component {
             },
           }));
         }, 2000);
-      }
+      },
     );
   }
 
@@ -201,19 +201,22 @@ class Settings extends Component {
     const form = e.target;
     const password = form.elements.password.value;
     if (password.length < 8) {
-      return this.setState({ passwordError: 'Password must be at least 8 chars long.' }, () => {
-        setTimeout(() => {
-          this.setState({
-            passwordError: '',
-          });
-        }, 1500);
-      });
+      return this.setState(
+        { passwordError: 'Password must be at least 8 chars long.' },
+        () => {
+          setTimeout(() => {
+            this.setState({
+              passwordError: '',
+            });
+          }, 1500);
+        },
+      );
     }
     return axios
       .post(
         '/api/auth/changepassword',
         { password },
-        { headers: { Authorization: cookie.get('token') } }
+        { headers: { Authorization: cookie.get('token') } },
       )
       .then(res =>
         this.setState({ passwordMessage: res.data.message }, () => {
@@ -221,7 +224,7 @@ class Settings extends Component {
             this.setState({ passwordMessage: '' });
           }, 1500);
           form.reset();
-        })
+        }),
       )
       .catch(err =>
         this.setState({ passwordError: err.response.data.error }, () => {
@@ -230,7 +233,7 @@ class Settings extends Component {
               passwordError: '',
             });
           }, 1500);
-        })
+        }),
       );
   }
 
@@ -274,7 +277,11 @@ class Settings extends Component {
           isCopied={this.state.isCopied}
           onCopy={this.onCopy}
         />
-        <Modal show={this.state.showModal} close={this.closeModal} handler={this.deleteDomain}>
+        <Modal
+          show={this.state.showModal}
+          close={this.closeModal}
+          handler={this.deleteDomain}
+        >
           Are you sure do you want to delete the domain?
         </Modal>
       </Wrapper>
@@ -328,7 +335,4 @@ const mapDispatchToProps = dispatch => ({
   showDomainInput: bindActionCreators(showDomainInput, dispatch),
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Settings);
+export default connect(mapStateToProps, mapDispatchToProps)(Settings);

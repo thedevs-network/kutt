@@ -6,7 +6,7 @@ import {
   UPDATE_URL_LIST,
   LIST_URLS,
   DELETE_URL,
-  UNAUTH_USER
+  UNAUTH_USER,
 } from '../../actions/actionTypes';
 
 import reducer from '../url';
@@ -18,7 +18,7 @@ describe('url reducer', () => {
     count: 10,
     countAll: 0,
     page: 1,
-    search: ''
+    search: '',
   };
 
   beforeEach(() => {
@@ -36,12 +36,12 @@ describe('url reducer', () => {
       target: 'https://kutt.it/',
       password: false,
       reuse: false,
-      shortLink: 'https://kutt.it/YufjdS'
+      shortLink: 'https://kutt.it/YufjdS',
     };
 
     const state = reducer(initialState, {
       type: ADD_URL,
-      payload: item
+      payload: item,
     });
 
     expect(state.list).to.be.an('array');
@@ -57,7 +57,7 @@ describe('url reducer', () => {
 
     const allParamsState = reducer(initialState, {
       type: UPDATE_URL_LIST,
-      payload: { count, page, search }
+      payload: { count, page, search },
     });
 
     expect(allParamsState).not.to.be.undefined;
@@ -67,7 +67,7 @@ describe('url reducer', () => {
 
     const countState = reducer(initialState, {
       type: UPDATE_URL_LIST,
-      payload: { count }
+      payload: { count },
     });
 
     expect(countState).not.to.be.undefined;
@@ -75,7 +75,7 @@ describe('url reducer', () => {
 
     const pageState = reducer(initialState, {
       type: UPDATE_URL_LIST,
-      payload: { page }
+      payload: { page },
     });
 
     expect(pageState).not.to.be.undefined;
@@ -83,14 +83,14 @@ describe('url reducer', () => {
 
     const searchState = reducer(initialState, {
       type: UPDATE_URL_LIST,
-      payload: { search }
+      payload: { search },
     });
 
     expect(searchState).not.to.be.undefined;
     expect(searchState.search).to.be.equal(search);
 
     const state = reducer(initialState, {
-      type: UPDATE_URL_LIST
+      type: UPDATE_URL_LIST,
     });
 
     expect(state).not.to.be.undefined;
@@ -105,7 +105,7 @@ describe('url reducer', () => {
         target: 'https://kutt.it/',
         password: false,
         reuse: false,
-        shortLink: 'https://kutt.it/YufjdS'
+        shortLink: 'https://kutt.it/YufjdS',
       },
       {
         createdAt: '2018-06-12T19:51:56.435Z',
@@ -113,15 +113,15 @@ describe('url reducer', () => {
         target: 'https://kutt.it/',
         password: false,
         reuse: false,
-        shortLink: 'https://kutt.it/1gCdbC'
-      }
+        shortLink: 'https://kutt.it/1gCdbC',
+      },
     ];
 
     const countAll = list.length;
 
     const state = reducer(initialState, {
       type: LIST_URLS,
-      payload: { list, countAll }
+      payload: { list, countAll },
     });
 
     expect(state.list).to.be.an('array');
@@ -140,7 +140,7 @@ describe('url reducer', () => {
           target: 'https://kutt.it/',
           password: false,
           reuse: false,
-          shortLink: 'https://kutt.it/YufjdS'
+          shortLink: 'https://kutt.it/YufjdS',
         },
         {
           createdAt: '2018-06-12T19:51:56.435Z',
@@ -148,21 +148,21 @@ describe('url reducer', () => {
           target: 'https://kutt.it/',
           password: false,
           reuse: false,
-          shortLink: 'https://kutt.it/1gCdbC'
-        }
+          shortLink: 'https://kutt.it/1gCdbC',
+        },
       ],
       isShortened: true,
       count: 10,
       countAll: 2,
       page: 1,
-      search: ''
+      search: '',
     };
 
     deepFreeze(itemsState);
 
     const state = reducer(itemsState, {
       type: DELETE_URL,
-      payload: 'YufjdS'
+      payload: 'YufjdS',
     });
 
     expect(state.list).to.be.an('array');
@@ -173,13 +173,13 @@ describe('url reducer', () => {
       target: 'https://kutt.it/',
       password: false,
       reuse: false,
-      shortLink: 'https://kutt.it/YufjdS'
+      shortLink: 'https://kutt.it/YufjdS',
     });
   });
 
   it('should handle UNAUTH_USER', () => {
     const state = reducer(initialState, {
-      type: UNAUTH_USER
+      type: UNAUTH_USER,
     });
 
     expect(state).not.to.be.undefined;
@@ -188,7 +188,7 @@ describe('url reducer', () => {
 
   it('should not handle other action types', () => {
     const state = reducer(initialState, {
-      type: 'ANOTHER_ACTION'
+      type: 'ANOTHER_ACTION',
     });
 
     expect(state).not.to.be.undefined;

@@ -82,9 +82,10 @@ const SettingsApi = ({ apikey, generateKey, loader, isCopied, onCopy }) => (
   <Wrapper>
     <h3>API</h3>
     <p>
-      In additional to this website, you can use the API to create, delete and get shortend URLs. If
-      {" you're"} not familiar with API, {"don't"} generate the key. DO NOT share this key on the
-      client side of your website.
+      In additional to this website, you can use the API to create, delete and
+      get shortend URLs. If
+      {" you're"} not familiar with API, {"don't"} generate the key. DO NOT
+      share this key on the client side of your website.
     </p>
     <ApiKeyWrapper apikey={apikey}>
       {isCopied && <CopyMessage>Copied to clipboard.</CopyMessage>}
@@ -96,11 +97,19 @@ const SettingsApi = ({ apikey, generateKey, loader, isCopied, onCopy }) => (
           </CopyToClipboard>
         </KeyWrapper>
       )}
-      <Button color="purple" icon={loader ? 'loader' : 'zap'} onClick={generateKey}>
+      <Button
+        color="purple"
+        icon={loader ? 'loader' : 'zap'}
+        onClick={generateKey}
+      >
         {apikey ? 'Regenerate' : 'Generate'} key
       </Button>
     </ApiKeyWrapper>
-    <Link href="https://github.com/thedevs-network/kutt#api" title="API Docs" target="_blank">
+    <Link
+      href="https://github.com/thedevs-network/kutt#api"
+      title="API Docs"
+      target="_blank"
+    >
       Read API docs
     </Link>
   </Wrapper>

@@ -1,29 +1,32 @@
-require("dotenv").config();
-import { v1 as NEO4J } from "neo4j-driver";
-import knex from "knex";
-import PQueue from "p-queue";
-import { startOfHour } from "date-fns";
+require('dotenv').config();
+import { v1 as NEO4J } from 'neo4j-driver';
+import knex from 'knex';
+import PQueue from 'p-queue';
+import { startOfHour } from 'date-fns';
 
 let count = 0;
 const queue = new PQueue({ concurrency: 5 });
 
-queue.on("active", () => (count % 1000 === 0 ? console.log(count++) : count++));
+queue.on('active', () => (count % 1000 === 0 ? console.log(count++) : count++));
 
 // 1. Connect to Neo4j database
 const neo4j = NEO4J.driver(
   process.env.NEO4J_DB_URI,
-  NEO4J.auth.basic(process.env.NEO4J_DB_USERNAME, process.env.NEO4J_DB_PASSWORD)
+  NEO4J.auth.basic(
+    process.env.NEO4J_DB_USERNAME,
+    process.env.NEO4J_DB_PASSWORD,
+  ),
 );
 
 // 2. Connect to Postgres database
 const postgres = knex({
-  client: "postgres",
+  client: 'postgres',
   connection: {
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD
-  }
+    password: process.env.DB_PASSWORD,
+  },
 });
 
 (async function() {
@@ -32,9 +35,9 @@ const postgres = knex({
   // 3. [NEO4J] Get all links
   const session = neo4j.session();
   const { records } = await session.run(
-    "MATCH (l:URL) WITH COUNT(l) as count RETURN count"
+    'MATCH (l:URL) WITH COUNT(l) as count RETURN count',
   );
-  const total = records[0].get("count").toNumber();
+  const total = records[0].get('count').toNumber();
   const limit = 20000;
 
   function main(index = 0) {
@@ -43,26 +46,26 @@ const postgres = knex({
         new Promise((resolve, reject) => {
           session
             .run(
-              "MATCH (l:URL) WITH l SKIP $skip LIMIT $limit " +
-                "OPTIONAL MATCH (l)-[:USES]->(d) " +
-                "OPTIONAL MATCH (l)<-[:CREATED]-(u) " +
-                "OPTIONAL MATCH (v)-[:VISITED]->(l) " +
-                "OPTIONAL MATCH (v)-[:BROWSED_BY]->(b) " +
-                "OPTIONAL MATCH (v)-[:OS]->(o) " +
-                "OPTIONAL MATCH (v)-[:LOCATED_IN]->(c) " +
-                "OPTIONAL MATCH (v)-[:REFERRED_BY]->(r) " +
-                "OPTIONAL MATCH (v)-[:VISITED_IN]->(dd) " +
-                "WITH l, u, d, COLLECT([b.browser, o.os, c.country, r.referrer, dd.date]) as stats " +
-                "RETURN l, u.email as email, d.name as domain, stats",
-              { limit: limit, skip: index * limit }
+              'MATCH (l:URL) WITH l SKIP $skip LIMIT $limit ' +
+                'OPTIONAL MATCH (l)-[:USES]->(d) ' +
+                'OPTIONAL MATCH (l)<-[:CREATED]-(u) ' +
+                'OPTIONAL MATCH (v)-[:VISITED]->(l) ' +
+                'OPTIONAL MATCH (v)-[:BROWSED_BY]->(b) ' +
+                'OPTIONAL MATCH (v)-[:OS]->(o) ' +
+                'OPTIONAL MATCH (v)-[:LOCATED_IN]->(c) ' +
+                'OPTIONAL MATCH (v)-[:REFERRED_BY]->(r) ' +
+                'OPTIONAL MATCH (v)-[:VISITED_IN]->(dd) ' +
+                'WITH l, u, d, COLLECT([b.browser, o.os, c.country, r.referrer, dd.date]) as stats ' +
+                'RETURN l, u.email as email, d.name as domain, stats',
+              { limit: limit, skip: index * limit },
             )
             .subscribe({
               onNext(record) {
                 queue.add(async () => {
-                  const link = record.get("l").properties;
-                  const email = record.get("email");
-                  const address = record.get("domain");
-                  const stats = record.get("stats");
+                  const link = record.get('l').properties;
+                  const email = record.get('email');
+                  const address = record.get('domain');
+                  const stats = record.get('stats');
 
                   // 4. Merge and normalize stats based on hour
                   const visits: Record<
@@ -73,10 +76,10 @@ const postgres = knex({
                   stats.forEach(([b, o, country, referrer, date]) => {
                     if (b && o && country && referrer && date) {
                       const dateHour = startOfHour(
-                        new Date(date)
+                        new Date(date),
                       ).toISOString();
                       const browser = b.toLowerCase();
-                      const os = o === "Mac Os X" ? "macos" : o.toLowerCase();
+                      const os = o === 'Mac Os X' ? 'macos' : o.toLowerCase();
                       visits[dateHour] = {
                         ...visits[dateHour],
                         total:
@@ -96,7 +99,7 @@ const postgres = knex({
                               visits[dateHour].countries[
                                 country.toLowerCase()
                               ]) ||
-                              0) + 1
+                              0) + 1,
                         },
                         referrers: {
                           ...((visits[dateHour] || {}).referrers as {}),
@@ -105,8 +108,8 @@ const postgres = knex({
                               visits[dateHour].referrers[
                                 referrer.toLowerCase()
                               ]) ||
-                              0) + 1
-                        }
+                              0) + 1,
+                        },
                       };
                     }
                   });
@@ -114,13 +117,13 @@ const postgres = knex({
                   // 5. [Postgres] Find matching user and or domain
                   const [user, domain] = await Promise.all([
                     email &&
-                      postgres<User>("users")
+                      postgres<User>('users')
                         .where({ email })
                         .first(),
                     address &&
-                      postgres<Domain>("domains")
+                      postgres<Domain>('domains')
                         .where({ address })
-                        .first()
+                        .first(),
                   ]);
 
                   // 6. [Postgres] Create link
@@ -132,10 +135,10 @@ const postgres = knex({
                     target: link.target,
                     user_id: user ? user.id : null,
                     ...(link.count && { visit_count: link.count.toNumber() }),
-                    ...(link.createdAt && { created_at: link.createdAt })
+                    ...(link.createdAt && { created_at: link.createdAt }),
                   };
 
-                  const res = await postgres<Link>("links").insert(data, "id");
+                  const res = await postgres<Link>('links').insert(data, 'id');
                   const link_id = res[0];
 
                   // 7. [Postgres] Create visits
@@ -158,11 +161,11 @@ const postgres = knex({
                       os_linux: details.os_linux as number,
                       os_macos: details.os_macos as number,
                       os_other: details.os_other as number,
-                      os_windows: details.os_windows as number
-                    })
+                      os_windows: details.os_windows as number,
+                    }),
                   );
 
-                  await postgres<Visit>("visits").insert(newVisits);
+                  await postgres<Visit>('visits').insert(newVisits);
                 });
               },
               onCompleted() {
@@ -174,7 +177,7 @@ const postgres = knex({
                     const endTime = Date.now();
                     console.log(
                       `✅ Done! It took ${(endTime - startTime) /
-                        1000} seconds.`
+                        1000} seconds.`,
                     );
                   });
                 }
@@ -186,9 +189,9 @@ const postgres = knex({
                   queue.add(() => main(index + 1));
                 }
                 reject(error);
-              }
+              },
             });
-        })
+        }),
     );
   }
   main();

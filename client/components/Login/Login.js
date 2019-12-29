@@ -10,7 +10,12 @@ import LoginInputLabel from './LoginInputLabel';
 import TextInput from '../TextInput';
 import Button from '../Button';
 import Error from '../Error';
-import { loginUser, showAuthError, signupUser, showPageLoading } from '../../actions';
+import {
+  loginUser,
+  showAuthError,
+  signupUser,
+  showPageLoading,
+} from '../../actions';
 
 const Wrapper = styled.div`
   flex: 0 0 auto;
@@ -82,7 +87,8 @@ class Login extends Component {
     const { value: email } = form.elements.email;
     const { value: password } = form.elements.password;
     if (!email) return showError('Email address must not be empty.');
-    if (!emailValidator.validate(email)) return showError('Email address is not valid.');
+    if (!emailValidator.validate(email))
+      return showError('Email address is not valid.');
     if (password.trim().length < 8) {
       return showError('Password must be at least 8 chars long.');
     }
@@ -106,7 +112,8 @@ class Login extends Component {
       <Wrapper>
         {this.props.auth.sentVerification ? (
           <VerificationMsg>
-            A verification email has been sent to <User>{this.props.auth.user}</User>.
+            A verification email has been sent to{' '}
+            <User>{this.props.auth.user}</User>.
           </VerificationMsg>
         ) : (
           <LoginBox id="login-form" onSubmit={this.loginHandler}>
@@ -114,9 +121,15 @@ class Login extends Component {
               Email address
             </LoginInputLabel>
             <TextInput type="email" name="email" id="email" autoFocus />
-            <LoginInputLabel htmlFor="password">Password (min chars: 8)</LoginInputLabel>
+            <LoginInputLabel htmlFor="password">
+              Password (min chars: 8)
+            </LoginInputLabel>
             <TextInput type="password" name="password" id="password" />
-            <ForgetPassLink href="/reset-password" title="Forget password" onClick={this.goTo}>
+            <ForgetPassLink
+              href="/reset-password"
+              title="Forget password"
+              onClick={this.goTo}
+            >
               Forgot your password?
             </ForgetPassLink>
             <ButtonWrapper>
@@ -168,7 +181,4 @@ const mapDispatchToProps = dispatch => ({
   showPageLoading: bindActionCreators(showPageLoading, dispatch),
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

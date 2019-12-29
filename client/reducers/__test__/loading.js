@@ -18,7 +18,7 @@ import {
   SET_DOMAIN,
   DOMAIN_ERROR,
   API_LOADING,
-  SET_APIKEY
+  SET_APIKEY,
 } from '../../actions/actionTypes';
 
 import reducer from '../loading';
@@ -31,7 +31,7 @@ describe('loading reducer', () => {
     login: false,
     page: false,
     table: false,
-    signup: false
+    signup: false,
   };
 
   beforeEach(() => {
@@ -44,7 +44,7 @@ describe('loading reducer', () => {
 
   it('should handle SHOW_PAGE_LOADING', () => {
     const state = reducer(initialState, {
-      type: SHOW_PAGE_LOADING
+      type: SHOW_PAGE_LOADING,
     });
 
     expect(state).not.to.be.undefined;
@@ -53,7 +53,7 @@ describe('loading reducer', () => {
 
   it('should handle HIDE_PAGE_LOADING', () => {
     const state = reducer(initialState, {
-      type: HIDE_PAGE_LOADING
+      type: HIDE_PAGE_LOADING,
     });
 
     expect(state).not.to.be.undefined;
@@ -65,7 +65,7 @@ describe('loading reducer', () => {
 
   it('should handle TABLE_LOADING', () => {
     const state = reducer(initialState, {
-      type: TABLE_LOADING
+      type: TABLE_LOADING,
     });
 
     expect(state).not.to.be.undefined;
@@ -74,7 +74,7 @@ describe('loading reducer', () => {
 
   it('should handle LOGIN_LOADING', () => {
     const state = reducer(initialState, {
-      type: LOGIN_LOADING
+      type: LOGIN_LOADING,
     });
 
     expect(state).not.to.be.undefined;
@@ -83,7 +83,7 @@ describe('loading reducer', () => {
 
   it('should handle SIGNUP_LOADING', () => {
     const state = reducer(initialState, {
-      type: SIGNUP_LOADING
+      type: SIGNUP_LOADING,
     });
 
     expect(state).not.to.be.undefined;
@@ -92,7 +92,7 @@ describe('loading reducer', () => {
 
   it('should handle SHORTENER_LOADING', () => {
     const state = reducer(initialState, {
-      type: SHORTENER_LOADING
+      type: SHORTENER_LOADING,
     });
 
     expect(state).not.to.be.undefined;
@@ -101,7 +101,7 @@ describe('loading reducer', () => {
 
   it('should handle ADD_URL', () => {
     const state = reducer(initialState, {
-      type: ADD_URL
+      type: ADD_URL,
     });
 
     expect(state).not.to.be.undefined;
@@ -110,7 +110,7 @@ describe('loading reducer', () => {
 
   it('should handle SHORTENER_ERROR', () => {
     const state = reducer(initialState, {
-      type: SHORTENER_ERROR
+      type: SHORTENER_ERROR,
     });
 
     expect(state).not.to.be.undefined;
@@ -119,7 +119,7 @@ describe('loading reducer', () => {
 
   it('should handle LIST_URLS', () => {
     const state = reducer(initialState, {
-      type: LIST_URLS
+      type: LIST_URLS,
     });
 
     expect(state).not.to.be.undefined;
@@ -128,7 +128,7 @@ describe('loading reducer', () => {
 
   it('should handle DELETE_URL', () => {
     const state = reducer(initialState, {
-      type: DELETE_URL
+      type: DELETE_URL,
     });
 
     expect(state).not.to.be.undefined;
@@ -137,7 +137,7 @@ describe('loading reducer', () => {
 
   it('should handle AUTH_ERROR', () => {
     const state = reducer(initialState, {
-      type: AUTH_ERROR
+      type: AUTH_ERROR,
     });
 
     expect(state).not.to.be.undefined;
@@ -147,7 +147,7 @@ describe('loading reducer', () => {
 
   it('should handle AUTH_USER', () => {
     const state = reducer(initialState, {
-      type: AUTH_USER
+      type: AUTH_USER,
     });
 
     expect(state).not.to.be.undefined;
@@ -157,7 +157,7 @@ describe('loading reducer', () => {
 
   it('should handle DOMAIN_LOADING', () => {
     const state = reducer(initialState, {
-      type: DOMAIN_LOADING
+      type: DOMAIN_LOADING,
     });
 
     expect(state).not.to.be.undefined;
@@ -166,7 +166,7 @@ describe('loading reducer', () => {
 
   it('should handle SET_DOMAIN', () => {
     const state = reducer(initialState, {
-      type: SET_DOMAIN
+      type: SET_DOMAIN,
     });
 
     expect(state).not.to.be.undefined;
@@ -175,7 +175,7 @@ describe('loading reducer', () => {
 
   it('should handle DOMAIN_ERROR', () => {
     const state = reducer(initialState, {
-      type: DOMAIN_ERROR
+      type: DOMAIN_ERROR,
     });
 
     expect(state).not.to.be.undefined;
@@ -184,7 +184,7 @@ describe('loading reducer', () => {
 
   it('should handle API_LOADING', () => {
     const state = reducer(initialState, {
-      type: API_LOADING
+      type: API_LOADING,
     });
 
     expect(state).not.to.be.undefined;
@@ -193,7 +193,7 @@ describe('loading reducer', () => {
 
   it('should handle SET_APIKEY', () => {
     const state = reducer(initialState, {
-      type: SET_APIKEY
+      type: SET_APIKEY,
     });
 
     expect(state).not.to.be.undefined;
@@ -202,7 +202,7 @@ describe('loading reducer', () => {
 
   it('should not handle other action types', () => {
     const state = reducer(initialState, {
-      type: 'ANOTHER_ACTION'
+      type: 'ANOTHER_ACTION',
     });
 
     expect(state).not.to.be.undefined;

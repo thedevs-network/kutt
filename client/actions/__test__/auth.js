@@ -15,7 +15,7 @@ import {
   AUTH_USER,
   SET_DOMAIN,
   SHOW_PAGE_LOADING,
-  UNAUTH_USER
+  UNAUTH_USER,
 } from '../actionTypes';
 
 const middlewares = [thunk];
@@ -40,7 +40,7 @@ describe('auth actions', () => {
         .post('/api/auth/signup')
         .reply(200, {
           email,
-          message: 'Verification email has been sent.'
+          message: 'Verification email has been sent.',
         });
 
       const store = mockStore({});
@@ -49,8 +49,8 @@ describe('auth actions', () => {
         { type: SIGNUP_LOADING },
         {
           type: SENT_VERIFICATION,
-          payload: email
-        }
+          payload: email,
+        },
       ];
 
       store
@@ -72,7 +72,7 @@ describe('auth actions', () => {
       nock('http://localhost')
         .post('/api/auth/login')
         .reply(200, {
-          token
+          token,
         });
 
       const store = mockStore({});
@@ -82,15 +82,15 @@ describe('auth actions', () => {
         { type: AUTH_RENEW },
         {
           type: AUTH_USER,
-          payload: jwt
+          payload: jwt,
         },
         {
           type: SET_DOMAIN,
           payload: {
             customDomain: '',
-          }
+          },
         },
-        { type: SHOW_PAGE_LOADING }
+        { type: SHOW_PAGE_LOADING },
       ];
 
       store
@@ -117,7 +117,7 @@ describe('auth actions', () => {
 
       const expectedActions = [
         { type: SHOW_PAGE_LOADING },
-        { type: UNAUTH_USER }
+        { type: UNAUTH_USER },
       ];
 
       store.dispatch(logoutUser());
@@ -135,12 +135,12 @@ describe('auth actions', () => {
 
       nock('http://localhost', {
         reqheaders: {
-          Authorization: token
-        }
+          Authorization: token,
+        },
       })
         .post('/api/auth/renew')
         .reply(200, {
-          token
+          token,
         });
 
       const store = mockStore({ auth: { renew: false } });
@@ -149,14 +149,14 @@ describe('auth actions', () => {
         { type: AUTH_RENEW },
         {
           type: AUTH_USER,
-          payload: jwt
+          payload: jwt,
         },
         {
           type: SET_DOMAIN,
           payload: {
             customDomain: '',
-          }
-        }
+          },
+        },
       ];
 
       store

@@ -6,7 +6,11 @@ import styled from 'styled-components';
 import ShortenerResult from './ShortenerResult';
 import ShortenerTitle from './ShortenerTitle';
 import ShortenerInput from './ShortenerInput';
-import { createShortUrl, setShortenerFormError, showShortenerLoading } from '../../actions';
+import {
+  createShortUrl,
+  setShortenerFormError,
+  showShortenerLoading,
+} from '../../actions';
 import { fadeIn } from '../../helpers/animations';
 
 const Wrapper = styled.div`
@@ -86,10 +90,16 @@ class Shortener extends Component {
       const getCaptchaToken = () => {
         setTimeout(() => {
           if (window.isCaptchaReady) {
-            const reCaptchaToken = window.grecaptcha.getResponse(window.captchaId);
+            const reCaptchaToken = window.grecaptcha.getResponse(
+              window.captchaId,
+            );
             window.isCaptchaReady = false;
             window.grecaptcha.reset(window.captchaId);
-            return this.props.createShortUrl({ target, reCaptchaToken, ...options });
+            return this.props.createShortUrl({
+              target,
+              reCaptchaToken,
+              ...options,
+            });
           }
           return getCaptchaToken();
         }, 200);
@@ -108,7 +118,12 @@ class Shortener extends Component {
 
   render() {
     const { isCopied } = this.state;
-    const { isAuthenticated, shortenerError, shortenerLoading, url } = this.props;
+    const {
+      isAuthenticated,
+      shortenerError,
+      shortenerLoading,
+      url,
+    } = this.props;
     return (
       <Wrapper>
         <ResultWrapper>
@@ -167,7 +182,4 @@ const mapDispatchToProps = dispatch => ({
   showShortenerLoading: bindActionCreators(showShortenerLoading, dispatch),
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Shortener);
+export default connect(mapStateToProps, mapDispatchToProps)(Shortener);

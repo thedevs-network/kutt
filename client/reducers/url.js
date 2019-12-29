@@ -26,7 +26,13 @@ const url = (state = initialState, action) => {
         list: [action.payload, ...state.list],
       };
     case UPDATE_URL_LIST:
-      return Object.assign({}, state, count && { count }, page && { page }, isSearch && { search });
+      return Object.assign(
+        {},
+        state,
+        count && { count },
+        page && { page },
+        isSearch && { search },
+      );
     case LIST_URLS:
       return {
         ...state,

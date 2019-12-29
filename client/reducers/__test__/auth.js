@@ -5,7 +5,7 @@ import {
   AUTH_USER,
   AUTH_RENEW,
   UNAUTH_USER,
-  SENT_VERIFICATION
+  SENT_VERIFICATION,
 } from '../../actions/actionTypes';
 
 import reducer from '../auth';
@@ -40,7 +40,7 @@ describe('auth reducer', () => {
 
     const state = reducer(initialState, {
       type: AUTH_USER,
-      payload: jwt
+      payload: jwt,
     });
 
     expect(state).not.to.be.undefined;
@@ -51,7 +51,7 @@ describe('auth reducer', () => {
 
   it('should handle AUTH_RENEW', () => {
     const state = reducer(initialState, {
-      type: AUTH_RENEW
+      type: AUTH_RENEW,
     });
 
     expect(state).not.to.be.undefined;
@@ -60,7 +60,7 @@ describe('auth reducer', () => {
 
   it('should handle UNAUTH_USER', () => {
     const state = reducer(initialState, {
-      type: UNAUTH_USER
+      type: UNAUTH_USER,
     });
 
     expect(state).not.to.be.undefined;
@@ -72,7 +72,7 @@ describe('auth reducer', () => {
 
     const state = reducer(initialState, {
       type: SENT_VERIFICATION,
-      payload: user
+      payload: user,
     });
 
     expect(state).not.to.be.undefined;
@@ -82,7 +82,7 @@ describe('auth reducer', () => {
 
   it('should not handle other action types', () => {
     const state = reducer(initialState, {
-      type: 'ANOTHER_ACTION'
+      type: 'ANOTHER_ACTION',
     });
 
     expect(state).not.to.be.undefined;

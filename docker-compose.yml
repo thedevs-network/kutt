@@ -8,8 +8,8 @@ services:
       - postgres
       - redis
     ports:
-      - "3000:3000"
-    env_file: 
+      - '3000:3000'
+    env_file:
       - .env
     environment:
       DB_HOST: postgres
@@ -18,7 +18,7 @@ services:
       DB_PASSWORD: pass
     networks:
       - kutt-network
-    
+
   redis:
     image: redis:alpine
     container_name: redis
@@ -33,10 +33,10 @@ services:
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: kutt
     ports:
-      - "54323:5432"
+      - '54323:5432'
     networks:
       - kutt-network
 
 networks:
   kutt-network:
-    driver: "bridge"
+    driver: 'bridge'

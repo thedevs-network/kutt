@@ -20,7 +20,10 @@ const ChartArea = ({ data: rawData, period }) => {
   const getDate = index => {
     switch (period) {
       case 'allTime':
-        return formatDate(subMonths(now, rawData.length - index - 1), 'MMM yyy');
+        return formatDate(
+          subMonths(now, rawData.length - index - 1),
+          'MMM yyy',
+        );
       case 'lastDay':
         return formatDate(subHours(now, rawData.length - index - 1), 'HH:00');
       case 'lastMonth':
@@ -35,7 +38,10 @@ const ChartArea = ({ data: rawData, period }) => {
   }));
 
   return (
-    <ResponsiveContainer width="100%" height={window.innerWidth < 468 ? 240 : 320}>
+    <ResponsiveContainer
+      width="100%"
+      height={window.innerWidth < 468 ? 240 : 320}
+    >
       <AreaChart
         data={data}
         margin={{

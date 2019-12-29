@@ -88,13 +88,15 @@ class Stats extends Component {
     const { domain, id } = this.props;
     if (!id) return null;
     return axios
-      .get(`/api/url/stats?id=${id}&domain=${domain}`, { headers: { Authorization: cookie.get('token') } })
+      .get(`/api/url/stats?id=${id}&domain=${domain}`, {
+        headers: { Authorization: cookie.get('token') },
+      })
       .then(({ data }) =>
         this.setState({
           stats: data,
           loading: false,
           error: !data,
-        })
+        }),
       )
       .catch(() => this.setState({ error: true, loading: false }));
   }
@@ -115,7 +117,8 @@ class Stats extends Component {
     const { error, loading, period, stats } = this.state;
     const { isAuthenticated, id } = this.props;
 
-    if (!isAuthenticated) return <StatsError text="You need to login to view stats." />;
+    if (!isAuthenticated)
+      return <StatsError text="You need to login to view stats." />;
 
     if (!id || error) return <StatsError />;
 
@@ -140,8 +143,16 @@ class Stats extends Component {
           </TitleTarget>
         </TitleWrapper>
         <Content>
-          <StatsHead total={stats.total} period={period} changePeriod={this.changePeriod} />
-          <StatsCharts stats={stats[period]} updatedAt={stats.updatedAt} period={period} />
+          <StatsHead
+            total={stats.total}
+            period={period}
+            changePeriod={this.changePeriod}
+          />
+          <StatsCharts
+            stats={stats[period]}
+            updatedAt={stats.updatedAt}
+            period={period}
+          />
         </Content>
         <ButtonWrapper>
           <Button icon="arrow-left" onClick={this.goToHomepage}>
@@ -160,13 +171,12 @@ Stats.propTypes = {
   showPageLoading: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = ({ auth: { isAuthenticated } }) => ({ isAuthenticated });
+const mapStateToProps = ({ auth: { isAuthenticated } }) => ({
+  isAuthenticated,
+});
 
 const mapDispatchToProps = dispatch => ({
   showPageLoading: bindActionCreators(showPageLoading, dispatch),
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Stats);
+export default connect(mapStateToProps, mapDispatchToProps)(Stats);

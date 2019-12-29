@@ -53,7 +53,8 @@ const Features = () => (
     <Title>Kutting edge features.</Title>
     <Wrapper>
       <FeaturesItem title="Managing links" icon="edit">
-        Create, protect and delete your links and monitor them with detailed statistics.
+        Create, protect and delete your links and monitor them with detailed
+        statistics.
       </FeaturesItem>
       <FeaturesItem title="Custom domain" icon="navigation">
         Use custom domains for your links. Add or remove them for free.

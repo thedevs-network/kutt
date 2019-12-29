@@ -7,5 +7,5 @@ module.exports = withTypescript({
     config.plugins.push(new webpack.EnvironmentPlugin(localEnv));
 
     return config;
-  }
+  },
 });

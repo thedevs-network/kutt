@@ -1,14 +1,14 @@
-import bcrypt from "bcryptjs";
-import dns from "dns";
-import { Handler } from "express";
-import isbot from "isbot";
-import generate from "nanoid/generate";
-import ua from "universal-analytics";
-import URL from "url";
-import urlRegex from "url-regex";
-import { promisify } from "util";
-import { deleteDomain, getDomain, setDomain } from "../db/domain";
-import { addIP } from "../db/ip";
+import bcrypt from 'bcryptjs';
+import dns from 'dns';
+import { Handler } from 'express';
+import isbot from 'isbot';
+import generate from 'nanoid/generate';
+import ua from 'universal-analytics';
+import URL from 'url';
+import urlRegex from 'url-regex';
+import { promisify } from 'util';
+import { deleteDomain, getDomain, setDomain } from '../db/domain';
+import { addIP } from '../db/ip';
 import {
   banLink,
   createShortLink,
@@ -16,27 +16,27 @@ import {
   findLink,
   getLinks,
   getStats,
-  getUserLinksCount
-} from "../db/link";
-import transporter from "../mail/mail";
-import * as redis from "../redis";
-import { addProtocol, generateShortLink, getStatsCacheTime } from "../utils";
+  getUserLinksCount,
+} from '../db/link';
+import transporter from '../mail/mail';
+import * as redis from '../redis';
+import { addProtocol, generateShortLink, getStatsCacheTime } from '../utils';
 import {
   checkBannedDomain,
   checkBannedHost,
   cooldownCheck,
   malwareCheck,
   preservedUrls,
-  urlCountsCheck
-} from "./validateBodyController";
-import { visitQueue } from "../queues";
+  urlCountsCheck,
+} from './validateBodyController';
+import { visitQueue } from '../queues';
 
 const dnsLookup = promisify(dns.lookup);
 
 const generateId = async () => {
   const address = generate(
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
-    Number(process.env.LINK_LENGTH) || 6
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
+    Number(process.env.LINK_LENGTH) || 6,
   );
   const link = await findLink({ address });
   if (!link) return address;
@@ -57,17 +57,17 @@ export const shortener: Handler = async (req, res) => {
         req.body.reuse &&
         findLink({
           target,
-          user_id: req.user.id
+          user_id: req.user.id,
         }),
       req.user &&
         req.body.customurl &&
         findLink({
           address: req.body.customurl,
-          domain_id: req.user.domain_id || null
+          domain_id: req.user.domain_id || null,
         }),
       (!req.user || !req.body.customurl) && generateId(),
       checkBannedDomain(targetDomain),
-      checkBannedHost(targetDomain)
+      checkBannedHost(targetDomain),
     ]);
 
     // if "reuse" is true, try to return
@@ -81,14 +81,14 @@ export const shortener: Handler = async (req, res) => {
         password: !!link.password,
         reuse: true,
         shortLink,
-        shortUrl: shortLink
+        shortUrl: shortLink,
       };
       return res.json(data);
     }
 
     // Check if custom link already exists
     if (queries[4]) {
-      throw new Error("Custom URL is already in use.");
+      throw new Error('Custom URL is already in use.');
     }
 
     // Create new link
@@ -97,9 +97,9 @@ export const shortener: Handler = async (req, res) => {
       {
         ...req.body,
         address,
-        target
+        target,
       },
-      req.user
+      req.user,
     );
     if (!req.user && Number(process.env.NON_USER_COOLDOWN)) {
       addIP(req.realIP);
@@ -114,9 +114,9 @@ export const shortener: Handler = async (req, res) => {
 export const goToLink: Handler = async (req, res, next) => {
   const { host } = req.headers;
   const reqestedId = req.params.id || req.body.id;
-  const address = reqestedId.replace("+", "");
+  const address = reqestedId.replace('+', '');
   const customDomain = host !== process.env.DEFAULT_DOMAIN && host;
-  const isBot = isbot(req.headers["user-agent"]);
+  const isBot = isbot(req.headers['user-agent']);
 
   let domain;
   if (customDomain) {
@@ -134,34 +134,34 @@ export const goToLink: Handler = async (req, res, next) => {
   }
 
   if (link.banned) {
-    return res.redirect("/banned");
+    return res.redirect('/banned');
   }
 
   const doesRequestInfo = /.*\+$/gi.test(reqestedId);
   if (doesRequestInfo && !link.password) {
     req.linkTarget = link.target;
-    req.pageType = "info";
+    req.pageType = 'info';
     return next();
   }
 
   if (link.password && !req.body.password) {
     req.protectedLink = address;
-    req.pageType = "password";
+    req.pageType = 'password';
     return next();
   }
 
   if (link.password) {
     const isMatch = await bcrypt.compare(req.body.password, link.password);
     if (!isMatch) {
-      return res.status(401).json({ error: "Password is not correct" });
+      return res.status(401).json({ error: 'Password is not correct' });
     }
     if (link.user_id && !isBot) {
       visitQueue.add({
         headers: req.headers,
         realIP: req.realIP,
-        referrer: req.get("Referrer"),
+        referrer: req.get('Referrer'),
         link,
-        customDomain
+        customDomain,
       });
     }
     return res.status(200).json({ target: link.target });
@@ -171,9 +171,9 @@ export const goToLink: Handler = async (req, res, next) => {
     visitQueue.add({
       headers: req.headers,
       realIP: req.realIP,
-      referrer: req.get("Referrer"),
+      referrer: req.get('Referrer'),
       link,
-      customDomain
+      customDomain,
     });
   }
 
@@ -182,9 +182,9 @@ export const goToLink: Handler = async (req, res, next) => {
     visitor
       .pageview({
         dp: `/${address}`,
-        ua: req.headers["user-agent"],
+        ua: req.headers['user-agent'],
         uip: req.realIP,
-        aip: 1
+        aip: 1,
       })
       .send();
   }
@@ -195,7 +195,7 @@ export const goToLink: Handler = async (req, res, next) => {
 export const getUserLinks: Handler = async (req, res) => {
   const [countAll, list] = await Promise.all([
     getUserLinksCount({ user_id: req.user.id }),
-    getLinks(req.user.id, req.query)
+    getLinks(req.user.id, req.query),
   ]);
   return res.json({ list, countAll: parseInt(countAll) });
 };
@@ -204,11 +204,11 @@ export const setCustomDomain: Handler = async (req, res) => {
   const parsed = URL.parse(req.body.customDomain);
   const customDomain = parsed.hostname || parsed.href;
   if (!customDomain)
-    return res.status(400).json({ error: "Domain is not valid." });
+    return res.status(400).json({ error: 'Domain is not valid.' });
   if (customDomain.length > 40) {
     return res
       .status(400)
-      .json({ error: "Maximum custom domain length is 40." });
+      .json({ error: 'Maximum custom domain length is 40.' });
   }
   if (customDomain === process.env.DEFAULT_DOMAIN) {
     return res.status(400).json({ error: "You can't use default domain." });
@@ -217,7 +217,7 @@ export const setCustomDomain: Handler = async (req, res) => {
     !req.body.homepage ||
     urlRegex({ exact: true, strict: false }).test(req.body.homepage);
   if (!isValidHomepage)
-    return res.status(400).json({ error: "Homepage is not valid." });
+    return res.status(400).json({ error: 'Homepage is not valid.' });
   const homepage =
     req.body.homepage &&
     (URL.parse(req.body.homepage).protocol
@@ -230,21 +230,21 @@ export const setCustomDomain: Handler = async (req, res) => {
     matchedDomain.user_id !== req.user.id
   ) {
     return res.status(400).json({
-      error: "Domain is already taken. Contact us for multiple users."
+      error: 'Domain is already taken. Contact us for multiple users.',
     });
   }
   const userCustomDomain = await setDomain(
     {
       address: customDomain,
-      homepage
+      homepage,
     },
     req.user,
-    matchedDomain
+    matchedDomain,
   );
   if (userCustomDomain) {
     return res.status(201).json({
       customDomain: userCustomDomain.address,
-      homepage: userCustomDomain.homepage
+      homepage: userCustomDomain.homepage,
     });
   }
   return res.status(400).json({ error: "Couldn't set custom domain." });
@@ -253,7 +253,7 @@ export const setCustomDomain: Handler = async (req, res) => {
 export const deleteCustomDomain: Handler = async (req, res) => {
   const response = await deleteDomain(req.user);
   if (response)
-    return res.status(200).json({ message: "Domain deleted successfully" });
+    return res.status(200).json({ message: 'Domain deleted successfully' });
   return res.status(400).json({ error: "Couldn't delete custom domain." });
 };
 
@@ -261,16 +261,16 @@ export const customDomainRedirection: Handler = async (req, res, next) => {
   const { headers, path } = req;
   if (
     headers.host !== process.env.DEFAULT_DOMAIN &&
-    (path === "/" ||
+    (path === '/' ||
       preservedUrls
-        .filter(l => l !== "url-password")
-        .some(item => item === path.replace("/", "")))
+        .filter(l => l !== 'url-password')
+        .some(item => item === path.replace('/', '')))
   ) {
     const domain = await getDomain({ address: headers.host });
     return res.redirect(
       301,
       (domain && domain.homepage) ||
-        `https://${process.env.DEFAULT_DOMAIN + path}`
+        `https://${process.env.DEFAULT_DOMAIN + path}`,
     );
   }
   return next();
@@ -280,17 +280,17 @@ export const deleteUserLink: Handler = async (req, res) => {
   const { id, domain } = req.body;
 
   if (!id) {
-    return res.status(400).json({ error: "No id has been provided." });
+    return res.status(400).json({ error: 'No id has been provided.' });
   }
 
   const response = await deleteLink({
     address: id,
     domain: !domain || domain === process.env.DEFAULT_DOMAIN ? null : domain,
-    user_id: req.user.id
+    user_id: req.user.id,
   });
 
   if (response) {
-    return res.status(200).json({ message: "Short link deleted successfully" });
+    return res.status(200).json({ message: 'Short link deleted successfully' });
   }
 
   return res.status(400).json({ error: "Couldn't delete the short link." });
@@ -298,7 +298,7 @@ export const deleteUserLink: Handler = async (req, res) => {
 
 export const getLinkStats: Handler = async (req, res) => {
   if (!req.query.id) {
-    return res.status(400).json({ error: "No id has been provided." });
+    return res.status(400).json({ error: 'No id has been provided.' });
   }
 
   const { hostname } = URL.parse(req.query.domain);
@@ -308,14 +308,14 @@ export const getLinkStats: Handler = async (req, res) => {
     ? (await getDomain({ address: req.query.domain })) || ({ id: -1 } as Domain)
     : ({} as Domain);
 
-  const redisKey = req.query.id + (customDomain.address || "") + req.user.email;
+  const redisKey = req.query.id + (customDomain.address || '') + req.user.email;
   const cached = await redis.get(redisKey);
   if (cached) return res.status(200).json(JSON.parse(cached));
 
   const link = await findLink({
     address: req.query.id,
     domain_id: hasCustomDomain ? customDomain.id : null,
-    user_id: req.user && req.user.id
+    user_id: req.user && req.user.id,
   });
 
   if (!link) {
@@ -327,32 +327,32 @@ export const getLinkStats: Handler = async (req, res) => {
   if (!stats) {
     return res
       .status(400)
-      .json({ error: "Could not get the short link stats." });
+      .json({ error: 'Could not get the short link stats.' });
   }
 
   const cacheTime = getStatsCacheTime(0);
-  redis.set(redisKey, JSON.stringify(stats), "EX", cacheTime);
+  redis.set(redisKey, JSON.stringify(stats), 'EX', cacheTime);
   return res.status(200).json(stats);
 };
 
 export const reportLink: Handler = async (req, res) => {
   if (!req.body.link) {
-    return res.status(400).json({ error: "No URL has been provided." });
+    return res.status(400).json({ error: 'No URL has been provided.' });
   }
 
   const { hostname } = URL.parse(req.body.link);
   if (hostname !== process.env.DEFAULT_DOMAIN) {
     return res.status(400).json({
-      error: `You can only report a ${process.env.DEFAULT_DOMAIN} link`
+      error: `You can only report a ${process.env.DEFAULT_DOMAIN} link`,
     });
   }
 
   const mail = await transporter.sendMail({
     from: process.env.MAIL_USER,
     to: process.env.REPORT_MAIL,
-    subject: "[REPORT]",
+    subject: '[REPORT]',
     text: req.body.link,
-    html: req.body.link
+    html: req.body.link,
   });
   if (mail.accepted.length) {
     return res
@@ -366,14 +366,14 @@ export const reportLink: Handler = async (req, res) => {
 
 export const ban: Handler = async (req, res) => {
   if (!req.body.id)
-    return res.status(400).json({ error: "No id has been provided." });
+    return res.status(400).json({ error: 'No id has been provided.' });
 
   const link = await findLink({ address: req.body.id, domain_id: null });
 
   if (!link) return res.status(400).json({ error: "Couldn't find the link." });
 
   if (link.banned) {
-    return res.status(200).json({ message: "Link was banned already." });
+    return res.status(200).json({ message: 'Link was banned already.' });
   }
 
   const domain = URL.parse(link.target).hostname;
@@ -393,8 +393,8 @@ export const ban: Handler = async (req, res) => {
     domain,
     host,
     address: req.body.id,
-    banUser: !!req.body.user
+    banUser: !!req.body.user,
   });
 
-  return res.status(200).json({ message: "Link has been banned successfully" });
+  return res.status(200).json({ message: 'Link has been banned successfully' });
 };

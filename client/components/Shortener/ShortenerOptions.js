@@ -77,7 +77,9 @@ class ShortenerOptions extends Component {
   handleCheckbox(e) {
     e.preventDefault();
     if (!this.props.isAuthenticated) {
-      return this.props.setShortenerFormError('Please login or sign up to use this feature.');
+      return this.props.setShortenerFormError(
+        'Please login or sign up to use this feature.',
+      );
     }
     const type = e.target.id;
     return this.setState({ [type]: !this.state[type] });
