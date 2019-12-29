@@ -8,14 +8,19 @@
     "docker:build": "docker build -t kutt .",
     "docker:run": "docker run -p 3000:3000 --env-file .env -d kutt:latest",
     "dev": "nodemon server/server.ts",
-    "build": "next build client/ && rimraf production-server && tsc --project tsconfig.server.json && copyfiles -f \"server/mail/*.html\" production-server/mail",
+    "build:server": "rimraf production-server && tsc --project tsconfig.server.json && copyfiles -f \"server/mail/*.html\" production-server/mail",
+    "build:client": "next build client/",
+    "build": "run-p build:*",
     "start": "NODE_ENV=production node production-server/server.js",
-    "lint": "eslint server/ --ext .js,.ts --fix",
-    "lint:nofix": "eslint server/ --ext .js,.ts"
+    "lint": "eslint server/ --ext .js,.ts --format=stylish",
+    "tscheck:server": "tsc --noEmit --project tsconfig.server.json",
+    "tscheck:client": "tsc --noEmit --project tsconfig.json",
+    "tscheck": "run-p tscheck:* ",
+    "prettier": "prettier --check '**/*.{js,jsx,ts,tsx,md,json,yml,css,html}'"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint:nofix"
+      "pre-commit": "run-p prettier lint tscheck"
     }
   },
   "repository": {
@@ -124,16 +129,16 @@
     "deep-freeze": "^0.0.1",
     "eslint": "^5.4.0",
     "eslint-config-airbnb": "^16.1.0",
-    "eslint-config-prettier": "^6.1.0",
+    "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
-    "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.14.3",
     "husky": "^0.15.0-rc.13",
     "mocha": "^5.2.0",
     "nock": "^9.3.3",
     "nodemon": "^1.18.10",
-    "prettier": "^1.18.2",
+    "npm-run-all": "^4.1.5",
+    "prettier": "1.19.1",
     "redux-mock-store": "^1.5.3",
     "rimraf": "^3.0.0",
     "sinon": "^6.0.0",
