@@ -6,7 +6,6 @@ dotenv.config();
 import nextApp from 'next';
 import express, { Request, Response } from 'express';
 import helmet from 'helmet';
-import morgan from 'morgan';
 import Raven from 'raven';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
@@ -21,6 +20,11 @@ import {
 import * as auth from './controllers/authController';
 import * as link from './controllers/linkController';
 import { initializeDb } from './knex';
+import {
+  logger,
+  loggerMiddleware,
+  errorLoggerMiddleware,
+} from './utils/logger';
 
 import './cron';
 import './passport';
@@ -44,10 +48,7 @@ app.prepare().then(async () => {
 
   server.set('trust proxy', true);
 
-  if (process.env.NODE_ENV !== 'production') {
-    server.use(morgan('dev'));
-  }
-
+  server.use(loggerMiddleware());
   server.use(helmet());
   server.use(cookieParser());
   server.use(express.json());
@@ -206,8 +207,14 @@ app.prepare().then(async () => {
 
   server.get('*', (req, res) => handle(req, res));
 
+  server.use(errorLoggerMiddleware());
+
   server.listen(port, err => {
-    if (err) throw err;
-    console.log(`> Ready on http://localhost:${port}`);
+    if (err) {
+      throw err;
+    }
+    logger.info('Server ready and listening', {
+      url: `http://localhost:${port}`,
+    });
   });
 });
