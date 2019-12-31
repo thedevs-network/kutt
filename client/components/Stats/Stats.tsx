@@ -11,7 +11,7 @@ import StatsError from "./StatsError";
 import StatsHead from "./StatsHead";
 import StatsCharts from "./StatsCharts";
 import PageLoading from "../PageLoading";
-import Button from "../Button";
+import { Button } from "../Button";
 
 interface Props {
   isAuthenticated: boolean;
@@ -143,7 +143,4 @@ const mapStateToProps = ({ auth: { isAuthenticated } }) => ({
   isAuthenticated
 });
 
-export default connect(
-  mapStateToProps,
-  null
-)(Stats);
+export default connect(mapStateToProps, null)(Stats);

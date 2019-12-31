@@ -6,7 +6,7 @@ import { Flex } from "reflexbox/styled-components";
 import decode from "jwt-decode";
 
 import BodyWrapper from "../components/BodyWrapper";
-import Button from "../components/Button";
+import { Button } from "../components/Button";
 import { NextPage } from "next";
 import { TokenPayload } from "../types";
 import { useStoreActions } from "../store";

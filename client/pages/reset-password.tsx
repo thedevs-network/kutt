@@ -10,7 +10,7 @@ import axios from "axios";
 import { useStoreState, useStoreActions } from "../store";
 import BodyWrapper from "../components/BodyWrapper";
 import TextInput from "../components/TextInput";
-import Button from "../components/Button";
+import { Button } from "../components/Button";
 import { TokenPayload } from "../types";
 import Text from "../components/Text";
 import { useMessage } from "../hooks";
@@ -67,7 +67,8 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
         <Text as="p" mb={4}>
           If you forgot you password you can use the form below to get reset
           password link.
-        </Text>w
+        </Text>
+        w
         <Flex
           as="form"
           flexDirection={["column", "row"]}

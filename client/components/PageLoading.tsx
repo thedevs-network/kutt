@@ -1,15 +1,7 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Flex } from 'reflexbox/styled-components';
+import { Flex } from "reflexbox/styled-components";
+import React from "react";
 
-import { spin } from '../helpers/animations';
-
-const Icon = styled.img`
-  display: block;
-  width: 28px;
-  height: 28px;
-  animation: ${spin} 1s linear infinite;
-`;
+import Icon from "./Icon";
 
 const pageLoading = () => (
   <Flex
@@ -19,7 +11,7 @@ const pageLoading = () => (
     justifyContent="center"
     margin="0 0 48px"
   >
-    <Icon src="/images/loader.svg" />
+    <Icon name="spinner" size={24} stroke="#888" />
   </Flex>
 );
 

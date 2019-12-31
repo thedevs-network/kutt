@@ -8,7 +8,7 @@ import { Domain } from "../../store/settings";
 import { useMessage } from "../../hooks";
 import TextInput from "../TextInput";
 import Table from "../CustomTable";
-import Button from "../Button";
+import { Button } from "../Button";
 import Modal from "../Modal";
 import Icon from "../Icon";
 import Text from "../Text";
@@ -28,10 +28,10 @@ const SettingsDomain: FC = () => {
   const [message, setMessage] = useMessage(2000);
   const domains = useStoreState(s => s.settings.domains);
   const { saveDomain, deleteDomain } = useStoreActions(s => s.settings);
-  const [formState, { text }] = useFormState<{
+  const [formState, { label, text }] = useFormState<{
     customDomain: string;
     homepage: string;
-  }>();
+  }>(null, { withIds: true });
 
   const onSubmit = async e => {
     e.preventDefault();
@@ -94,10 +94,13 @@ const SettingsDomain: FC = () => {
                   <Icon
                     as="button"
                     name="trash"
-                    color="#f2392c"
+                    stroke="hsl(0, 100%, 69%)"
+                    strokeWidth="2.5"
+                    backgroundColor="hsl(0, 100%, 96%)"
                     py={0}
-                    px="2px"
-                    size={15}
+                    px={0}
+                    size={[23, 24]}
+                    p={["4px", "5px"]}
                     onClick={() => {
                       setDomainToDelete(d);
                       setModal(true);
@@ -119,7 +122,12 @@ const SettingsDomain: FC = () => {
         >
           <Flex width={1}>
             <Flex flexDirection="column" mr={2} flex="1 1 auto">
-              <Text as="label" htmlFor="customdomain" fontWeight={700} mb={3}>
+              <Text
+                {...label("customDomain")}
+                as="label"
+                fontWeight={700}
+                mb={3}
+              >
                 Domain
               </Text>
               <TextInput
@@ -132,12 +140,11 @@ const SettingsDomain: FC = () => {
               />
             </Flex>
             <Flex flexDirection="column" ml={2} flex="1 1 auto">
-              <Text as="label" htmlFor="customdomain" fontWeight={700} mb={3}>
+              <Text {...label("homepage")} as="label" fontWeight={700} mb={3}>
                 Homepage (optional)
               </Text>
               <TextInput
                 {...text("homepage")}
-                type="text"
                 placeholder="Homepage URL"
                 flex="1 1 auto"
                 height={44}
@@ -147,7 +154,7 @@ const SettingsDomain: FC = () => {
             </Flex>
           </Flex>
           <Button type="submit" color="purple" mt={3} disabled={loading}>
-            <Icon name={loading ? "spinner" : "plus"} mr={2} color="white" />
+            <Icon name={loading ? "spinner" : "plus"} mr={2} stroke="white" />
             {loading ? "Setting..." : "Set domain"}
           </Button>
         </Flex>
@@ -160,15 +167,14 @@ const SettingsDomain: FC = () => {
         <Text as="p" textAlign="center">
           Are you sure do you want to delete the domain{" "}
           <Text as="span" fontWeight={700}>
-            "{domainToDelete && domainToDelete.customDomain}""
+            "{domainToDelete && domainToDelete.customDomain}"
           </Text>
           ?
         </Text>
-        {/* FIXME: user a proper loading */}
         <Flex justifyContent="center" mt={44}>
           {deleteLoading ? (
             <>
-              <Icon name="spinner" size={20} />
+              <Icon name="spinner" size={20} stroke="#888" />
             </>
           ) : (
             <>
@@ -176,7 +182,7 @@ const SettingsDomain: FC = () => {
                 Cancel
               </Button>
               <Button color="blue" ml={3} onClick={onDelete}>
-                <Icon name="trash" color="white" mr={2} />
+                <Icon name="trash" stroke="white" mr={2} />
                 Delete
               </Button>
             </>

@@ -7,5 +7,8 @@ export enum API {
   BAN_LINK = "/api/url/admin/ban",
   CUSTOM_DOMAIN = "/api/url/customdomain",
   GENERATE_APIKEY = "/api/auth/generateapikey",
-  SETTINGS = "/api/auth/usersettings"
+  SETTINGS = "/api/auth/usersettings",
+  SUBMIT = "/api/url/submit",
+  GET_LINKS = "/api/url/geturls",
+  DELETE_LINK = "/api/url/deleteurl"
 }

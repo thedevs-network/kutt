@@ -7,7 +7,7 @@ import { useFormState } from "react-use-form-state";
 
 import BodyWrapper from "../components/BodyWrapper";
 import TextInput from "../components/TextInput";
-import Button from "../components/Button";
+import { Button } from "../components/Button";
 import Text from "../components/Text";
 
 interface Props {

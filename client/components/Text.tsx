@@ -24,7 +24,8 @@ const Text = styled(Box)<Props>`
 
 Text.defaultProps = {
   as: "p",
-  fontWeight: 400
+  fontWeight: 400,
+  color: "hsl(200, 35%, 25%)"
 };
 
 export default Text;

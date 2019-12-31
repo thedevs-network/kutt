@@ -1,17 +1,17 @@
-import React from 'react';
-import Link from 'next/link';
-import styled from 'styled-components';
-import { Flex } from 'reflexbox/styled-components';
+import React from "react";
+import Link from "next/link";
+import styled from "styled-components";
+import { Flex } from "reflexbox/styled-components";
 
-import Button from './Button';
-import { fadeIn } from '../helpers/animations';
+import { Button } from "./Button";
+import { fadeIn } from "../helpers/animations";
 
 const Wrapper = styled(Flex).attrs({
   width: 1200,
-  maxWidth: '98%',
-  alignItems: 'center',
-  margin: '16px 0 0',
-  flexDirection: ['column', 'column', 'row'],
+  maxWidth: "98%",
+  alignItems: "center",
+  margin: "16px 0 0",
+  flexDirection: ["column", "column", "row"]
 })`
   animation: ${fadeIn} 0.8s ease-out;
   box-sizing: border-box;
@@ -58,14 +58,14 @@ const NeedToLogin = () => (
   <Wrapper>
     <Flex
       flexDirection="column"
-      alignItems={['center', 'center', 'flex-start']}
+      alignItems={["center", "center", "flex-start"]}
       mt={-32}
       mb={[32, 32, 0]}
     >
       <Title>
         Manage links, set custom <b>domains</b> and view <b>stats</b>.
       </Title>
-      <Link href="/login" prefetch>
+      <Link href="/login">
         <a href="/login" title="login / signup">
           <Button>Login / Signup</Button>
         </a>

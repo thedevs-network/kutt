@@ -3,43 +3,118 @@ import styled, { css } from "styled-components";
 import { prop, ifProp } from "styled-tools";
 import React, { FC } from "react";
 
-import Trash from "./Trash";
+import ChevronRight from "./ChevronRight";
+import ChevronLeft from "./ChevronLeft";
+import Clipboard from "./Clipboard";
+import PieChart from "./PieChart";
+import Refresh from "./Refresh";
 import Spinner from "./Spinner";
+import QRCode from "./QRCode";
+import Trash from "./Trash";
+import Check from "./Check";
 import Plus from "./Plus";
 import Lock from "./Lock";
-import Refresh from "./Refresh";
+import Copy from "./Copy";
+import Send from "./Send";
+import Key from "./Key";
 import Zap from "./Zap";
 
 export interface IIcons {
-  lock: JSX.Element;
-  refresh: JSX.Element;
-  zap: JSX.Element;
+  clipboard: JSX.Element;
+  chevronRight: JSX.Element;
+  chevronLeft: JSX.Element;
+  pieChart: JSX.Element;
+  key: JSX.Element;
   plus: JSX.Element;
+  Lock: JSX.Element;
+  copy: JSX.Element;
+  refresh: JSX.Element;
+  check: JSX.Element;
+  send: JSX.Element;
   spinner: JSX.Element;
   trash: JSX.Element;
+  zap: JSX.Element;
+  qrcode: JSX.Element;
 }
 
 const icons = {
+  clipboard: Clipboard,
+  chevronRight: ChevronRight,
+  chevronLeft: ChevronLeft,
+  pieChart: PieChart,
+  key: Key,
   lock: Lock,
-  refresh: Refresh,
-  zap: Zap,
+  check: Check,
   plus: Plus,
+  copy: Copy,
+  refresh: Refresh,
+  send: Send,
   spinner: Spinner,
   trash: Trash,
+  zap: Zap,
+  qrcode: QRCode
 };
 
 interface Props extends React.ComponentProps<typeof Flex> {
   name: keyof typeof icons;
+  stroke?: string;
+  fill?: string;
+  hoverFill?: string;
+  hoverStroke?: string;
+  strokeWidth?: string;
 }
 
 const CustomIcon: FC<React.ComponentProps<typeof Flex>> = styled(Flex)`
   position: relative;
-  fill: ${prop("color")};
 
   svg {
+    transition: all 0.2s ease-out;
     width: 100%;
     height: 100%;
+
+    ${ifProp(
+      "fill",
+      css`
+        fill: ${prop("fill")};
+      `
+    )}
+
+    ${ifProp(
+      "stroke",
+      css`
+        stroke: ${prop("stroke")};
+      `
+    )}
+
+    ${ifProp(
+      "strokeWidth",
+      css`
+        stroke-width: ${prop("strokeWidth")};
+      `
+    )}
   }
+
+  ${ifProp(
+    "hoverFill",
+    css`
+      :hover {
+        svg {
+          fill: ${prop("hoverFill")};
+        }
+      }
+    `
+  )}
+
+  ${ifProp(
+    "hoverStroke",
+    css`
+      :hover {
+        svg {
+          stroke: ${prop("stroke")};
+        }
+      }
+    `
+  )}
 
   ${ifProp(
     { as: "button" },
@@ -47,7 +122,8 @@ const CustomIcon: FC<React.ComponentProps<typeof Flex>> = styled(Flex)`
       border: none;
       outline: none;
       transition: transform 0.4s ease-out;
-      background-color: transparent;
+      border-radius: 100%;
+      background-color: none !important;
       cursor: pointer;
       box-sizing: content-box;
 
@@ -69,8 +145,7 @@ const Icon: FC<Props> = ({ name, ...rest }) => (
 Icon.defaultProps = {
   size: 16,
   alignItems: "center",
-  justifyContent: "center",
-  color: "#888"
+  justifyContent: "center"
 };
 
 export default Icon;

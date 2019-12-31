@@ -4,7 +4,7 @@ import React, { FC, useState } from "react";
 import styled from "styled-components";
 
 import { useStoreState, useStoreActions } from "../../store";
-import Button from "../Button";
+import { Button } from "../Button";
 import ALink from "../ALink";
 import Icon from "../Icon";
 import Text from "../Text";
@@ -85,7 +85,7 @@ const SettingsApi: FC = () => {
         </Flex>
       )}
       <Button color="purple" onClick={onSubmit} disabled={loading}>
-        <Icon name={loading ? "spinner" : "zap"} mr={2} color="white" />
+        <Icon name={loading ? "spinner" : "zap"} mr={2} stroke="white" />
         {loading ? "Generating..." : apikey ? "Regenerate" : "Generate"} key
       </Button>
     </Flex>

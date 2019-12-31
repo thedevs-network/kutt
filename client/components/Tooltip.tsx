@@ -4,9 +4,9 @@ import styled from "styled-components";
 const Tooltip = styled(ReactTooltip).attrs({
   effect: "solid"
 })`
-  padding: 4px 8px;
+  padding: 3px 7px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 11px;
 `;
 
 export default Tooltip;

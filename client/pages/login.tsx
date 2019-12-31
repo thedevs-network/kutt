@@ -6,18 +6,16 @@ import styled from "styled-components";
 import emailValidator from "email-validator";
 import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
-import cookie from "js-cookie";
-import decode from "jwt-decode";
 
 import { useStoreState, useStoreActions } from "../store";
 import BodyWrapper from "../components/BodyWrapper";
 import { fadeIn } from "../helpers/animations";
 import { API } from "../consts";
 import TextInput from "../components/TextInput";
-import Button from "../components/Button";
+import { Button } from "../components/Button";
 import Text from "../components/Text";
-import { TokenPayload } from "../types";
 import ALink from "../components/ALink";
+import { ColCenterV } from "../components/Layout";
 
 const LoginForm = styled(Flex).attrs({
   as: "form",
@@ -38,10 +36,10 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [loading, setLoading] = useState({ login: false, signup: false });
-  const [formState, { email, password }] = useFormState<{
+  const [formState, { email, password, label }] = useFormState<{
     email: string;
     password: string;
-  }>();
+  }>(null, { withIds: true });
 
   useEffect(() => {
     if (isAuthenticated) Router.push("/");
@@ -72,6 +70,7 @@ const LoginPage = () => {
         setLoading(s => ({ ...s, login: true }));
         try {
           await login(formState.values);
+          Router.push("/");
         } catch (error) {
           setError(error.response.data.error);
         }
@@ -97,13 +96,7 @@ const LoginPage = () => {
 
   return (
     <BodyWrapper>
-      <Flex
-        flexDirection="column"
-        flex="0 0 auto"
-        alignItems="center"
-        mt={24}
-        mb={64}
-      >
+      <ColCenterV flex="0 0 auto" mt={24} mb={64}>
         {verifying ? (
           <Text fontWeight={300} as="h2" textAlign="center">
             A verification email has been sent to{" "}
@@ -111,18 +104,18 @@ const LoginPage = () => {
           </Text>
         ) : (
           <LoginForm id="login-form" onSubmit={onSubmit("login")}>
-            <Flex mb={[2, 2, 2]}>
-              <label htmlFor="email">Email address</label>
-            </Flex>
+            <Text {...label("email")} as="label" fontWeight={700} mb={2}>
+              Email address:
+            </Text>
             <TextInput
               {...email("email")}
               height={[56, 64, 72]}
               mb={[24, 32, 36]}
               autoFocus
             />
-            <Flex mb={[2, 2, 2]}>
-              <label htmlFor="password">Password (min chars: 8)</label>
-            </Flex>
+            <Text {...label("password")} as="label" fontWeight={700} mb={2}>
+              Password (min chars: 8):
+            </Text>
             <TextInput
               {...password("password")}
               height={[56, 64, 72]}
@@ -165,7 +158,7 @@ const LoginPage = () => {
             </Text>
           </LoginForm>
         )}
-      </Flex>
+      </ColCenterV>
     </BodyWrapper>
   );
 };

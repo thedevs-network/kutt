@@ -5,7 +5,7 @@ import { Flex } from "reflexbox/styled-components";
 
 import BodyWrapper from "../components/BodyWrapper";
 import TextInput from "../components/TextInput";
-import Button from "../components/Button";
+import { Button } from "../components/Button";
 import Text from "../components/Text";
 import { API } from "../consts";
 import { useMessage } from "../hooks";

@@ -1,8 +1,10 @@
-import React, { FC } from "react";
-import styled from "styled-components";
 import { Flex } from "reflexbox/styled-components";
+import styled from "styled-components";
+import React, { FC } from "react";
 
-interface Props {
+import Animation from "./Animation";
+
+interface Props extends React.ComponentProps<typeof Flex> {
   show: boolean;
   id?: string;
   closeHandler?: () => unknown;
@@ -21,7 +23,7 @@ const Wrapper = styled.div`
   z-index: 1000;
 `;
 
-const Modal: FC<Props> = ({ children, id, show, closeHandler }) => {
+const Modal: FC<Props> = ({ children, id, show, closeHandler, ...rest }) => {
   if (!show) return null;
 
   const onClickOutside = e => {
@@ -30,16 +32,19 @@ const Modal: FC<Props> = ({ children, id, show, closeHandler }) => {
 
   return (
     <Wrapper id={id} onClick={onClickOutside}>
-      <Flex
+      <Animation
+        offset="-20px"
+        duration="0.2s"
         minWidth={[400, 450]}
         maxWidth={0.9}
         py={[32, 32, 48]}
         px={[24, 24, 32]}
         style={{ borderRadius: 8, backgroundColor: "white" }}
         flexDirection="column"
+        {...rest}
       >
         {children}
-      </Flex>
+      </Animation>
     </Wrapper>
   );
 };

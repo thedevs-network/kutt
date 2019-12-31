@@ -107,7 +107,7 @@ const Icon = styled(SVG)`
   }
 `;
 
-const Button: FC<Props> = props => {
+export const Button: FC<Props> = props => {
   const SVGIcon = props.icon ? (
     <Icon
       icon={props.icon}
@@ -139,4 +139,49 @@ Button.defaultProps = {
   isRound: false
 };
 
-export default Button;
+interface NavButtonProps extends BoxProps {
+  disabled?: boolean;
+  onClick?: any; // TODO: better typing
+  type?: "button" | "submit" | "reset";
+}
+
+export const NavButton = styled(Flex)<NavButtonProps>`
+  display: flex;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 0px 10px rgba(100, 100, 100, 0.1);
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+  box-sizing: border-box;
+
+  :hover {
+    transform: translateY(-2px);
+  }
+
+  ${ifProp(
+    "disabled",
+    css`
+      background-color: #f5f5f5;
+      box-shadow: 0 0px 5px rgba(150, 150, 150, 0.1);
+      cursor: default;
+
+      :hover {
+        transform: none;
+      }
+    `
+  )}
+`;
+
+NavButton.defaultProps = {
+  as: "button",
+  type: "button",
+  flex: "0 0 auto",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "auto",
+  height: [26, 28],
+  py: 0,
+  px: ["6px", "8px"],
+  fontSize: [12]
+};

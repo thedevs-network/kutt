@@ -8,7 +8,7 @@ import { useMessage } from "../../hooks";
 import TextInput from "../TextInput";
 import Checkbox from "../Checkbox";
 import { API } from "../../consts";
-import Button from "../Button";
+import { Button } from "../Button";
 import Icon from "../Icon";
 import Text from "../Text";
 
@@ -64,9 +64,14 @@ const SettingsBan: FC = () => {
             pl={24}
             pr={24}
             width={[1, 3 / 5]}
+            required
           />
           <Button type="submit" disabled={submitting}>
-            <Icon name={submitting ? "spinner" : "lock"} color="white" mr={2} />
+            <Icon
+              name={submitting ? "spinner" : "lock"}
+              stroke="white"
+              mr={2}
+            />
             {submitting ? "Banning..." : "Ban"}
           </Button>
         </Flex>

@@ -82,7 +82,7 @@ const Checkbox: FC<Props> = ({
     >
       <Input name={name} id={id} checked={checked} />
       <Box checked={checked} width={width} height={height} />
-      <Text as="span" ml={2}>
+      <Text as="span" ml={12} color="#555">
         {label}
       </Text>
     </Flex>

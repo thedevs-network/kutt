@@ -1,5 +1,4 @@
 import { action, Action, thunk, Thunk, computed, Computed } from "easy-peasy";
-import Router from "next/router";
 import decode from "jwt-decode";
 import cookie from "js-cookie";
 import axios from "axios";
@@ -32,7 +31,6 @@ export const auth: Auth = {
     state.domain = null;
     state.email = null;
     state.isAdmin = false;
-    Router.push("/");
   }),
   login: thunk(async (actions, payload) => {
     const res = await axios.post(API.LOGIN, payload);
@@ -40,6 +38,5 @@ export const auth: Auth = {
     cookie.set("token", token, { expires: 7 });
     const tokenPayload: TokenPayload = decode(token);
     actions.add(tokenPayload);
-    Router.push("/");
   })
 };

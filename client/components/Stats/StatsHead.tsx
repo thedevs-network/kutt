@@ -1,7 +1,7 @@
-import React, { FC } from 'react';
-import styled, { css } from 'styled-components';
-import { ifProp } from 'styled-tools';
-import { Flex } from 'reflexbox/styled-components';
+import React, { FC } from "react";
+import styled, { css } from "styled-components";
+import { ifProp } from "styled-tools";
+import { Flex } from "reflexbox/styled-components";
 
 interface Props {
   changePeriod: any; // TODO: types
@@ -10,11 +10,11 @@ interface Props {
 }
 
 const Wrapper = styled(Flex).attrs({
-  flex: '1 1 auto',
-  justifyContent: 'center',
-  alignItems: 'center',
+  flex: "1 1 auto",
+  justifyContent: "center",
+  alignItems: "center",
   py: [16, 16, 25],
-  px: 32,
+  px: 32
 })`
   background-color: #f1f1f1;
   border-top-left-radius: 12px;
@@ -89,10 +89,10 @@ const StatsHead: FC<Props> = ({ changePeriod, period, total }) => {
         Total clicks: <span>{total}</span>
       </TotalText>
       <Flex>
-        {buttonWithPeriod('allTime', 'All Time')}
-        {buttonWithPeriod('lastMonth', 'Month')}
-        {buttonWithPeriod('lastWeek', 'Week')}
-        {buttonWithPeriod('lastDay', 'Day')}
+        {buttonWithPeriod("allTime", "All Time")}
+        {buttonWithPeriod("lastMonth", "Month")}
+        {buttonWithPeriod("lastWeek", "Week")}
+        {buttonWithPeriod("lastDay", "Day")}
       </Flex>
     </Wrapper>
   );

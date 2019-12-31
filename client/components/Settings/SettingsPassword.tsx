@@ -7,7 +7,7 @@ import { getAxiosConfig } from "../../utils";
 import { useMessage } from "../../hooks";
 import TextInput from "../TextInput";
 import { API } from "../../consts";
-import Button from "../Button";
+import { Button } from "../Button";
 import Icon from "../Icon";
 import Text from "../Text";
 
@@ -64,7 +64,7 @@ const SettingsPassword: FC = () => {
           required
         />
         <Button type="submit" disabled={loading}>
-          <Icon name={loading ? "spinner" : "refresh"} mr={2} color="white" />
+          <Icon name={loading ? "spinner" : "refresh"} mr={2} stroke="white" />
           {loading ? "Updating..." : "Update"}
         </Button>
       </Flex>

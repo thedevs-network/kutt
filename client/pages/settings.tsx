@@ -1,6 +1,6 @@
 import { Flex } from "reflexbox/styled-components";
 import { NextPage } from "next";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
 import SettingsPassword from "../components/Settings/SettingsPassword";
 import SettingsDomain from "../components/Settings/SettingsDomain";
@@ -13,7 +13,7 @@ import { useStoreState, useStoreActions } from "../store";
 import Text from "../components/Text";
 
 const SettingsPage: NextPage = () => {
-  const { isAuthenticated, email, isAdmin } = useStoreState(s => s.auth);
+  const { email, isAdmin } = useStoreState(s => s.auth);
   const getSettings = useStoreActions(s => s.settings.getSettings);
 
   useEffect(() => {

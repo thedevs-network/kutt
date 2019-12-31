@@ -1,6 +1,6 @@
-import React from 'react';
-import Document, { Head, Main, NextScript } from 'next/document';
-import { ServerStyleSheet } from 'styled-components';
+import React from "react";
+import Document, { Head, Main, NextScript } from "next/document";
+import { ServerStyleSheet } from "styled-components";
 
 interface Props {
   styleTags: any;
@@ -65,7 +65,7 @@ class AppDocument extends Document<Props> {
 
           <script
             dangerouslySetInnerHTML={{
-              __html: `window.recaptchaCallback = function() { window.isCaptchaReady = true; }`,
+              __html: `window.recaptchaCallback = function() { window.isCaptchaReady = true; }`
             }}
           />
 
@@ -79,10 +79,10 @@ class AppDocument extends Document<Props> {
         <body
           style={{
             margin: 0,
-            backgroundColor: '#f3f3f3',
+            backgroundColor: "hsl(206, 12%, 95%)",
             font: '16px/1.45 "Nunito", sans-serif',
-            overflowX: 'hidden',
-            color: 'black',
+            overflowX: "hidden",
+            color: "hsl(200, 35%, 25%)"
           }}
         >
           <Main />
