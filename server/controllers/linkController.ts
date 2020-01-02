@@ -370,7 +370,7 @@ export const ban: Handler = async (req, res) => {
 
   const link = await findLink({ address: req.body.id, domain_id: null });
 
-  if (!link) return res.status(400).json({ error: "Couldn't find the link." });
+  if (!link) return res.status(400).json({ error: "Link does not exist." });
 
   if (link.banned) {
     return res.status(200).json({ message: "Link was banned already." });

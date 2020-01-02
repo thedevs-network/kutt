@@ -1,4 +1,12 @@
 {
   "presets": ["next/babel", "@zeit/next-typescript/babel"],
-  "plugins": [["styled-components", { "ssr": true, "displayName": true, "preprocess": false }]]
+  "plugins": [
+    [
+      "styled-components",
+      { "ssr": true, "displayName": true, "preprocess": false }
+    ],
+    "inline-react-svg",
+    "@babel/plugin-proposal-optional-chaining",
+    "@babel/plugin-proposal-nullish-coalescing-operator"
+  ]
 }

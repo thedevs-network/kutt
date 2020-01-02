@@ -511,6 +511,8 @@ export const banLink = async (data: IBanLink) => {
   if (data.domain) tasks.push(banDomain(data.domain, banned_by_id));
 
   redis.del(getRedisKey.link(link.address, link.domain_id, link.user_id));
+  redis.del(getRedisKey.link(link.address, link.domain_id));
+  redis.del(getRedisKey.link(link.address));
 
   return Promise.all(tasks);
 };

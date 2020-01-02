@@ -261,10 +261,13 @@ export const requestUserPasswordReset: Handler = async (req, res) => {
 };
 
 export const resetUserPassword: Handler = async (req, _res, next) => {
-  const user: UserJoined = await resetPassword(req.params.resetPasswordToken);
-  if (user) {
-    const token = signToken(user as UserJoined);
-    req.token = token;
+  const { resetPasswordToken } = req.params;
+  if (resetPasswordToken) {
+    const user: UserJoined = await resetPassword(resetPasswordToken);
+    if (user) {
+      const token = signToken(user as UserJoined);
+      req.token = token;
+    }
   }
   return next();
 };

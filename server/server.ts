@@ -85,7 +85,6 @@ app.prepare().then(async () => {
   server.get("/terms", (req, res) => app.render(req, res, "/terms"));
   server.get("/report", (req, res) => app.render(req, res, "/report"));
   server.get("/banned", (req, res) => app.render(req, res, "/banned"));
-  server.get("/offline", (req, res) => app.render(req, res, "/offline"));
 
   /* View routes */
   server.get(
