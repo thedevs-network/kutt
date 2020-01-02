@@ -6,6 +6,9 @@ declare module "*.svg";
 declare global {
   interface Window {
     GA_INITIALIZED: boolean;
+    grecaptcha: any;
+    isCaptchaReady: boolean;
+    captchaId: boolean;
   }
 }
 

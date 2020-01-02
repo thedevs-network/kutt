@@ -4,6 +4,7 @@ import query from "query-string";
 
 import { getAxiosConfig } from "../utils";
 import { API } from "../consts";
+import { string } from "prop-types";
 
 export interface Link {
   id: number;
@@ -26,6 +27,7 @@ export interface NewLink {
   customurl?: string;
   password?: string;
   reuse?: boolean;
+  reCaptchaToken?: string;
 }
 
 export interface LinksQuery {
