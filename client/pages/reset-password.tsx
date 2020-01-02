@@ -8,13 +8,14 @@ import cookie from "js-cookie";
 import axios from "axios";
 
 import { useStoreState, useStoreActions } from "../store";
-import BodyWrapper from "../components/BodyWrapper";
+import AppWrapper from "../components/AppWrapper";
 import TextInput from "../components/TextInput";
 import { Button } from "../components/Button";
 import { TokenPayload } from "../types";
-import Text from "../components/Text";
+import Text, { H2 } from "../components/Text";
 import { useMessage } from "../hooks";
 import { API } from "../consts";
+import { Col } from "../components/Layout";
 
 interface Props {
   token?: string;
@@ -59,12 +60,12 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
 
   // FIXME: make a container for width
   return (
-    <BodyWrapper>
-      <Flex width={600} maxWidth="97%" flexDirection="column">
-        <Text as="h2" fontWeight={700} my={3}>
+    <AppWrapper>
+      <Col width={600} maxWidth="97%">
+        <H2 my={3} bold>
           Reset password
-        </Text>
-        <Text as="p" mb={4}>
+        </H2>
+        <Text mb={4}>
           If you forgot you password you can use the form below to get reset
           password link.
         </Text>
@@ -94,11 +95,11 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
             Reset password
           </Button>
         </Flex>
-        <Text fontSize={14} fontWeight={400} color={message.color} mt={2}>
+        <Text fontSize={14} color={message.color} mt={2} normal>
           {message.text}
         </Text>
-      </Flex>
-    </BodyWrapper>
+      </Col>
+    </AppWrapper>
   );
 };
 

@@ -5,6 +5,7 @@ import React, { FC } from "react";
 
 import ChevronRight from "./ChevronRight";
 import ChevronLeft from "./ChevronLeft";
+import { Colors } from "../../consts";
 import Clipboard from "./Clipboard";
 import PieChart from "./PieChart";
 import Refresh from "./Refresh";
@@ -125,7 +126,8 @@ const CustomIcon: FC<React.ComponentProps<typeof Flex>> = styled(Flex)`
       border-radius: 100%;
       background-color: none !important;
       cursor: pointer;
-      box-sizing: content-box;
+      box-sizing: border-box;
+      box-shadow: 0 2px 1px ${Colors.IconShadow};
 
       :hover,
       :focus {

@@ -2,10 +2,12 @@ import { Flex } from "reflexbox/styled-components";
 import styled, { css } from "styled-components";
 import { ifProp, prop } from "styled-tools";
 
+import { Colors } from "../consts";
+
 const Table = styled(Flex)<{ scrollWidth?: string }>`
   background-color: white;
   border-radius: 12px;
-  box-shadow: 0 6px 15px hsla(200, 20%, 70%, 0.3);
+  box-shadow: 0 6px 15px ${Colors.TableShadow};
   text-align: center;
   overflow: scroll;
 
@@ -26,7 +28,7 @@ const Table = styled(Flex)<{ scrollWidth?: string }>`
   }
 
   tr {
-    border-bottom: 1px solid hsl(200, 14%, 94%);
+    border-bottom: 1px solid ${Colors.TableHeadBorder};
   }
   tbody {
     border-bottom-right-radius: 12px;
@@ -37,19 +39,19 @@ const Table = styled(Flex)<{ scrollWidth?: string }>`
     border: none;
   }
   tbody tr:hover {
-    background-color: hsl(200, 14%, 98%);
+    background-color: ${Colors.TableRowHover};
   }
   thead {
-    background-color: hsl(200, 14%, 96%);
+    background-color: ${Colors.TableHeadBg};
     border-top-right-radius: 12px;
     border-top-left-radius: 12px;
     font-weight: bold;
     tr {
-      border-bottom: 1px solid hsl(200, 14%, 90%);
+      border-bottom: 1px solid ${Colors.TableBorder};
     }
   }
   tfoot {
-    background-color: hsl(200, 14%, 96%);
+    background-color: ${Colors.TableHeadBg};
     border-bottom-right-radius: 12px;
     border-bottom-left-radius: 12px;
   }

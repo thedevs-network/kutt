@@ -10,7 +10,8 @@ import Checkbox from "../Checkbox";
 import { API } from "../../consts";
 import { Button } from "../Button";
 import Icon from "../Icon";
-import Text from "../Text";
+import Text, { H2 } from "../Text";
+import { Col } from "../Layout";
 
 interface BanForm {
   id: string;
@@ -43,16 +44,11 @@ const SettingsBan: FC = () => {
   };
 
   return (
-    <Flex flexDirection="column">
-      <Text as="h2" fontWeight={700} mb={4}>
+    <Col>
+      <H2 mb={4} bold>
         Ban link
-      </Text>
-      <Flex
-        as="form"
-        flexDirection="column"
-        onSubmit={onSubmit}
-        alignItems="flex-start"
-      >
+      </H2>
+      <Col as="form" onSubmit={onSubmit} alignItems="flex-start">
         <Flex mb={24} alignItems="center">
           <TextInput
             {...text("id")}
@@ -85,8 +81,8 @@ const SettingsBan: FC = () => {
         <Text color={message.color} mt={3}>
           {message.text}
         </Text>
-      </Flex>
-    </Flex>
+      </Col>
+    </Col>
   );
 };
 

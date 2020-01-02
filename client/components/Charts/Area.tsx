@@ -1,8 +1,8 @@
-import React, { FC } from 'react';
-import subHours from 'date-fns/subHours';
-import subDays from 'date-fns/subDays';
-import subMonths from 'date-fns/subMonths';
-import formatDate from 'date-fns/format';
+import subMonths from "date-fns/subMonths";
+import subHours from "date-fns/subHours";
+import formatDate from "date-fns/format";
+import subDays from "date-fns/subDays";
+import React, { FC } from "react";
 import {
   AreaChart,
   Area,
@@ -10,10 +10,8 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
-  Tooltip,
-} from 'recharts';
-
-import withTitle from './withTitle';
+  Tooltip
+} from "recharts";
 
 interface Props {
   data: number[];
@@ -24,22 +22,22 @@ const ChartArea: FC<Props> = ({ data: rawData, period }) => {
   const now = new Date();
   const getDate = index => {
     switch (period) {
-      case 'allTime':
+      case "allTime":
         return formatDate(
           subMonths(now, rawData.length - index - 1),
-          'MMM yyy'
+          "MMM yyy"
         );
-      case 'lastDay':
-        return formatDate(subHours(now, rawData.length - index - 1), 'HH:00');
-      case 'lastMonth':
-      case 'lastWeek':
+      case "lastDay":
+        return formatDate(subHours(now, rawData.length - index - 1), "HH:00");
+      case "lastMonth":
+      case "lastWeek":
       default:
-        return formatDate(subDays(now, rawData.length - index - 1), 'MMM dd');
+        return formatDate(subDays(now, rawData.length - index - 1), "MMM dd");
     }
   };
   const data = rawData.map((view, index) => ({
     name: getDate(index),
-    views: view,
+    views: view
   }));
 
   return (
@@ -53,7 +51,7 @@ const ChartArea: FC<Props> = ({ data: rawData, period }) => {
           top: 16,
           right: 0,
           left: 0,
-          bottom: 16,
+          bottom: 16
         }}
       >
         <defs>
@@ -79,4 +77,4 @@ const ChartArea: FC<Props> = ({ data: rawData, period }) => {
   );
 };
 
-export default withTitle(ChartArea);
+export default ChartArea;

@@ -1,19 +1,10 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Flex } from 'reflexbox/styled-components';
-import SVG from 'react-inlinesvg'; // TODO: another solution
-
-const Section = styled(Flex).attrs({
-  width: 1,
-  flex: '0 0 auto',
-  flexWrap: ['wrap', 'wrap', 'nowrap'],
-  flexDirection: 'column',
-  alignItems: 'center',
-  m: 0,
-  p: ['48px 0 16px', '48px 0 16px', '90px 0 100px'],
-})`
-  background-color: #282828;
-`;
+import React from "react";
+import styled from "styled-components";
+import { Flex } from "reflexbox/styled-components";
+import SVG from "react-inlinesvg"; // TODO: another solution
+import { Colors } from "../consts";
+import { ColCenterH } from "./Layout";
+import Text, { H3 } from "./Text";
 
 const Title = styled.h3`
   font-size: 28px;
@@ -38,7 +29,7 @@ const Button = styled.button`
   justify-content: center;
   margin: 0 16px;
   padding: 12px 28px;
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   background-color: #eee;
   border: 1px solid #aaa;
   font-size: 14px;
@@ -89,7 +80,7 @@ const Icon = styled(SVG)`
     width: 18px;
     height: 18px;
     margin-right: 16px;
-    fill: ${props => props.color || '#333'};
+    fill: ${props => props.color || "#333"};
 
     @media only screen and (max-width: 768px) {
       width: 13px;
@@ -100,14 +91,22 @@ const Icon = styled(SVG)`
 `;
 
 const Extensions = () => (
-  <Section>
-    <Title>Browser extensions.</Title>
+  <ColCenterH
+    width={1}
+    flex="0 0 auto"
+    flexWrap={["wrap", "wrap", "nowrap"]}
+    py={[64, 96]}
+    backgroundColor={Colors.ExtensionsBg}
+  >
+    <H3 fontSize={[26, 28]} mb={5} color="white" light>
+      Browser extensions.
+    </H3>
     <Flex
       width={1200}
       maxWidth="100%"
       flex="1 1 auto"
       justifyContent="center"
-      flexWrap={['wrap', 'wrap', 'nowrap']}
+      flexWrap={["wrap", "wrap", "nowrap"]}
     >
       <Link
         href="https://chrome.google.com/webstore/detail/kutt/pklakpjfiegjacoppcodencchehlfnpd"
@@ -130,7 +129,7 @@ const Extensions = () => (
         </FirefoxButton>
       </Link>
     </Flex>
-  </Section>
+  </ColCenterH>
 );
 
 export default Extensions;

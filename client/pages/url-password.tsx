@@ -1,14 +1,14 @@
+import { useFormState } from "react-use-form-state";
+import { Flex } from "reflexbox/styled-components";
 import React, { useState } from "react";
 import { NextPage } from "next";
-import styled from "styled-components";
 import axios from "axios";
-import { Flex } from "reflexbox/styled-components";
-import { useFormState } from "react-use-form-state";
 
-import BodyWrapper from "../components/BodyWrapper";
+import AppWrapper from "../components/AppWrapper";
 import TextInput from "../components/TextInput";
 import { Button } from "../components/Button";
-import Text from "../components/Text";
+import Text, { H2 } from "../components/Text";
+import { Col } from "../components/Layout";
 
 interface Props {
   protectedLink?: string;
@@ -43,19 +43,17 @@ const UrlPasswordPage: NextPage<Props> = ({ protectedLink }) => {
   };
 
   return (
-    <BodyWrapper>
+    <AppWrapper>
       {!protectedLink ? (
-        <Text as="h2" my={4} fontWeight={300}>
+        <H2 my={4} light>
           404 | Link could not be found.
-        </Text>
+        </H2>
       ) : (
-        <Flex width={500} maxWidth="97%" flexDirection="column">
-          <Text as="h2" fontWeight={700} my={3}>
+        <Col width={500} maxWidth="97%">
+          <H2 my={3} bold>
             Protected link
-          </Text>
-          <Text as="p" mb={4}>
-            Enter the password to be redirected to the link.
-          </Text>
+          </H2>
+          <Text mb={4}>Enter the password to be redirected to the link.</Text>
           <Flex
             as="form"
             alignItems="center"
@@ -79,12 +77,12 @@ const UrlPasswordPage: NextPage<Props> = ({ protectedLink }) => {
               Go
             </Button>
           </Flex>
-          <Text fontSize={14} color="red" fontWeight={400} mt={3}>
+          <Text fontSize={14} color="red" mt={3} normal>
             {error}
           </Text>
-        </Flex>
+        </Col>
       )}
-    </BodyWrapper>
+    </AppWrapper>
   );
 };
 

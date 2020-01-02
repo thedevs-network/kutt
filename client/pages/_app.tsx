@@ -1,14 +1,17 @@
 import App, { AppContext } from "next/app";
 import { StoreProvider } from "easy-peasy";
-import Head from "next/head";
 import Router from "next/router";
-import React from "react";
-import { Provider } from "react-redux";
 import decode from "jwt-decode";
+import cookie from "js-cookie";
+import Head from "next/head";
+import React from "react";
 
-import withReduxStore from "../with-redux-store";
+import { initGA, logPageView } from "../helpers/analytics";
 import { initializeStore } from "../store";
 import { TokenPayload } from "../types";
+import AppWrapper from "../components/AppWrapper";
+
+const isProd = process.env.NODE_ENV === "production";
 
 // TODO: types
 class MyApp extends App<any> {
@@ -39,27 +42,44 @@ class MyApp extends App<any> {
   }
 
   componentDidMount() {
-    const { loading } = this.store.dispatch;
+    const { loading, auth } = this.store.dispatch;
+    const token = cookie.get("token");
+
+    if (token) {
+      auth.renew().catch(() => {
+        auth.logout();
+      });
+    }
+
+    if (!isProd) {
+      initGA();
+    }
+
     Router.events.on("routeChangeStart", () => loading.show());
-    Router.events.on("routeChangeComplete", () => loading.hide());
+    Router.events.on("routeChangeComplete", () => {
+      loading.hide();
+
+      if (isProd) {
+        logPageView();
+      }
+    });
     Router.events.on("routeChangeError", () => loading.hide());
   }
 
   render() {
-    const { Component, pageProps, reduxStore } = this.props;
+    const { Component, pageProps } = this.props;
+
     return (
       <>
         <Head>
           <title>Kutt.it | Modern Open Source URL shortener.</title>
         </Head>
-        <Provider store={reduxStore}>
-          <StoreProvider store={this.store}>
-            <Component {...pageProps} />
-          </StoreProvider>
-        </Provider>
+        <StoreProvider store={this.store}>
+          <Component {...pageProps} />
+        </StoreProvider>
       </>
     );
   }
 }
 
-export default withReduxStore(MyApp);
+export default MyApp;

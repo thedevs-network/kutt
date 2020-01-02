@@ -1,12 +1,9 @@
-import React, { FC } from 'react';
-import { PieChart, Pie, Tooltip, ResponsiveContainer } from 'recharts';
-import withTitle from './withTitle';
+import { PieChart, Pie, Tooltip, ResponsiveContainer } from "recharts";
+import React, { FC } from "react";
 
 interface Props {
   data: any[]; // TODO: types
 }
-
-const renderCustomLabel = ({ name }) => name;
 
 const ChartPie: FC<Props> = ({ data }) => (
   <ResponsiveContainer
@@ -18,7 +15,7 @@ const ChartPie: FC<Props> = ({ data }) => (
         top: window.innerWidth < 468 ? 56 : 0,
         right: window.innerWidth < 468 ? 56 : 0,
         bottom: window.innerWidth < 468 ? 56 : 0,
-        left: window.innerWidth < 468 ? 56 : 0,
+        left: window.innerWidth < 468 ? 56 : 0
       }}
     >
       <Pie
@@ -26,11 +23,11 @@ const ChartPie: FC<Props> = ({ data }) => (
         dataKey="value"
         innerRadius={window.innerWidth < 468 ? 20 : 80}
         fill="#B39DDB"
-        label={renderCustomLabel}
+        label={({ name }) => name}
       />
       <Tooltip />
     </PieChart>
   </ResponsiveContainer>
 );
 
-export default withTitle(ChartPie);
+export default ChartPie;

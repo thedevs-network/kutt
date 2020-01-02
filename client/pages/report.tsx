@@ -3,12 +3,13 @@ import axios from "axios";
 import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 
-import BodyWrapper from "../components/BodyWrapper";
+import AppWrapper from "../components/AppWrapper";
 import TextInput from "../components/TextInput";
 import { Button } from "../components/Button";
-import Text from "../components/Text";
-import { API } from "../consts";
+import Text, { H2, Span } from "../components/Text";
 import { useMessage } from "../hooks";
+import { API } from "../consts";
+import { Col } from "../components/Layout";
 
 const ReportPage = () => {
   const [formState, { text }] = useFormState<{ url: string }>();
@@ -31,27 +32,20 @@ const ReportPage = () => {
   };
 
   return (
-    <BodyWrapper>
-      <Flex
-        width={600}
-        maxWidth="97%"
-        flexDirection="column"
-        alignItems="flex-start"
-      >
-        <Text as="h2" fontWeight={700} my={3}>
+    <AppWrapper>
+      <Col width={600} maxWidth="97%" alignItems="flex-start">
+        <H2 my={3} bold>
           Report abuse
-        </Text>
-        <Text as="p" mb={3}>
+        </H2>
+        <Text mb={3}>
           Report abuses, malware and phishing links to the below email address
           or use the form. We will take actions shortly.
         </Text>
-        <Text as="p" mb={4}>
+        <Text mb={4}>
           {(process.env.REPORT_EMAIL || "").replace("@", "[at]")}
         </Text>
-        <Text as="p" mb={3}>
-          <Text as="span" fontWeight={700}>
-            URL containing malware/scam:
-          </Text>
+        <Text mb={3}>
+          <Span bold>URL containing malware/scam:</Span>
         </Text>
         <Flex
           as="form"
@@ -82,8 +76,8 @@ const ReportPage = () => {
         <Text fontSize={14} mt={3} color={message.color}>
           {message.text}
         </Text>
-      </Flex>
-    </BodyWrapper>
+      </Col>
+    </AppWrapper>
   );
 };
 

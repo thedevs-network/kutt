@@ -1,12 +1,18 @@
-import styled, { css } from "styled-components";
+import { switchProp, ifNotProp, ifProp } from "styled-tools";
 import { Box } from "reflexbox/styled-components";
-import { switchProp, ifNotProp } from "styled-tools";
+import styled, { css } from "styled-components";
+
+import { Colors } from "../consts";
+import { FC, ComponentProps } from "react";
 
 interface Props {
-  weight?: 300 | 400 | 700;
   htmlFor?: string;
+  light?: boolean;
+  normal?: boolean;
+  bold?: boolean;
 }
 const Text = styled(Box)<Props>`
+  font-weight: 400;
   ${ifNotProp(
     "fontSize",
     css`
@@ -20,12 +26,42 @@ const Text = styled(Box)<Props>`
       })};
     `
   )}
+
+  ${ifProp(
+    "light",
+    css`
+      font-weight: 300;
+    `
+  )}
+
+  ${ifProp(
+    "normal",
+    css`
+      font-weight: 400;
+    `
+  )}
+
+  ${ifProp(
+    "bold",
+    css`
+      font-weight: 700;
+    `
+  )}
 `;
 
 Text.defaultProps = {
   as: "p",
-  fontWeight: 400,
-  color: "hsl(200, 35%, 25%)"
+  color: Colors.Text
 };
 
 export default Text;
+
+type TextProps = ComponentProps<typeof Text>;
+
+export const H1: FC<TextProps> = props => <Text as="h1" {...props} />;
+export const H2: FC<TextProps> = props => <Text as="h2" {...props} />;
+export const H3: FC<TextProps> = props => <Text as="h3" {...props} />;
+export const H4: FC<TextProps> = props => <Text as="h4" {...props} />;
+export const H5: FC<TextProps> = props => <Text as="h5" {...props} />;
+export const H6: FC<TextProps> = props => <Text as="h6" {...props} />;
+export const Span: FC<TextProps> = props => <Text as="span" {...props} />;

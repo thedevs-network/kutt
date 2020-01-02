@@ -1,87 +1,63 @@
-import React, { FC, useEffect } from 'react';
-import { connect } from 'react-redux';
-import styled from 'styled-components';
-import { Flex } from 'reflexbox/styled-components';
+import React, { FC, useEffect } from "react";
 
-import ReCaptcha from './ReCaptcha';
-import showRecaptcha from '../helpers/recaptcha';
-import { ifProp } from 'styled-tools';
+import showRecaptcha from "../helpers/recaptcha";
+import { useStoreState } from "../store";
+import { ColCenter } from "./Layout";
+import ReCaptcha from "./ReCaptcha";
+import ALink from "./ALink";
+import Text from "./Text";
 
-interface Props {
-  isAuthenticated: boolean;
-}
+const Footer: FC = () => {
+  const { isAuthenticated } = useStoreState(s => s.auth);
 
-const Wrapper = styled(Flex).attrs({
-  as: 'footer',
-  width: 1,
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-})<Props>`
-  padding: 4px 0 ${ifProp('isAuthenticated', '8px', '24px')};
-  background-color: white;
-
-  a {
-    text-decoration: none;
-    color: #2196f3;
-  }
-`;
-
-const Text = styled.p`
-  font-size: 13px;
-  font-weight: 300;
-  color: #666;
-
-  @media only screen and (max-width: 768px) {
-    font-size: 11px;
-  }
-`;
-
-const Footer: FC<Props> = ({ isAuthenticated }) => {
   useEffect(() => {
     showRecaptcha();
   }, []);
 
   return (
-    <Wrapper isAuthenticated={isAuthenticated}>
+    <ColCenter
+      as="footer"
+      width={1}
+      backgroundColor="white"
+      p={isAuthenticated ? 2 : 24}
+    >
       {!isAuthenticated && <ReCaptcha />}
-      <Text>
-        Made with love by{' '}
-        <a href="//thedevs.network/" title="The Devs">
+      <Text fontSize={[12, 13]} py={2}>
+        Made with love by{" "}
+        <ALink href="//thedevs.network/" title="The Devs">
           The Devs
-        </a>
-        .{' | '}
-        <a
+        </ALink>
+        .{" | "}
+        <ALink
           href="https://github.com/thedevs-network/kutt"
           title="GitHub"
           target="_blank"
         >
           GitHub
-        </a>
-        {' | '}
-        <a href="/terms" title="Terms of Service">
+        </ALink>
+        {" | "}
+        <ALink href="/terms" title="Terms of Service">
           Terms of Service
-        </a>
-        {' | '}
-        <a href="/report" title="Report abuse">
+        </ALink>
+        {" | "}
+        <ALink href="/report" title="Report abuse">
           Report Abuse
-        </a>
+        </ALink>
         {process.env.CONTACT_EMAIL && (
           <>
-            {' | '}
-            <a href={`mailto:${process.env.CONTACT_EMAIL}`} title="Contact us">
+            {" | "}
+            <ALink
+              href={`mailto:${process.env.CONTACT_EMAIL}`}
+              title="Contact us"
+            >
               Contact us
-            </a>
+            </ALink>
           </>
         )}
         .
       </Text>
-    </Wrapper>
+    </ColCenter>
   );
 };
 
-const mapStateToProps = ({ auth: { isAuthenticated } }) => ({
-  isAuthenticated,
-});
-
-export default connect(mapStateToProps)(Footer);
+export default Footer;

@@ -3,9 +3,10 @@ import styled from "styled-components";
 import { Flex } from "reflexbox/styled-components";
 import { NextPage } from "next";
 
-import BodyWrapper from "../components/BodyWrapper";
+import AppWrapper from "../components/AppWrapper";
 import Footer from "../components/Footer";
-import Text from "../components/Text";
+import { H2, H4 } from "../components/Text";
+import { Col } from "../components/Layout";
 
 interface Props {
   linkTarget?: string;
@@ -13,25 +14,23 @@ interface Props {
 
 const UrlInfoPage: NextPage<Props> = ({ linkTarget }) => {
   return (
-    <BodyWrapper>
+    <AppWrapper>
       {!linkTarget ? (
-        <Text as="h2" my={4} fontWeight={300}>
+        <H2 my={4} light>
           404 | Link could not be found.
-        </Text>
+        </H2>
       ) : (
         <>
-          <Flex flex="1 1 100%" flexDirection="column" alignItems="center">
-            <Text as="h2" my={3} fontWeight={300}>
+          <Col flex="1 1 100%" alignItems="center">
+            <H2 my={3} light>
               Target:
-            </Text>
-            <Text as="h4" fontWeight={700}>
-              {linkTarget}
-            </Text>
-          </Flex>
+            </H2>
+            <H4 bold>{linkTarget}</H4>
+          </Col>
           <Footer />
         </>
       )}
-    </BodyWrapper>
+    </AppWrapper>
   );
 };
 

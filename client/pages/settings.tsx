@@ -1,42 +1,36 @@
 import { Flex } from "reflexbox/styled-components";
-import { NextPage } from "next";
 import React, { useEffect } from "react";
+import { NextPage } from "next";
 
 import SettingsPassword from "../components/Settings/SettingsPassword";
 import SettingsDomain from "../components/Settings/SettingsDomain";
 import SettingsBan from "../components/Settings/SettingsBan";
 import SettingsApi from "../components/Settings/SettingsApi";
-import BodyWrapper from "../components/BodyWrapper";
+import { useStoreState, useStoreActions } from "../store";
+import AppWrapper from "../components/AppWrapper";
+import { H1, Span } from "../components/Text";
 import Divider from "../components/Divider";
 import Footer from "../components/Footer";
-import { useStoreState, useStoreActions } from "../store";
-import Text from "../components/Text";
+import { Col } from "../components/Layout";
 
-const SettingsPage: NextPage = () => {
+const SettingsPage: NextPage = props => {
   const { email, isAdmin } = useStoreState(s => s.auth);
   const getSettings = useStoreActions(s => s.settings.getSettings);
 
   useEffect(() => {
     getSettings();
-  }, []);
+  }, [false]);
 
   return (
-    <BodyWrapper>
-      <Flex
-        width={600}
-        maxWidth="90%"
-        flexDirection="column"
-        alignItems="flex-start"
-        pb={80}
-        mt={4}
-      >
-        <Text as="h1" alignItems="center" fontWeight={300} fontSize={[24, 28]}>
+    <AppWrapper>
+      <Col width={600} maxWidth="90%" alignItems="flex-start" pb={80} mt={4}>
+        <H1 alignItems="center" fontSize={[24, 28]} light>
           Welcome,{" "}
-          <Text as="span" pb="2px" style={{ borderBottom: "2px dotted #999" }}>
+          <Span pb="2px" style={{ borderBottom: "2px dotted #999" }}>
             {email}
-          </Text>
+          </Span>
           .
-        </Text>
+        </H1>
         <Divider my={[4, 48]} />
         {isAdmin && (
           <>
@@ -49,9 +43,9 @@ const SettingsPage: NextPage = () => {
         <SettingsPassword />
         <Divider my={[12, 24]} />
         <SettingsApi />
-      </Flex>
+      </Col>
       <Footer />
-    </BodyWrapper>
+    </AppWrapper>
   );
 };
 

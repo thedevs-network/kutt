@@ -5,6 +5,7 @@ import axios from "axios";
 
 import { TokenPayload } from "../types";
 import { API } from "../consts";
+import { getAxiosConfig } from "../utils";
 
 export interface Auth {
   domain?: string;
@@ -14,6 +15,7 @@ export interface Auth {
   add: Action<Auth, TokenPayload>;
   logout: Action<Auth>;
   login: Thunk<Auth, { email: string; password: string }>;
+  renew: Thunk<Auth>;
 }
 
 export const auth: Auth = {
@@ -34,6 +36,13 @@ export const auth: Auth = {
   }),
   login: thunk(async (actions, payload) => {
     const res = await axios.post(API.LOGIN, payload);
+    const { token } = res.data;
+    cookie.set("token", token, { expires: 7 });
+    const tokenPayload: TokenPayload = decode(token);
+    actions.add(tokenPayload);
+  }),
+  renew: thunk(async actions => {
+    const res = await axios.post(API.RENEW, null, getAxiosConfig());
     const { token } = res.data;
     cookie.set("token", token, { expires: 7 });
     const tokenPayload: TokenPayload = decode(token);

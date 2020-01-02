@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 import { ifProp } from "styled-tools";
 import { Flex, BoxProps } from "reflexbox/styled-components";
 
-import Text from "./Text";
+import Text, { Span } from "./Text";
 
 interface InputProps {
   checked: boolean;
@@ -82,9 +82,9 @@ const Checkbox: FC<Props> = ({
     >
       <Input name={name} id={id} checked={checked} />
       <Box checked={checked} width={width} height={height} />
-      <Text as="span" ml={12} color="#555">
+      <Span ml={12} color="#555">
         {label}
-      </Text>
+      </Span>
     </Flex>
   );
 };

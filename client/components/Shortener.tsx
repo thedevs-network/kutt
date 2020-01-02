@@ -2,7 +2,6 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Flex } from "reflexbox/styled-components";
 import React, { useState } from "react";
 import styled from "styled-components";
-import QRCode from "qrcode.react";
 
 import { useStoreActions, useStoreState } from "../store";
 import { Col, RowCenterH, RowCenter } from "./Layout";
@@ -12,11 +11,9 @@ import { Link } from "../store/links";
 import { useMessage } from "../hooks";
 import TextInput from "./TextInput";
 import Animation from "./Animation";
+import { Colors } from "../consts";
 import Checkbox from "./Checkbox";
-import { Button } from "./Button";
-import Tooltip from "./Tooltip";
-import Modal from "./Modal";
-import Text from "./Text";
+import Text, { H1, Span } from "./Text";
 import Icon from "./Icon";
 
 const SubmitIconWrapper = styled.div`
@@ -40,13 +37,13 @@ const SubmitIconWrapper = styled.div`
   }
 `;
 
-const ShortenedLink = styled(Text)`
-  border-bottom: 2px dotted #aaa;
+const ShortenedLink = styled(H1)`
+  cursor: "pointer";
+  border-bottom: 1px dotted ${Colors.StatsTotalUnderline};
   cursor: pointer;
-  transition: all 0.2s ease;
 
   :hover {
-    opacity: 0.5;
+    opacity: 0.8;
   }
 `;
 
@@ -65,7 +62,7 @@ const Shortener = () => {
   const [message, setMessage] = useMessage(3000);
   const [loading, setLoading] = useState(false);
   const [qrModal, setQRModal] = useState(false);
-  const [copied, setCopied] = useMessage(3000);
+  const [copied, setCopied] = useState(false);
   const [formState, { raw, password, text, label }] = useFormState<Form>(null, {
     withIds: true,
     onChange(e, stateValues, nextStateValues) {
@@ -79,7 +76,7 @@ const Shortener = () => {
   const onSubmit = async e => {
     e.preventDefault();
     if (loading) return;
-    setCopied("");
+    setCopied(false);
     setLoading(true);
     try {
       const link = await submit(formState.values);
@@ -94,20 +91,21 @@ const Shortener = () => {
   };
 
   const title = !link && (
-    <Text as="h1" fontWeight={300}>
+    <H1 light>
       Kutt your links{" "}
-      <Text
-        as="span"
-        fontWeight={300}
-        style={{ borderBottom: "2px dotted #999" }}
-      >
+      <Span style={{ borderBottom: "2px dotted #999" }} light>
         shorter
-      </Text>
+      </Span>
       .
-    </Text>
+    </H1>
   );
 
-  const onCopy = () => setCopied("Copied to clipboard.", "green");
+  const onCopy = () => {
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 1500);
+  };
 
   const result = link && (
     <Animation
@@ -116,28 +114,42 @@ const Shortener = () => {
       duration="0.4s"
       style={{ position: "relative" }}
     >
+      {copied ? (
+        <Animation offset="10px" duration="0.2s" alignItems="center">
+          <Icon
+            size={[35]}
+            py={0}
+            px={0}
+            mr={3}
+            p="5px"
+            name="check"
+            strokeWidth="3"
+            stroke={Colors.CheckIcon}
+          />
+        </Animation>
+      ) : (
+        <Animation offset="-10px" duration="0.2s">
+          <CopyToClipboard text={link.shortLink} onCopy={onCopy}>
+            <Icon
+              as="button"
+              py={0}
+              px={0}
+              mr={3}
+              size={[35]}
+              p={["7px"]}
+              name="copy"
+              strokeWidth="2.5"
+              stroke={Colors.CopyIcon}
+              backgroundColor={Colors.CopyIconBg}
+            />
+          </CopyToClipboard>
+        </Animation>
+      )}
       <CopyToClipboard text={link.shortLink} onCopy={onCopy}>
-        <ShortenedLink as="h1" fontWeight={300} mr={3} mb={1} pb="2px">
+        <ShortenedLink fontSize={[30]} pb="2px" light>
           {removeProtocol(link.shortLink)}
         </ShortenedLink>
       </CopyToClipboard>
-      <CopyToClipboard text={link.shortLink} onCopy={onCopy}>
-        <Button>
-          <Icon name="clipboard" stroke="white" mr={2} />
-          Copy
-        </Button>
-      </CopyToClipboard>
-      {copied && (
-        <Animation
-          as={Text}
-          offset="10px"
-          color={copied.color}
-          fontSize={15}
-          style={{ position: "absolute", left: 0, top: -24 }}
-        >
-          {copied.text}
-        </Animation>
-      )}
     </Animation>
   );
 
@@ -165,13 +177,14 @@ const Shortener = () => {
           width={1}
           height={[72]}
           autoFocus
+          data-lpignore
         />
         <SubmitIconWrapper onClick={onSubmit}>
           <Icon
             name={loading ? "spinner" : "send"}
             size={28}
             fill={loading ? "none" : "#aaa"}
-            stroke={loading ? "#888" : "none"}
+            stroke={loading ? Colors.Spinner : "none"}
             mb={1}
             mr={1}
           />
@@ -198,17 +211,12 @@ const Shortener = () => {
         checked={formState.values.showAdvanced}
         label="Show advanced options"
         mt={24}
+        alignSelf="flex-start"
       />
       {formState.values.showAdvanced && (
         <Flex mt={4}>
           <Col>
-            <Text
-              as="label"
-              {...label("customurl")}
-              fontWeight={700}
-              fontSize={15}
-              mb={2}
-            >
+            <Text as="label" {...label("customurl")} fontSize={15} mb={2} bold>
               {(domain || {}).customDomain ||
                 (typeof window !== "undefined" && window.location.hostname)}
               /
@@ -216,32 +224,28 @@ const Shortener = () => {
             <TextInput
               {...text("customurl")}
               placeholder="Custom address"
+              data-lpignore
               pl={24}
               pr={24}
               placeholderSize={[13, 14, 14, 14]}
               fontSize={[14, 15]}
-              height={48}
+              height={44}
               width={240}
             />
           </Col>
           <Col ml={4}>
-            <Text
-              as="label"
-              {...label("password")}
-              fontWeight={700}
-              fontSize={15}
-              mb={2}
-            >
+            <Text as="label" {...label("password")} fontSize={15} mb={2} bold>
               Password:
             </Text>
             <TextInput
               {...password("password")}
               placeholder="Password"
+              data-lpignore
               pl={24}
               pr={24}
               placeholderSize={[13, 14, 14, 14]}
               fontSize={[14, 15]}
-              height={48}
+              height={44}
               width={240}
             />
           </Col>

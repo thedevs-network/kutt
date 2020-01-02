@@ -8,14 +8,14 @@ import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 
 import { useStoreState, useStoreActions } from "../store";
-import BodyWrapper from "../components/BodyWrapper";
+import { ColCenterV } from "../components/Layout";
+import AppWrapper from "../components/AppWrapper";
 import { fadeIn } from "../helpers/animations";
-import { API } from "../consts";
 import TextInput from "../components/TextInput";
 import { Button } from "../components/Button";
-import Text from "../components/Text";
 import ALink from "../components/ALink";
-import { ColCenterV } from "../components/Layout";
+import Text, { H2 } from "../components/Text";
+import { API } from "../consts";
 
 const LoginForm = styled(Flex).attrs({
   as: "form",
@@ -95,29 +95,31 @@ const LoginPage = () => {
   }
 
   return (
-    <BodyWrapper>
+    <AppWrapper>
       <ColCenterV flex="0 0 auto" mt={24} mb={64}>
         {verifying ? (
-          <Text fontWeight={300} as="h2" textAlign="center">
+          <H2 textAlign="center" light>
             A verification email has been sent to{" "}
             <Email>{formState.values.email}</Email>.
-          </Text>
+          </H2>
         ) : (
           <LoginForm id="login-form" onSubmit={onSubmit("login")}>
-            <Text {...label("email")} as="label" fontWeight={700} mb={2}>
+            <Text {...label("email")} as="label" mb={2} bold>
               Email address:
             </Text>
             <TextInput
               {...email("email")}
+              placeholder="Email address..."
               height={[56, 64, 72]}
               mb={[24, 32, 36]}
               autoFocus
             />
-            <Text {...label("password")} as="label" fontWeight={700} mb={2}>
+            <Text {...label("password")} as="label" mb={2} bold>
               Password (min chars: 8):
             </Text>
             <TextInput
               {...password("password")}
+              placeholder="Password..."
               height={[56, 64, 72]}
               mb={[24, 32, 36]}
             />
@@ -153,13 +155,13 @@ const LoginPage = () => {
                 Forgot your password?
               </ALink>
             </Link>
-            <Text color="red" fontWeight={400} mt={1}>
+            <Text color="red" mt={1} normal>
               {error}
             </Text>
           </LoginForm>
         )}
       </ColCenterV>
-    </BodyWrapper>
+    </AppWrapper>
   );
 };
 

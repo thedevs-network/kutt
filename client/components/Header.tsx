@@ -50,7 +50,7 @@ const Header: FC = () => {
   const login = !isAuthenticated && (
     <Li>
       <Link href="/login">
-        <ALink href="/login" title="login / signup">
+        <ALink href="/login" title="login / signup" forButton>
           <Button>Login / Sign up</Button>
         </ALink>
       </Link>
@@ -68,7 +68,7 @@ const Header: FC = () => {
   const settings = isAuthenticated && (
     <Li>
       <Link href="/settings">
-        <ALink href="/settings" title="settings">
+        <ALink href="/settings" title="Settings" forButton>
           <Button>Settings</Button>
         </ALink>
       </Link>

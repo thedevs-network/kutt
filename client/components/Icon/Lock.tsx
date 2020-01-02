@@ -10,7 +10,7 @@ function Lock() {
       stroke="#000"
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeWidth="3"
+      strokeWidth="2"
       viewBox="0 0 24 24"
     >
       <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>

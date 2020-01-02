@@ -1,8 +1,8 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { Flex } from 'reflexbox/styled-components';
+import React, { FC } from "react";
+import styled from "styled-components";
+import { Flex } from "reflexbox/styled-components";
 
-import { fadeIn } from '../helpers/animations';
+import { fadeIn } from "../helpers/animations";
 
 interface Props {
   title: string;
@@ -10,11 +10,11 @@ interface Props {
 }
 
 const Block = styled(Flex).attrs({
-  maxWidth: ['100%', '100%', '50%', '25%'],
-  flexDirection: 'column',
-  alignItems: 'center',
-  p: '0 24px',
-  mb: [48, 48, 48, 0],
+  maxWidth: ["100%", "100%", "50%", "25%"],
+  flexDirection: "column",
+  alignItems: "center",
+  p: "0 24px",
+  mb: [48, 48, 48, 0]
 })`
   animation: ${fadeIn} 0.8s ease-out;
 
@@ -26,8 +26,8 @@ const Block = styled(Flex).attrs({
 const IconBox = styled(Flex).attrs({
   width: [40, 40, 48],
   height: [40, 40, 48],
-  alignItems: 'center',
-  justifyContent: 'center',
+  alignItems: "center",
+  justifyContent: "center"
 })`
   border-radius: 100%;
   box-sizing: border-box;

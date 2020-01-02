@@ -6,12 +6,14 @@ import { useStoreState, useStoreActions } from "../../store";
 import { useFormState } from "react-use-form-state";
 import { Domain } from "../../store/settings";
 import { useMessage } from "../../hooks";
+import { Colors } from "../../consts";
 import TextInput from "../TextInput";
-import Table from "../CustomTable";
 import { Button } from "../Button";
+import Table from "../Table";
 import Modal from "../Modal";
 import Icon from "../Icon";
-import Text from "../Text";
+import Text, { H2, Span } from "../Text";
+import { Col } from "../Layout";
 
 const Th = styled(Flex).attrs({ as: "th", py: 3, px: 3 })`
   font-size: 15px;
@@ -64,11 +66,11 @@ const SettingsDomain: FC = () => {
   };
 
   return (
-    <Flex alignItems="flex-start" flexDirection="column">
-      <Text as="h2" fontWeight={700} mb={4}>
+    <Col alignItems="flex-start">
+      <H2 mb={4} bold>
         Custom domain
-      </Text>
-      <Text as="p" mb={3}>
+      </H2>
+      <Text mb={3}>
         You can set a custom domain for your short URLs, so instead of{" "}
         <b>kutt.it/shorturl</b> you can have <b>example.com/shorturl.</b>
       </Text>
@@ -94,9 +96,9 @@ const SettingsDomain: FC = () => {
                   <Icon
                     as="button"
                     name="trash"
-                    stroke="hsl(0, 100%, 69%)"
+                    stroke={Colors.TrashIcon}
                     strokeWidth="2.5"
-                    backgroundColor="hsl(0, 100%, 96%)"
+                    backgroundColor={Colors.TrashIconBg}
                     py={0}
                     px={0}
                     size={[23, 24]}
@@ -112,22 +114,16 @@ const SettingsDomain: FC = () => {
           </tbody>
         </Table>
       ) : (
-        <Flex
+        <Col
           alignItems="flex-start"
-          flexDirection="column"
           onSubmit={onSubmit}
           width={1}
           as="form"
           my={4}
         >
           <Flex width={1}>
-            <Flex flexDirection="column" mr={2} flex="1 1 auto">
-              <Text
-                {...label("customDomain")}
-                as="label"
-                fontWeight={700}
-                mb={3}
-              >
+            <Col mr={2} flex="1 1 auto">
+              <Text {...label("customDomain")} as="label" mb={3} bold>
                 Domain
               </Text>
               <TextInput
@@ -138,9 +134,9 @@ const SettingsDomain: FC = () => {
                 pr={24}
                 required
               />
-            </Flex>
-            <Flex flexDirection="column" ml={2} flex="1 1 auto">
-              <Text {...label("homepage")} as="label" fontWeight={700} mb={3}>
+            </Col>
+            <Col ml={2} flex="1 1 auto">
+              <Text {...label("homepage")} as="label" mb={3} bold>
                 Homepage (optional)
               </Text>
               <TextInput
@@ -151,37 +147,34 @@ const SettingsDomain: FC = () => {
                 pl={24}
                 pr={24}
               />
-            </Flex>
+            </Col>
           </Flex>
           <Button type="submit" color="purple" mt={3} disabled={loading}>
             <Icon name={loading ? "spinner" : "plus"} mr={2} stroke="white" />
             {loading ? "Setting..." : "Set domain"}
           </Button>
-        </Flex>
+        </Col>
       )}
       <Text color={message.color}>{message.text}</Text>
       <Modal id="delete-custom-domain" show={modal} closeHandler={closeModal}>
-        <Text as="h2" fontWeight={700} mb={24} textAlign="center">
+        <H2 mb={24} textAlign="center" bold>
           Delete domain?
-        </Text>
-        <Text as="p" textAlign="center">
+        </H2>
+        <Text textAlign="center">
           Are you sure do you want to delete the domain{" "}
-          <Text as="span" fontWeight={700}>
-            "{domainToDelete && domainToDelete.customDomain}"
-          </Text>
-          ?
+          <Span bold>"{domainToDelete && domainToDelete.customDomain}"</Span>?
         </Text>
         <Flex justifyContent="center" mt={44}>
           {deleteLoading ? (
             <>
-              <Icon name="spinner" size={20} stroke="#888" />
+              <Icon name="spinner" size={20} stroke={Colors.Spinner} />
             </>
           ) : (
             <>
               <Button color="gray" mr={3} onClick={closeModal}>
                 Cancel
               </Button>
-              <Button color="blue" ml={3} onClick={onDelete}>
+              <Button color="red" ml={3} onClick={onDelete}>
                 <Icon name="trash" stroke="white" mr={2} />
                 Delete
               </Button>
@@ -189,7 +182,7 @@ const SettingsDomain: FC = () => {
           )}
         </Flex>
       </Modal>
-    </Flex>
+    </Col>
   );
 };
 

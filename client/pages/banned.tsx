@@ -1,37 +1,34 @@
-import React from "react";
-import Link from "next/link";
 import { Flex } from "reflexbox/styled-components";
+import Link from "next/link";
+import React from "react";
 
-import BodyWrapper from "../components/BodyWrapper";
+import AppWrapper from "../components/AppWrapper";
+import { H2, H4, Span } from "../components/Text";
 import Footer from "../components/Footer";
-import Text from "../components/Text";
 import ALink from "../components/ALink";
+import { Col } from "../components/Layout";
 
 const BannedPage = () => {
   return (
-    <BodyWrapper>
-      <Flex flex="1 1 100%" flexDirection="column" alignItems="center">
-        <Text as="h2" textAlign="center" my={3} fontWeight={400}>
+    <AppWrapper>
+      <Col flex="1 1 100%" alignItems="center">
+        <H2 textAlign="center" my={3} normal>
           Link has been banned and removed because of{" "}
-          <Text
-            as="span"
-            fontWeight={700}
-            style={{ borderBottom: "1px dotted rgba(0, 0, 0, 0.4)" }}
-          >
+          <Span style={{ borderBottom: "1px dotted rgba(0, 0, 0, 0.4)" }} bold>
             malware or scam
-          </Text>
+          </Span>
           .
-        </Text>
-        <Text as="h4" textAlign="center" fontWeight={400}>
+        </H2>
+        <H4 textAlign="center" normal>
           If you noticed a malware/scam link shortened by Kutt,{" "}
           <Link href="/report">
             <ALink title="Send report">send us a report</ALink>
           </Link>
           .
-        </Text>
-      </Flex>
+        </H4>
+      </Col>
       <Footer />
-    </BodyWrapper>
+    </AppWrapper>
   );
 };
 

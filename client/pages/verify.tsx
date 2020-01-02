@@ -1,15 +1,16 @@
-import React, { useEffect } from "react";
-import Router from "next/router";
-import styled from "styled-components";
-import cookie from "js-cookie";
 import { Flex } from "reflexbox/styled-components";
+import React, { useEffect } from "react";
+import styled from "styled-components";
+import Router from "next/router";
 import decode from "jwt-decode";
+import cookie from "js-cookie";
 
-import BodyWrapper from "../components/BodyWrapper";
+import AppWrapper from "../components/AppWrapper";
 import { Button } from "../components/Button";
-import { NextPage } from "next";
-import { TokenPayload } from "../types";
 import { useStoreActions } from "../store";
+import { TokenPayload } from "../types";
+import { NextPage } from "next";
+import { Col } from "../components/Layout";
 
 interface Props {
   token?: string;
@@ -58,23 +59,26 @@ const Verify: NextPage<Props> = ({ token }) => {
     Router.push("/");
   };
 
-  const message = token ? (
-    <Flex flexDirection="column" alignItems="center">
-      <MessageWrapper>
-        <Icon src="/images/check.svg" />
-        <Message>Your account has been verified successfully!</Message>
-      </MessageWrapper>
-      <Button icon="arrow-left" onClick={goToHomepage}>
-        Back to homepage
-      </Button>
-    </Flex>
-  ) : (
-    <MessageWrapper>
-      <Icon src="/images/x.svg" />
-      <Message>Invalid verification.</Message>
-    </MessageWrapper>
+  return (
+    <AppWrapper>
+      {token ? (
+        <Col alignItems="center">
+          <MessageWrapper>
+            <Icon src="/images/check.svg" />
+            <Message>Your account has been verified successfully!</Message>
+          </MessageWrapper>
+          <Button icon="arrow-left" onClick={goToHomepage}>
+            Back to homepage
+          </Button>
+        </Col>
+      ) : (
+        <MessageWrapper>
+          <Icon src="/images/x.svg" />
+          <Message>Invalid verification.</Message>
+        </MessageWrapper>
+      )}
+    </AppWrapper>
   );
-  return <BodyWrapper norenew>{message}</BodyWrapper>;
 };
 
 Verify.getInitialProps = async ({ req }) => {

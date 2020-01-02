@@ -7,7 +7,8 @@ import { useStoreState, useStoreActions } from "../../store";
 import { Button } from "../Button";
 import ALink from "../ALink";
 import Icon from "../Icon";
-import Text from "../Text";
+import Text, { H2 } from "../Text";
+import { Col } from "../Layout";
 
 const ApiKey = styled(Text).attrs({
   mr: 3,
@@ -39,11 +40,11 @@ const SettingsApi: FC = () => {
   };
 
   return (
-    <Flex flexDirection="column" alignItems="flex-start">
-      <Text as="h2" fontWeight={700} mb={4}>
+    <Col alignItems="flex-start">
+      <H2 mb={4} bold>
         API
-      </Text>
-      <Text as="p" mb={4}>
+      </H2>
+      <Text mb={4}>
         In additional to this website, you can use the API to create, delete and
         get shortend URLs. If
         {" you're"} not familiar with API, {"don't"} generate the key. DO NOT
@@ -57,10 +58,9 @@ const SettingsApi: FC = () => {
         </ALink>
       </Text>
       {apikey && (
-        <Flex flexDirection="column" style={{ position: "relative" }} my={3}>
+        <Col style={{ position: "relative" }} my={3}>
           {copied && (
             <Text
-              as="p"
               color="green"
               fontSize={14}
               style={{ position: "absolute", top: -24 }}
@@ -82,13 +82,13 @@ const SettingsApi: FC = () => {
               </Button>
             </CopyToClipboard>
           </Flex>
-        </Flex>
+        </Col>
       )}
       <Button color="purple" onClick={onSubmit} disabled={loading}>
         <Icon name={loading ? "spinner" : "zap"} mr={2} stroke="white" />
         {loading ? "Generating..." : apikey ? "Regenerate" : "Generate"} key
       </Button>
-    </Flex>
+    </Col>
   );
 };
 

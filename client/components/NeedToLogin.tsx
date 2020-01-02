@@ -5,12 +5,13 @@ import { Flex } from "reflexbox/styled-components";
 
 import { Button } from "./Button";
 import { fadeIn } from "../helpers/animations";
+import { Col } from "./Layout";
 
 const Wrapper = styled(Flex).attrs({
   width: 1200,
   maxWidth: "98%",
   alignItems: "center",
-  margin: "16px 0 0",
+  margin: "150px 0 0",
   flexDirection: ["column", "column", "row"]
 })`
   animation: ${fadeIn} 0.8s ease-out;
@@ -56,8 +57,7 @@ const Image = styled.img`
 
 const NeedToLogin = () => (
   <Wrapper>
-    <Flex
-      flexDirection="column"
+    <Col
       alignItems={["center", "center", "flex-start"]}
       mt={-32}
       mb={[32, 32, 0]}
@@ -70,7 +70,7 @@ const NeedToLogin = () => (
           <Button>Login / Signup</Button>
         </a>
       </Link>
-    </Flex>
+    </Col>
     <Image src="/images/callout.png" />
   </Wrapper>
 );

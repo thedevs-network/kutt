@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC } from "react";
 import {
   BarChart,
   Bar,
@@ -6,10 +6,8 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
-
-import withTitle from './withTitle';
+  ResponsiveContainer
+} from "recharts";
 
 interface Props {
   data: any[]; // TODO: types
@@ -27,7 +25,7 @@ const ChartBar: FC<Props> = ({ data }) => (
         top: 0,
         right: 0,
         left: 24,
-        bottom: 0,
+        bottom: 0
       }}
     >
       <XAxis type="number" dataKey="value" />
@@ -39,4 +37,4 @@ const ChartBar: FC<Props> = ({ data }) => (
   </ResponsiveContainer>
 );
 
-export default withTitle(ChartBar);
+export default ChartBar;

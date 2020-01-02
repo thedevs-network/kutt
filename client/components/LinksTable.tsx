@@ -1,6 +1,7 @@
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import React, { FC, useState, useEffect } from "react";
+import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 import styled, { css } from "styled-components";
 import QRCode from "qrcode.react";
@@ -8,18 +9,18 @@ import Link from "next/link";
 
 import { useStoreActions, useStoreState } from "../store";
 import { removeProtocol, withComma } from "../utils";
-import { useFormState } from "react-use-form-state";
 import { NavButton, Button } from "./Button";
 import { Col, RowCenter } from "./Layout";
 import { ifProp } from "styled-tools";
 import TextInput from "./TextInput";
-import Table from "./CustomTable";
+import Animation from "./Animation";
 import Tooltip from "./Tooltip";
+import Table from "./Table";
 import ALink from "./ALink";
 import Modal from "./Modal";
-import Text from "./Text";
+import Text, { H2, Span } from "./Text";
 import Icon from "./Icon";
-import Animation from "./Animation";
+import { Colors } from "../consts";
 
 const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
 const Th = styled(Flex)``;
@@ -45,8 +46,8 @@ const Td = styled(Flex)<{ withFade?: boolean }>`
       tr:hover &:after {
         background: linear-gradient(
           to left,
-          hsl(200, 14%, 98%),
-          hsl(200, 14%, 98%),
+          ${Colors.TableRowHover},
+          ${Colors.TableRowHover},
           transparent
         );
       }
@@ -180,9 +181,9 @@ const LinksTable: FC = () => {
 
   return (
     <Col width={1200} maxWidth="95%" margin="40px 0 120px" my={6}>
-      <Text as="h2" fontWeight={300} mb={3}>
+      <H2 mb={3} light>
         Recent shortened links.
-      </Text>
+      </H2>
       <Table scrollWidth="700px">
         <thead>
           <Tr justifyContent="space-between">
@@ -216,7 +217,7 @@ const LinksTable: FC = () => {
           {!links.items.length ? (
             <Tr width={1} justifyContent="center">
               <Td flex="1 1 auto" justifyContent="center">
-                <Text as="p" fontWeight={300} fontSize={18}>
+                <Text fontSize={18} light>
                   {links.loading ? "Loading links..." : "No links to show."}
                 </Text>
               </Td>
@@ -239,14 +240,14 @@ const LinksTable: FC = () => {
                         alignItems="center"
                       >
                         <Icon
-                          size={[15, 24]}
+                          size={[23, 24]}
                           py={0}
                           px={0}
                           mr={2}
                           p="3px"
                           name="check"
                           strokeWidth="3"
-                          stroke="hsl(144, 50%, 60%)"
+                          stroke={Colors.CheckIcon}
                         />
                       </Animation>
                     ) : (
@@ -258,8 +259,8 @@ const LinksTable: FC = () => {
                           <Action
                             name="copy"
                             strokeWidth="2.5"
-                            stroke="hsl(144, 40%, 57%)"
-                            backgroundColor="hsl(144, 100%, 96%)"
+                            stroke={Colors.CopyIcon}
+                            backgroundColor={Colors.CopyIconBg}
                           />
                         </CopyToClipboard>
                       </Animation>
@@ -294,25 +295,25 @@ const LinksTable: FC = () => {
                       >
                         <Action
                           name="pieChart"
-                          stroke="hsl(260, 100%, 69%)"
+                          stroke={Colors.PieIcon}
                           strokeWidth="2.5"
-                          backgroundColor="hsl(260, 100%, 96%)"
+                          backgroundColor={Colors.PieIconBg}
                         />
                       </Link>
                     )}
                     <Action
                       name="qrcode"
                       stroke="none"
-                      fill="hsl(0, 0%, 35%)"
-                      backgroundColor="hsl(0, 0%, 94%)"
+                      fill={Colors.QrCodeIcon}
+                      backgroundColor={Colors.QrCodeIconBg}
                       onClick={() => setQRModal(index)}
                     />
                     <Action
                       mr={0}
                       name="trash"
-                      stroke="hsl(0, 100%, 69%)"
                       strokeWidth="2"
-                      backgroundColor="hsl(0, 100%, 96%)"
+                      stroke={Colors.TrashIcon}
+                      backgroundColor={Colors.TrashIconBg}
                       onClick={() => setDeleteModal(index)}
                     />
                   </Td>
@@ -344,20 +345,17 @@ const LinksTable: FC = () => {
       >
         {linkToDelete && (
           <>
-            <Text as="h2" fontWeight={700} mb={24} textAlign="center">
+            <H2 mb={24} textAlign="center" bold>
               Delete link?
-            </Text>
-            <Text as="p" textAlign="center">
+            </H2>
+            <Text textAlign="center">
               Are you sure do you want to delete the link{" "}
-              <Text as="span" fontWeight={700}>
-                "{removeProtocol(linkToDelete.shortLink)}"
-              </Text>
-              ?
+              <Span bold>"{removeProtocol(linkToDelete.shortLink)}"</Span>?
             </Text>
             <Flex justifyContent="center" mt={44}>
               {deleteLoading ? (
                 <>
-                  <Icon name="spinner" size={20} stroke="#888" />
+                  <Icon name="spinner" size={20} stroke={Colors.Spinner} />
                 </>
               ) : (
                 <>
@@ -368,7 +366,7 @@ const LinksTable: FC = () => {
                   >
                     Cancel
                   </Button>
-                  <Button color="blue" ml={3} onClick={onDelete}>
+                  <Button color="red" ml={3} onClick={onDelete}>
                     <Icon name="trash" stroke="white" mr={2} />
                     Delete
                   </Button>

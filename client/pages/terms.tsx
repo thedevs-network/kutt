@@ -1,17 +1,13 @@
 import React from "react";
 import { Flex } from "reflexbox/styled-components";
 
-import BodyWrapper from "../components/BodyWrapper";
+import AppWrapper from "../components/AppWrapper";
+import { Col } from "../components/Layout";
 
 const TermsPage = () => (
-  <BodyWrapper>
+  <AppWrapper>
     {/* TODO: better container */}
-    <Flex
-      width={600}
-      maxWidth="97%"
-      flexDirection="column"
-      alignItems="flex-start"
-    >
+    <Col width={600} maxWidth="97%" alignItems="flex-start">
       <h3>Kutt Terms of Service</h3>
       <p>
         By accessing the website at{" "}
@@ -51,8 +47,8 @@ const TermsPage = () => (
         without notice. By using this website you are agreeing to be bound by
         the then current version of these terms of service.
       </p>
-    </Flex>
-  </BodyWrapper>
+    </Col>
+  </AppWrapper>
 );
 
 export default TermsPage;

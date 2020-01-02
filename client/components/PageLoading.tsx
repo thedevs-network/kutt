@@ -1,9 +1,10 @@
 import { Flex } from "reflexbox/styled-components";
 import React from "react";
 
+import { Colors } from "../consts";
 import Icon from "./Icon";
 
-const pageLoading = () => (
+const PageLoading = () => (
   <Flex
     flex="1 1 250px"
     alignItems="center"
@@ -11,8 +12,8 @@ const pageLoading = () => (
     justifyContent="center"
     margin="0 0 48px"
   >
-    <Icon name="spinner" size={24} stroke="#888" />
+    <Icon name="spinner" size={24} stroke={Colors.Spinner} />
   </Flex>
 );
 
-export default pageLoading;
+export default PageLoading;

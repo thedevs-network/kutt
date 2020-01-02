@@ -9,7 +9,8 @@ import TextInput from "../TextInput";
 import { API } from "../../consts";
 import { Button } from "../Button";
 import Icon from "../Icon";
-import Text from "../Text";
+import Text, { H2 } from "../Text";
+import { Col } from "../Layout";
 
 const SettingsPassword: FC = () => {
   const [loading, setLoading] = useState(false);
@@ -39,10 +40,10 @@ const SettingsPassword: FC = () => {
   };
 
   return (
-    <Flex flexDirection="column" alignItems="flex-start">
-      <Text as="h2" fontWeight={700} mb={4}>
+    <Col alignItems="flex-start">
+      <H2 mb={4} bold>
         Change password
-      </Text>
+      </H2>
       <Text mb={4}>Enter a new password to change your current password.</Text>
       <Flex as="form" onSubmit={onSubmit}>
         <TextInput
@@ -71,7 +72,7 @@ const SettingsPassword: FC = () => {
       <Text color={message.color} mt={3} fontSize={15}>
         {message.text}
       </Text>
-    </Flex>
+    </Col>
   );
 };
 
