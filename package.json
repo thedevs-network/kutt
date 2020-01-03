@@ -8,7 +8,7 @@
     "docker:build": "docker build -t kutt .",
     "docker:run": "docker run -p 3000:3000 --env-file .env -d kutt:latest",
     "dev": "nodemon server/server.ts",
-    "build": "next build client/ && rimraf production-server && tsc --project tsconfig.server.json && copyfiles -f \"server/mail/*.html\" production-server/mail",
+    "build": "next build client/ && rimraf production-server && tsc --project tsconfig.json && copyfiles -f \"server/mail/*.html\" production-server/mail",
     "start": "NODE_ENV=production node production-server/server.js",
     "lint": "eslint server/ --ext .js,.ts --fix",
     "lint:nofix": "eslint server/ --ext .js,.ts"

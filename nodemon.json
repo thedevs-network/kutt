@@ -1,6 +1,6 @@
 {
   "watch": ["server/**/*.ts"],
   "execMap": {
-    "ts": "rimraf production-server && tsc --project tsconfig.server.json && copyfiles -f \"server/mail/*.html\" production-server/mail && node production-server/server.js"
+    "ts": "rimraf production-server && tsc --project tsconfig.json && copyfiles -f \"server/mail/*.html\" production-server/mail && node production-server/server.js"
   }
 }
