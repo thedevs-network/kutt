@@ -51,7 +51,7 @@ class MyApp extends App<any> {
       });
     }
 
-    if (!isProd) {
+    if (isProd) {
       initGA();
     }
 
