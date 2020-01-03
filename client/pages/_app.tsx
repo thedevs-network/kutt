@@ -53,6 +53,7 @@ class MyApp extends App<any> {
 
     if (isProd) {
       initGA();
+      logPageView();
     }
 
     Router.events.on("routeChangeStart", () => loading.show());
