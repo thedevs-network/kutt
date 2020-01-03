@@ -1,33 +1,33 @@
-import './configToEnv';
+import "./configToEnv";
 
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
-import nextApp from 'next';
-import express, { Request, Response } from 'express';
-import helmet from 'helmet';
-import Raven from 'raven';
-import cookieParser from 'cookie-parser';
-import passport from 'passport';
-import cors from 'cors';
+import nextApp from "next";
+import express, { Request, Response } from "express";
+import helmet from "helmet";
+import Raven from "raven";
+import cookieParser from "cookie-parser";
+import passport from "passport";
+import cors from "cors";
 
 import {
   validateBody,
   validationCriterias,
   validateUrl,
-  ipCooldownCheck,
-} from './controllers/validateBodyController';
-import * as auth from './controllers/authController';
-import * as link from './controllers/linkController';
-import { initializeDb } from './knex';
+  ipCooldownCheck
+} from "./controllers/validateBodyController";
+import * as auth from "./controllers/authController";
+import * as link from "./controllers/linkController";
+import { initializeDb } from "./knex";
 import {
   logger,
   loggerMiddleware,
-  errorLoggerMiddleware,
-} from './utils/logger';
+  errorLoggerMiddleware
+} from "./utils/logger";
 
-import './cron';
-import './passport';
+import "./cron";
+import "./passport";
 
 if (process.env.RAVEN_DSN) {
   Raven.config(process.env.RAVEN_DSN).install();
@@ -37,8 +37,8 @@ const catchErrors = fn => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
 
 const port = Number(process.env.PORT) || 3000;
-const dev = process.env.NODE_ENV !== 'production';
-const app = nextApp({ dir: './client', dev });
+const dev = process.env.NODE_ENV !== "production";
+const app = nextApp({ dir: "./client", dev });
 const handle = app.getRequestHandler();
 
 app.prepare().then(async () => {
@@ -46,7 +46,7 @@ app.prepare().then(async () => {
 
   const server = express();
 
-  server.set('trust proxy', true);
+  server.set("trust proxy", true);
 
   server.use(loggerMiddleware());
   server.use(helmet());
@@ -54,15 +54,15 @@ app.prepare().then(async () => {
   server.use(express.json());
   server.use(express.urlencoded({ extended: true }));
   server.use(passport.initialize());
-  server.use(express.static('static'));
+  server.use(express.static("static"));
 
   server.use((error, req, res, next) => {
     res
       .status(500)
-      .json({ error: 'Sorry an error ocurred. Please try again later.' });
+      .json({ error: "Sorry an error ocurred. Please try again later." });
     if (process.env.RAVEN_DSN) {
       Raven.captureException(error, {
-        user: { email: req.user && req.user.email },
+        user: { email: req.user && req.user.email }
       });
     }
     next();
@@ -70,142 +70,141 @@ app.prepare().then(async () => {
 
   server.use((req, _res, next) => {
     req.realIP =
-      (req.headers['x-real-ip'] as string) ||
+      (req.headers["x-real-ip"] as string) ||
       req.connection.remoteAddress ||
-      '';
+      "";
     return next();
   });
 
   server.use(link.customDomainRedirection);
 
-  server.get('/', (req, res) => app.render(req, res, '/'));
-  server.get('/login', (req, res) => app.render(req, res, '/login'));
-  server.get('/logout', (req, res) => app.render(req, res, '/logout'));
-  server.get('/settings', (req, res) => app.render(req, res, '/settings'));
-  server.get('/stats', (req, res) => app.render(req, res, '/stats', req.query));
-  server.get('/terms', (req, res) => app.render(req, res, '/terms'));
-  server.get('/report', (req, res) => app.render(req, res, '/report'));
-  server.get('/banned', (req, res) => app.render(req, res, '/banned'));
-  server.get('/offline', (req, res) => app.render(req, res, '/offline'));
+  server.get("/", (req, res) => app.render(req, res, "/"));
+  server.get("/login", (req, res) => app.render(req, res, "/login"));
+  server.get("/logout", (req, res) => app.render(req, res, "/logout"));
+  server.get("/settings", (req, res) => app.render(req, res, "/settings"));
+  server.get("/stats", (req, res) => app.render(req, res, "/stats", req.query));
+  server.get("/terms", (req, res) => app.render(req, res, "/terms"));
+  server.get("/report", (req, res) => app.render(req, res, "/report"));
+  server.get("/banned", (req, res) => app.render(req, res, "/banned"));
 
   /* View routes */
   server.get(
-    '/reset-password/:resetPasswordToken?',
+    "/reset-password/:resetPasswordToken?",
     catchErrors(auth.resetUserPassword),
-    (req, res) => app.render(req, res, '/reset-password', { token: req.token }),
+    (req, res) => app.render(req, res, "/reset-password", { token: req.token })
   );
   server.get(
-    '/verify/:verificationToken?',
+    "/verify/:verificationToken?",
     catchErrors(auth.verify),
-    (req, res) => app.render(req, res, '/verify', { token: req.token }),
+    (req, res) => app.render(req, res, "/verify", { token: req.token })
   );
 
   /* User and authentication */
   server.post(
-    '/api/auth/signup',
+    "/api/auth/signup",
     validationCriterias,
     catchErrors(validateBody),
-    catchErrors(auth.signup),
+    catchErrors(auth.signup)
   );
   server.post(
-    '/api/auth/login',
+    "/api/auth/login",
     validationCriterias,
     catchErrors(validateBody),
     catchErrors(auth.authLocal),
-    catchErrors(auth.login),
+    catchErrors(auth.login)
   );
   server.post(
-    '/api/auth/renew',
+    "/api/auth/renew",
     catchErrors(auth.authJwt),
-    catchErrors(auth.renew),
+    catchErrors(auth.renew)
   );
   server.post(
-    '/api/auth/changepassword',
+    "/api/auth/changepassword",
     catchErrors(auth.authJwt),
-    catchErrors(auth.changeUserPassword),
+    catchErrors(auth.changeUserPassword)
   );
   server.post(
-    '/api/auth/generateapikey',
+    "/api/auth/generateapikey",
     catchErrors(auth.authJwt),
-    catchErrors(auth.generateUserApiKey),
+    catchErrors(auth.generateUserApiKey)
   );
   server.post(
-    '/api/auth/resetpassword',
-    catchErrors(auth.requestUserPasswordReset),
+    "/api/auth/resetpassword",
+    catchErrors(auth.requestUserPasswordReset)
   );
   server.get(
-    '/api/auth/usersettings',
+    "/api/auth/usersettings",
     catchErrors(auth.authJwt),
-    catchErrors(auth.userSettings),
+    catchErrors(auth.userSettings)
   );
 
   /* URL shortener */
   server.post(
-    '/api/url/submit',
+    "/api/url/submit",
     cors(),
     catchErrors(auth.authApikey),
     catchErrors(auth.authJwtLoose),
     catchErrors(auth.recaptcha),
     catchErrors(validateUrl),
     catchErrors(ipCooldownCheck),
-    catchErrors(link.shortener),
+    catchErrors(link.shortener)
   );
   server.post(
-    '/api/url/deleteurl',
+    "/api/url/deleteurl",
     catchErrors(auth.authApikey),
     catchErrors(auth.authJwt),
-    catchErrors(link.deleteUserLink),
+    catchErrors(link.deleteUserLink)
   );
   server.get(
-    '/api/url/geturls',
+    "/api/url/geturls",
     catchErrors(auth.authApikey),
     catchErrors(auth.authJwt),
-    catchErrors(link.getUserLinks),
+    catchErrors(link.getUserLinks)
   );
   server.post(
-    '/api/url/customdomain',
+    "/api/url/customdomain",
     catchErrors(auth.authJwt),
-    catchErrors(link.setCustomDomain),
+    catchErrors(link.setCustomDomain)
   );
   server.delete(
-    '/api/url/customdomain',
+    "/api/url/customdomain",
     catchErrors(auth.authJwt),
-    catchErrors(link.deleteCustomDomain),
+    catchErrors(link.deleteCustomDomain)
   );
   server.get(
-    '/api/url/stats',
+    "/api/url/stats",
     catchErrors(auth.authApikey),
     catchErrors(auth.authJwt),
-    catchErrors(link.getLinkStats),
+    catchErrors(link.getLinkStats)
   );
-  server.post('/api/url/requesturl', catchErrors(link.goToLink));
-  server.post('/api/url/report', catchErrors(link.reportLink));
+  server.post("/api/url/requesturl", catchErrors(link.goToLink));
+  server.post("/api/url/report", catchErrors(link.reportLink));
   server.post(
-    '/api/url/admin/ban',
+    "/api/url/admin/ban",
     catchErrors(auth.authApikey),
     catchErrors(auth.authJwt),
     catchErrors(auth.authAdmin),
-    catchErrors(link.ban),
+    catchErrors(link.ban)
   );
   server.get(
-    '/:id',
+    "/:id",
     catchErrors(link.goToLink),
     (req: Request, res: Response) => {
       switch (req.pageType) {
-        case 'password':
-          return app.render(req, res, '/url-password', {
-            protectedLink: req.protectedLink,
+        case "password":
+          return app.render(req, res, "/url-password", {
+            protectedLink: req.protectedLink
           });
-        case 'info':
+        case "info":
         default:
-          return app.render(req, res, '/url-info', {
-            linkTarget: req.linkTarget,
+          return app.render(req, res, "/url-info", {
+            linkTarget: req.linkTarget
           });
       }
-    },
+    }
   );
 
-  server.get('*', (req, res) => handle(req, res));
+  server.get("*", (req, res) => handle(req, res));
 
   server.use(errorLoggerMiddleware());
 
@@ -213,8 +212,8 @@ app.prepare().then(async () => {
     if (err) {
       throw err;
     }
-    logger.info('Server ready and listening', {
-      url: `http://localhost:${port}`,
+    logger.info("Server ready and listening", {
+      url: `http://localhost:${port}`
     });
   });
 });
