@@ -89,7 +89,7 @@ const SettingsDomain: FC = () => {
           </thead>
           <tbody>
             {domains.map(d => (
-              <tr>
+              <tr key={d.customDomain}>
                 <Td width={2 / 5}>{d.customDomain}</Td>
                 <Td width={2 / 5}>{d.homepage || "default"}</Td>
                 <Td width={1 / 5} justifyContent="center">

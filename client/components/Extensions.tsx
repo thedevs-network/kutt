@@ -4,24 +4,7 @@ import { Flex } from "reflexbox/styled-components";
 import SVG from "react-inlinesvg"; // TODO: another solution
 import { Colors } from "../consts";
 import { ColCenterH } from "./Layout";
-import Text, { H3 } from "./Text";
-
-const Title = styled.h3`
-  font-size: 28px;
-  font-weight: 300;
-  margin: 0 0 60px;
-  color: #f5f5f5;
-
-  @media only screen and (max-width: 768px) {
-    font-size: 24px;
-    margin-bottom: 56px;
-  }
-
-  @media only screen and (max-width: 448px) {
-    font-size: 20px;
-    margin-bottom: 40px;
-  }
-`;
+import { H3 } from "./Text";
 
 const Button = styled.button`
   display: flex;

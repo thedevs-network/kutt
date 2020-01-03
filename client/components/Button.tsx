@@ -132,6 +132,7 @@ interface NavButtonProps extends BoxProps {
   disabled?: boolean;
   onClick?: any; // TODO: better typing
   type?: "button" | "submit" | "reset";
+  key?: string;
 }
 
 export const NavButton = styled(Flex)<NavButtonProps>`

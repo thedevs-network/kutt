@@ -225,7 +225,7 @@ const LinksTable: FC = () => {
           ) : (
             <>
               {links.items.map((l, index) => (
-                <Tr>
+                <Tr key={`link-${index}`}>
                   <Td {...ogLinkFlex} withFade>
                     <ALink href={l.target}>{l.target}</ALink>
                   </Td>
@@ -293,12 +293,14 @@ const LinksTable: FC = () => {
                           l.domain ? `&domain=${l.domain}` : ""
                         }`}
                       >
-                        <Action
-                          name="pieChart"
-                          stroke={Colors.PieIcon}
-                          strokeWidth="2.5"
-                          backgroundColor={Colors.PieIconBg}
-                        />
+                        <ALink title="View stats" forButton>
+                          <Action
+                            name="pieChart"
+                            stroke={Colors.PieIcon}
+                            strokeWidth="2.5"
+                            backgroundColor={Colors.PieIconBg}
+                          />
+                        </ALink>
                       </Link>
                     )}
                     <Action

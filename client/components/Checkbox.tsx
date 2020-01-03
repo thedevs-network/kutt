@@ -3,12 +3,13 @@ import styled, { css } from "styled-components";
 import { ifProp } from "styled-tools";
 import { Flex, BoxProps } from "reflexbox/styled-components";
 
-import Text, { Span } from "./Text";
+import { Span } from "./Text";
 
 interface InputProps {
   checked: boolean;
   id?: string;
   name: string;
+  onChange: any;
 }
 
 const Input = styled(Flex).attrs({
@@ -70,6 +71,7 @@ const Checkbox: FC<Props> = ({
   label,
   name,
   width,
+  onChange,
   ...rest
 }) => {
   return (
@@ -80,7 +82,7 @@ const Checkbox: FC<Props> = ({
       style={{ cursor: "pointer" }}
       {...(rest as any)}
     >
-      <Input name={name} id={id} checked={checked} />
+      <Input onChange={onChange} name={name} id={id} checked={checked} />
       <Box checked={checked} width={width} height={height} />
       <Span ml={12} color="#555">
         {label}

@@ -116,6 +116,7 @@ const StatsPage: NextPage<Props> = ({ domain, id }) => {
                       ml={10}
                       disabled={p === period}
                       onClick={() => setPeriod(p as any)}
+                      key={p}
                     >
                       {n}
                     </NavButton>

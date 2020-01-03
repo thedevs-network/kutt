@@ -61,17 +61,19 @@ const Shortener = () => {
   const [link, setLink] = useState<Link | null>(null);
   const [message, setMessage] = useMessage(3000);
   const [loading, setLoading] = useState(false);
-  const [qrModal, setQRModal] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [formState, { raw, password, text, label }] = useFormState<Form>(null, {
-    withIds: true,
-    onChange(e, stateValues, nextStateValues) {
-      if (stateValues.showAdvanced && !nextStateValues.showAdvanced) {
-        formState.clear();
-        formState.setField("target", stateValues.target);
+  const [formState, { raw, password, text, label }] = useFormState<Form>(
+    { showAdvanced: false },
+    {
+      withIds: true,
+      onChange(e, stateValues, nextStateValues) {
+        if (stateValues.showAdvanced && !nextStateValues.showAdvanced) {
+          formState.clear();
+          formState.setField("target", stateValues.target);
+        }
       }
     }
-  });
+  );
 
   const submitLink = async (reCaptchaToken?: string) => {
     try {
