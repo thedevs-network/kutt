@@ -75,7 +75,6 @@ class AppDocument extends Document<Props> {
             async
             defer
           />
-          <script src="static/analytics.js" />
         </Head>
         <body
           style={{
