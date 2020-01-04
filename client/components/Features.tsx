@@ -28,7 +28,7 @@ const Features = () => (
         Create, protect and delete your links and monitor them with detailed
         statistics.
       </FeaturesItem>
-      <FeaturesItem title="Custom domain" icon="navigation">
+      <FeaturesItem title="Custom domain" icon="shuffle">
         Use custom domains for your links. Add or remove them for free.
       </FeaturesItem>
       <FeaturesItem title="API" icon="zap">

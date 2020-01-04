@@ -3,13 +3,14 @@ import axios from "axios";
 import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 
+import Text, { H2, Span } from "../components/Text";
 import AppWrapper from "../components/AppWrapper";
 import TextInput from "../components/TextInput";
 import { Button } from "../components/Button";
-import Text, { H2, Span } from "../components/Text";
+import { Col } from "../components/Layout";
+import Icon from "../components/Icon";
 import { useMessage } from "../hooks";
 import { API } from "../consts";
-import { Col } from "../components/Layout";
 
 const ReportPage = () => {
   const [formState, { text }] = useFormState<{ url: string }>();
@@ -63,13 +64,8 @@ const ReportPage = () => {
             mr={3}
             required
           />
-          <Button
-            type="submit"
-            icon={loading ? "loader" : ""}
-            flex="0 0 auto"
-            height={[40, 44]}
-            mt={[3, 0]}
-          >
+          <Button type="submit" flex="0 0 auto" height={[40, 44]} mt={[3, 0]}>
+            {loading && <Icon name={"spinner"} stroke="white" mr={2} />}
             Send report
           </Button>
         </Flex>

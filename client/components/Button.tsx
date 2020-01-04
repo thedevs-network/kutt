@@ -17,7 +17,7 @@ interface Props extends BoxProps {
   type?: "button" | "submit" | "reset";
 }
 
-const StyledButton = styled(Flex)<Props>`
+const Button = styled(Flex)<Props>`
   position: relative;
   align-items: center;
   justify-content: center;
@@ -95,25 +95,6 @@ const Icon = styled(SVG)`
     }
   }
 `;
-
-export const Button: FC<Props> = props => {
-  const SVGIcon = props.icon ? (
-    <Icon
-      icon={props.icon}
-      isRound={props.isRound}
-      color={props.color}
-      src={`/images/${props.icon}.svg`}
-    />
-  ) : (
-    ""
-  );
-  return (
-    <StyledButton {...props}>
-      {SVGIcon}
-      {props.icon !== "loader" && props.children}
-    </StyledButton>
-  );
-};
 
 Button.defaultProps = {
   as: "button",

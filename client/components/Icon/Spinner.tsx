@@ -1,5 +1,5 @@
-import React from "react";
 import styled, { keyframes } from "styled-components";
+import React from "react";
 
 const spin = keyframes`
   from {
@@ -11,8 +11,8 @@ const spin = keyframes`
 `;
 
 const Svg = styled.svg`
- animation: ${spin} 1s linear infinite;
-`
+  animation: ${spin} 1s linear infinite;
+`;
 
 function Spinner() {
   return (

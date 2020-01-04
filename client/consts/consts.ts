@@ -21,6 +21,7 @@ export enum Colors {
   Spinner = "hsl(200, 15%, 70%)",
   FeaturesBg = "hsl(230, 15%, 92%)",
   ExtensionsBg = "hsl(230, 15%, 20%)",
+  Icon = "hsl(200, 35%, 45%)",
   IconShadow = "hsla(200, 15%, 60%, 0.12)",
   CopyIcon = "hsl(144, 40%, 57%)",
   CopyIconBg = "hsl(144, 100%, 96%)",
@@ -38,5 +39,5 @@ export enum Colors {
   TableShadow = "hsla(200, 20%, 70%, 0.3)",
   StatsLastUpdateText = "hsl(200, 14%, 60%)",
   StatsTotalUnderline = "hsl(200, 35%, 65%)",
-  Divider = "hsl(200, 15%, 90%)"
+  Divider = "hsl(200, 20%, 92%)"
 }

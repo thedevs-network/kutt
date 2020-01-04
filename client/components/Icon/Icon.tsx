@@ -7,57 +7,55 @@ import ChevronRight from "./ChevronRight";
 import ChevronLeft from "./ChevronLeft";
 import { Colors } from "../../consts";
 import Clipboard from "./Clipboard";
+import ArrowLeft from "./ArrowLeft";
 import PieChart from "./PieChart";
 import Refresh from "./Refresh";
 import Spinner from "./Spinner";
+import Shuffle from "./Shuffle";
 import QRCode from "./QRCode";
+import Signup from "./Signup";
 import Trash from "./Trash";
 import Check from "./Check";
+import Login from "./Login";
+import Heart from "./Heart";
 import Plus from "./Plus";
 import Lock from "./Lock";
+import Edit from "./Edit";
 import Copy from "./Copy";
 import Send from "./Send";
 import Key from "./Key";
 import Zap from "./Zap";
-
-export interface IIcons {
-  clipboard: JSX.Element;
-  chevronRight: JSX.Element;
-  chevronLeft: JSX.Element;
-  pieChart: JSX.Element;
-  key: JSX.Element;
-  plus: JSX.Element;
-  Lock: JSX.Element;
-  copy: JSX.Element;
-  refresh: JSX.Element;
-  check: JSX.Element;
-  send: JSX.Element;
-  spinner: JSX.Element;
-  trash: JSX.Element;
-  zap: JSX.Element;
-  qrcode: JSX.Element;
-}
+import X from "./X";
 
 const icons = {
-  clipboard: Clipboard,
-  chevronRight: ChevronRight,
+  arrowLeft: ArrowLeft,
+  check: Check,
   chevronLeft: ChevronLeft,
-  pieChart: PieChart,
+  chevronRight: ChevronRight,
+  clipboard: Clipboard,
+  shuffle: Shuffle,
+  copy: Copy,
+  heart: Heart,
+  edit: Edit,
   key: Key,
   lock: Lock,
-  check: Check,
+  login: Login,
+  pieChart: PieChart,
   plus: Plus,
-  copy: Copy,
+  qrcode: QRCode,
   refresh: Refresh,
   send: Send,
+  signup: Signup,
   spinner: Spinner,
   trash: Trash,
-  zap: Zap,
-  qrcode: QRCode
+  x: X,
+  zap: Zap
 };
 
+export type Icons = keyof typeof icons;
+
 interface Props extends React.ComponentProps<typeof Flex> {
-  name: keyof typeof icons;
+  name: Icons;
   stroke?: string;
   fill?: string;
   hoverFill?: string;

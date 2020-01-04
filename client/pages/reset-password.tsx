@@ -11,11 +11,12 @@ import { useStoreState, useStoreActions } from "../store";
 import AppWrapper from "../components/AppWrapper";
 import TextInput from "../components/TextInput";
 import { Button } from "../components/Button";
-import { TokenPayload } from "../types";
 import Text, { H2 } from "../components/Text";
-import { useMessage } from "../hooks";
-import { API } from "../consts";
 import { Col } from "../components/Layout";
+import { TokenPayload } from "../types";
+import { useMessage } from "../hooks";
+import Icon from "../components/Icon";
+import { API } from "../consts";
 
 interface Props {
   token?: string;
@@ -86,12 +87,8 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
             autoFocus
             required
           />
-          <Button
-            icon={loading ? "loader" : ""}
-            type="submit"
-            height={[40, 44]}
-            my={3}
-          >
+          <Button type="submit" height={[40, 44]} my={3}>
+            {loading && <Icon name={"spinner"} stroke="white" mr={2} />}
             Reset password
           </Button>
         </Flex>

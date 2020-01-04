@@ -9,6 +9,7 @@ import TextInput from "../components/TextInput";
 import { Button } from "../components/Button";
 import Text, { H2 } from "../components/Text";
 import { Col } from "../components/Layout";
+import Icon from "../components/Icon";
 
 interface Props {
   protectedLink?: string;
@@ -69,11 +70,8 @@ const UrlPasswordPage: NextPage<Props> = ({ protectedLink }) => {
               autoFocus
               required
             />
-            <Button
-              type="submit"
-              icon={loading ? "loader" : ""}
-              height={[40, 44]}
-            >
+            <Button type="submit" height={[40, 44]}>
+              {loading && <Icon name={"spinner"} stroke="white" mr={2} />}
               Go
             </Button>
           </Flex>

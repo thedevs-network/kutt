@@ -5,17 +5,18 @@ import { NextPage } from "next";
 import Link from "next/link";
 import axios from "axios";
 
+import Text, { H1, H2, H4, Span } from "../components/Text";
 import { getAxiosConfig, removeProtocol } from "../utils";
 import { Button, NavButton } from "../components/Button";
 import { Col, RowCenterV } from "../components/Layout";
 import { Area, Bar, Pie } from "../components/Charts";
 import PageLoading from "../components/PageLoading";
 import AppWrapper from "../components/AppWrapper";
-import Text, { H1, H2, H4, Span } from "../components/Text";
 import Divider from "../components/Divider";
 import { useStoreState } from "../store";
 import ALink from "../components/ALink";
 import { API, Colors } from "../consts";
+import Icon from "../components/Icon";
 
 interface Props {
   domain?: string;
@@ -32,7 +33,7 @@ const StatsPage: NextPage<Props> = ({ domain, id }) => {
   const stats = data && data[period];
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || !isAuthenticated) return;
     axios
       .get(`${API.STATS}?id=${id}&domain=${domain}`, getAxiosConfig())
       .then(({ data }) => {
@@ -49,13 +50,21 @@ const StatsPage: NextPage<Props> = ({ domain, id }) => {
   let errorMessage;
 
   if (!isAuthenticated) {
-    // TODO: use icons
-    errorMessage = <H2>You need to login to view stats.</H2>;
+    errorMessage = (
+      <Flex mt={3}>
+        <Icon name="x" size={32} mr={3} stroke={Colors.TrashIcon} />
+        <H2>You need to login to view stats.</H2>
+      </Flex>
+    );
   }
 
   if (!id || error) {
-    // TODO: use icons
-    errorMessage = <H2>Couldn't get stats.</H2>;
+    errorMessage = (
+      <Flex mt={3}>
+        <Icon name="x" size={32} mr={3} stroke={Colors.TrashIcon} />
+        <H2>Couldn't get stats.</H2>
+      </Flex>
+    );
   }
 
   const loader = loading && <PageLoading />;
@@ -181,7 +190,10 @@ const StatsPage: NextPage<Props> = ({ domain, id }) => {
             <Box alignSelf="center" my={64}>
               <Link href="/">
                 <ALink href="/" title="Back to homepage" forButton>
-                  <Button icon="arrow-left">Back to homepage</Button>
+                  <Button>
+                    <Icon name="arrowLeft" stroke="white" mr={2} />
+                    Back to homepage
+                  </Button>
                 </ALink>
               </Link>
             </Box>

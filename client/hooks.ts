@@ -15,3 +15,17 @@ export const useMessage = (timeout?: number) => {
 
   return [message, setMessage] as const;
 };
+
+export const useCopy = (timeout = 1500) => {
+  const [copied, set] = useState(false);
+
+  const setCopied = (isCopied = true) => {
+    set(isCopied);
+
+    if (isCopied && timeout) {
+      setTimeout(() => set(false), timeout);
+    }
+  };
+
+  return [copied, setCopied] as const;
+};

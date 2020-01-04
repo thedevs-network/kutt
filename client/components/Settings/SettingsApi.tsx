@@ -9,28 +9,28 @@ import ALink from "../ALink";
 import Icon from "../Icon";
 import Text, { H2 } from "../Text";
 import { Col } from "../Layout";
+import { useCopy } from "../../hooks";
+import Animation from "../Animation";
+import { Colors } from "../../consts";
 
 const ApiKey = styled(Text).attrs({
-  mr: 3,
-  fontSize: [14, 16],
-  fontWeight: 700
+  mt: "2px",
+  fontSize: [15, 16],
+  bold: true
 })`
-  max-width: 100%;
-  border-bottom: 2px dotted #999;
+  border-bottom: 1px dotted ${Colors.StatsTotalUnderline};
+  cursor: pointer;
+
+  :hover {
+    opacity: 0.8;
+  }
 `;
 
 const SettingsApi: FC = () => {
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useCopy();
   const [loading, setLoading] = useState(false);
   const apikey = useStoreState(s => s.settings.apikey);
   const generateApiKey = useStoreActions(s => s.settings.generateApiKey);
-
-  const onCopy = () => {
-    setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-    }, 1500);
-  };
 
   const onSubmit = async () => {
     if (loading) return;
@@ -58,33 +58,44 @@ const SettingsApi: FC = () => {
         </ALink>
       </Text>
       {apikey && (
-        <Col style={{ position: "relative" }} my={3}>
-          {copied && (
-            <Text
-              color="green"
-              fontSize={14}
-              style={{ position: "absolute", top: -24 }}
-            >
-              Copied to clipboard.
-            </Text>
+        <Flex alignItems="center" my={3}>
+          {copied ? (
+            <Animation offset="10px" duration="0.2s">
+              <Icon
+                size={[23, 24]}
+                py={0}
+                px={0}
+                mr={2}
+                p="3px"
+                name="check"
+                strokeWidth="3"
+                stroke={Colors.CheckIcon}
+              />
+            </Animation>
+          ) : (
+            <Animation offset="-10px" duration="0.2s">
+              <CopyToClipboard text={apikey} onCopy={setCopied}>
+                <Icon
+                  as="button"
+                  py={0}
+                  px={0}
+                  mr={2}
+                  size={[23, 24]}
+                  p={["4px", "5px"]}
+                  name="copy"
+                  strokeWidth="2.5"
+                  stroke={Colors.CopyIcon}
+                  backgroundColor={Colors.CopyIconBg}
+                />
+              </CopyToClipboard>
+            </Animation>
           )}
-          <Flex
-            maxWidth="100%"
-            flexDirection={["column", "column", "row"]}
-            flexWrap="wrap"
-            alignItems={["flex-start", "flex-start", "center"]}
-            mb={16}
-          >
+          <CopyToClipboard text={apikey} onCopy={setCopied}>
             <ApiKey>{apikey}</ApiKey>
-            <CopyToClipboard text={apikey} onCopy={onCopy}>
-              <Button icon="copy" height={36} mt={[3, 3, 0]}>
-                Copy
-              </Button>
-            </CopyToClipboard>
-          </Flex>
-        </Col>
+          </CopyToClipboard>
+        </Flex>
       )}
-      <Button color="purple" onClick={onSubmit} disabled={loading}>
+      <Button mt={2} color="purple" onClick={onSubmit} disabled={loading}>
         <Icon name={loading ? "spinner" : "zap"} mr={2} stroke="white" />
         {loading ? "Generating..." : apikey ? "Regenerate" : "Generate"} key
       </Button>

@@ -10,11 +10,12 @@ import { Flex } from "reflexbox/styled-components";
 import { useStoreState, useStoreActions } from "../store";
 import { ColCenterV } from "../components/Layout";
 import AppWrapper from "../components/AppWrapper";
-import { fadeIn } from "../helpers/animations";
 import TextInput from "../components/TextInput";
+import { fadeIn } from "../helpers/animations";
 import { Button } from "../components/Button";
-import ALink from "../components/ALink";
 import Text, { H2 } from "../components/Text";
+import ALink from "../components/ALink";
+import Icon from "../components/Icon";
 import { API } from "../consts";
 
 const LoginForm = styled(Flex).attrs({
@@ -111,7 +112,7 @@ const LoginPage = () => {
               {...email("email")}
               placeholder="Email address..."
               height={[56, 64, 72]}
-              mb={[24, 32, 36]}
+              mb={[24, 4, 48]}
               autoFocus
             />
             <Text {...label("password")} as="label" mb={2} bold>
@@ -121,26 +122,34 @@ const LoginPage = () => {
               {...password("password")}
               placeholder="Password..."
               height={[56, 64, 72]}
-              mb={[24, 32, 36]}
+              mb={[24, 4, 48]}
             />
             <Flex justifyContent="center">
               <Button
                 flex="1 1 auto"
                 mr={["8px", 16]}
                 height={[44, 56]}
-                icon={loading.login ? "loader" : "login"}
                 onClick={onSubmit("login")}
               >
+                <Icon
+                  name={loading.login ? "spinner" : "login"}
+                  stroke="white"
+                  mr={2}
+                />
                 Log in
               </Button>
               <Button
                 flex="1 1 auto"
                 ml={["8px", 16]}
                 height={[44, 56]}
-                icon={loading.signup ? "loader" : "signup"}
                 color="purple"
                 onClick={onSubmit("signup")}
               >
+                <Icon
+                  name={loading.signup ? "spinner" : "signup"}
+                  stroke="white"
+                  mr={2}
+                />
                 Sign up
               </Button>
             </Flex>

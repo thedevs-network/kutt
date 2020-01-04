@@ -8,7 +8,7 @@ import { Col, RowCenterH, RowCenter } from "./Layout";
 import { useFormState } from "react-use-form-state";
 import { removeProtocol } from "../utils";
 import { Link } from "../store/links";
-import { useMessage } from "../hooks";
+import { useMessage, useCopy } from "../hooks";
 import TextInput from "./TextInput";
 import Animation from "./Animation";
 import { Colors } from "../consts";
@@ -61,7 +61,7 @@ const Shortener = () => {
   const [link, setLink] = useState<Link | null>(null);
   const [message, setMessage] = useMessage(3000);
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useCopy();
   const [formState, { raw, password, text, label }] = useFormState<Form>(
     { showAdvanced: false },
     {
@@ -125,13 +125,6 @@ const Shortener = () => {
     </H1>
   );
 
-  const onCopy = () => {
-    setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-    }, 1500);
-  };
-
   const result = link && (
     <Animation
       as={RowCenter}
@@ -154,7 +147,7 @@ const Shortener = () => {
         </Animation>
       ) : (
         <Animation offset="-10px" duration="0.2s">
-          <CopyToClipboard text={link.shortLink} onCopy={onCopy}>
+          <CopyToClipboard text={link.shortLink} onCopy={setCopied}>
             <Icon
               as="button"
               py={0}
@@ -170,7 +163,7 @@ const Shortener = () => {
           </CopyToClipboard>
         </Animation>
       )}
-      <CopyToClipboard text={link.shortLink} onCopy={onCopy}>
+      <CopyToClipboard text={link.shortLink} onCopy={setCopied}>
         <ShortenedLink fontSize={[30]} pb="2px" light>
           {removeProtocol(link.shortLink)}
         </ShortenedLink>

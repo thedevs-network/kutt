@@ -3,10 +3,12 @@ import styled from "styled-components";
 import { Flex } from "reflexbox/styled-components";
 
 import { fadeIn } from "../helpers/animations";
+import Icon from "./Icon";
+import { Icons } from "./Icon/Icon";
 
 interface Props {
   title: string;
-  icon: string; // TODO: better typing
+  icon: Icons;
 }
 
 const Block = styled(Flex).attrs({
@@ -34,19 +36,6 @@ const IconBox = styled(Flex).attrs({
   background-color: #2196f3;
 `;
 
-const Icon = styled.img`
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  padding: 0;
-
-  @media only screen and (max-width: 448px) {
-    width: 14px;
-    height: 14px;
-  }
-`;
-
 const Title = styled.h3`
   margin: 16px;
   font-size: 15px;
@@ -71,7 +60,7 @@ const Description = styled.p`
 const FeaturesItem: FC<Props> = ({ children, icon, title }) => (
   <Block>
     <IconBox>
-      <Icon src={`/images/${icon}.svg`} />
+      <Icon name={icon} stroke="white" strokeWidth="2" />
     </IconBox>
     <Title>{title}</Title>
     <Description>{children}</Description>

@@ -83,10 +83,7 @@ const authenticate = (
     })(req, res, next);
   };
 
-export const authLocal = authenticate(
-  "local",
-  "Login email and/or password are wrong."
-);
+export const authLocal = authenticate("local", "Login credentials are wrong.");
 export const authJwt = authenticate("jwt", "Unauthorized.");
 export const authJwtLoose = authenticate("jwt", "Unauthorized.", false);
 export const authApikey = authenticate(
@@ -180,11 +177,15 @@ export const renew: Handler = (req, res) => {
 };
 
 export const verify: Handler = async (req, _res, next) => {
+  const { verificationToken } = req.params;
+  if (!verificationToken) return next();
+
   const user = await verifyUser(req.params.verificationToken);
   if (user) {
     const token = signToken(user);
     req.token = token;
   }
+
   return next();
 };
 

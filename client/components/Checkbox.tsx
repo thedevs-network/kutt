@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import styled, { css } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import { ifProp } from "styled-tools";
 import { Flex, BoxProps } from "reflexbox/styled-components";
 
@@ -55,6 +55,16 @@ const Box = styled(Flex).attrs({
         background-color: #9575cd;
         box-shadow: 0 2px 4px rgba(50, 50, 50, 0.2);
         cursor: pointer;
+        animation: ${keyframes`
+          from {
+            opacity: 0;
+            transform: scale(0, 0);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1, 1);
+          }
+        `} 0.1s ease-in;
       }
     `
   )}

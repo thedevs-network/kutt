@@ -31,17 +31,17 @@ const SettingsPage: NextPage = props => {
           </Span>
           .
         </H1>
-        <Divider my={[4, 48]} />
+        <Divider mt={4} mb={48} />
         {isAdmin && (
           <>
             <SettingsBan />
-            <Divider my={[12, 24]} />
+            <Divider mt={4} mb={48} />
           </>
         )}
         <SettingsDomain />
-        <Divider my={[12, 24]} />
+        <Divider mt={4} mb={48} />
         <SettingsPassword />
-        <Divider my={[12, 24]} />
+        <Divider mt={4} mb={48} />
         <SettingsApi />
       </Col>
       <Footer />

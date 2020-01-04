@@ -1,16 +1,19 @@
 import { Flex } from "reflexbox/styled-components";
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import Router from "next/router";
 import decode from "jwt-decode";
 import cookie from "js-cookie";
+import Link from "next/link";
 
 import AppWrapper from "../components/AppWrapper";
 import { Button } from "../components/Button";
 import { useStoreActions } from "../store";
-import { TokenPayload } from "../types";
-import { NextPage } from "next";
 import { Col } from "../components/Layout";
+import { TokenPayload } from "../types";
+import Icon from "../components/Icon";
+import { NextPage } from "next";
+import { Colors } from "../consts";
+import ALink from "../components/ALink";
 
 interface Props {
   token?: string;
@@ -31,18 +34,6 @@ const Message = styled.p`
   }
 `;
 
-const Icon = styled.img`
-  width: 32px;
-  height: 32px;
-  margin-right: 16px;
-
-  @media only screen and (max-width: 768px) {
-    width: 26px;
-    height: 26px;
-    margin-right: 8px;
-  }
-`;
-
 const Verify: NextPage<Props> = ({ token }) => {
   const addAuth = useStoreActions(s => s.auth.add);
 
@@ -54,28 +45,38 @@ const Verify: NextPage<Props> = ({ token }) => {
     }
   }, []);
 
-  const goToHomepage = e => {
-    e.preventDefault();
-    Router.push("/");
-  };
-
   return (
     <AppWrapper>
       {token ? (
         <Col alignItems="center">
           <MessageWrapper>
-            <Icon src="/images/check.svg" />
+            <Icon name="check" size={32} mr={3} stroke={Colors.CheckIcon} />
             <Message>Your account has been verified successfully!</Message>
           </MessageWrapper>
-          <Button icon="arrow-left" onClick={goToHomepage}>
-            Back to homepage
-          </Button>
+          <Link href="/">
+            <ALink href="/" forButton>
+              <Button>
+                <Icon name="arrowLeft" stroke="white" mr={2} />
+                Back to homepage
+              </Button>
+            </ALink>
+          </Link>
         </Col>
       ) : (
-        <MessageWrapper>
-          <Icon src="/images/x.svg" />
-          <Message>Invalid verification.</Message>
-        </MessageWrapper>
+        <Col alignItems="center">
+          <MessageWrapper>
+            <Icon name="x" size={32} mr={3} stroke={Colors.TrashIcon} />
+            <Message>Invalid verification.</Message>
+          </MessageWrapper>
+          <Link href="/login">
+            <ALink href="/login" forButton>
+              <Button color="purple">
+                <Icon name="arrowLeft" stroke="white" mr={2} />
+                Back to signup
+              </Button>
+            </ALink>
+          </Link>
+        </Col>
       )}
     </AppWrapper>
   );
