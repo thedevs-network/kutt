@@ -90,6 +90,7 @@
     "styled-tools": "^1.7.1",
     "universal-analytics": "^0.4.20",
     "url-regex": "^4.1.1",
+    "use-media": "^1.4.0",
     "useragent": "^2.2.1",
     "uuid": "^3.3.2"
   },
