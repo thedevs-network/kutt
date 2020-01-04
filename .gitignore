@@ -8,3 +8,4 @@ server/config.js
 server/old.config.js
 production-server
 .idea/
+dump.rdb
