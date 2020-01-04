@@ -1,12 +1,6 @@
-import React, { FC } from "react";
 import styled, { css } from "styled-components";
 import { switchProp, prop, ifProp } from "styled-tools";
 import { Flex, BoxProps } from "reflexbox/styled-components";
-
-// TODO: another solution for inline SVG
-import SVG from "react-inlinesvg";
-
-import { spin } from "../helpers/animations";
 
 interface Props extends BoxProps {
   color?: "purple" | "gray" | "blue" | "red";
@@ -17,7 +11,7 @@ interface Props extends BoxProps {
   type?: "button" | "submit" | "reset";
 }
 
-const Button = styled(Flex)<Props>`
+export const Button = styled(Flex)<Props>`
   position: relative;
   align-items: center;
   justify-content: center;
@@ -59,40 +53,6 @@ const Button = styled(Flex)<Props>`
       gray: "0 6px 15px rgba(160, 160, 160, 0.5)"
     })};
     transform: translateY(-2px) scale(1.02, 1.02);
-  }
-`;
-
-const Icon = styled(SVG)`
-  svg {
-    width: 16px;
-    height: 16px;
-    margin-right: 12px;
-    stroke: ${ifProp({ color: "gray" }, "#444", "#fff")};
-
-    ${ifProp(
-      { icon: "loader" },
-      css`
-        width: 20px;
-        height: 20px;
-        margin: 0;
-        animation: ${spin} 1s linear infinite;
-      `
-    )}
-
-    ${ifProp(
-      "isRound",
-      css`
-        width: 15px;
-        height: 15px;
-        margin: 0;
-      `
-    )}
-
-    @media only screen and (max-width: 768px) {
-      width: 12px;
-      height: 12px;
-      margin-right: 6px;
-    }
   }
 `;
 
