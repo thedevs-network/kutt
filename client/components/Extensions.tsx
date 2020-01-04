@@ -59,17 +59,15 @@ const Link = styled.a`
 `;
 
 const Icon = styled(SVG)`
-  svg {
-    width: 18px;
-    height: 18px;
-    margin-right: 16px;
-    fill: ${props => props.color || "#333"};
+  width: 18px;
+  height: 18px;
+  margin-right: 16px;
+  fill: ${props => props.color || "#333"};
 
-    @media only screen and (max-width: 768px) {
-      width: 13px;
-      height: 13px;
-      margin-right: 10px;
-    }
+  @media only screen and (max-width: 768px) {
+    width: 13px;
+    height: 13px;
+    margin-right: 10px;
   }
 `;
 

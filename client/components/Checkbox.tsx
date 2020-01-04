@@ -94,7 +94,7 @@ const Checkbox: FC<Props> = ({
     >
       <Input onChange={onChange} name={name} id={id} checked={checked} />
       <Box checked={checked} width={width} height={height} />
-      <Span ml={12} color="#555">
+      <Span ml={[10, 12]} mt="1px" color="#555">
         {label}
       </Span>
     </Flex>
@@ -102,8 +102,9 @@ const Checkbox: FC<Props> = ({
 };
 
 Checkbox.defaultProps = {
-  width: [18],
-  height: [18]
+  width: [16, 18],
+  height: [16, 18],
+  fontSize: [15, 16]
 };
 
 export default Checkbox;

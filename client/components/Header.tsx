@@ -1,6 +1,7 @@
 import { Flex } from "reflexbox/styled-components";
 import React, { FC } from "react";
 import Router from "next/router";
+import useMedia from "use-media";
 import Link from "next/link";
 
 import { useStoreState } from "../store";
@@ -9,7 +10,7 @@ import { RowCenterV } from "./Layout";
 import { Button } from "./Button";
 import ALink from "./ALink";
 
-const Li = styled(Flex).attrs({ ml: [16, 32] })`
+const Li = styled(Flex).attrs({ ml: [12, 24, 32] })`
   a {
     color: inherit;
 
@@ -46,6 +47,7 @@ const LogoImage = styled.div`
 
 const Header: FC = () => {
   const { isAuthenticated } = useStoreState(s => s.auth);
+  const isMobile = useMedia({ maxWidth: 640 });
 
   const login = !isAuthenticated && (
     <Li>
@@ -59,7 +61,7 @@ const Header: FC = () => {
   const logout = isAuthenticated && (
     <Li>
       <Link href="/logout">
-        <ALink href="/logout" title="logout">
+        <ALink href="/logout" title="logout" fontSize={[14, 16]}>
           Log out
         </ALink>
       </Link>
@@ -79,15 +81,15 @@ const Header: FC = () => {
     <Flex
       width={1232}
       maxWidth="100%"
-      p={[16, 16, "0 32px"]}
-      mb={[32, 32, 0]}
+      p={[16, "0 32px"]}
+      mb={[32, 0]}
       height={["auto", "auto", 102]}
       justifyContent="space-between"
-      alignItems={["flex-start", "flex-start", "center"]}
+      alignItems={["flex-start", "center"]}
     >
       <Flex
-        flexDirection={["column", "column", "row"]}
-        alignItems={["flex-start", "flex-start", "stretch"]}
+        flexDirection={["column", "row"]}
+        alignItems={["flex-start", "stretch"]}
       >
         <LogoImage>
           <a
@@ -102,33 +104,36 @@ const Header: FC = () => {
             Kutt.it
           </a>
         </LogoImage>
-        <Flex
-          style={{ listStyle: "none" }}
-          display={["none", "flex"]}
-          alignItems="flex-end"
-          as="ul"
-          mb="3px"
-          m={0}
-          p={0}
-        >
-          <Li>
-            <ALink
-              href="//github.com/thedevs-network/kutt"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="GitHub"
-            >
-              GitHub
-            </ALink>
-          </Li>
-          <Li>
-            <Link href="/report">
-              <ALink href="/report" title="Report abuse">
-                Report
+        {!isMobile && (
+          <Flex
+            style={{ listStyle: "none" }}
+            display={["none", "flex"]}
+            alignItems="flex-end"
+            as="ul"
+            mb="3px"
+            m={0}
+            p={0}
+          >
+            <Li>
+              <ALink
+                href="//github.com/thedevs-network/kutt"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="GitHub"
+                fontSize={[14, 16]}
+              >
+                GitHub
               </ALink>
-            </Link>
-          </Li>
-        </Flex>
+            </Li>
+            <Li>
+              <Link href="/report">
+                <ALink href="/report" title="Report abuse" fontSize={[14, 16]}>
+                  Report
+                </ALink>
+              </Link>
+            </Li>
+          </Flex>
+        )}
       </Flex>
       <RowCenterV
         m={0}
@@ -140,7 +145,7 @@ const Header: FC = () => {
         <Li>
           <Flex display={["flex", "none"]}>
             <Link href="/report">
-              <ALink href="/report" title="Report">
+              <ALink href="/report" title="Report" fontSize={[14, 16]}>
                 Report
               </ALink>
             </Link>

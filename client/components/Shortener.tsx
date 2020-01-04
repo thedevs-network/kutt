@@ -116,7 +116,7 @@ const Shortener = () => {
   };
 
   const title = !link && (
-    <H1 light>
+    <H1 fontSize={[25, 27, 32]} light>
       Kutt your links{" "}
       <Span style={{ borderBottom: "2px dotted #999" }} light>
         shorter
@@ -135,11 +135,11 @@ const Shortener = () => {
       {copied ? (
         <Animation offset="10px" duration="0.2s" alignItems="center">
           <Icon
-            size={[35]}
+            size={[30, 35]}
             py={0}
             px={0}
             mr={3}
-            p="5px"
+            p={["4px", "5px"]}
             name="check"
             strokeWidth="3"
             stroke={Colors.CheckIcon}
@@ -153,8 +153,8 @@ const Shortener = () => {
               py={0}
               px={0}
               mr={3}
-              size={[35]}
-              p={["7px"]}
+              size={[30, 35]}
+              p={["6px", "7px"]}
               name="copy"
               strokeWidth="2.5"
               stroke={Colors.CopyIcon}
@@ -164,7 +164,7 @@ const Shortener = () => {
         </Animation>
       )}
       <CopyToClipboard text={link.shortLink} onCopy={setCopied}>
-        <ShortenedLink fontSize={[30]} pb="2px" light>
+        <ShortenedLink fontSize={[24, 26, 30]} pb="2px" light>
           {removeProtocol(link.shortLink)}
         </ShortenedLink>
       </CopyToClipboard>
@@ -172,16 +172,15 @@ const Shortener = () => {
   );
 
   return (
-    <Col width={800} maxWidth="98%" flex="0 0 auto" mt={4}>
-      <RowCenterH mb={40}>
+    <Col width={800} maxWidth="100%" px={[3]} flex="0 0 auto" mt={4}>
+      <RowCenterH mb={[4, 48]}>
         {title}
         {result}
       </RowCenterH>
       <Flex
         as="form"
         id="shortenerform"
-        width={800}
-        maxWidth="100%"
+        width={1}
         alignItems="center"
         justifyContent="center"
         style={{ position: "relative" }}
@@ -190,17 +189,17 @@ const Shortener = () => {
         <TextInput
           {...text("target")}
           placeholder="Paste your long URL"
-          placeholderSize={[16, 18]}
-          fontSize={[20, 22]}
+          placeholderSize={[16, 17, 18]}
+          fontSize={[18, 20, 22]}
           width={1}
-          height={[72]}
+          height={[58, 64, 72]}
           autoFocus
           data-lpignore
         />
         <SubmitIconWrapper onClick={onSubmit}>
           <Icon
             name={loading ? "spinner" : "send"}
-            size={28}
+            size={[22, 26, 28]}
             fill={loading ? "none" : "#aaa"}
             stroke={loading ? Colors.Spinner : "none"}
             mb={1}
@@ -228,13 +227,19 @@ const Shortener = () => {
         })}
         checked={formState.values.showAdvanced}
         label="Show advanced options"
-        mt={24}
+        mt={[3, 24]}
         alignSelf="flex-start"
       />
       {formState.values.showAdvanced && (
-        <Flex mt={4}>
-          <Col>
-            <Text as="label" {...label("customurl")} fontSize={15} mb={2} bold>
+        <Flex mt={4} flexDirection={["column", "row"]}>
+          <Col mb={[3, 0]}>
+            <Text
+              as="label"
+              {...label("customurl")}
+              fontSize={[14, 15]}
+              mb={2}
+              bold
+            >
               {(domain || {}).customDomain ||
                 (typeof window !== "undefined" && window.location.hostname)}
               /
@@ -243,28 +248,34 @@ const Shortener = () => {
               {...text("customurl")}
               placeholder="Custom address"
               data-lpignore
-              pl={24}
-              pr={24}
-              placeholderSize={[13, 14, 14, 14]}
+              pl={[3, 24]}
+              pr={[3, 24]}
+              placeholderSize={[13, 14]}
               fontSize={[14, 15]}
-              height={44}
-              width={240}
+              height={[36, 44]}
+              width={[210, 240]}
             />
           </Col>
-          <Col ml={4}>
-            <Text as="label" {...label("password")} fontSize={15} mb={2} bold>
+          <Col ml={[0, 4]}>
+            <Text
+              as="label"
+              {...label("password")}
+              fontSize={[14, 15]}
+              mb={2}
+              bold
+            >
               Password:
             </Text>
             <TextInput
               {...password("password")}
               placeholder="Password"
               data-lpignore
-              pl={24}
-              pr={24}
-              placeholderSize={[13, 14, 14, 14]}
+              pl={[3, 24]}
+              pr={[3, 24]}
+              placeholderSize={[13, 14]}
               fontSize={[14, 15]}
-              height={44}
-              width={240}
+              height={[36, 44]}
+              width={[210, 240]}
             />
           </Col>
         </Flex>

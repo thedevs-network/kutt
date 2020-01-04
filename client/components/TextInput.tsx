@@ -41,14 +41,17 @@ const TextInput = styled(Flex).attrs({
   }
 
   ::placeholder {
-    font-size: ${withProp("placeholderSize", s => s[0] || 14)};
+    font-size: ${withProp("placeholderSize", s => s[0] || 14)}px;
     letter-spacing: 0.05em;
     color: #888;
   }
 
   @media screen and (min-width: 64em) {
     ::placeholder {
-      font-size: ${withProp("placeholderSize", s => s[3] || 16)}px;
+      font-size: ${withProp(
+        "placeholderSize",
+        s => s[3] || s[2] || s[1] || s[0] || 16
+      )}px;
     }
   }
 
@@ -56,13 +59,16 @@ const TextInput = styled(Flex).attrs({
     letter-spacing: 0.1em;
     border-bottom-width: ${prop("bbw", "6px")};
     ::placeholder {
-      font-size: ${withProp("placeholderSize", s => s[2] || 15)}px;
+      font-size: ${withProp(
+        "placeholderSize",
+        s => s[2] || s[1] || s[0] || 15
+      )}px;
     }
   }
 
   @media screen and (min-width: 40em) {
     ::placeholder {
-      font-size: ${withProp("placeholderSize", s => s[1] || 15)}px;
+      font-size: ${withProp("placeholderSize", s => s[1] || s[0] || 15)}px;
     }
   }
 `;
