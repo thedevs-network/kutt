@@ -27,7 +27,9 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
   const addAuth = useStoreActions(s => s.auth.add);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useMessage();
-  const [formState, { email }] = useFormState<{ email: string }>();
+  const [formState, { email, label }] = useFormState<{ email: string }>(null, {
+    withIds: true
+  });
 
   useEffect(() => {
     if (auth.isAuthenticated) {
@@ -62,7 +64,7 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
   // FIXME: make a container for width
   return (
     <AppWrapper>
-      <Col width={600} maxWidth="97%">
+      <Col width={600} maxWidth="100%" px={3}>
         <H2 my={3} bold>
           Reset password
         </H2>
@@ -70,17 +72,18 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
           If you forgot you password you can use the form below to get reset
           password link.
         </Text>
-        w
+        <Text {...label("homepage")} as="label" mt={2} fontSize={[15, 16]} bold>
+          Email address
+        </Text>
         <Flex
           as="form"
-          flexDirection={["column", "row"]}
-          alignItems={["flex-start", "center"]}
+          alignItems="center"
           justifyContent="flex-start"
           onSubmit={onSubmit}
         >
           <TextInput
             {...email("email")}
-            placeholder="Email address"
+            placeholder="Email address..."
             height={[44, 54]}
             width={[1, 1 / 2]}
             mr={3}
