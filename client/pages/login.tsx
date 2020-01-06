@@ -97,7 +97,7 @@ const LoginPage = () => {
 
   return (
     <AppWrapper>
-      <ColCenterV flex="0 0 auto" mt={24} mb={64}>
+      <ColCenterV maxWidth="100%" px={3} flex="0 0 auto" mt={4}>
         {verifying ? (
           <H2 textAlign="center" light>
             A verification email has been sent to{" "}
@@ -112,7 +112,11 @@ const LoginPage = () => {
               {...email("email")}
               placeholder="Email address..."
               height={[56, 64, 72]}
-              mb={[24, 4, 48]}
+              fontSize={[15, 16]}
+              px={[4, 40]}
+              mb={[24, 4]}
+              width={[300, 400]}
+              maxWidth="100%"
               autoFocus
             />
             <Text {...label("password")} as="label" mb={2} bold>
@@ -121,8 +125,12 @@ const LoginPage = () => {
             <TextInput
               {...password("password")}
               placeholder="Password..."
+              px={[4, 40]}
               height={[56, 64, 72]}
-              mb={[24, 4, 48]}
+              fontSize={[15, 16]}
+              width={[300, 400]}
+              maxWidth="100%"
+              mb={[24, 4]}
             />
             <Flex justifyContent="center">
               <Button

@@ -53,7 +53,7 @@ const Header: FC = () => {
     <Li>
       <Link href="/login">
         <ALink href="/login" title="login / signup" forButton>
-          <Button>Login / Sign up</Button>
+          <Button height={[32, 40]}>Login / Sign up</Button>
         </ALink>
       </Link>
     </Li>
@@ -71,7 +71,7 @@ const Header: FC = () => {
     <Li>
       <Link href="/settings">
         <ALink href="/settings" title="Settings" forButton>
-          <Button>Settings</Button>
+          <Button height={[32, 40]}>Settings</Button>
         </ALink>
       </Link>
     </Li>

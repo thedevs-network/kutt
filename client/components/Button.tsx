@@ -60,7 +60,7 @@ Button.defaultProps = {
   as: "button",
   width: "auto",
   flex: "0 0 auto",
-  height: [32, 40],
+  height: [36, 40],
   py: 0,
   px: [24, 32],
   fontSize: [12, 13],

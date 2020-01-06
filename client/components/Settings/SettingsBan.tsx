@@ -53,16 +53,11 @@ const SettingsBan: FC = () => {
           <TextInput
             {...text("id")}
             placeholder="Link ID (e.g. K7b2A)"
-            height={44}
-            fontSize={[16, 18]}
-            placeholderSize={[14, 15]}
             mr={3}
-            pl={24}
-            pr={24}
             width={[1, 3 / 5]}
             required
           />
-          <Button type="submit" disabled={submitting}>
+          <Button height={[36, 40]} type="submit" disabled={submitting}>
             <Icon
               name={submitting ? "spinner" : "lock"}
               stroke="white"

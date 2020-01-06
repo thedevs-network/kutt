@@ -66,7 +66,7 @@ const SettingsDomain: FC = () => {
   };
 
   return (
-    <Col alignItems="flex-start">
+    <Col alignItems="flex-start" maxWidth="100%">
       <H2 mb={4} bold>
         Custom domain
       </H2>
@@ -79,7 +79,7 @@ const SettingsDomain: FC = () => {
         via form below:
       </Text>
       {domains.length ? (
-        <Table my={3}>
+        <Table my={3} scrollWidth="550px">
           <thead>
             <tr>
               <Th width={2 / 5}>Domain</Th>
@@ -119,37 +119,45 @@ const SettingsDomain: FC = () => {
           onSubmit={onSubmit}
           width={1}
           as="form"
-          my={4}
+          my={[3, 4]}
         >
-          <Flex width={1}>
-            <Col mr={2} flex="1 1 auto">
-              <Text {...label("customDomain")} as="label" mb={3} bold>
+          <Flex width={1} flexDirection={["column", "row"]}>
+            <Col mr={[0, 2]} mb={[3, 0]} flex="1 1 auto">
+              <Text
+                {...label("customDomain")}
+                as="label"
+                mb={[2, 3]}
+                fontSize={[15, 16]}
+                bold
+              >
                 Domain
               </Text>
               <TextInput
                 {...text("customDomain")}
                 placeholder="example.com"
-                height={44}
-                pl={24}
-                pr={24}
+                maxWidth="240px"
                 required
               />
             </Col>
-            <Col ml={2} flex="1 1 auto">
-              <Text {...label("homepage")} as="label" mb={3} bold>
+            <Col ml={[0, 2]} flex="1 1 auto">
+              <Text
+                {...label("homepage")}
+                as="label"
+                mb={[2, 3]}
+                fontSize={[15, 16]}
+                bold
+              >
                 Homepage (optional)
               </Text>
               <TextInput
                 {...text("homepage")}
                 placeholder="Homepage URL"
                 flex="1 1 auto"
-                height={44}
-                pl={24}
-                pr={24}
+                maxWidth="240px"
               />
             </Col>
           </Flex>
-          <Button type="submit" color="purple" mt={3} disabled={loading}>
+          <Button type="submit" color="purple" mt={[24, 3]} disabled={loading}>
             <Icon name={loading ? "spinner" : "plus"} mr={2} stroke="white" />
             {loading ? "Setting..." : "Set domain"}
           </Button>

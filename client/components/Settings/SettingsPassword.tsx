@@ -15,7 +15,10 @@ import { Col } from "../Layout";
 const SettingsPassword: FC = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useMessage();
-  const [formState, { password }] = useFormState<{ password: string }>();
+  const [formState, { password, label }] = useFormState<{ password: string }>(
+    null,
+    { withIds: true }
+  );
 
   const onSubmit = async e => {
     e.preventDefault();
@@ -40,11 +43,20 @@ const SettingsPassword: FC = () => {
   };
 
   return (
-    <Col alignItems="flex-start">
+    <Col alignItems="flex-start" maxWidth="100%">
       <H2 mb={4} bold>
         Change password
       </H2>
       <Text mb={4}>Enter a new password to change your current password.</Text>
+      <Text
+        {...label("password")}
+        as="label"
+        mb={[2, 3]}
+        fontSize={[15, 16]}
+        bold
+      >
+        New password
+      </Text>
       <Flex as="form" onSubmit={onSubmit}>
         <TextInput
           {...password({
@@ -56,11 +68,8 @@ const SettingsPassword: FC = () => {
               }
             }
           })}
-          placeholder="New password"
-          height={44}
+          placeholder="New password..."
           width={[1, 2 / 3]}
-          pl={24}
-          pr={24}
           mr={3}
           required
         />

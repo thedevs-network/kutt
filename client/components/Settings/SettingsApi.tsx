@@ -14,12 +14,13 @@ import Animation from "../Animation";
 import { Colors } from "../../consts";
 
 const ApiKey = styled(Text).attrs({
-  mt: "2px",
+  mt: [0, "2px"],
   fontSize: [15, 16],
   bold: true
 })`
   border-bottom: 1px dotted ${Colors.StatsTotalUnderline};
   cursor: pointer;
+  word-break: break-word;
 
   :hover {
     opacity: 0.8;
@@ -40,7 +41,7 @@ const SettingsApi: FC = () => {
   };
 
   return (
-    <Col alignItems="flex-start">
+    <Col alignItems="flex-start" maxWidth="100%">
       <H2 mb={4} bold>
         API
       </H2>
@@ -58,7 +59,7 @@ const SettingsApi: FC = () => {
         </ALink>
       </Text>
       {apikey && (
-        <Flex alignItems="center" my={3}>
+        <Flex alignItems={["flex-start", "center"]} my={3}>
           {copied ? (
             <Animation offset="10px" duration="0.2s">
               <Icon
@@ -95,7 +96,7 @@ const SettingsApi: FC = () => {
           </CopyToClipboard>
         </Flex>
       )}
-      <Button mt={2} color="purple" onClick={onSubmit} disabled={loading}>
+      <Button mt={3} color="purple" onClick={onSubmit} disabled={loading}>
         <Icon name={loading ? "spinner" : "zap"} mr={2} stroke="white" />
         {loading ? "Generating..." : apikey ? "Regenerate" : "Generate"} key
       </Button>

@@ -11,9 +11,7 @@ interface Props extends BoxProps {
   type?: string;
   value?: string;
   required?: boolean;
-  small?: boolean;
   onChange?: any;
-  tiny?: boolean;
   placeholderSize?: number[];
   br?: string;
   bbw?: string;
@@ -75,14 +73,11 @@ const TextInput = styled(Flex).attrs({
 
 TextInput.defaultProps = {
   value: "",
-  small: false,
-  tiny: false,
-  height: [56, 72],
+  height: [40, 44],
   py: 0,
-  pr: [48, 84],
-  pl: [32, 40],
-  fontSize: [14, 16],
-  placeholderSize: []
+  px: [3, 24],
+  fontSize: [14, 15],
+  placeholderSize: [13, 14]
 };
 
 export default TextInput;

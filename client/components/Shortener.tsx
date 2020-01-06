@@ -193,6 +193,9 @@ const Shortener = () => {
           fontSize={[18, 20, 22]}
           width={1}
           height={[58, 64, 72]}
+          px={0}
+          pr={[48, 84]}
+          pl={[32, 40]}
           autoFocus
           data-lpignore
         />
@@ -252,7 +255,7 @@ const Shortener = () => {
               pr={[3, 24]}
               placeholderSize={[13, 14]}
               fontSize={[14, 15]}
-              height={[36, 44]}
+              height={[40, 44]}
               width={[210, 240]}
             />
           </Col>
@@ -274,7 +277,7 @@ const Shortener = () => {
               pr={[3, 24]}
               placeholderSize={[13, 14]}
               fontSize={[14, 15]}
-              height={[36, 44]}
+              height={[40, 44]}
               width={[210, 240]}
             />
           </Col>
