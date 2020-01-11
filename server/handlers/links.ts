@@ -1,7 +1,7 @@
 import { Handler, Request } from "express";
 import URL from "url";
 
-import { generateShortLink, generateId } from "../utils";
+import { generateShortLink, generateId, CustomError } from "../utils";
 import {
   getLinksQuery,
   getTotalQuery,
@@ -15,6 +15,7 @@ import {
   checkBannedDomain,
   checkBannedHost
 } from "../controllers/validateBodyController";
+import { addIP } from "../db/ip";
 
 export const getLinks: Handler = async (req, res) => {
   const { limit, skip, search, all } = req.query;
@@ -94,7 +95,7 @@ export const createLink: Handler = async (req: CreateLinkReq, res) => {
 
     // Check if custom link already exists
     if (queries[4]) {
-      throw new Error("Custom URL is already in use.");
+      throw new CustomError("Custom URL is already in use.");
     }
 
     // Create new link
@@ -104,11 +105,12 @@ export const createLink: Handler = async (req: CreateLinkReq, res) => {
       address,
       domainAddress,
       domainId,
-      target
+      target,
+      userId: req.user && req.user.id
     });
 
     if (!req.user && Number(process.env.NON_USER_COOLDOWN)) {
-      // addIP(req.realIP);
+      addIP(req.realIP);
     }
 
     return res.json({ ...link, id: link.uuid });
