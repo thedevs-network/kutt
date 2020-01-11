@@ -13,7 +13,7 @@ import { getIP } from "../db/ip";
 import { getUserLinksCount } from "../db/link";
 import { getDomain } from "../db/domain";
 import { getHost } from "../db/host";
-import { addProtocol } from "../utils";
+import { addProtocol, CustomError } from "../utils";
 
 const dnsLookup = promisify(dns.lookup);
 
@@ -179,7 +179,7 @@ export const malwareCheck = async (user: User, target: string) => {
     if (user) {
       await addCooldown(user.id);
     }
-    throw new Error(
+    throw new CustomError(
       user ? "Malware detected! Cooldown for 12h." : "Malware detected!"
     );
   }
@@ -191,7 +191,7 @@ export const urlCountsCheck = async (user: User) => {
     date: subDays(new Date(), 1)
   });
   if (count > Number(process.env.USER_LIMIT_PER_DAY)) {
-    throw new Error(
+    throw new CustomError(
       `You have reached your daily limit (${process.env.USER_LIMIT_PER_DAY}). Please wait 24h.`
     );
   }
@@ -200,7 +200,7 @@ export const urlCountsCheck = async (user: User) => {
 export const checkBannedDomain = async (domain: string) => {
   const bannedDomain = await getDomain({ address: domain, banned: true });
   if (bannedDomain) {
-    throw new Error("URL is containing malware/scam.");
+    throw new CustomError("URL is containing malware/scam.");
   }
 };
 
@@ -216,6 +216,6 @@ export const checkBannedHost = async (domain: string) => {
     isHostBanned = null;
   }
   if (isHostBanned) {
-    throw new Error("URL is containing malware/scam.");
+    throw new CustomError("URL is containing malware/scam.");
   }
 };
