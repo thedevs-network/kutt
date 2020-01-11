@@ -1,19 +1,18 @@
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 import React, { useState } from "react";
 import styled from "styled-components";
 
 import { useStoreActions, useStoreState } from "../store";
+import { Checkbox, Select, TextInput } from "./Input";
 import { Col, RowCenterH, RowCenter } from "./Layout";
-import { useFormState } from "react-use-form-state";
-import { removeProtocol } from "../utils";
-import { Link } from "../store/links";
 import { useMessage, useCopy } from "../hooks";
-import TextInput from "./TextInput";
+import { removeProtocol } from "../utils";
+import Text, { H1, Span } from "./Text";
+import { Link } from "../store/links";
 import Animation from "./Animation";
 import { Colors } from "../consts";
-import Checkbox from "./Checkbox";
-import Text, { H1, Span } from "./Text";
 import Icon from "./Icon";
 
 const SubmitIconWrapper = styled.div`
@@ -49,20 +48,25 @@ const ShortenedLink = styled(H1)`
 
 interface Form {
   target: string;
+  domain?: string;
   customurl?: string;
   password?: string;
   showAdvanced?: boolean;
 }
 
+const defaultDomain = process.env.DEFAULT_DOMAIN;
+
 const Shortener = () => {
   const { isAuthenticated } = useStoreState(s => s.auth);
-  const [domain] = useStoreState(s => s.settings.domains);
+  const domains = useStoreState(s => s.settings.domains);
   const submit = useStoreActions(s => s.links.submit);
   const [link, setLink] = useState<Link | null>(null);
   const [message, setMessage] = useMessage(3000);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useCopy();
-  const [formState, { raw, password, text, label }] = useFormState<Form>(
+  const [formState, { raw, password, text, select, label }] = useFormState<
+    Form
+  >(
     { showAdvanced: false },
     {
       withIds: true,
@@ -147,7 +151,7 @@ const Shortener = () => {
         </Animation>
       ) : (
         <Animation offset="-10px" duration="0.2s">
-          <CopyToClipboard text={link.shortLink} onCopy={setCopied}>
+          <CopyToClipboard text={link.link} onCopy={setCopied}>
             <Icon
               as="button"
               py={0}
@@ -163,9 +167,9 @@ const Shortener = () => {
           </CopyToClipboard>
         </Animation>
       )}
-      <CopyToClipboard text={link.shortLink} onCopy={setCopied}>
+      <CopyToClipboard text={link.link} onCopy={setCopied}>
         <ShortenedLink fontSize={[24, 26, 30]} pb="2px" light>
-          {removeProtocol(link.shortLink)}
+          {removeProtocol(link.link)}
         </ShortenedLink>
       </CopyToClipboard>
     </Animation>
@@ -238,14 +242,39 @@ const Shortener = () => {
           <Col mb={[3, 0]}>
             <Text
               as="label"
+              {...label("domain")}
+              fontSize={[14, 15]}
+              mb={2}
+              bold
+            >
+              Domain
+            </Text>
+            <Select
+              {...select("domain")}
+              data-lpignore
+              pl={[3, 24]}
+              pr={[3, 24]}
+              fontSize={[14, 15]}
+              height={[40, 44]}
+              width={[170, 200]}
+              options={[
+                { key: defaultDomain, value: "" },
+                ...domains.map(d => ({
+                  key: d.customDomain,
+                  value: d.customDomain
+                }))
+              ]}
+            />
+          </Col>
+          <Col mb={[3, 0]} ml={[0, 24]}>
+            <Text
+              as="label"
               {...label("customurl")}
               fontSize={[14, 15]}
               mb={2}
               bold
             >
-              {(domain || {}).customDomain ||
-                (typeof window !== "undefined" && window.location.hostname)}
-              /
+              {formState.values.domain || defaultDomain}/
             </Text>
             <TextInput
               {...text("customurl")}
@@ -259,7 +288,7 @@ const Shortener = () => {
               width={[210, 240]}
             />
           </Col>
-          <Col ml={[0, 4]}>
+          <Col ml={[0, 24]}>
             <Text
               as="label"
               {...label("password")}

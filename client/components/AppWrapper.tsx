@@ -1,8 +1,9 @@
 import { Flex } from "reflexbox/styled-components";
+import React, { useEffect } from "react";
 import styled from "styled-components";
-import React from "react";
+import Router from "next/router";
 
-import { useStoreState } from "../store";
+import { useStoreState, useStoreActions } from "../store";
 import PageLoading from "./PageLoading";
 import Header from "./Header";
 
@@ -21,7 +22,17 @@ const Wrapper = styled(Flex)`
 `;
 
 const AppWrapper = ({ children }: { children: any }) => {
+  const isAuthenticated = useStoreState(s => s.auth.isAuthenticated);
+  const logout = useStoreActions(s => s.auth.logout);
+  const fetched = useStoreState(s => s.settings.fetched);
   const loading = useStoreState(s => s.loading.loading);
+  const getSettings = useStoreActions(s => s.settings.getSettings);
+
+  useEffect(() => {
+    if (isAuthenticated && !fetched) {
+      getSettings().catch(() => logout());
+    }
+  }, []);
 
   return (
     <Wrapper

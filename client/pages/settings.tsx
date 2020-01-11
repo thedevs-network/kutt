@@ -15,11 +15,6 @@ import { Col } from "../components/Layout";
 
 const SettingsPage: NextPage = props => {
   const { email, isAdmin } = useStoreState(s => s.auth);
-  const getSettings = useStoreActions(s => s.settings.getSettings);
-
-  useEffect(() => {
-    getSettings();
-  }, [false]);
 
   return (
     <AppWrapper>

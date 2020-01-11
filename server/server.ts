@@ -21,9 +21,11 @@ import {
 import * as auth from "./controllers/authController";
 import * as link from "./controllers/linkController";
 import { initializeDb } from "./knex";
+import routes from "./routes";
 
 import "./cron";
 import "./passport";
+import { CustomError } from "./utils";
 
 if (process.env.RAVEN_DSN) {
   Raven.config(process.env.RAVEN_DSN).install();
@@ -55,18 +57,6 @@ app.prepare().then(async () => {
   server.use(passport.initialize());
   server.use(express.static("static"));
 
-  server.use((error, req, res, next) => {
-    res
-      .status(500)
-      .json({ error: "Sorry an error ocurred. Please try again later." });
-    if (process.env.RAVEN_DSN) {
-      Raven.captureException(error, {
-        user: { email: req.user && req.user.email }
-      });
-    }
-    next();
-  });
-
   server.use((req, _res, next) => {
     req.realIP =
       (req.headers["x-real-ip"] as string) ||
@@ -76,6 +66,8 @@ app.prepare().then(async () => {
   });
 
   server.use(link.customDomainRedirection);
+
+  server.use(routes);
 
   server.get("/", (req, res) => app.render(req, res, "/"));
   server.get("/login", (req, res) => app.render(req, res, "/login"));
@@ -204,6 +196,20 @@ app.prepare().then(async () => {
   );
 
   server.get("*", (req, res) => handle(req, res));
+
+  server.use((error, req, res, next) => {
+    if (error instanceof CustomError) {
+      return res.status(error.statusCode || 500).json({ error: error.message });
+    }
+
+    if (process.env.RAVEN_DSN) {
+      Raven.captureException(error, {
+        user: { email: req.user && req.user.email }
+      });
+    }
+
+    return res.status(500).json({ error: "An error occurred." });
+  });
 
   server.listen(port, err => {
     if (err) throw err;

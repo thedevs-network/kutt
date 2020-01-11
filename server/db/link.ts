@@ -189,6 +189,7 @@ export const getLinks = async (
       "links.target",
       "links.visit_count",
       "links.user_id",
+      "links.uuid",
       "domains.address as domain"
     )
     .offset(offset)

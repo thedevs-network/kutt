@@ -60,6 +60,7 @@ interface Link {
   target: string;
   updated_at: string;
   user_id?: number;
+  uuid: string;
   visit_count: number;
 }
 

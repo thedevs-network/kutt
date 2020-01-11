@@ -9,7 +9,7 @@ const Table = styled(Flex)<{ scrollWidth?: string }>`
   border-radius: 12px;
   box-shadow: 0 6px 15px ${Colors.TableShadow};
   text-align: center;
-  overflow: scroll;
+  overflow: auto;
 
   tr,
   th,

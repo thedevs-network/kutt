@@ -15,6 +15,10 @@ export enum API {
   STATS = "/api/url/stats"
 }
 
+export enum APIv2 {
+  Links = "/api/v2/links"
+}
+
 export enum Colors {
   Text = "hsl(200, 35%, 25%)",
   Bg = "hsl(206, 12%, 95%)",

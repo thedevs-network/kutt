@@ -8,19 +8,20 @@ import QRCode from "qrcode.react";
 import Link from "next/link";
 
 import { useStoreActions, useStoreState } from "../store";
-import { removeProtocol, withComma } from "../utils";
+import { removeProtocol, withComma, errorMessage } from "../utils";
+import { Checkbox, TextInput } from "./Input";
 import { NavButton, Button } from "./Button";
 import { Col, RowCenter } from "./Layout";
+import Text, { H2, Span } from "./Text";
 import { ifProp } from "styled-tools";
-import TextInput from "./TextInput";
 import Animation from "./Animation";
+import { Colors } from "../consts";
 import Tooltip from "./Tooltip";
 import Table from "./Table";
 import ALink from "./ALink";
 import Modal from "./Modal";
-import Text, { H2, Span } from "./Text";
 import Icon from "./Icon";
-import { Colors } from "../consts";
+import { useMessage } from "../hooks";
 
 const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
 const Th = styled(Flex)``;
@@ -87,26 +88,33 @@ const viewsFlex = {
 const actionsFlex = { flexGrow: [1, 1, 2.5], flexShrink: [1, 1, 2.5] };
 
 interface Form {
-  count?: string;
-  page?: string;
-  search?: string;
+  all: boolean;
+  limit: string;
+  skip: string;
+  search: string;
 }
 
 const LinksTable: FC = () => {
+  const isAdmin = useStoreState(s => s.auth.isAdmin);
   const links = useStoreState(s => s.links);
   const { get, deleteOne } = useStoreActions(s => s.links);
+  const [tableMessage, setTableMessage] = useState("No links to show.");
   const [copied, setCopied] = useState([]);
   const [qrModal, setQRModal] = useState(-1);
   const [deleteModal, setDeleteModal] = useState(-1);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [formState, { text }] = useFormState<Form>({ page: "1", count: "10" });
+  const [deleteMessage, setDeleteMessage] = useMessage();
+  const [formState, { label, checkbox, text }] = useFormState<Form>(
+    { skip: "0", limit: "10", all: false },
+    { withIds: true }
+  );
 
   const options = formState.values;
   const linkToDelete = links.items[deleteModal];
 
   useEffect(() => {
-    get(options);
-  }, [options.count, options.page]);
+    get(options).catch(err => setTableMessage(err?.response?.data?.error));
+  }, [options.limit, options.skip, options.all]);
 
   const onSubmit = e => {
     e.preventDefault();
@@ -122,14 +130,21 @@ const LinksTable: FC = () => {
 
   const onDelete = async () => {
     setDeleteLoading(true);
-    await deleteOne({ id: linkToDelete.address, domain: linkToDelete.domain });
-    await get(options);
+    try {
+      await deleteOne({
+        id: linkToDelete.address,
+        domain: linkToDelete.domain
+      });
+      await get(options);
+      setDeleteModal(-1);
+    } catch (err) {
+      setDeleteMessage(errorMessage(err));
+    }
     setDeleteLoading(false);
-    setDeleteModal(-1);
   };
 
   const onNavChange = (nextPage: number) => () => {
-    formState.setField("page", (parseInt(options.page) + nextPage).toString());
+    formState.setField("skip", (parseInt(options.skip) + nextPage).toString());
   };
 
   const Nav = (
@@ -143,8 +158,11 @@ const LinksTable: FC = () => {
         {["10", "25", "50"].map(c => (
           <Flex key={c} ml={[10, 12]}>
             <NavButton
-              disabled={options.count === c}
-              onClick={() => formState.setField("count", c)}
+              disabled={options.limit === c}
+              onClick={() => {
+                formState.setField("limit", c);
+                formState.setField("skip", "0");
+              }}
             >
               {c}
             </NavButton>
@@ -159,16 +177,16 @@ const LinksTable: FC = () => {
       />
       <Flex>
         <NavButton
-          onClick={onNavChange(-1)}
-          disabled={options.page === "1"}
+          onClick={onNavChange(-parseInt(options.limit))}
+          disabled={options.skip === "0"}
           px={2}
         >
           <Icon name="chevronLeft" size={15} />
         </NavButton>
         <NavButton
-          onClick={onNavChange(1)}
+          onClick={onNavChange(parseInt(options.limit))}
           disabled={
-            parseInt(options.page) * parseInt(options.count) > links.total
+            parseInt(options.skip) + parseInt(options.limit) > links.total
           }
           ml={12}
           px={2}
@@ -184,11 +202,11 @@ const LinksTable: FC = () => {
       <H2 mb={3} light>
         Recent shortened links.
       </H2>
-      <Table scrollWidth="700px">
+      <Table scrollWidth="800px">
         <thead>
           <Tr justifyContent="space-between">
             <Th flexGrow={1} flexShrink={1}>
-              <form onSubmit={onSubmit}>
+              <Flex as="form" onSubmit={onSubmit}>
                 <TextInput
                   {...text("search")}
                   placeholder="Search..."
@@ -201,7 +219,19 @@ const LinksTable: FC = () => {
                   br="3px"
                   bbw="2px"
                 />
-              </form>
+
+                {isAdmin && (
+                  <Checkbox
+                    {...label("all")}
+                    {...checkbox("all")}
+                    label="All links"
+                    ml={3}
+                    fontSize={[14, 15]}
+                    width={[15, 16]}
+                    height={[15, 16]}
+                  />
+                )}
+              </Flex>
             </Th>
             {Nav}
           </Tr>
@@ -218,7 +248,7 @@ const LinksTable: FC = () => {
             <Tr width={1} justifyContent="center">
               <Td flex="1 1 auto" justifyContent="center">
                 <Text fontSize={18} light>
-                  {links.loading ? "Loading links..." : "No links to show."}
+                  {links.loading ? "Loading links..." : tableMessage}
                 </Text>
               </Td>
             </Tr>
@@ -235,6 +265,7 @@ const LinksTable: FC = () => {
                   <Td {...shortLinkFlex} withFade>
                     {copied.includes(index) ? (
                       <Animation
+                        minWidth={32}
                         offset="10px"
                         duration="0.2s"
                         alignItems="center"
@@ -251,11 +282,8 @@ const LinksTable: FC = () => {
                         />
                       </Animation>
                     ) : (
-                      <Animation offset="-10px" duration="0.2s">
-                        <CopyToClipboard
-                          text={l.shortLink}
-                          onCopy={onCopy(index)}
-                        >
+                      <Animation minWidth={32} offset="-10px" duration="0.2s">
+                        <CopyToClipboard text={l.link} onCopy={onCopy(index)}>
                           <Action
                             name="copy"
                             strokeWidth="2.5"
@@ -265,9 +293,7 @@ const LinksTable: FC = () => {
                         </CopyToClipboard>
                       </Animation>
                     )}
-                    <ALink href={l.shortLink}>
-                      {removeProtocol(l.shortLink)}
-                    </ALink>
+                    <ALink href={l.link}>{removeProtocol(l.link)}</ALink>
                   </Td>
                   <Td {...viewsFlex}>{withComma(l.visit_count)}</Td>
                   <Td {...actionsFlex} justifyContent="flex-end">
@@ -336,7 +362,7 @@ const LinksTable: FC = () => {
       >
         {links.items[qrModal] && (
           <RowCenter width={192}>
-            <QRCode size={192} value={links.items[qrModal].shortLink} />
+            <QRCode size={192} value={links.items[qrModal].link} />
           </RowCenter>
         )}
       </Modal>
@@ -352,13 +378,17 @@ const LinksTable: FC = () => {
             </H2>
             <Text textAlign="center">
               Are you sure do you want to delete the link{" "}
-              <Span bold>"{removeProtocol(linkToDelete.shortLink)}"</Span>?
+              <Span bold>"{removeProtocol(linkToDelete.link)}"</Span>?
             </Text>
             <Flex justifyContent="center" mt={44}>
               {deleteLoading ? (
                 <>
                   <Icon name="spinner" size={20} stroke={Colors.Spinner} />
                 </>
+              ) : deleteMessage.text ? (
+                <Text fontSize={15} color={deleteMessage.color}>
+                  {deleteMessage.text}
+                </Text>
               ) : (
                 <>
                   <Button

@@ -1,5 +1,5 @@
 import cookie from "js-cookie";
-import { AxiosRequestConfig } from "axios";
+import { AxiosRequestConfig, AxiosError } from "axios";
 
 export const removeProtocol = (link: string) =>
   link.replace(/^https?:\/\//, "");
@@ -16,3 +16,8 @@ export const getAxiosConfig = (
     Authorization: cookie.get("token")
   }
 });
+
+export const errorMessage = (err: AxiosError, defaultMessage?: string) => {
+  const data = err?.response?.data;
+  return data?.message || data?.error || defaultMessage || "";
+};

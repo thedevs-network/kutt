@@ -4,9 +4,9 @@ import dns from "dns";
 import axios from "axios";
 import URL from "url";
 import urlRegex from "url-regex";
-import validator from "express-validator/check";
+import { body } from "express-validator";
 import { differenceInMinutes, subHours, subDays, isAfter } from "date-fns";
-import { validationResult } from "express-validator/check";
+import { validationResult } from "express-validator";
 
 import { addCooldown, banUser } from "../db/user";
 import { getIP } from "../db/ip";
@@ -18,16 +18,13 @@ import { addProtocol } from "../utils";
 const dnsLookup = promisify(dns.lookup);
 
 export const validationCriterias = [
-  validator
-    .body("email")
+  body("email")
     .exists()
     .withMessage("Email must be provided.")
     .isEmail()
     .withMessage("Email is not valid.")
-    .trim()
-    .normalizeEmail(),
-  validator
-    .body("password", "Password must be at least 8 chars long.")
+    .trim(),
+  body("password", "Password must be at least 8 chars long.")
     .exists()
     .withMessage("Password must be provided.")
     .isLength({ min: 8 })
@@ -125,7 +122,7 @@ export const cooldownCheck = async (user: User) => {
   if (user && user.cooldowns) {
     if (user.cooldowns.length > 4) {
       await banUser(user.id);
-      throw new Error("Too much malware requests. You are now banned.");
+      throw new Error("Too much malware requests. You are banned.");
     }
     const hasCooldownNow = user.cooldowns.some(cooldown =>
       isAfter(subHours(new Date(), 12), new Date(cooldown))

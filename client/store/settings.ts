@@ -17,6 +17,7 @@ export interface SettingsResp extends Domain {
 export interface Settings {
   domains: Array<Domain>;
   apikey: string;
+  fetched: boolean;
   setSettings: Action<Settings, SettingsResp>;
   getSettings: Thunk<Settings, null, null, StoreModel>;
   setApiKey: Action<Settings, string>;
@@ -30,8 +31,24 @@ export interface Settings {
 export const settings: Settings = {
   domains: [],
   apikey: null,
+  fetched: false,
+  getSettings: thunk(async (actions, payload, { getStoreActions }) => {
+    getStoreActions().loading.show();
+    const res = await axios.get(API.SETTINGS, getAxiosConfig());
+    actions.setSettings(res.data);
+    getStoreActions().loading.hide();
+  }),
+  generateApiKey: thunk(async actions => {
+    const res = await axios.post(API.GENERATE_APIKEY, null, getAxiosConfig());
+    actions.setApiKey(res.data.apikey);
+  }),
+  deleteDomain: thunk(async actions => {
+    await axios.delete(API.CUSTOM_DOMAIN, getAxiosConfig());
+    actions.removeDomain();
+  }),
   setSettings: action((state, payload) => {
     state.apikey = payload.apikey;
+    state.fetched = true;
     if (payload.customDomain) {
       state.domains = [
         {
@@ -41,18 +58,8 @@ export const settings: Settings = {
       ];
     }
   }),
-  getSettings: thunk(async (actions, payload, { getStoreActions }) => {
-    getStoreActions().loading.show();
-    const res = await axios.get(API.SETTINGS, getAxiosConfig());
-    actions.setSettings(res.data);
-    getStoreActions().loading.hide();
-  }),
   setApiKey: action((state, payload) => {
     state.apikey = payload;
-  }),
-  generateApiKey: thunk(async actions => {
-    const res = await axios.post(API.GENERATE_APIKEY, null, getAxiosConfig());
-    actions.setApiKey(res.data.apikey);
   }),
   addDomain: action((state, payload) => {
     state.domains.push(payload);
@@ -66,9 +73,5 @@ export const settings: Settings = {
       customDomain: res.data.customDomain,
       homepage: res.data.homepage
     });
-  }),
-  deleteDomain: thunk(async actions => {
-    await axios.delete(API.CUSTOM_DOMAIN, getAxiosConfig());
-    actions.removeDomain();
   })
 };

@@ -1,19 +1,20 @@
+import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 import React, { FC, useState } from "react";
 import styled from "styled-components";
 
 import { useStoreState, useStoreActions } from "../../store";
-import { useFormState } from "react-use-form-state";
 import { Domain } from "../../store/settings";
 import { useMessage } from "../../hooks";
+import Text, { H2, Span } from "../Text";
 import { Colors } from "../../consts";
-import TextInput from "../TextInput";
+import { TextInput } from "../Input";
 import { Button } from "../Button";
+import { Col } from "../Layout";
 import Table from "../Table";
 import Modal from "../Modal";
 import Icon from "../Icon";
-import Text, { H2, Span } from "../Text";
-import { Col } from "../Layout";
+import { errorMessage } from "../../utils";
 
 const Th = styled(Flex).attrs({ as: "th", py: 3, px: 3 })`
   font-size: 15px;
@@ -55,12 +56,10 @@ const SettingsDomain: FC = () => {
 
   const onDelete = async () => {
     setDeleteLoading(true);
-    try {
-      await deleteDomain();
-      setMessage("Domain has been deleted successfully.", "green");
-    } catch (err) {
-      setMessage(err?.response?.data?.error || "Couldn't delete the domain.");
-    }
+    await deleteDomain().catch(err =>
+      setMessage(errorMessage(err, "Couldn't delete the domain."))
+    );
+    setMessage("Domain has been deleted successfully.", "green");
     closeModal();
     setDeleteLoading(false);
   };
@@ -122,7 +121,7 @@ const SettingsDomain: FC = () => {
           my={[3, 4]}
         >
           <Flex width={1} flexDirection={["column", "row"]}>
-            <Col mr={[0, 2]} mb={[3, 0]} flex="1 1 auto">
+            <Col mr={[0, 2]} mb={[3, 0]} flex="0 0 auto">
               <Text
                 {...label("customDomain")}
                 as="label"
@@ -139,7 +138,7 @@ const SettingsDomain: FC = () => {
                 required
               />
             </Col>
-            <Col ml={[0, 2]} flex="1 1 auto">
+            <Col ml={[0, 2]} flex="0 0 auto">
               <Text
                 {...label("homepage")}
                 as="label"

@@ -83,8 +83,8 @@ const StatsPage: NextPage<Props> = ({ domain, id }) => {
             <Flex justifyContent="space-between" alignItems="center" mb={3}>
               <H1 fontSize={[18, 20, 24]} light>
                 Stats for:{" "}
-                <ALink href={data.shortLink} title="Short link">
-                  {removeProtocol(data.shortLink)}
+                <ALink href={data.link} title="Short link">
+                  {removeProtocol(data.link)}
                 </ALink>
               </H1>
               <Text fontSize={[13, 14]} textAlign="right">

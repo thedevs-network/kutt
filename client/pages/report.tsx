@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import axios from "axios";
 import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
+import React, { useState } from "react";
+import axios from "axios";
 
 import Text, { H2, Span } from "../components/Text";
 import AppWrapper from "../components/AppWrapper";
-import TextInput from "../components/TextInput";
+import { TextInput } from "../components/Input";
 import { Button } from "../components/Button";
 import { Col } from "../components/Layout";
 import Icon from "../components/Icon";

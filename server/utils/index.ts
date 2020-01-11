@@ -4,6 +4,29 @@ import {
   differenceInHours,
   differenceInMonths
 } from "date-fns";
+import generate from "nanoid/generate";
+import { findLinkQuery } from "../queries/link";
+
+export class CustomError extends Error {
+  public statusCode?: number;
+  public data?: any;
+  public constructor(message: string, statusCode = 500, data?: any) {
+    super(message);
+    this.name = this.constructor.name;
+    this.statusCode = statusCode;
+    this.data = data;
+  }
+}
+
+export const generateId = async (domainId: number = null) => {
+  const address = generate(
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+    Number(process.env.LINK_LENGTH) || 6
+  );
+  const link = await findLinkQuery({ address, domainId });
+  if (!link) return address;
+  return generateId(domainId);
+};
 
 export const addProtocol = (url: string): string => {
   const hasProtocol = /^\w+:\/\//.test(url);

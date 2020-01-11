@@ -69,7 +69,7 @@ const authenticate = (
       }
       if (user && user.banned) {
         return res
-          .status(400)
+          .status(403)
           .json({ error: "Your are banned from using this website." });
       }
       if (user) {

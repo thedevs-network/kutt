@@ -3,8 +3,7 @@ import axios from "axios";
 import query from "query-string";
 
 import { getAxiosConfig } from "../utils";
-import { API } from "../consts";
-import { string } from "prop-types";
+import { API, APIv2 } from "../consts";
 
 export interface Link {
   id: number;
@@ -12,7 +11,7 @@ export interface Link {
   banned: boolean;
   banned_by_id?: number;
   created_at: string;
-  shortLink: string;
+  link: string;
   domain?: string;
   domain_id?: number;
   password?: string;
@@ -26,19 +25,23 @@ export interface NewLink {
   target: string;
   customurl?: string;
   password?: string;
+  domain?: string;
   reuse?: boolean;
   reCaptchaToken?: string;
 }
 
 export interface LinksQuery {
-  count?: string;
-  page?: string;
-  search?: string;
+  limit: string;
+  skip: string;
+  search: string;
+  all: boolean;
 }
 
 export interface LinksListRes {
-  list: Link[];
-  countAll: number;
+  data: Link[];
+  total: number;
+  limit: number;
+  skip: number;
 }
 
 export interface Links {
@@ -60,14 +63,17 @@ export const links: Links = {
   total: 0,
   loading: true,
   submit: thunk(async (actions, payload) => {
-    const res = await axios.post(API.SUBMIT, payload, getAxiosConfig());
+    const data = Object.fromEntries(
+      Object.entries(payload).filter(([, value]) => value !== "")
+    );
+    const res = await axios.post(APIv2.Links, data, getAxiosConfig());
     actions.add(res.data);
     return res.data;
   }),
   get: thunk(async (actions, payload) => {
     actions.setLoading(true);
     const res = await axios.get(
-      `${API.GET_LINKS}?${query.stringify(payload)}`,
+      `${APIv2.Links}?${query.stringify(payload)}`,
       getAxiosConfig()
     );
     actions.set(res.data);
@@ -82,8 +88,8 @@ export const links: Links = {
     state.items.unshift(payload);
   }),
   set: action((state, payload) => {
-    state.items = payload.list;
-    state.total = payload.countAll;
+    state.items = payload.data;
+    state.total = payload.total;
   }),
   setLoading: action((state, payload) => {
     state.loading = payload;

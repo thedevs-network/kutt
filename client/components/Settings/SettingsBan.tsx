@@ -1,17 +1,16 @@
-import React, { FC, useState } from "react";
-import { Flex } from "reflexbox/styled-components";
 import { useFormState } from "react-use-form-state";
+import { Flex } from "reflexbox/styled-components";
+import React, { FC, useState } from "react";
 import axios from "axios";
 
+import { Checkbox, TextInput } from "../Input";
 import { getAxiosConfig } from "../../utils";
 import { useMessage } from "../../hooks";
-import TextInput from "../TextInput";
-import Checkbox from "../Checkbox";
 import { API } from "../../consts";
 import { Button } from "../Button";
-import Icon from "../Icon";
 import Text, { H2 } from "../Text";
 import { Col } from "../Layout";
+import Icon from "../Icon";
 
 interface BanForm {
   id: string;

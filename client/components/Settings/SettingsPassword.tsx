@@ -5,16 +5,16 @@ import axios from "axios";
 
 import { getAxiosConfig } from "../../utils";
 import { useMessage } from "../../hooks";
-import TextInput from "../TextInput";
+import { TextInput } from "../Input";
 import { API } from "../../consts";
 import { Button } from "../Button";
-import Icon from "../Icon";
 import Text, { H2 } from "../Text";
 import { Col } from "../Layout";
+import Icon from "../Icon";
 
 const SettingsPassword: FC = () => {
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useMessage();
+  const [message, setMessage] = useMessage(2000);
   const [formState, { password, label }] = useFormState<{ password: string }>(
     null,
     { withIds: true }

@@ -1,5 +1,5 @@
 export interface TokenPayload {
-  iss: 'ApiAuth';
+  iss: "ApiAuth";
   sub: string;
   domain: string;
   admin: boolean;

@@ -1,16 +1,16 @@
+import { useFormState } from "react-use-form-state";
 import React, { useEffect, useState } from "react";
+import { Flex } from "reflexbox/styled-components";
+import emailValidator from "email-validator";
+import styled from "styled-components";
 import Router from "next/router";
 import Link from "next/link";
 import axios from "axios";
-import styled from "styled-components";
-import emailValidator from "email-validator";
-import { useFormState } from "react-use-form-state";
-import { Flex } from "reflexbox/styled-components";
 
 import { useStoreState, useStoreActions } from "../store";
 import { ColCenterV } from "../components/Layout";
 import AppWrapper from "../components/AppWrapper";
-import TextInput from "../components/TextInput";
+import { TextInput } from "../components/Input";
 import { fadeIn } from "../helpers/animations";
 import { Button } from "../components/Button";
 import Text, { H2 } from "../components/Text";

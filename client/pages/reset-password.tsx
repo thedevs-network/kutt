@@ -9,7 +9,7 @@ import axios from "axios";
 
 import { useStoreState, useStoreActions } from "../store";
 import AppWrapper from "../components/AppWrapper";
-import TextInput from "../components/TextInput";
+import { TextInput } from "../components/Input";
 import { Button } from "../components/Button";
 import Text, { H2 } from "../components/Text";
 import { Col } from "../components/Layout";
