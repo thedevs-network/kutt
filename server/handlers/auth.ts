@@ -81,7 +81,7 @@ export const cooldown: Handler = async (req, res, next) => {
 
 export const recaptcha: Handler = async (req, res, next) => {
   if (process.env.NODE_ENV !== "production") return next();
-  if (!req.user) return next();
+  if (req.user) return next();
 
   const isReCaptchaValid = await axios({
     method: "post",
