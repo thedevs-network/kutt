@@ -60,9 +60,9 @@ You need to have [Node.js](https://nodejs.org/), [PostgreSQL](https://www.postgr
 
 1. Clone this repository or [download zip](https://github.com/thedevs-network/kutt/archive/v2-beta.zip).
 2. Copy `.example.env` to `.env` and fill it properly.
-3. Install dependencies: `npm install`.
-4. Run for development: `npm run dev`.
-5. Run for production: `npm run build` then `npm start`.
+3. Install dependencies: `yarn`.
+4. Run for development: `yarn dev`.
+5. Run for production: `yarn build` then `yarn start`.
 
 ### Docker
 
