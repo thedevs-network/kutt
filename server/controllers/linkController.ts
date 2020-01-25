@@ -348,7 +348,7 @@ export const reportLink: Handler = async (req, res) => {
   }
 
   const mail = await transporter.sendMail({
-    from: process.env.MAIL_USER,
+    from: process.env.MAIL_FROM || process.env.MAIL_USER,
     to: process.env.REPORT_MAIL,
     subject: "[REPORT]",
     text: req.body.link,

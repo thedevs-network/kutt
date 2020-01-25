@@ -240,7 +240,7 @@ export const requestUserPasswordReset: Handler = async (req, res) => {
   }
 
   const mail = await transporter.sendMail({
-    from: process.env.MAIL_USER,
+    from: process.env.MAIL_FROM || process.env.MAIL_USER,
     to: user.email,
     subject: "Reset your password",
     text: resetMailText
