@@ -11,6 +11,7 @@ import * as utils from "../utils";
 import * as mail from "../mail";
 import query from "../queries";
 import knex from "../knex";
+import * as redis from "../redis";
 import env from "../env";
 
 const authenticate = (
@@ -171,6 +172,8 @@ export const changePassword: Handler = async (req, res) => {
 
 export const generateApiKey = async (req, res) => {
   const apikey = nanoid(40);
+
+  redis.remove.user(req.user);
 
   const [user] = await query.user.update({ id: req.user.id }, { apikey });
 
