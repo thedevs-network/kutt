@@ -15,7 +15,7 @@ const filterInOs = agent => item =>
 export default function({ data }) {
   const tasks = [];
 
-  tasks.push(query.link.increamentVisit(data.link.id));
+  tasks.push(query.link.increamentVisit({ id: data.link.id }));
 
   if (data.link.visit_count < getStatsLimit()) {
     const agent = useragent.parse(data.headers["user-agent"]);
