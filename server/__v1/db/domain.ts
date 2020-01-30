@@ -1,6 +1,6 @@
-import knex from "../knex";
-import * as redis from "../redis";
-import { getRedisKey } from "../utils";
+import knex from "../../knex";
+import * as redis from "../../redis";
+import { getRedisKey } from "../../utils";
 
 export const getDomain = async (data: Partial<Domain>): Promise<Domain> => {
   const getData = {

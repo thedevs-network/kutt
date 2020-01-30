@@ -2,20 +2,23 @@ import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 import React, { useState } from "react";
 import { NextPage } from "next";
+import { useRouter } from "next/router";
 import axios from "axios";
 
-import AppWrapper from "../components/AppWrapper";
-import { TextInput } from "../components/Input";
-import { Button } from "../components/Button";
-import Text, { H2 } from "../components/Text";
-import { Col } from "../components/Layout";
-import Icon from "../components/Icon";
+import AppWrapper from "../../components/AppWrapper";
+import { TextInput } from "../../components/Input";
+import { Button } from "../../components/Button";
+import Text, { H2 } from "../../components/Text";
+import { Col } from "../../components/Layout";
+import Icon from "../../components/Icon";
+import { APIv2 } from "../../consts";
 
 interface Props {
   protectedLink?: string;
 }
 
-const UrlPasswordPage: NextPage<Props> = ({ protectedLink }) => {
+const ProtectedPage: NextPage<Props> = () => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formState, { password }] = useFormState<{ password: string }>();
   const [error, setError] = useState<string>();
@@ -30,12 +33,13 @@ const UrlPasswordPage: NextPage<Props> = ({ protectedLink }) => {
 
     setError("");
     setLoading(true);
-    // TODO: better api calls
     try {
-      const { data } = await axios.post("/api/url/requesturl", {
-        id: protectedLink,
-        password
-      });
+      const { data } = await axios.post(
+        `${APIv2.Links}/${router.query.id}/protected`,
+        {
+          password
+        }
+      );
       window.location.replace(data.target);
     } catch ({ response }) {
       setError(response.data.error);
@@ -45,7 +49,7 @@ const UrlPasswordPage: NextPage<Props> = ({ protectedLink }) => {
 
   return (
     <AppWrapper>
-      {!protectedLink ? (
+      {!router.query.id ? (
         <H2 my={4} light>
           404 | Link could not be found.
         </H2>
@@ -84,10 +88,10 @@ const UrlPasswordPage: NextPage<Props> = ({ protectedLink }) => {
   );
 };
 
-UrlPasswordPage.getInitialProps = async ({ req }) => {
+ProtectedPage.getInitialProps = async ({ req }) => {
   return {
     protectedLink: req && (req as any).protectedLink
   };
 };
 
-export default UrlPasswordPage;
+export default ProtectedPage;

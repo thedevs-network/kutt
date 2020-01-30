@@ -3,9 +3,9 @@ import nanoid from "nanoid";
 import uuid from "uuid/v4";
 import { addMinutes } from "date-fns";
 
-import knex from "../knex";
-import * as redis from "../redis";
-import { getRedisKey } from "../utils";
+import knex from "../../knex";
+import * as redis from "../../redis";
+import { getRedisKey } from "../../utils";
 
 export const getUser = async (emailOrKey = ""): Promise<User> => {
   const redisKey = getRedisKey.user(emailOrKey);

@@ -1,1 +1,5 @@
-export * from "./queues";
+import { visit } from "./queues";
+
+export default {
+  visit
+};

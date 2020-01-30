@@ -1,14 +1,14 @@
 import bcrypt from "bcryptjs";
 import { isAfter, subDays, set } from "date-fns";
-import knex from "../knex";
-import * as redis from "../redis";
+import knex from "../../knex";
+import * as redis from "../../redis";
 import {
   generateShortLink,
   getRedisKey,
   getUTCDate,
   getDifferenceFunction,
   statsObjectToArray
-} from "../utils";
+} from "../../utils";
 import { banDomain } from "./domain";
 import { banHost } from "./host";
 import { banUser } from "./user";

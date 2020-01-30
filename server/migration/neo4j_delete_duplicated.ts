@@ -1,4 +1,5 @@
-require("dotenv").config();
+import env from "../env";
+
 import { v1 as NEO4J } from "neo4j-driver";
 import PQueue from "p-queue";
 
@@ -8,8 +9,8 @@ queue.on("active", () => console.log(count++));
 
 // 1. Connect to Neo4j database
 const neo4j = NEO4J.driver(
-  process.env.NEO4J_DB_URI,
-  NEO4J.auth.basic(process.env.NEO4J_DB_USERNAME, process.env.NEO4J_DB_PASSWORD)
+  env.NEO4J_DB_URI,
+  NEO4J.auth.basic(env.NEO4J_DB_USERNAME, env.NEO4J_DB_PASSWORD)
 );
 
 (async function() {

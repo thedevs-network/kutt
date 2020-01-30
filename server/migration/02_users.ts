@@ -1,23 +1,24 @@
-require("dotenv").config();
+import env from "../env";
+
 import { v1 as NEO4J } from "neo4j-driver";
-import knex from "knex";
 import PQuque from "p-queue";
+import knex from "knex";
 
 const queue = new PQuque({ concurrency: 10 });
 
 // 1. Connect to Neo4j database
 const neo4j = NEO4J.driver(
-  process.env.NEO4J_DB_URI,
-  NEO4J.auth.basic(process.env.NEO4J_DB_USERNAME, process.env.NEO4J_DB_PASSWORD)
+  env.NEO4J_DB_URI,
+  NEO4J.auth.basic(env.NEO4J_DB_USERNAME, env.NEO4J_DB_PASSWORD)
 );
 // 2. Connect to Postgres database
 const postgres = knex({
   client: "postgres",
   connection: {
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD
+    host: env.DB_HOST,
+    database: env.DB_NAME,
+    user: env.DB_USER,
+    password: env.DB_PASSWORD
   }
 });
 

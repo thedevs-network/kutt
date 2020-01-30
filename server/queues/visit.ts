@@ -2,7 +2,7 @@ import useragent from "useragent";
 import geoip from "geoip-lite";
 import URL from "url";
 
-import { createVisit, addLinkCount } from "../db/link";
+import query from "../queries";
 import { getStatsLimit } from "../utils";
 
 const browsersList = ["IE", "Firefox", "Chrome", "Opera", "Safari", "Edge"];
@@ -15,7 +15,7 @@ const filterInOs = agent => item =>
 export default function({ data }) {
   const tasks = [];
 
-  tasks.push(addLinkCount(data.link.id));
+  tasks.push(query.link.increamentVisit(data.link.id));
 
   if (data.link.visit_count < getStatsLimit()) {
     const agent = useragent.parse(data.headers["user-agent"]);
@@ -25,10 +25,9 @@ export default function({ data }) {
     const location = geoip.lookup(data.realIP);
     const country = location && location.country;
     tasks.push(
-      createVisit({
+      query.visit.add({
         browser: browser.toLowerCase(),
         country: country || "Unknown",
-        domain: data.customDomain,
         id: data.link.id,
         os: os.toLowerCase().replace(/\s/gi, ""),
         referrer: (referrer && referrer.replace(/\./gi, "[dot]")) || "Direct"

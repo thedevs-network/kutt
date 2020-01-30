@@ -1,18 +1,20 @@
 import Queue from "bull";
 import path from "path";
 
+import env from "../env";
+
 const redis = {
-  port: Number(process.env.REDIS_PORT) || 6379,
-  host: process.env.REDIS_HOST || "127.0.0.1",
-  ...(process.env.REDIS_PASSWORD && { password: process.env.REDIS_PASSWORD })
+  port: env.REDIS_PORT,
+  host: env.REDIS_HOST,
+  ...(env.REDIS_PASSWORD && { password: env.REDIS_PASSWORD })
 };
 
 const removeJob = job => job.remove();
 
-export const visitQueue = new Queue("visit", { redis });
+export const visit = new Queue("visit", { redis });
 
-visitQueue.clean(5000, "completed");
+visit.clean(5000, "completed");
 
-visitQueue.process(4, path.resolve(__dirname, "visitQueue.js"));
+visit.process(4, path.resolve(__dirname, "visit.js"));
 
-visitQueue.on("completed", removeJob);
+visit.on("completed", removeJob);

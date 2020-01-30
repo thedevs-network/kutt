@@ -16,7 +16,7 @@ import { Col } from "../components/Layout";
 import { TokenPayload } from "../types";
 import { useMessage } from "../hooks";
 import Icon from "../components/Icon";
-import { API } from "../consts";
+import { API, APIv2 } from "../consts";
 
 interface Props {
   token?: string;
@@ -51,7 +51,7 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
     setLoading(true);
     setMessage();
     try {
-      await axios.post(API.RESET_PASSWORD, {
+      await axios.post(APIv2.AuthResetPassword, {
         email: formState.values.email
       });
       setMessage("Reset password email has been sent.", "green");

@@ -1,6 +1,6 @@
-import knex from "../knex";
-import * as redis from "../redis";
-import { getRedisKey } from "../utils";
+import knex from "../../knex";
+import * as redis from "../../redis";
+import { getRedisKey } from "../../utils";
 
 export const getHost = async (data: Partial<Host>) => {
   const getData = {

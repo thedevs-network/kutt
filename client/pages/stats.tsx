@@ -15,15 +15,14 @@ import AppWrapper from "../components/AppWrapper";
 import Divider from "../components/Divider";
 import { useStoreState } from "../store";
 import ALink from "../components/ALink";
-import { API, Colors } from "../consts";
+import { APIv2, Colors } from "../consts";
 import Icon from "../components/Icon";
 
 interface Props {
-  domain?: string;
   id?: string;
 }
 
-const StatsPage: NextPage<Props> = ({ domain, id }) => {
+const StatsPage: NextPage<Props> = ({ id }) => {
   const { isAuthenticated } = useStoreState(s => s.auth);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -35,7 +34,7 @@ const StatsPage: NextPage<Props> = ({ domain, id }) => {
   useEffect(() => {
     if (!id || !isAuthenticated) return;
     axios
-      .get(`${API.STATS}?id=${id}&domain=${domain}`, getAxiosConfig())
+      .get(`${APIv2.Links}/${id}/stats`, getAxiosConfig())
       .then(({ data }) => {
         setLoading(false);
         setError(!data);
@@ -208,7 +207,6 @@ StatsPage.getInitialProps = ({ query }) => {
 };
 
 StatsPage.defaultProps = {
-  domain: "",
   id: ""
 };
 

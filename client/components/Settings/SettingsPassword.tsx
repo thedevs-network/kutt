@@ -6,7 +6,7 @@ import axios from "axios";
 import { getAxiosConfig } from "../../utils";
 import { useMessage } from "../../hooks";
 import { TextInput } from "../Input";
-import { API } from "../../consts";
+import { APIv2 } from "../../consts";
 import { Button } from "../Button";
 import Text, { H2 } from "../Text";
 import { Col } from "../Layout";
@@ -30,7 +30,7 @@ const SettingsPassword: FC = () => {
     setMessage();
     try {
       const res = await axios.post(
-        API.CHANGE_PASSWORD,
+        APIv2.AuthChangePassword,
         formState.values,
         getAxiosConfig()
       );

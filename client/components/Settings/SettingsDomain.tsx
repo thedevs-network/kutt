@@ -5,6 +5,7 @@ import styled from "styled-components";
 
 import { useStoreState, useStoreActions } from "../../store";
 import { Domain } from "../../store/settings";
+import { errorMessage } from "../../utils";
 import { useMessage } from "../../hooks";
 import Text, { H2, Span } from "../Text";
 import { Colors } from "../../consts";
@@ -14,7 +15,6 @@ import { Col } from "../Layout";
 import Table from "../Table";
 import Modal from "../Modal";
 import Icon from "../Icon";
-import { errorMessage } from "../../utils";
 
 const Th = styled(Flex).attrs({ as: "th", py: 3, px: 3 })`
   font-size: 15px;
@@ -24,15 +24,15 @@ const Td = styled(Flex).attrs({ as: "td", py: 12, px: 3 })`
 `;
 
 const SettingsDomain: FC = () => {
-  const [modal, setModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [domainToDelete, setDomainToDelete] = useState<Domain>(null);
-  const [message, setMessage] = useMessage(2000);
-  const domains = useStoreState(s => s.settings.domains);
   const { saveDomain, deleteDomain } = useStoreActions(s => s.settings);
+  const [domainToDelete, setDomainToDelete] = useState<Domain>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const domains = useStoreState(s => s.settings.domains);
+  const [message, setMessage] = useMessage(2000);
+  const [loading, setLoading] = useState(false);
+  const [modal, setModal] = useState(false);
   const [formState, { label, text }] = useFormState<{
-    customDomain: string;
+    address: string;
     homepage: string;
   }>(null, { withIds: true });
 
@@ -56,7 +56,7 @@ const SettingsDomain: FC = () => {
 
   const onDelete = async () => {
     setDeleteLoading(true);
-    await deleteDomain().catch(err =>
+    await deleteDomain(domainToDelete.id).catch(err =>
       setMessage(errorMessage(err, "Couldn't delete the domain."))
     );
     setMessage("Domain has been deleted successfully.", "green");
@@ -88,9 +88,11 @@ const SettingsDomain: FC = () => {
           </thead>
           <tbody>
             {domains.map(d => (
-              <tr key={d.customDomain}>
-                <Td width={2 / 5}>{d.customDomain}</Td>
-                <Td width={2 / 5}>{d.homepage || "default"}</Td>
+              <tr key={d.address}>
+                <Td width={2 / 5}>{d.address}</Td>
+                <Td width={2 / 5}>
+                  {d.homepage || process.env.DEFAULT_DOMAIN}
+                </Td>
                 <Td width={1 / 5} justifyContent="center">
                   <Icon
                     as="button"
@@ -123,7 +125,7 @@ const SettingsDomain: FC = () => {
           <Flex width={1} flexDirection={["column", "row"]}>
             <Col mr={[0, 2]} mb={[3, 0]} flex="0 0 auto">
               <Text
-                {...label("customDomain")}
+                {...label("address")}
                 as="label"
                 mb={[2, 3]}
                 fontSize={[15, 16]}
@@ -132,7 +134,7 @@ const SettingsDomain: FC = () => {
                 Domain
               </Text>
               <TextInput
-                {...text("customDomain")}
+                {...text("address")}
                 placeholder="example.com"
                 maxWidth="240px"
                 required
@@ -169,7 +171,7 @@ const SettingsDomain: FC = () => {
         </H2>
         <Text textAlign="center">
           Are you sure do you want to delete the domain{" "}
-          <Span bold>"{domainToDelete && domainToDelete.customDomain}"</Span>?
+          <Span bold>"{domainToDelete && domainToDelete.address}"</Span>?
         </Text>
         <Flex justifyContent="center" mt={44}>
           {deleteLoading ? (

@@ -1,9 +1,10 @@
 import cron from "node-cron";
 
-import { clearIPs } from "./db/ip";
+import query from "./queries";
+import env from "./env";
 
-if (Number(process.env.NON_USER_COOLDOWN)) {
+if (env.NON_USER_COOLDOWN) {
   cron.schedule("* */24 * * *", () => {
-    clearIPs().catch();
+    query.ip.clear().catch();
   });
 }

@@ -1,7 +1,7 @@
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import styled from "styled-components";
 
 import { useStoreActions, useStoreState } from "../store";
@@ -260,8 +260,8 @@ const Shortener = () => {
               options={[
                 { key: defaultDomain, value: "" },
                 ...domains.map(d => ({
-                  key: d.customDomain,
-                  value: d.customDomain
+                  key: d.address,
+                  value: d.address
                 }))
               ]}
             />

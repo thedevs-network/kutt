@@ -4,7 +4,7 @@ import cookie from "js-cookie";
 import axios from "axios";
 
 import { TokenPayload } from "../types";
-import { API } from "../consts";
+import { API, APIv2 } from "../consts";
 import { getAxiosConfig } from "../utils";
 
 export interface Auth {
@@ -35,14 +35,14 @@ export const auth: Auth = {
     state.isAdmin = false;
   }),
   login: thunk(async (actions, payload) => {
-    const res = await axios.post(API.LOGIN, payload);
+    const res = await axios.post(APIv2.AuthLogin, payload);
     const { token } = res.data;
     cookie.set("token", token, { expires: 7 });
     const tokenPayload: TokenPayload = decode(token);
     actions.add(tokenPayload);
   }),
   renew: thunk(async actions => {
-    const res = await axios.post(API.RENEW, null, getAxiosConfig());
+    const res = await axios.post(APIv2.AuthRenew, null, getAxiosConfig());
     const { token } = res.data;
     cookie.set("token", token, { expires: 7 });
     const tokenPayload: TokenPayload = decode(token);

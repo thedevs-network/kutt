@@ -1,6 +1,7 @@
 import { subMinutes } from "date-fns";
 
-import knex from "../knex";
+import knex from "../../knex";
+import env from "../../env";
 
 export const addIP = async (ipToGet: string) => {
   const ip = ipToGet.toLowerCase();
@@ -24,7 +25,7 @@ export const addIP = async (ipToGet: string) => {
   return ip;
 };
 export const getIP = async (ip: string) => {
-  const cooldownConfig = Number(process.env.NON_USER_COOLDOWN);
+  const cooldownConfig = env.NON_USER_COOLDOWN;
   const matchedIp = await knex<IP>("ips")
     .where({ ip: ip.toLowerCase() })
     .andWhere(
@@ -41,9 +42,6 @@ export const clearIPs = async () =>
     .where(
       "created_at",
       "<",
-      subMinutes(
-        new Date(),
-        Number(process.env.NON_USER_COOLDOWN)
-      ).toISOString()
+      subMinutes(new Date(), env.NON_USER_COOLDOWN).toISOString()
     )
     .delete();

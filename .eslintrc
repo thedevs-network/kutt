@@ -15,7 +15,7 @@
     "no-var": "warn",
     "no-console": "warn",
     "max-len": ["warn", { "comments": 80 }],
-    "no-param-reassign": ["warn", { "props": false }],
+    "no-param-reassign": 0,
     "require-atomic-updates": 0,
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/no-unused-vars": "off", // "warn" for production

@@ -6,7 +6,7 @@ import { getAxiosConfig } from "../utils";
 import { API, APIv2 } from "../consts";
 
 export interface Link {
-  id: number;
+  id: string;
   address: string;
   banned: boolean;
   banned_by_id?: number;
@@ -28,6 +28,14 @@ export interface NewLink {
   domain?: string;
   reuse?: boolean;
   reCaptchaToken?: string;
+}
+
+export interface BanLink {
+  id: string;
+  host?: boolean;
+  domain?: boolean;
+  user?: boolean;
+  userLinks?: boolean;
 }
 
 export interface LinksQuery {
@@ -53,7 +61,9 @@ export interface Links {
   get: Thunk<Links, LinksQuery>;
   add: Action<Links, Link>;
   set: Action<Links, LinksListRes>;
-  deleteOne: Thunk<Links, { id: string; domain?: string }>;
+  update: Action<Links, Partial<Link>>;
+  remove: Thunk<Links, string>;
+  ban: Thunk<Links, BanLink>;
   setLoading: Action<Links, boolean>;
 }
 
@@ -80,8 +90,17 @@ export const links: Links = {
     actions.setLoading(false);
     return res.data;
   }),
-  deleteOne: thunk(async (actions, payload) => {
-    await axios.post(API.DELETE_LINK, payload, getAxiosConfig());
+  remove: thunk(async (actions, id) => {
+    await axios.delete(`${APIv2.Links}/${id}`, getAxiosConfig());
+  }),
+  ban: thunk(async (actions, { id, ...payload }) => {
+    const res = await axios.post(
+      `${APIv2.Links}/admin/ban/${id}`,
+      payload,
+      getAxiosConfig()
+    );
+    actions.update({ id, banned: true });
+    return res.data;
   }),
   add: action((state, payload) => {
     state.items.pop();
@@ -90,6 +109,11 @@ export const links: Links = {
   set: action((state, payload) => {
     state.items = payload.data;
     state.total = payload.total;
+  }),
+  update: action((state, payload) => {
+    state.items = state.items.map(item =>
+      item.id === payload.id ? { ...item, ...payload } : item
+    );
   }),
   setLoading: action((state, payload) => {
     state.loading = payload;

@@ -1,4 +1,43 @@
-import { Handler } from "express";
+import { Handler, ErrorRequestHandler } from "express";
+import { validationResult } from "express-validator";
+import Raven from "raven";
+import signale from "signale";
+
+import { CustomError } from "../utils";
+import env from "../env";
+
+export const ip: Handler = (req, res, next) => {
+  req.realIP =
+    (req.headers["x-real-ip"] as string) || req.connection.remoteAddress || "";
+  return next();
+};
+
+export const error: ErrorRequestHandler = (error, req, res, next) => {
+  if (env.isDev) {
+    signale.fatal(error);
+  }
+
+  if (error instanceof CustomError) {
+    return res.status(error.statusCode || 500).json({ error: error.message });
+  }
+
+  if (env.RAVEN_DSN) {
+    Raven.captureException(error, {
+      user: { email: req.user && req.user.email }
+    });
+  }
+
+  return res.status(500).json({ error: "An error occurred." });
+};
+
+export const verify = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const message = errors.array()[0].msg;
+    throw new CustomError(message, 400);
+  }
+  return next();
+};
 
 export const query: Handler = (req, res, next) => {
   const { limit, skip, all } = req.query;

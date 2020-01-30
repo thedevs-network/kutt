@@ -16,7 +16,7 @@ import { Button } from "../components/Button";
 import Text, { H2 } from "../components/Text";
 import ALink from "../components/ALink";
 import Icon from "../components/Icon";
-import { API } from "../consts";
+import { APIv2 } from "../consts";
 
 const LoginForm = styled(Flex).attrs({
   as: "form",
@@ -80,7 +80,7 @@ const LoginPage = () => {
       if (type === "signup") {
         setLoading(s => ({ ...s, signup: true }));
         try {
-          await axios.post(API.SIGNUP, { email, password });
+          await axios.post(APIv2.AuthSignup, { email, password });
           setVerifying(true);
         } catch (error) {
           setError(error.response.data.error);

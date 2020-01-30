@@ -1,19 +1,20 @@
-import { RequestHandler } from "express";
-import { promisify } from "util";
-import dns from "dns";
-import axios from "axios";
-import URL from "url";
-import urlRegex from "url-regex";
-import { body } from "express-validator";
 import { differenceInMinutes, subHours, subDays, isAfter } from "date-fns";
 import { validationResult } from "express-validator";
+import { body } from "express-validator";
+import { RequestHandler } from "express";
+import { promisify } from "util";
+import urlRegex from "url-regex";
+import axios from "axios";
+import dns from "dns";
+import URL from "url";
 
+import { addProtocol, CustomError } from "../../utils";
 import { addCooldown, banUser } from "../db/user";
-import { getIP } from "../db/ip";
 import { getUserLinksCount } from "../db/link";
 import { getDomain } from "../db/domain";
 import { getHost } from "../db/host";
-import { addProtocol, CustomError } from "../utils";
+import { getIP } from "../db/ip";
+import env from "../../env";
 
 const dnsLookup = promisify(dns.lookup);
 
@@ -59,6 +60,7 @@ export const preservedUrls = [
   "banned",
   "terms",
   "privacy",
+  "protected",
   "report",
   "pricing"
 ];
@@ -82,10 +84,10 @@ export const validateUrl: RequestHandler = async (req, res, next) => {
 
   // If target is the URL shortener itself
   const { host } = URL.parse(addProtocol(req.body.target));
-  if (host === process.env.DEFAULT_DOMAIN) {
+  if (host === env.DEFAULT_DOMAIN) {
     return res
       .status(400)
-      .json({ error: `${process.env.DEFAULT_DOMAIN} URLs are not allowed.` });
+      .json({ error: `${env.DEFAULT_DOMAIN} URLs are not allowed.` });
   }
 
   // Validate password length
@@ -134,7 +136,7 @@ export const cooldownCheck = async (user: User) => {
 };
 
 export const ipCooldownCheck: RequestHandler = async (req, res, next) => {
-  const cooldownConfig = Number(process.env.NON_USER_COOLDOWN);
+  const cooldownConfig = env.NON_USER_COOLDOWN;
   if (req.user || !cooldownConfig) return next();
   const ip = await getIP(req.realIP);
   if (ip) {
@@ -151,10 +153,10 @@ export const ipCooldownCheck: RequestHandler = async (req, res, next) => {
 
 export const malwareCheck = async (user: User, target: string) => {
   const isMalware = await axios.post(
-    `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${process.env.GOOGLE_SAFE_BROWSING_KEY}`,
+    `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${env.GOOGLE_SAFE_BROWSING_KEY}`,
     {
       client: {
-        clientId: process.env.DEFAULT_DOMAIN.toLowerCase().replace(".", ""),
+        clientId: env.DEFAULT_DOMAIN.toLowerCase().replace(".", ""),
         clientVersion: "1.0.0"
       },
       threatInfo: {
@@ -190,9 +192,9 @@ export const urlCountsCheck = async (user: User) => {
     user_id: user.id,
     date: subDays(new Date(), 1)
   });
-  if (count > Number(process.env.USER_LIMIT_PER_DAY)) {
+  if (count > env.USER_LIMIT_PER_DAY) {
     throw new CustomError(
-      `You have reached your daily limit (${process.env.USER_LIMIT_PER_DAY}). Please wait 24h.`
+      `You have reached your daily limit (${env.USER_LIMIT_PER_DAY}). Please wait 24h.`
     );
   }
 };

@@ -3,6 +3,7 @@ import * as Knex from "knex";
 export async function createDomainTable(knex: Knex) {
   const hasTable = await knex.schema.hasTable("domains");
   if (!hasTable) {
+    await knex.schema.raw('create extension if not exists "uuid-ossp"');
     await knex.schema.createTable("domains", table => {
       table.increments("id").primary();
       table
@@ -24,6 +25,17 @@ export async function createDomainTable(knex: Knex) {
         .inTable("users")
         .unique();
       table.timestamps(false, true);
+    });
+  }
+
+  const hasUUID = await knex.schema.hasColumn("domains", "uuid");
+  if (!hasUUID) {
+    await knex.schema.raw('create extension if not exists "uuid-ossp"');
+    await knex.schema.alterTable("domains", table => {
+      table
+        .uuid("uuid")
+        .notNullable()
+        .defaultTo(knex.raw("uuid_generate_v4()"));
     });
   }
 }

@@ -4,16 +4,18 @@ import React, { FC, useState, useEffect } from "react";
 import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 import styled, { css } from "styled-components";
+import { ifProp } from "styled-tools";
 import QRCode from "qrcode.react";
 import Link from "next/link";
 
-import { useStoreActions, useStoreState } from "../store";
 import { removeProtocol, withComma, errorMessage } from "../utils";
+import { useStoreActions, useStoreState } from "../store";
+import { Link as LinkType } from "../store/links";
 import { Checkbox, TextInput } from "./Input";
 import { NavButton, Button } from "./Button";
+import Text, { H2, H4, Span } from "./Text";
 import { Col, RowCenter } from "./Layout";
-import Text, { H2, Span } from "./Text";
-import { ifProp } from "styled-tools";
+import { useMessage } from "../hooks";
 import Animation from "./Animation";
 import { Colors } from "../consts";
 import Tooltip from "./Tooltip";
@@ -21,7 +23,6 @@ import Table from "./Table";
 import ALink from "./ALink";
 import Modal from "./Modal";
 import Icon from "./Icon";
-import { useMessage } from "../hooks";
 
 const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
 const Th = styled(Flex)``;
@@ -87,6 +88,218 @@ const viewsFlex = {
 };
 const actionsFlex = { flexGrow: [1, 1, 2.5], flexShrink: [1, 1, 2.5] };
 
+interface RowProps {
+  index: number;
+  link: LinkType;
+  setDeleteModal: (number) => void;
+}
+
+interface BanForm {
+  host: boolean;
+  user: boolean;
+  userLinks: boolean;
+  domain: boolean;
+}
+
+const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
+  const isAdmin = useStoreState(s => s.auth.isAdmin);
+  const ban = useStoreActions(s => s.links.ban);
+  const [formState, { checkbox }] = useFormState<BanForm>();
+  const [copied, setCopied] = useState(false);
+  const [qrModal, setQRModal] = useState(false);
+  const [banModal, setBanModal] = useState(false);
+  const [banLoading, setBanLoading] = useState(false);
+  const [banMessage, setBanMessage] = useMessage();
+
+  const onCopy = () => {
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 1500);
+  };
+
+  const onBan = async () => {
+    setBanLoading(true);
+    try {
+      const res = await ban({ id: link.id, ...formState.values });
+      setBanMessage(res.message, "green");
+      setTimeout(() => {
+        setBanModal(false);
+      }, 2000);
+    } catch (err) {
+      setBanMessage(errorMessage(err));
+    }
+    setBanLoading(false);
+  };
+
+  return (
+    <>
+      <Tr key={index}>
+        <Td {...ogLinkFlex} withFade>
+          <ALink href={link.target}>{link.target}</ALink>
+        </Td>
+        <Td {...createdFlex}>{`${formatDistanceToNow(
+          new Date(link.created_at)
+        )} ago`}</Td>
+        <Td {...shortLinkFlex} withFade>
+          {copied ? (
+            <Animation
+              minWidth={32}
+              offset="10px"
+              duration="0.2s"
+              alignItems="center"
+            >
+              <Icon
+                size={[23, 24]}
+                py={0}
+                px={0}
+                mr={2}
+                p="3px"
+                name="check"
+                strokeWidth="3"
+                stroke={Colors.CheckIcon}
+              />
+            </Animation>
+          ) : (
+            <Animation minWidth={32} offset="-10px" duration="0.2s">
+              <CopyToClipboard text={link.link} onCopy={onCopy}>
+                <Action
+                  name="copy"
+                  strokeWidth="2.5"
+                  stroke={Colors.CopyIcon}
+                  backgroundColor={Colors.CopyIconBg}
+                />
+              </CopyToClipboard>
+            </Animation>
+          )}
+          <ALink href={link.link}>{removeProtocol(link.link)}</ALink>
+        </Td>
+        <Td {...viewsFlex}>{withComma(link.visit_count)}</Td>
+        <Td {...actionsFlex} justifyContent="flex-end">
+          {link.password && (
+            <>
+              <Tooltip id={`${index}-tooltip-password`}>
+                Password protected
+              </Tooltip>
+              <Action
+                as="span"
+                data-tip
+                data-for={`${index}-tooltip-password`}
+                name="key"
+                stroke={"#bbb"}
+                strokeWidth="2.5"
+                backgroundColor="none"
+              />
+            </>
+          )}
+          {link.banned && (
+            <>
+              <Tooltip id={`${index}-tooltip-banned`}>Banned</Tooltip>
+              <Action
+                as="span"
+                data-tip
+                data-for={`${index}-tooltip-banned`}
+                name="stop"
+                stroke="#bbb"
+                strokeWidth="2.5"
+                backgroundColor="none"
+              />
+            </>
+          )}
+          {link.visit_count > 0 && (
+            <Link href={`/stats?id=${link.id}`}>
+              <ALink title="View stats" forButton>
+                <Action
+                  name="pieChart"
+                  stroke={Colors.PieIcon}
+                  strokeWidth="2.5"
+                  backgroundColor={Colors.PieIconBg}
+                />
+              </ALink>
+            </Link>
+          )}
+          <Action
+            name="qrcode"
+            stroke="none"
+            fill={Colors.QrCodeIcon}
+            backgroundColor={Colors.QrCodeIconBg}
+            onClick={() => setQRModal(true)}
+          />
+          {isAdmin && !link.banned && (
+            <Action
+              name="stop"
+              strokeWidth="2"
+              stroke={Colors.StopIcon}
+              backgroundColor={Colors.StopIconBg}
+              onClick={() => setBanModal(true)}
+            />
+          )}
+          <Action
+            mr={0}
+            name="trash"
+            strokeWidth="2"
+            stroke={Colors.TrashIcon}
+            backgroundColor={Colors.TrashIconBg}
+            onClick={() => setDeleteModal(index)}
+          />
+        </Td>
+      </Tr>
+      <Modal
+        id="table-qrcode-modal"
+        minWidth="max-content"
+        show={qrModal}
+        closeHandler={() => setQRModal(false)}
+      >
+        <RowCenter width={192}>
+          <QRCode size={192} value={link.link} />
+        </RowCenter>
+      </Modal>
+      <Modal
+        id="table-ban-modal"
+        show={banModal}
+        closeHandler={() => setBanModal(false)}
+      >
+        <>
+          <H2 mb={24} textAlign="center" bold>
+            Ban link?
+          </H2>
+          <Text mb={24} textAlign="center">
+            Are you sure do you want to ban the link{" "}
+            <Span bold>"{removeProtocol(link.link)}"</Span>?
+          </Text>
+          <RowCenter>
+            <Checkbox {...checkbox("user")} label="User" mb={12} />
+            <Checkbox {...checkbox("userLinks")} label="User links" mb={12} />
+            <Checkbox {...checkbox("host")} label="Host" mb={12} />
+            <Checkbox {...checkbox("domain")} label="Domain" mb={12} />
+          </RowCenter>
+          <Flex justifyContent="center" mt={4}>
+            {banLoading ? (
+              <>
+                <Icon name="spinner" size={20} stroke={Colors.Spinner} />
+              </>
+            ) : banMessage.text ? (
+              <Text fontSize={15} color={banMessage.color}>
+                {banMessage.text}
+              </Text>
+            ) : (
+              <>
+                <Button color="gray" mr={3} onClick={() => setBanModal(false)}>
+                  Cancel
+                </Button>
+                <Button color="red" ml={3} onClick={onBan}>
+                  <Icon name="stop" stroke="white" mr={2} />
+                  Ban
+                </Button>
+              </>
+            )}
+          </Flex>
+        </>
+      </Modal>
+    </>
+  );
+};
+
 interface Form {
   all: boolean;
   limit: string;
@@ -97,10 +310,8 @@ interface Form {
 const LinksTable: FC = () => {
   const isAdmin = useStoreState(s => s.auth.isAdmin);
   const links = useStoreState(s => s.links);
-  const { get, deleteOne } = useStoreActions(s => s.links);
+  const { get, remove } = useStoreActions(s => s.links);
   const [tableMessage, setTableMessage] = useState("No links to show.");
-  const [copied, setCopied] = useState([]);
-  const [qrModal, setQRModal] = useState(-1);
   const [deleteModal, setDeleteModal] = useState(-1);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteMessage, setDeleteMessage] = useMessage();
@@ -113,7 +324,9 @@ const LinksTable: FC = () => {
   const linkToDelete = links.items[deleteModal];
 
   useEffect(() => {
-    get(options).catch(err => setTableMessage(err?.response?.data?.error));
+    get(options).catch(err =>
+      setTableMessage(err?.response?.data?.error || "An error occurred.")
+    );
   }, [options.limit, options.skip, options.all]);
 
   const onSubmit = e => {
@@ -121,20 +334,10 @@ const LinksTable: FC = () => {
     get(options);
   };
 
-  const onCopy = (index: number) => () => {
-    setCopied([index]);
-    setTimeout(() => {
-      setCopied(s => s.filter(i => i !== index));
-    }, 1500);
-  };
-
   const onDelete = async () => {
     setDeleteLoading(true);
     try {
-      await deleteOne({
-        id: linkToDelete.address,
-        domain: linkToDelete.domain
-      });
+      await remove(linkToDelete.id);
       await get(options);
       setDeleteModal(-1);
     } catch (err) {
@@ -254,98 +457,12 @@ const LinksTable: FC = () => {
             </Tr>
           ) : (
             <>
-              {links.items.map((l, index) => (
-                <Tr key={`link-${index}`}>
-                  <Td {...ogLinkFlex} withFade>
-                    <ALink href={l.target}>{l.target}</ALink>
-                  </Td>
-                  <Td {...createdFlex}>{`${formatDistanceToNow(
-                    new Date(l.created_at)
-                  )} ago`}</Td>
-                  <Td {...shortLinkFlex} withFade>
-                    {copied.includes(index) ? (
-                      <Animation
-                        minWidth={32}
-                        offset="10px"
-                        duration="0.2s"
-                        alignItems="center"
-                      >
-                        <Icon
-                          size={[23, 24]}
-                          py={0}
-                          px={0}
-                          mr={2}
-                          p="3px"
-                          name="check"
-                          strokeWidth="3"
-                          stroke={Colors.CheckIcon}
-                        />
-                      </Animation>
-                    ) : (
-                      <Animation minWidth={32} offset="-10px" duration="0.2s">
-                        <CopyToClipboard text={l.link} onCopy={onCopy(index)}>
-                          <Action
-                            name="copy"
-                            strokeWidth="2.5"
-                            stroke={Colors.CopyIcon}
-                            backgroundColor={Colors.CopyIconBg}
-                          />
-                        </CopyToClipboard>
-                      </Animation>
-                    )}
-                    <ALink href={l.link}>{removeProtocol(l.link)}</ALink>
-                  </Td>
-                  <Td {...viewsFlex}>{withComma(l.visit_count)}</Td>
-                  <Td {...actionsFlex} justifyContent="flex-end">
-                    {l.password && (
-                      <>
-                        <Tooltip id={`${index}-tooltip-password`}>
-                          Password protected
-                        </Tooltip>
-                        <Action
-                          as="span"
-                          data-tip
-                          data-for={`${index}-tooltip-password`}
-                          name="key"
-                          stroke="#bbb"
-                          strokeWidth="2.5"
-                          backgroundColor="none"
-                        />
-                      </>
-                    )}
-                    {l.visit_count > 0 && (
-                      <Link
-                        href={`/stats?id=${l.id}${
-                          l.domain ? `&domain=${l.domain}` : ""
-                        }`}
-                      >
-                        <ALink title="View stats" forButton>
-                          <Action
-                            name="pieChart"
-                            stroke={Colors.PieIcon}
-                            strokeWidth="2.5"
-                            backgroundColor={Colors.PieIconBg}
-                          />
-                        </ALink>
-                      </Link>
-                    )}
-                    <Action
-                      name="qrcode"
-                      stroke="none"
-                      fill={Colors.QrCodeIcon}
-                      backgroundColor={Colors.QrCodeIconBg}
-                      onClick={() => setQRModal(index)}
-                    />
-                    <Action
-                      mr={0}
-                      name="trash"
-                      strokeWidth="2"
-                      stroke={Colors.TrashIcon}
-                      backgroundColor={Colors.TrashIconBg}
-                      onClick={() => setDeleteModal(index)}
-                    />
-                  </Td>
-                </Tr>
+              {links.items.map((link, index) => (
+                <Row
+                  setDeleteModal={setDeleteModal}
+                  index={index}
+                  link={link}
+                />
               ))}
             </>
           )}
@@ -354,18 +471,6 @@ const LinksTable: FC = () => {
           <Tr justifyContent="flex-end">{Nav}</Tr>
         </tfoot>
       </Table>
-      <Modal
-        id="table-qrcode-modal"
-        minWidth="max-content"
-        show={qrModal > -1}
-        closeHandler={() => setQRModal(-1)}
-      >
-        {links.items[qrModal] && (
-          <RowCenter width={192}>
-            <QRCode size={192} value={links.items[qrModal].link} />
-          </RowCenter>
-        )}
-      </Modal>
       <Modal
         id="delete-custom-domain"
         show={deleteModal > -1}

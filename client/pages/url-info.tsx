@@ -1,21 +1,16 @@
+import { useRouter } from "next/router";
 import React from "react";
-import styled from "styled-components";
-import { Flex } from "reflexbox/styled-components";
-import { NextPage } from "next";
 
 import AppWrapper from "../components/AppWrapper";
 import Footer from "../components/Footer";
 import { H2, H4 } from "../components/Text";
 import { Col } from "../components/Layout";
 
-interface Props {
-  linkTarget?: string;
-}
-
-const UrlInfoPage: NextPage<Props> = ({ linkTarget }) => {
+const UrlInfoPage = () => {
+  const { query } = useRouter();
   return (
     <AppWrapper>
-      {!linkTarget ? (
+      {!query.target ? (
         <H2 my={4} light>
           404 | Link could not be found.
         </H2>
@@ -25,17 +20,13 @@ const UrlInfoPage: NextPage<Props> = ({ linkTarget }) => {
             <H2 my={3} light>
               Target:
             </H2>
-            <H4 bold>{linkTarget}</H4>
+            <H4 bold>{query.target}</H4>
           </Col>
           <Footer />
         </>
       )}
     </AppWrapper>
   );
-};
-
-UrlInfoPage.getInitialProps = async ctx => {
-  return { linkTarget: (ctx?.req as any)?.linkTarget };
 };
 
 export default UrlInfoPage;

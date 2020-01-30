@@ -1,10 +1,17 @@
-import { differenceInMinutes, subMinutes } from "date-fns";
+import { differenceInMinutes, addMinutes, subMinutes } from "date-fns";
 import { Handler } from "express";
 import passport from "passport";
+import bcrypt from "bcryptjs";
+import nanoid from "nanoid";
+import uuid from "uuid/v4";
 import axios from "axios";
 
-import { isAdmin, CustomError } from "../utils";
+import { CustomError } from "../utils";
+import * as utils from "../utils";
+import * as mail from "../mail";
+import query from "../queries";
 import knex from "../knex";
+import env from "../env";
 
 const authenticate = (
   type: "jwt" | "local" | "localapikey",
@@ -14,10 +21,8 @@ const authenticate = (
   async function auth(req, res, next) {
     if (req.user) return next();
 
-    return passport.authenticate(type, (err, user) => {
-      if (err) {
-        throw new CustomError("An error occurred");
-      }
+    passport.authenticate(type, (err, user) => {
+      if (err) return next(err);
 
       if (!user && isStrict) {
         throw new CustomError(error, 401);
@@ -38,7 +43,7 @@ const authenticate = (
       if (user) {
         req.user = {
           ...user,
-          admin: isAdmin(user.email)
+          admin: utils.isAdmin(user.email)
         };
         return next();
       }
@@ -56,7 +61,7 @@ export const apikey = authenticate(
 );
 
 export const cooldown: Handler = async (req, res, next) => {
-  const cooldownConfig = Number(process.env.NON_USER_COOLDOWN);
+  const cooldownConfig = env.NON_USER_COOLDOWN;
   if (req.user || !cooldownConfig) return next();
 
   const ip = await knex<IP>("ips")
@@ -80,8 +85,7 @@ export const cooldown: Handler = async (req, res, next) => {
 };
 
 export const recaptcha: Handler = async (req, res, next) => {
-  if (process.env.NODE_ENV !== "production") return next();
-  if (req.user) return next();
+  if (env.isDev || req.user) return next();
 
   const isReCaptchaValid = await axios({
     method: "post",
@@ -90,7 +94,7 @@ export const recaptcha: Handler = async (req, res, next) => {
       "Content-type": "application/x-www-form-urlencoded"
     },
     params: {
-      secret: process.env.RECAPTCHA_SECRET_KEY,
+      secret: env.RECAPTCHA_SECRET_KEY,
       response: req.body.reCaptchaToken,
       remoteip: req.realIP
     }
@@ -100,5 +104,117 @@ export const recaptcha: Handler = async (req, res, next) => {
     throw new CustomError("reCAPTCHA is not valid. Try again.", 401);
   }
 
+  return next();
+};
+
+export const admin: Handler = async (req, res, next) => {
+  if (req.user.admin) return next();
+  throw new CustomError("Unauthorized", 401);
+};
+
+export const signup: Handler = async (req, res) => {
+  const salt = await bcrypt.genSalt(12);
+  const password = await bcrypt.hash(req.body.password, salt);
+
+  const user = await query.user.add(
+    { email: req.body.email, password },
+    req.user
+  );
+
+  await mail.verification(user);
+
+  return res.status(201).send({ message: "Verification email has been sent." });
+};
+
+export const token: Handler = async (req, res) => {
+  const token = utils.signToken(req.user);
+  return res.status(200).send({ token });
+};
+
+export const verify: Handler = async (req, res, next) => {
+  if (!req.params.verificationToken) return next();
+
+  const [user] = await query.user.update(
+    {
+      verification_token: req.params.verificationToken,
+      verification_expires: [">", new Date().toISOString()]
+    },
+    {
+      verified: true,
+      verification_token: null,
+      verification_expires: null
+    }
+  );
+
+  if (user) {
+    const token = utils.signToken(user);
+    req.token = token;
+  }
+
+  return next();
+};
+
+export const changePassword: Handler = async (req, res) => {
+  const salt = await bcrypt.genSalt(12);
+  const password = await bcrypt.hash(req.body.password, salt);
+
+  const [user] = await query.user.update({ id: req.user.id }, { password });
+
+  if (!user) {
+    throw new CustomError("Couldn't change the password. Try again later.");
+  }
+
+  return res
+    .status(200)
+    .send({ message: "Your password has been changed successfully." });
+};
+
+export const generateApiKey = async (req, res) => {
+  const apikey = nanoid(40);
+
+  const [user] = await query.user.update({ id: req.user.id }, { apikey });
+
+  if (!user) {
+    throw new CustomError("Couldn't generate API key. Please try again later.");
+  }
+
+  return res.status(201).send({ apikey });
+};
+
+export const resetPasswordRequest = async (req, res) => {
+  const [user] = await query.user.update(
+    { email: req.body.email },
+    {
+      reset_password_token: uuid(),
+      reset_password_expires: addMinutes(new Date(), 30).toISOString()
+    }
+  );
+
+  if (user) {
+    await mail.resetPasswordToken(user);
+  }
+
+  return res.status(200).json({
+    error: "If email address exists, a reset password email has been sent."
+  });
+};
+
+export const resetPassword = async (req, res, next) => {
+  const { resetPasswordToken } = req.params;
+
+  if (resetPasswordToken) {
+    const [user] = await query.user.update(
+      {
+        reset_password_token: resetPasswordToken,
+        reset_password_expires: [">", new Date().toISOString()]
+      },
+      { reset_password_expires: null, reset_password_token: null }
+    );
+
+    if (user) {
+      const token = utils.signToken(user as UserJoined);
+      req.token = token;
+    }
+  }
   return next();
 };

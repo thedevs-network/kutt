@@ -1,21 +1,17 @@
 export enum API {
-  LOGIN = "/api/auth/login",
-  SIGNUP = "/api/auth/signup",
-  RENEW = "/api/auth/renew",
-  REPORT = "/api/url/report",
-  RESET_PASSWORD = "/api/auth/resetpassword",
-  CHANGE_PASSWORD = "/api/auth/changepassword",
   BAN_LINK = "/api/url/admin/ban",
-  CUSTOM_DOMAIN = "/api/url/customdomain",
-  GENERATE_APIKEY = "/api/auth/generateapikey",
-  SETTINGS = "/api/auth/usersettings",
-  SUBMIT = "/api/url/submit",
-  GET_LINKS = "/api/url/geturls",
-  DELETE_LINK = "/api/url/deleteurl",
   STATS = "/api/url/stats"
 }
 
 export enum APIv2 {
+  AuthLogin = "/api/v2/auth/login",
+  AuthSignup = "/api/v2/auth/signup",
+  AuthRenew = "/api/v2/auth/renew",
+  AuthResetPassword = "/api/v2/auth/reset-password",
+  AuthChangePassword = "/api/v2/auth/change-password",
+  AuthGenerateApikey = "/api/v2/auth/apikey",
+  Users = "/api/v2/users",
+  Domains = "/api/v2/domains",
   Links = "/api/v2/links"
 }
 
@@ -32,6 +28,8 @@ export enum Colors {
   CheckIcon = "hsl(144, 50%, 60%)",
   TrashIcon = "hsl(0, 100%, 69%)",
   TrashIconBg = "hsl(0, 100%, 96%)",
+  StopIcon = "hsl(10, 100%, 40%)",
+  StopIconBg = "hsl(10, 100%, 96%)",
   QrCodeIcon = "hsl(0, 0%, 35%)",
   QrCodeIconBg = "hsl(0, 0%, 94%)",
   PieIcon = "hsl(260, 100%, 69%)",

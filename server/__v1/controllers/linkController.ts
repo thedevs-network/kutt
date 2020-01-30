@@ -9,6 +9,7 @@ import urlRegex from "url-regex";
 import { promisify } from "util";
 import { deleteDomain, getDomain, setDomain } from "../db/domain";
 import { addIP } from "../db/ip";
+import env from "../../env";
 import {
   banLink,
   createShortLink,
@@ -18,9 +19,9 @@ import {
   getStats,
   getUserLinksCount
 } from "../db/link";
-import transporter from "../mail/mail";
-import * as redis from "../redis";
-import { addProtocol, generateShortLink, getStatsCacheTime } from "../utils";
+import transporter from "../../mail/mail";
+import * as redis from "../../redis";
+import { addProtocol, generateShortLink, getStatsCacheTime } from "../../utils";
 import {
   checkBannedDomain,
   checkBannedHost,
@@ -29,14 +30,14 @@ import {
   preservedUrls,
   urlCountsCheck
 } from "./validateBodyController";
-import { visitQueue } from "../queues";
+import queue from "../../queues";
 
 const dnsLookup = promisify(dns.lookup);
 
 const generateId = async () => {
   const address = generate(
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
-    Number(process.env.LINK_LENGTH) || 6
+    env.LINK_LENGTH
   );
   const link = await findLink({ address });
   if (!link) return address;
@@ -49,9 +50,8 @@ export const shortener: Handler = async (req, res) => {
     const targetDomain = URL.parse(target).hostname;
 
     const queries = await Promise.all([
-      process.env.GOOGLE_SAFE_BROWSING_KEY && cooldownCheck(req.user),
-      process.env.GOOGLE_SAFE_BROWSING_KEY &&
-        malwareCheck(req.user, req.body.target),
+      env.GOOGLE_SAFE_BROWSING_KEY && cooldownCheck(req.user),
+      env.GOOGLE_SAFE_BROWSING_KEY && malwareCheck(req.user, req.body.target),
       req.user && urlCountsCheck(req.user),
       req.user &&
         req.body.reuse &&
@@ -101,7 +101,7 @@ export const shortener: Handler = async (req, res) => {
       },
       req.user
     );
-    if (!req.user && Number(process.env.NON_USER_COOLDOWN)) {
+    if (!req.user && env.NON_USER_COOLDOWN) {
       addIP(req.realIP);
     }
 
@@ -115,7 +115,7 @@ export const goToLink: Handler = async (req, res, next) => {
   const { host } = req.headers;
   const reqestedId = req.params.id || req.body.id;
   const address = reqestedId.replace("+", "");
-  const customDomain = host !== process.env.DEFAULT_DOMAIN && host;
+  const customDomain = host !== env.DEFAULT_DOMAIN && host;
   const isBot = isbot(req.headers["user-agent"]);
 
   let domain;
@@ -126,7 +126,7 @@ export const goToLink: Handler = async (req, res, next) => {
   const link = await findLink({ address, domain_id: domain && domain.id });
 
   if (!link) {
-    if (host !== process.env.DEFAULT_DOMAIN) {
+    if (host !== env.DEFAULT_DOMAIN) {
       if (!domain || !domain.homepage) return next();
       return res.redirect(301, domain.homepage);
     }
@@ -156,7 +156,7 @@ export const goToLink: Handler = async (req, res, next) => {
       return res.status(401).json({ error: "Password is not correct" });
     }
     if (link.user_id && !isBot) {
-      visitQueue.add({
+      queue.visit.add({
         headers: req.headers,
         realIP: req.realIP,
         referrer: req.get("Referrer"),
@@ -168,7 +168,7 @@ export const goToLink: Handler = async (req, res, next) => {
   }
 
   if (link.user_id && !isBot) {
-    visitQueue.add({
+    queue.visit.add({
       headers: req.headers,
       realIP: req.realIP,
       referrer: req.get("Referrer"),
@@ -177,8 +177,8 @@ export const goToLink: Handler = async (req, res, next) => {
     });
   }
 
-  if (process.env.GOOGLE_ANALYTICS_UNIVERSAL && !isBot) {
-    const visitor = ua(process.env.GOOGLE_ANALYTICS_UNIVERSAL);
+  if (env.GOOGLE_ANALYTICS_UNIVERSAL && !isBot) {
+    const visitor = ua(env.GOOGLE_ANALYTICS_UNIVERSAL);
     visitor
       .pageview({
         dp: `/${address}`,
@@ -210,7 +210,7 @@ export const setCustomDomain: Handler = async (req, res) => {
       .status(400)
       .json({ error: "Maximum custom domain length is 40." });
   }
-  if (customDomain === process.env.DEFAULT_DOMAIN) {
+  if (customDomain === env.DEFAULT_DOMAIN) {
     return res.status(400).json({ error: "You can't use default domain." });
   }
   const isValidHomepage =
@@ -260,7 +260,7 @@ export const deleteCustomDomain: Handler = async (req, res) => {
 export const customDomainRedirection: Handler = async (req, res, next) => {
   const { headers, path } = req;
   if (
-    headers.host !== process.env.DEFAULT_DOMAIN &&
+    headers.host !== env.DEFAULT_DOMAIN &&
     (path === "/" ||
       preservedUrls
         .filter(l => l !== "url-password")
@@ -269,8 +269,7 @@ export const customDomainRedirection: Handler = async (req, res, next) => {
     const domain = await getDomain({ address: headers.host });
     return res.redirect(
       301,
-      (domain && domain.homepage) ||
-        `https://${process.env.DEFAULT_DOMAIN + path}`
+      (domain && domain.homepage) || `https://${env.DEFAULT_DOMAIN + path}`
     );
   }
   return next();
@@ -285,7 +284,7 @@ export const deleteUserLink: Handler = async (req, res) => {
 
   const response = await deleteLink({
     address: id,
-    domain: !domain || domain === process.env.DEFAULT_DOMAIN ? null : domain,
+    domain: !domain || domain === env.DEFAULT_DOMAIN ? null : domain,
     user_id: req.user.id
   });
 
@@ -302,8 +301,7 @@ export const getLinkStats: Handler = async (req, res) => {
   }
 
   const { hostname } = URL.parse(req.query.domain);
-  const hasCustomDomain =
-    req.query.domain && hostname !== process.env.DEFAULT_DOMAIN;
+  const hasCustomDomain = req.query.domain && hostname !== env.DEFAULT_DOMAIN;
   const customDomain = hasCustomDomain
     ? (await getDomain({ address: req.query.domain })) || ({ id: -1 } as Domain)
     : ({} as Domain);
@@ -341,15 +339,15 @@ export const reportLink: Handler = async (req, res) => {
   }
 
   const { hostname } = URL.parse(req.body.link);
-  if (hostname !== process.env.DEFAULT_DOMAIN) {
+  if (hostname !== env.DEFAULT_DOMAIN) {
     return res.status(400).json({
-      error: `You can only report a ${process.env.DEFAULT_DOMAIN} link`
+      error: `You can only report a ${env.DEFAULT_DOMAIN} link`
     });
   }
 
   const mail = await transporter.sendMail({
-    from: process.env.MAIL_USER,
-    to: process.env.REPORT_MAIL,
+    from: env.MAIL_USER,
+    to: env.REPORT_MAIL,
     subject: "[REPORT]",
     text: req.body.link,
     html: req.body.link

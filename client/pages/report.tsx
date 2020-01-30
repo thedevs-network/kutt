@@ -10,7 +10,7 @@ import { Button } from "../components/Button";
 import { Col } from "../components/Layout";
 import Icon from "../components/Icon";
 import { useMessage } from "../hooks";
-import { API } from "../consts";
+import { APIv2 } from "../consts";
 
 const ReportPage = () => {
   const [formState, { text }] = useFormState<{ url: string }>();
@@ -22,7 +22,7 @@ const ReportPage = () => {
     setLoading(true);
     setMessage();
     try {
-      await axios.post(API.REPORT, { link: formState.values.url }); // TODO: better api calls
+      await axios.post(`${APIv2.Links}/report`, { link: formState.values.url });
       setMessage("Thanks for the report, we'll take actions shortly.", "green");
       formState.clear();
     } catch (error) {

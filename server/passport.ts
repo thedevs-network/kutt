@@ -1,20 +1,21 @@
-import passport from "passport";
+import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey-update";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { Strategy as LocalStratergy } from "passport-local";
-import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey-update";
+import passport from "passport";
 import bcrypt from "bcryptjs";
 
-import { getUser } from "./db/user";
+import query from "./queries";
+import env from "./env";
 
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromHeader("authorization"),
-  secretOrKey: process.env.JWT_SECRET
+  secretOrKey: env.JWT_SECRET
 };
 
 passport.use(
   new JwtStrategy(jwtOptions, async (payload, done) => {
     try {
-      const user = await getUser(payload.sub);
+      const user = await query.user.find({ email: payload.sub });
       if (!user) return done(null, false);
       return done(null, user);
     } catch (err) {
@@ -30,7 +31,7 @@ const localOptions = {
 passport.use(
   new LocalStratergy(localOptions, async (email, password, done) => {
     try {
-      const user = await getUser(email);
+      const user = await query.user.find({ email });
       if (!user) {
         return done(null, false);
       }
@@ -53,7 +54,7 @@ const localAPIKeyOptions = {
 passport.use(
   new LocalAPIKeyStrategy(localAPIKeyOptions, async (apikey, done) => {
     try {
-      const user = await getUser(apikey);
+      const user = await query.user.find({ apikey });
       if (!user) {
         return done(null, false);
       }
