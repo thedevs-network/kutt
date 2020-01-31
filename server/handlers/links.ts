@@ -331,6 +331,8 @@ export const redirectCustomDomain: Handler = async (req, res, next) => {
 
     return res.redirect(301, redirectURL);
   }
+
+  return next();
 };
 
 export const stats: Handler = async (req, res) => {
