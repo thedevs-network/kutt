@@ -164,6 +164,7 @@ export const reportLink = [
       checkFalsy: true,
       checkNull: true
     })
+    .customSanitizer(addProtocol)
     .custom(value => URL.parse(value).hostname === env.DEFAULT_DOMAIN)
     .withMessage(`You can only report a ${env.DEFAULT_DOMAIN} link.`)
 ];
