@@ -71,7 +71,8 @@ const SettingsDomain: FC = () => {
       </H2>
       <Text mb={3}>
         You can set a custom domain for your short URLs, so instead of{" "}
-        <b>kutt.it/shorturl</b> you can have <b>example.com/shorturl.</b>
+        <b>{process.env.DEFAULT_DOMAIN}/shorturl</b> you can have{" "}
+        <b>example.com/shorturl.</b>
       </Text>
       <Text mb={4}>
         Point your domain A record to <b>192.64.116.170</b> then add the domain

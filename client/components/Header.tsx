@@ -101,7 +101,7 @@ const Header: FC = () => {
             }}
           >
             <img src="/images/logo.svg" alt="" />
-            Kutt.it
+            {process.env.SITE_NAME}
           </a>
         </LogoImage>
         {!isMobile && (

@@ -29,7 +29,7 @@ class AppDocument extends Document<Props> {
           />
           <meta
             name="description"
-            content="Kutt.it is a free and open source URL shortener with custom domains and stats."
+            content={`${process.env.SITE_NAME} is a free and open source URL shortener with custom domains and stats.`}
           />
           <link
             href="https://fonts.googleapis.com/css?family=Nunito:300,400,700"
@@ -44,23 +44,32 @@ class AppDocument extends Document<Props> {
           <meta name="theme-color" content="#f3f3f3" />
 
           <meta property="fb:app_id" content="123456789" />
-          <meta property="og:url" content="https://kutt.it" />
+          <meta
+            property="og:url"
+            content={`https://${process.env.DEFAULT_DOMAIN}`}
+          />
           <meta property="og:type" content="website" />
-          <meta property="og:title" content="Kutt.it" />
-          <meta property="og:image" content="https://kutt.it/images/card.png" />
+          <meta property="og:title" content={process.env.SITE_NAME} />
+          <meta
+            property="og:image"
+            content={`https://${process.env.DEFAULT_DOMAIN}/images/card.png`}
+          />
           <meta
             property="og:description"
             content="Free & Open Source Modern URL Shortener"
           />
-          <meta name="twitter:url" content="https://kutt.it" />
-          <meta name="twitter:title" content="Kutt.it" />
+          <meta
+            name="twitter:url"
+            content={`https://${process.env.DEFAULT_DOMAIN}`}
+          />
+          <meta name="twitter:title" content={process.env.SITE_NAME} />
           <meta
             name="twitter:description"
             content="Free & Open Source Modern URL Shortener"
           />
           <meta
             name="twitter:image"
-            content="https://kutt.it/images/card.png"
+            content={`https://${process.env.DEFAULT_DOMAIN}/images/card.png`}
           />
 
           {this.props.styleTags}

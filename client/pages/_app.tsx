@@ -73,7 +73,9 @@ class MyApp extends App<any> {
     return (
       <>
         <Head>
-          <title>Kutt.it | Modern Open Source URL shortener.</title>
+          <title>
+            {process.env.SITE_NAME} | Modern Open Source URL shortener.
+          </title>
         </Head>
         <StoreProvider store={this.store}>
           <Component {...pageProps} />

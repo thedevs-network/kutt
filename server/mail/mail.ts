@@ -25,24 +25,26 @@ const resetEmailTemplatePath = path.join(__dirname, "template-reset.html");
 const verifyEmailTemplatePath = path.join(__dirname, "template-verify.html");
 const resetEmailTemplate = fs
   .readFileSync(resetEmailTemplatePath, { encoding: "utf-8" })
-  .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN);
+  .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+  .replace(/{{site_name}}/gm, env.SITE_NAME);
 const verifyEmailTemplate = fs
   .readFileSync(verifyEmailTemplatePath, { encoding: "utf-8" })
-  .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN);
+  .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+  .replace(/{{site_name}}/gm, env.SITE_NAME);
 
 export const verification = async (user: User) => {
   const mail = await transporter.sendMail({
     from: env.MAIL_FROM || env.MAIL_USER,
     to: user.email,
     subject: "Verify your account",
-    text: verifyMailText.replace(
-      /{{verification}}/gim,
-      user.verification_token
-    ),
-    html: verifyEmailTemplate.replace(
-      /{{verification}}/gim,
-      user.verification_token
-    )
+    text: verifyMailText
+      .replace(/{{verification}}/gim, user.verification_token)
+      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+      .replace(/{{site_name}}/gm, env.SITE_NAME),
+    html: verifyEmailTemplate
+      .replace(/{{verification}}/gim, user.verification_token)
+      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+      .replace(/{{site_name}}/gm, env.SITE_NAME)
   });
 
   if (!mail.accepted.length) {
@@ -52,7 +54,7 @@ export const verification = async (user: User) => {
 
 export const resetPasswordToken = async (user: User) => {
   const mail = await transporter.sendMail({
-    from: env.MAIL_USER,
+    from: env.MAIL_FROM || env.MAIL_USER,
     to: user.email,
     subject: "Reset your password",
     text: resetMailText
