@@ -2,6 +2,7 @@ import { cleanEnv, num, str, bool } from "envalid";
 
 const env = cleanEnv(process.env, {
   PORT: num({ default: 3000 }),
+  SITE_NAME: str({ example: "Kutt" }),
   DEFAULT_DOMAIN: str({ example: "kutt.it" }),
   LINK_LENGTH: num({ default: 6 }),
   DB_HOST: str({ default: "localhost" }),
