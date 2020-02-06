@@ -8,8 +8,8 @@ const router = Router();
 
 router.get(
   "/",
-  asyncHandler(auth.jwt),
   asyncHandler(auth.apikey),
+  asyncHandler(auth.jwt),
   asyncHandler(user.get)
 );
 
