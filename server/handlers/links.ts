@@ -173,12 +173,12 @@ export const ban: Handler = async (req, res) => {
   }
 
   // 5. Ban link owner
-  if (req.body.user) {
+  if (req.body.user && link.user_id) {
     tasks.push(query.user.update({ id: link.user_id }, update));
   }
 
   // 6. Ban all of owner's links
-  if (req.body.userLinks) {
+  if (req.body.userLinks && link.user_id) {
     tasks.push(query.link.update({ user_id: link.user_id }, update));
   }
 
