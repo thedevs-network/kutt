@@ -11,6 +11,8 @@ const env = cleanEnv(process.env, {
   DB_USER: str(),
   DB_PASSWORD: str(),
   DB_SSL: bool({ default: false }),
+  DB_POOL_MIN: num({ default: 2 }),
+  DB_POOL_MAX: num({ default: 10 }),
   NEO4J_DB_URI: str({ default: "" }),
   NEO4J_DB_USERNAME: str({ default: "" }),
   NEO4J_DB_PASSWORD: str({ default: "" }),
