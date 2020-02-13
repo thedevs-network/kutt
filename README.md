@@ -49,10 +49,11 @@ You can still find the stable version (v1) in the [v1](https://github.com/thedev
 - Passport (Authentication)
 - React (UI library)
 - Next (Universal/server-side rendered React)
-- Redux (State management)
+- Easy Peasy (State management)
 - styled-components (CSS styling solution library)
 - Recharts (Chart library)
 - PostgreSQL (database)
+- Redis (Cache layer)
 
 ## Setup
 
