@@ -78,7 +78,7 @@ Download Kutt's extension for web browsers via below links. You can also find th
 
 ## API
 
-[Visit API v2 documentation on Swagger](https://app.swaggerhub.com/apis/poeti8/Kutt/2.0.0)
+Visit API v2 documentation on [docs.kutt.it](https://docs.kutt.it)
 
 ## Integrations
 

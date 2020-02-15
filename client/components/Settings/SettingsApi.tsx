@@ -52,11 +52,7 @@ const SettingsApi: FC = () => {
         get shortend URLs. If
         {" you're"} not familiar with API, {"don't"} generate the key. DO NOT
         share this key on the client side of your website.{" "}
-        <ALink
-          href="https://github.com/thedevs-network/kutt#api"
-          title="API Docs"
-          target="_blank"
-        >
+        <ALink href="https://docs.kutt.it" title="API Docs" target="_blank">
           Read API docs.
         </ALink>
       </Text>
