@@ -148,10 +148,6 @@ export const remove = async (match: Partial<Link>) => {
     throw new CustomError("Link was not found.");
   }
 
-  await knex<Visit>("visits")
-    .where("link_id", link.id)
-    .delete();
-
   const deletedLink = await knex<Link>("links")
     .where("id", link.id)
     .delete();

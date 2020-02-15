@@ -73,3 +73,13 @@ export const update = async (match: Match<User>, update: Partial<User>) => {
 
   return users;
 };
+
+export const remove = async (user: User) => {
+  const deletedUser = await knex<User>("users")
+    .where("id", user.id)
+    .delete();
+
+  redis.remove.user(user);
+
+  return !!deletedUser;
+};

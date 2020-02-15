@@ -26,7 +26,8 @@ export async function createLinkTable(knex: Knex) {
       table
         .integer("user_id")
         .references("id")
-        .inTable("users");
+        .inTable("users")
+        .onDelete("CASCADE");
       table
         .integer("visit_count")
         .notNullable()

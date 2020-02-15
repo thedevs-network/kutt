@@ -15,7 +15,8 @@ export async function createVisitTable(knex: Knex) {
         .integer("link_id")
         .references("id")
         .inTable("links")
-        .notNullable();
+        .notNullable()
+        .onDelete("CASCADE");
       table.jsonb("referrers").defaultTo("{}");
       table
         .integer("total")
