@@ -56,7 +56,12 @@ const SettingsDeleteAccount: FC = () => {
         Password
       </Text>
       <RowCenterV as="form" onSubmit={onSubmit}>
-        <TextInput placeholder="Password..." {...password("password")} mr={3} />
+        <TextInput
+          {...password("password")}
+          placeholder="Password..."
+          autocomplete="off"
+          mr={3}
+        />
         <Button color="red" type="submit" disabled={loading}>
           <Icon name={loading ? "spinner" : "trash"} mr={2} stroke="white" />
           {loading ? "Deleting..." : "Delete"}

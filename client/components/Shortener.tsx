@@ -279,6 +279,7 @@ const Shortener = () => {
             <TextInput
               {...text("customurl")}
               placeholder="Custom address"
+              autocomplete="off"
               data-lpignore
               pl={[3, 24]}
               pr={[3, 24]}
@@ -301,6 +302,7 @@ const Shortener = () => {
             <TextInput
               {...password("password")}
               placeholder="Password"
+              autocomplete="off"
               data-lpignore
               pl={[3, 24]}
               pr={[3, 24]}

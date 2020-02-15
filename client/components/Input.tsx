@@ -5,7 +5,7 @@ import { FC } from "react";
 
 import { Span } from "./Text";
 
-interface StyledSelectProps extends BoxProps {
+interface StyledTextProps extends BoxProps {
   autoFocus?: boolean;
   name?: string;
   id?: string;
@@ -16,11 +16,12 @@ interface StyledSelectProps extends BoxProps {
   placeholderSize?: number[];
   br?: string;
   bbw?: string;
+  autocomplete?: "on" | "off";
 }
 
 export const TextInput = styled(Flex).attrs({
   as: "input"
-})<StyledSelectProps>`
+})<StyledTextProps>`
   position: relative;
   box-sizing: border-box;
   letter-spacing: 0.05em;

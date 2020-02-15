@@ -68,6 +68,7 @@ const ProtectedPage: NextPage<Props> = () => {
             <TextInput
               {...password("password")}
               placeholder="Password"
+              autocomplete="off"
               height={[44, 54]}
               width={[1, 1 / 2]}
               mr={3}
