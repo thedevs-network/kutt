@@ -1,5 +1,5 @@
 {
-  "compilerOptions": {
+	"compilerOptions": {
 		"target": "es2018",
 		"module": "commonjs",
 		"sourceMap": true,
@@ -8,9 +8,12 @@
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
 		"noEmit": false,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,		
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
 		"strict": false
-  },
-	"include": ["global.d.ts", "server"]
+	},
+	"include": [
+		"global.d.ts",
+		"server"
+	]
 }
