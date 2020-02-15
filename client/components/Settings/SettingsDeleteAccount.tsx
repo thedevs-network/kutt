@@ -15,9 +15,12 @@ import Icon from "../Icon";
 const SettingsDeleteAccount: FC = () => {
   const [message, setMessage] = useMessage(1500);
   const [loading, setLoading] = useState(false);
-  const [formState, { password, label }] = useFormState(null, {
-    withIds: true
-  });
+  const [formState, { password, label }] = useFormState<{ accpass: string }>(
+    null,
+    {
+      withIds: true
+    }
+  );
 
   const onSubmit = async e => {
     e.preventDefault();
@@ -26,7 +29,7 @@ const SettingsDeleteAccount: FC = () => {
     try {
       await axios.post(
         `${APIv2.Users}/delete`,
-        formState.values,
+        { password: formState.values.accpass },
         getAxiosConfig()
       );
       Router.push("/logout");
@@ -57,7 +60,7 @@ const SettingsDeleteAccount: FC = () => {
       </Text>
       <RowCenterV as="form" onSubmit={onSubmit}>
         <TextInput
-          {...password("password")}
+          {...password("accpass")}
           placeholder="Password..."
           autocomplete="off"
           mr={3}
