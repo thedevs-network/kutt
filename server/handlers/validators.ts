@@ -2,6 +2,7 @@ import { body, param } from "express-validator";
 import { isAfter, subDays, subHours } from "date-fns";
 import urlRegex from "url-regex";
 import { promisify } from "util";
+import bcrypt from "bcryptjs";
 import axios from "axios";
 import dns from "dns";
 import URL from "url";
@@ -94,7 +95,7 @@ export const createLink = [
       });
       req.body.domain = domain || null;
 
-      return !!domain;
+      if (!domain) return Promise.reject();
     })
     .withMessage("You can't use this domain.")
 ];
@@ -125,12 +126,12 @@ export const addDomain = [
     .withMessage("You can't use the default domain.")
     .custom(async (value, { req }) => {
       const domains = await query.domain.get({ user_id: req.user.id });
-      return domains.length === 0;
+      if (domains.length !== 0) return Promise.reject();
     })
     .withMessage("You already own a domain. Contact support if you need more.")
     .custom(async value => {
       const domain = await query.domain.find({ address: value });
-      return !domain || !domain.user_id || !domain.banned;
+      if (domain?.user_id || domain?.banned) return Promise.reject();
     })
     .withMessage("You can't add this domain."),
   body("homepage")
@@ -225,7 +226,7 @@ export const signup = [
         req.user = user;
       }
 
-      return !user || !user.verified;
+      if (user?.verified) return Promise.reject();
     })
     .withMessage("You can't use this email address.")
 ];
@@ -257,6 +258,16 @@ export const resetPasswordRequest = [
     .isEmail()
     .isLength({ min: 0, max: 255 })
     .withMessage("Email length must be max 255.")
+];
+
+export const deleteUser = [
+  body("password", "Password is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 8, max: 64 })
+    .custom(async (password, { req }) => {
+      const isMatch = await bcrypt.compare(password, req.user.password);
+      if (!isMatch) return Promise.reject();
+    })
 ];
 
 export const cooldown = (user: User) => {

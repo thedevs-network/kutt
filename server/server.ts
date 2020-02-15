@@ -12,7 +12,6 @@ import Raven from "raven";
 import * as helpers from "./handlers/helpers";
 import * as links from "./handlers/links";
 import * as auth from "./handlers/auth";
-import { initializeDb } from "./knex";
 import __v1Routes from "./__v1";
 import routes from "./routes";
 
@@ -28,8 +27,6 @@ const app = nextApp({ dir: "./client", dev: env.isDev });
 const handle = app.getRequestHandler();
 
 app.prepare().then(async () => {
-  await initializeDb();
-
   const server = express();
   server.set("trust proxy", true);
 

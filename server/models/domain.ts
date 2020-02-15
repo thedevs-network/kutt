@@ -23,19 +23,9 @@ export async function createDomainTable(knex: Knex) {
         .integer("user_id")
         .references("id")
         .inTable("users")
+        .onDelete("SET NULL")
         .unique();
       table.timestamps(false, true);
-    });
-  }
-
-  const hasUUID = await knex.schema.hasColumn("domains", "uuid");
-  if (!hasUUID) {
-    await knex.schema.raw('create extension if not exists "uuid-ossp"');
-    await knex.schema.alterTable("domains", table => {
-      table
-        .uuid("uuid")
-        .notNullable()
-        .defaultTo(knex.raw("uuid_generate_v4()"));
     });
   }
 }

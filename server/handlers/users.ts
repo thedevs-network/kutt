@@ -12,3 +12,8 @@ export const get = async (req, res) => {
 
   return res.status(200).send(data);
 };
+
+export const remove = async (req, res) => {
+  await query.user.remove(req.user);
+  return res.status(200).send("OK");
+};
