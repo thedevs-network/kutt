@@ -98,6 +98,57 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
     .send(utils.sanitize.link({ ...link, domain: domain?.address }));
 };
 
+export const edit: Handler = async (req, res) => {
+  const { address, target } = req.body;
+
+  if (!address && !target) {
+    throw new CustomError("Should at least update one field.");
+  }
+
+  const link = await query.link.find({
+    uuid: req.params.id,
+    ...(!req.user.admin && { user_id: req.user.id })
+  });
+
+  if (!link) {
+    throw new CustomError("Link was not found.");
+  }
+
+  const targetDomain = URL.parse(target).hostname;
+  const domain_id = link.domain_id;
+
+  const queries = await Promise.all([
+    validators.cooldown(req.user),
+    validators.malware(req.user, target),
+    address !== link.address &&
+      query.link.find({
+        address,
+        user_id: req.user.id,
+        domain_id
+      }),
+    validators.bannedDomain(targetDomain),
+    validators.bannedHost(targetDomain)
+  ]);
+
+  // Check if custom link already exists
+  if (queries[2]) {
+    throw new CustomError("Custom URL is already in use.");
+  }
+
+  // Update link
+  const [updatedLink] = await query.link.update(
+    {
+      id: link.id
+    },
+    {
+      ...(address && { address }),
+      ...(target && { target })
+    }
+  );
+
+  return res.status(200).send(utils.sanitize.link({ ...link, ...updatedLink }));
+};
+
 export const remove: Handler = async (req, res) => {
   const link = await query.link.remove({
     uuid: req.params.id,

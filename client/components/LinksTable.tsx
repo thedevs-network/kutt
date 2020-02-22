@@ -65,6 +65,11 @@ Td.defaultProps = {
   px: [12, 12, 3]
 };
 
+const EditContent = styled(Col)`
+  border-bottom: 1px solid ${Colors.TableHeadBorder};
+  background-color: #fafafa;
+`;
+
 const Action = (props: React.ComponentProps<typeof Icon>) => (
   <Icon
     as="button"
@@ -101,15 +106,31 @@ interface BanForm {
   domain: boolean;
 }
 
+interface EditForm {
+  target: string;
+  address: string;
+}
+
 const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
   const isAdmin = useStoreState(s => s.auth.isAdmin);
   const ban = useStoreActions(s => s.links.ban);
-  const [formState, { checkbox }] = useFormState<BanForm>();
+  const edit = useStoreActions(s => s.links.edit);
+  const [banFormState, { checkbox }] = useFormState<BanForm>();
+  const [editFormState, { text, label }] = useFormState<EditForm>(
+    {
+      target: link.target,
+      address: link.address
+    },
+    { withIds: true }
+  );
   const [copied, setCopied] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
   const [qrModal, setQRModal] = useState(false);
   const [banModal, setBanModal] = useState(false);
   const [banLoading, setBanLoading] = useState(false);
   const [banMessage, setBanMessage] = useMessage();
+  const [editLoading, setEditLoading] = useState(false);
+  const [editMessage, setEditMessage] = useMessage();
 
   const onCopy = () => {
     setCopied(true);
@@ -121,7 +142,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
   const onBan = async () => {
     setBanLoading(true);
     try {
-      const res = await ban({ id: link.id, ...formState.values });
+      const res = await ban({ id: link.id, ...banFormState.values });
       setBanMessage(res.message, "green");
       setTimeout(() => {
         setBanModal(false);
@@ -130,6 +151,25 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
       setBanMessage(errorMessage(err));
     }
     setBanLoading(false);
+  };
+
+  const onEdit = async e => {
+    e.preventDefault();
+    if (editLoading) return;
+    setEditLoading(true);
+    try {
+      await edit({ id: link.id, ...editFormState.values });
+      setShowEdit(false);
+    } catch (err) {
+      setEditMessage(errorMessage(err));
+    }
+    setEditLoading(false);
+  };
+
+  const toggleEdit = () => {
+    setShowEdit(s => !s);
+    if (showEdit) editFormState.reset();
+    setEditMessage("");
   };
 
   return (
@@ -225,6 +265,13 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
             backgroundColor={Colors.QrCodeIconBg}
             onClick={() => setQRModal(true)}
           />
+          <Action
+            name="editAlt"
+            strokeWidth="2.5"
+            stroke={Colors.EditIcon}
+            backgroundColor={Colors.EditIconBg}
+            onClick={toggleEdit}
+          />
           {isAdmin && !link.banned && (
             <Action
               name="stop"
@@ -244,6 +291,80 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
           />
         </Td>
       </Tr>
+      {showEdit && (
+        <EditContent px={[3, 3, 24]} py={[3, 3, 24]}>
+          <Col as="form" alignItems="flex-start" onSubmit={onEdit}>
+            <Flex alignItems="flex-start">
+              <Col alignItems="flex-start" mr={[0, 3, 3]}>
+                <Text
+                  {...label("target")}
+                  as="label"
+                  mb={2}
+                  fontSize={[14, 15]}
+                  bold
+                >
+                  Target:
+                </Text>
+                <Flex as="form">
+                  <TextInput
+                    {...text("target")}
+                    placeholder="Target..."
+                    placeholderSize={[13, 14]}
+                    fontSize={[14, 15]}
+                    height={[40, 44]}
+                    width={[1, 300, 420]}
+                    pl={[3, 24]}
+                    pr={[3, 24]}
+                    required
+                  />
+                </Flex>
+              </Col>
+              <Col alignItems="flex-start">
+                <Text
+                  {...label("address")}
+                  as="label"
+                  mb={2}
+                  fontSize={[14, 15]}
+                  bold
+                >
+                  {link.domain || process.env.DEFAULT_DOMAIN}/
+                </Text>
+                <Flex as="form">
+                  <TextInput
+                    {...text("address")}
+                    placeholder="Custom address..."
+                    placeholderSize={[13, 14]}
+                    fontSize={[14, 15]}
+                    height={[40, 44]}
+                    width={[1, 210, 240]}
+                    pl={[3, 24]}
+                    pr={[3, 24]}
+                    required
+                  />
+                </Flex>
+              </Col>
+            </Flex>
+            <Button
+              color="blue"
+              mt={3}
+              height={[30, 38]}
+              disabled={editLoading}
+            >
+              <Icon
+                name={editLoading ? "spinner" : "refresh"}
+                stroke="white"
+                mr={2}
+              />
+              {editLoading ? "Updating..." : "Update"}
+            </Button>
+            {editMessage.text && (
+              <Text mt={3} fontSize={15} color={editMessage.color}>
+                {editMessage.text}
+              </Text>
+            )}
+          </Col>
+        </EditContent>
+      )}
       <Modal
         id="table-qrcode-modal"
         minWidth="max-content"

@@ -100,6 +100,37 @@ export const createLink = [
     .withMessage("You can't use this domain.")
 ];
 
+export const editLink = [
+  body("target")
+    .optional({ checkFalsy: true, nullable: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 2040 })
+    .withMessage("Maximum URL length is 2040.")
+    .customSanitizer(addProtocol)
+    .custom(
+      value =>
+        urlRegex({ exact: true, strict: false }).test(value) ||
+        /^(?!https?)(\w+):\/\//.test(value)
+    )
+    .withMessage("URL is not valid.")
+    .custom(value => URL.parse(value).host !== env.DEFAULT_DOMAIN)
+    .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
+  body("address")
+    .optional({ checkFalsy: true, nullable: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 64 })
+    .withMessage("Custom URL length must be between 1 and 64.")
+    .custom(value => /^[a-zA-Z0-9-_]+$/g.test(value))
+    .withMessage("Custom URL is not valid")
+    .custom(value => !preservedUrls.some(url => url.toLowerCase() === value))
+    .withMessage("You can't use this custom URL."),
+  param("id", "ID is invalid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 36, max: 36 })
+];
+
 export const redirectProtected = [
   body("password", "Password is invalid.")
     .exists({ checkFalsy: true, checkNull: true })

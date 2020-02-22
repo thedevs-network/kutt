@@ -12,6 +12,7 @@ import PieChart from "./PieChart";
 import Refresh from "./Refresh";
 import Spinner from "./Spinner";
 import Shuffle from "./Shuffle";
+import EditAlt from "./EditAlt";
 import QRCode from "./QRCode";
 import Signup from "./Signup";
 import Trash from "./Trash";
@@ -36,6 +37,7 @@ const icons = {
   clipboard: Clipboard,
   copy: Copy,
   edit: Edit,
+  editAlt: EditAlt,
   heart: Heart,
   key: Key,
   lock: Lock,

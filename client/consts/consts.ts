@@ -32,6 +32,8 @@ export enum Colors {
   StopIconBg = "hsl(10, 100%, 96%)",
   QrCodeIcon = "hsl(0, 0%, 35%)",
   QrCodeIconBg = "hsl(0, 0%, 94%)",
+  EditIcon = "hsl(46, 90%, 50%)",
+  EditIconBg = "hsl(46, 100%, 94%)",
   PieIcon = "hsl(260, 100%, 69%)",
   PieIconBg = "hsl(260, 100%, 96%)",
   TableHeadBg = "hsl(200, 12%, 95%)",

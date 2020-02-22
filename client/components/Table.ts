@@ -30,26 +30,32 @@ const Table = styled(Flex)<{ scrollWidth?: string }>`
   tr {
     border-bottom: 1px solid ${Colors.TableHeadBorder};
   }
+
   tbody {
     border-bottom-right-radius: 12px;
     border-bottom-left-radius: 12px;
     overflow: hidden;
   }
+
   tbody + tfoot {
     border: none;
   }
+
   tbody tr:hover {
     background-color: ${Colors.TableRowHover};
   }
+
   thead {
     background-color: ${Colors.TableHeadBg};
     border-top-right-radius: 12px;
     border-top-left-radius: 12px;
     font-weight: bold;
+
     tr {
       border-bottom: 1px solid ${Colors.TableBorder};
     }
   }
+
   tfoot {
     background-color: ${Colors.TableHeadBg};
     border-bottom-right-radius: 12px;

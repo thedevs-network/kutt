@@ -38,6 +38,12 @@ export interface BanLink {
   userLinks?: boolean;
 }
 
+export interface EditLink {
+  id: string;
+  target: string;
+  address: string;
+}
+
 export interface LinksQuery {
   limit: string;
   skip: string;
@@ -63,6 +69,7 @@ export interface Links {
   set: Action<Links, LinksListRes>;
   update: Action<Links, Partial<Link>>;
   remove: Thunk<Links, string>;
+  edit: Thunk<Links, EditLink>;
   ban: Thunk<Links, BanLink>;
   setLoading: Action<Links, boolean>;
 }
@@ -101,6 +108,14 @@ export const links: Links = {
     );
     actions.update({ id, banned: true });
     return res.data;
+  }),
+  edit: thunk(async (actions, { id, ...payload }) => {
+    const res = await axios.patch(
+      `${APIv2.Links}/${id}`,
+      payload,
+      getAxiosConfig()
+    );
+    actions.update(res.data);
   }),
   add: action((state, payload) => {
     state.items.pop();
