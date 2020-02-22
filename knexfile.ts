@@ -7,7 +7,7 @@ module.exports = {
       host: env.DB_HOST,
       database: env.DB_NAME,
       user: env.DB_USER,
-      port: env.PORT,
+      port: env.DB_PORT,
       password: env.DB_PASSWORD
     },
     migrations: {
