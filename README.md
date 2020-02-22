@@ -13,13 +13,11 @@ _Contributions and bug reports are welcome._
 [![GitHub license](https://img.shields.io/github/license/thedevs-network/kutt.svg)](https://github.com/thedevs-network/kutt/blob/develop/LICENSE)
 [![Twitter](https://img.shields.io/twitter/url/https/github.com/thedevs-network/kutt/.svg?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fthedevs-network%2Fkutt%2F)
 
-## Kutt v2 (🚧 beta)
+## Migration from v1
 
 The new version of Kutt is here. In version 2, we used TypeScript and we moved from Neo4j to PostgreSQL database in favor of performance and we're working on adding new features.
 
 If you're coming from v1, refer to [MIGRATION.md](MIGRATION.md) to migrate data from Neo4j to PostgreSQL.
-
-You can still find the stable version (v1) in the [v1](https://github.com/thedevs-network/kutt/tree/v1) branch.
 
 ## Table of Contents
 
