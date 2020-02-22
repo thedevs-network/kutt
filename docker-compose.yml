@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   kutt:
@@ -7,9 +7,10 @@ services:
     depends_on:
       - postgres
       - redis
+    command: ["./wait-for-it.sh", "postgres:5432", "--", "npm", "start"]
     ports:
       - "3000:3000"
-    env_file: 
+    env_file:
       - .env
     environment:
       DB_HOST: postgres
@@ -18,7 +19,7 @@ services:
       DB_PASSWORD: pass
     networks:
       - kutt-network
-    
+
   redis:
     image: redis:alpine
     container_name: redis
