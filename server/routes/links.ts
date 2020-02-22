@@ -28,6 +28,15 @@ router.post(
   asyncHandler(link.create)
 );
 
+router.patch(
+  "/:id",
+  asyncHandler(auth.apikey),
+  asyncHandler(auth.jwtLoose),
+  validators.editLink,
+  asyncHandler(helpers.verify),
+  asyncHandler(link.edit)
+);
+
 router.delete(
   "/:id",
   asyncHandler(auth.apikey),
