@@ -134,7 +134,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
 
   return (
     <>
-      <Tr key={index}>
+      <Tr key={link.id}>
         <Td {...ogLinkFlex} withFade>
           <ALink href={link.target}>{link.target}</ALink>
         </Td>
