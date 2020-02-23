@@ -292,7 +292,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
         </Td>
       </Tr>
       {showEdit && (
-        <EditContent px={[3, 3, 24]} py={[3, 3, 24]}>
+        <EditContent key={link.id} px={[3, 3, 24]} py={[3, 3, 24]}>
           <Col as="form" alignItems="flex-start" onSubmit={onEdit}>
             <Flex alignItems="flex-start">
               <Col alignItems="flex-start" mr={[0, 3, 3]}>
@@ -366,6 +366,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
         </EditContent>
       )}
       <Modal
+        key={link.id}
         id="table-qrcode-modal"
         minWidth="max-content"
         show={qrModal}
@@ -376,6 +377,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
         </RowCenter>
       </Modal>
       <Modal
+        key={link.id}
         id="table-ban-modal"
         show={banModal}
         closeHandler={() => setBanModal(false)}
