@@ -9,13 +9,13 @@ import Text, { H1, H2, H4, Span } from "../components/Text";
 import { getAxiosConfig, removeProtocol } from "../utils";
 import { Button, NavButton } from "../components/Button";
 import { Col, RowCenterV } from "../components/Layout";
-import { Area, Bar, Pie } from "../components/Charts";
+import { Area, Bar, Pie, Map } from "../components/Charts";
 import PageLoading from "../components/PageLoading";
 import AppWrapper from "../components/AppWrapper";
 import Divider from "../components/Divider";
+import { APIv2, Colors } from "../consts";
 import { useStoreState } from "../store";
 import ALink from "../components/ALink";
-import { APIv2, Colors } from "../consts";
 import Icon from "../components/Icon";
 
 interface Props {
@@ -173,7 +173,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                         <H2 mb={3} light>
                           Country.
                         </H2>
-                        <Pie data={stats.stats.country} />
+                        <Map data={stats.stats.country} />
                       </Col>
                       <Col flex="1 1 0">
                         <H2 mb={3} light>
