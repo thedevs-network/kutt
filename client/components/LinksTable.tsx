@@ -42,15 +42,14 @@ const Td = styled(Flex)<{ withFade?: boolean }>`
         top: 0;
         height: 100%;
         width: 16px;
-        background: linear-gradient(to left, white, white, transparent);
+        background: linear-gradient(to left, white, rgba(255, 255, 255, 0.001));
       }
 
       tr:hover &:after {
         background: linear-gradient(
           to left,
           ${Colors.TableRowHover},
-          ${Colors.TableRowHover},
-          transparent
+          rgba(255, 255, 255, 0.001)
         );
       }
     `
@@ -66,7 +65,7 @@ Td.defaultProps = {
 };
 
 const EditContent = styled(Col)`
-  border-bottom: 1px solid ${Colors.TableHeadBorder};
+  border-bottom: 1px solid ${Colors.TableRowHover};
   background-color: #fafafa;
 `;
 
@@ -153,8 +152,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
     setBanLoading(false);
   };
 
-  const onEdit = async e => {
-    e.preventDefault();
+  const onEdit = async () => {
     if (editLoading) return;
     setEditLoading(true);
     try {
@@ -292,8 +290,8 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
         </Td>
       </Tr>
       {showEdit && (
-        <EditContent px={[3, 3, 24]} py={[3, 3, 24]}>
-          <Col as="form" alignItems="flex-start" onSubmit={onEdit}>
+        <EditContent as="tr">
+          <Col as="td" alignItems="flex-start" px={[3, 3, 24]} py={[3, 3, 24]}>
             <Flex alignItems="flex-start">
               <Col alignItems="flex-start" mr={[0, 3, 3]}>
                 <Text
@@ -349,6 +347,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
               mt={3}
               height={[30, 38]}
               disabled={editLoading}
+              onClick={onEdit}
             >
               <Icon
                 name={editLoading ? "spinner" : "refresh"}
@@ -583,6 +582,7 @@ const LinksTable: FC = () => {
                   setDeleteModal={setDeleteModal}
                   index={index}
                   link={link}
+                  key={link.id}
                 />
               ))}
             </>
