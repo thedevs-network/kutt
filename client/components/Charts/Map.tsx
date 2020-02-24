@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React from "react";
+import React, { FC } from "react";
 // import { VectorMap } from "@south-paw/react-vector-maps";
 
 import { Colors } from "../../consts";
@@ -42,21 +42,20 @@ interface Props {
   data: Array<{ name: string; value: number }>;
 }
 
-const Map = ({ data }) => {
-  const [mostVisits] = data.sort((a, b) => (a > b ? 1 : -1));
+const Map: FC<Props> = ({ data }) => {
+  const [mostVisits] = data.sort((a, b) => (b.value - a.value > 0 ? 1 : -1));
   return (
     <>
       {world.layers.map(layer => (
-        <>
-          <Tooltip
-            type="light"
-            effect="float"
-            id={`${layer.id}-tooltip-country`}
-          >
-            {layer.name}:{" "}
-            {data.find(d => d.name.toLowerCase() === layer.id)?.value || 0}
-          </Tooltip>
-        </>
+        <Tooltip
+          key={layer.id}
+          type="light"
+          effect="float"
+          id={`${layer.id}-tooltip-country`}
+        >
+          {layer.name}:{" "}
+          {data.find(d => d.name.toLowerCase() === layer.id)?.value || 0}
+        </Tooltip>
       ))}
       <Svg
         xmlns="http://www.w3.org/2000/svg"
@@ -64,19 +63,17 @@ const Map = ({ data }) => {
         viewBox={world.viewBox}
       >
         {world.layers.map(layer => (
-          <>
-            <path
-              data-tip
-              data-for={`${layer.id}-tooltip-country`}
-              className={`country-${Math.ceil(
-                ((data.find(d => d.name.toLowerCase() === layer.id)?.value ||
-                  0) / mostVisits?.value || 0) * 6
-              )}`}
-              key={layer.id}
-              aria-label={layer.name}
-              d={layer.d}
-            />
-          </>
+          <path
+            key={layer.id}
+            data-tip
+            data-for={`${layer.id}-tooltip-country`}
+            className={`country-${Math.ceil(
+              ((data.find(d => d.name.toLowerCase() === layer.id)?.value || 0) /
+                mostVisits?.value || 0) * 6
+            )}`}
+            aria-label={layer.name}
+            d={layer.d}
+          />
         ))}
       </Svg>
     </>
