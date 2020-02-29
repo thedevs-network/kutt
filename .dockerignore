@@ -1,3 +1,4 @@
+.env
 .git
 node_modules
 production-server
