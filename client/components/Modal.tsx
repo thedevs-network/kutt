@@ -1,6 +1,7 @@
 import { Flex } from "reflexbox/styled-components";
 import styled from "styled-components";
 import React, { FC } from "react";
+import ReactDOM from "react-dom";
 
 import Animation from "./Animation";
 
@@ -30,13 +31,13 @@ const Modal: FC<Props> = ({ children, id, show, closeHandler, ...rest }) => {
     if (e.target.id === id) closeHandler();
   };
 
-  return (
+  return ReactDOM.createPortal(
     <Wrapper id={id} onClick={onClickOutside}>
       <Animation
         offset="-20px"
         duration="0.2s"
         minWidth={[400, 450]}
-        maxWidth={0.9}
+        maxWidth="90%"
         py={[32, 32, 48]}
         px={[24, 24, 32]}
         style={{ borderRadius: 8, backgroundColor: "white" }}
@@ -45,7 +46,8 @@ const Modal: FC<Props> = ({ children, id, show, closeHandler, ...rest }) => {
       >
         {children}
       </Animation>
-    </Wrapper>
+    </Wrapper>,
+    document.body
   );
 };
 
