@@ -10,7 +10,7 @@
     "dev": "npm run migrate && nodemon server/server.ts",
     "build": "next build client/ && rimraf production-server && tsc --project tsconfig.json && copyfiles -f \"server/mail/*.html\" production-server/mail",
     "start": "npm run migrate && NODE_ENV=production node production-server/server.js",
-    "migrate": "knex migrate:up --env production",
+    "migrate": "knex migrate:latest --env production",
     "lint": "eslint server/ --ext .js,.ts --fix",
     "lint:nofix": "eslint server/ --ext .js,.ts",
     "docs:build": "cd docs/api && tsc generate.ts --resolveJsonModule && node generate && cd ../.."

@@ -78,7 +78,7 @@ const SettingsDomain: FC = () => {
         Point your domain A record to <b>192.64.116.170</b> then add the domain
         via form below:
       </Text>
-      {domains.length ? (
+      {domains.length > 0 && (
         <Table my={3} scrollWidth="550px">
           <thead>
             <tr>
@@ -115,7 +115,7 @@ const SettingsDomain: FC = () => {
             ))}
           </tbody>
         </Table>
-      ) : (
+      )}
         <Col
           alignItems="flex-start"
           onSubmit={onSubmit}
@@ -164,7 +164,6 @@ const SettingsDomain: FC = () => {
             {loading ? "Setting..." : "Set domain"}
           </Button>
         </Col>
-      )}
       <Text color={message.color}>{message.text}</Text>
       <Modal id="delete-custom-domain" show={modal} closeHandler={closeModal}>
         <H2 mb={24} textAlign="center" bold>
