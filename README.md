@@ -97,7 +97,6 @@ Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app f
 | Rust       | [urlshortener](https://github.com/vityafx/urlshortener-rs) | URL shortener library written in Rust              |
 | Rust       | [kutt-rs](https://github.com/robatipoor/kutt-rs)           | Command line tool written in Rust                  |
 | Node.js    | [node-kutt](https://github.com/ardalanamini/node-kutt)     | Node.js client for Kutt.it url shortener           |
-| Bash       | [kutt-bash](https://git.fossdaily.xyz/caltlgin/kutt-bash)  | Simple command line program for Kutt               |
 | JavaScript | [kutt-vscode](https://github.com/mehrad77/kutt-vscode)     | Visual Studio Code extention for Kutt              |
 | Java       | [kutt-desktop](https://github.com/cipher812/kutt-desktop)  | A Cross platform Java desktop application for Kutt |
 | Go         | [kutt-go](https://github.com/raahii/kutt-go)               | Go client for Kutt.it url shortener                |
