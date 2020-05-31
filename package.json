@@ -1,6 +1,6 @@
 {
   "name": "kutt",
-  "version": "2.3.14",
+  "version": "2.3.15",
   "description": "Modern URL shortener.",
   "main": "./production-server/server.js",
   "scripts": {
