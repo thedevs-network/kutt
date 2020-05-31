@@ -115,7 +115,7 @@ export const edit: Handler = async (req, res) => {
   }
 
   const targetDomain = URL.parse(target).hostname;
-  const domain_id = link.domain_id;
+  const domain_id = link.domain_id || null;
 
   const queries = await Promise.all([
     validators.cooldown(req.user),
@@ -265,7 +265,7 @@ export const redirect = (app: ReturnType<typeof next>): Handler => async (
   const address = req.params.id.replace("+", "");
   const link = await query.link.find({
     address,
-    domain_id: domain && domain.id
+    domain_id: domain ? domain.id : null
   });
 
   // 3. When no link, if has domain redirect to domain's homepage
