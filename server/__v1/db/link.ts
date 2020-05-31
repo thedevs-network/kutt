@@ -229,9 +229,9 @@ interface IDeleteLink {
 export const deleteLink = async (data: IDeleteLink) => {
   const link: LinkJoinedDomain = await knex<LinkJoinedDomain>("links")
     .select("links.id", "domains.address as domain")
+    .where("links.address", data.address)
+    .where("links.user_id", data.user_id)
     .where({
-      "links.address": data.address,
-      "links.user_id": data.user_id,
       ...(!data.domain && { domain_id: null })
     })
     .leftJoin("domains", "links.domain_id", "domains.id")
