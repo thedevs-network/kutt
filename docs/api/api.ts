@@ -4,7 +4,7 @@ export default {
   openapi: "3.0.0",
   info: {
     title: "Kutt.it",
-    description: "API referrence for [http://kutt.it](http://kutt.it).\n",
+    description: "API reference for [http://kutt.it](http://kutt.it).\n",
     version: p.version
   },
   servers: [
@@ -117,7 +117,7 @@ export default {
         },
         responses: {
           "200": {
-            description: "Craeted link",
+            description: "Created link",
             content: {
               "application/json": {
                 schema: {
