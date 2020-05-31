@@ -31,7 +31,7 @@ router.post(
 router.patch(
   "/:id",
   asyncHandler(auth.apikey),
-  asyncHandler(auth.jwtLoose),
+  asyncHandler(auth.jwt),
   validators.editLink,
   asyncHandler(helpers.verify),
   asyncHandler(link.edit)
