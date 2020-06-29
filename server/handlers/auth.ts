@@ -38,7 +38,7 @@ const authenticate = (
       }
 
       if (user && user.banned) {
-        throw new CustomError("Your are banned from using this website.", 403);
+        throw new CustomError("You're banned from using this website.", 403);
       }
 
       if (user) {
