@@ -14,7 +14,8 @@ export interface Link {
   link: string;
   domain?: string;
   domain_id?: number;
-  password?: string;
+  password?: string;  
+  description?: string;
   target: string;
   updated_at: string;
   user_id?: number;
@@ -42,6 +43,7 @@ export interface EditLink {
   id: string;
   target: string;
   address: string;
+  description: string;
 }
 
 export interface LinksQuery {

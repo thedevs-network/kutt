@@ -82,15 +82,16 @@ const Action = (props: React.ComponentProps<typeof Icon>) => (
   />
 );
 
-const ogLinkFlex = { flexGrow: [1, 3, 7], flexShrink: [1, 3, 7] };
+const ogLinkFlex = { flexGrow: [1, 2, 4], flexShrink: [1, 2, 4] };
+const descriptionFlex = { flexGrow: [2, 2, 3], flexShrink: [2, 2, 3] };
 const createdFlex = { flexGrow: [1, 1, 3], flexShrink: [1, 1, 3] };
-const shortLinkFlex = { flexGrow: [1, 1, 3], flexShrink: [1, 1, 3] };
+const shortLinkFlex = { flexGrow: [1, 2, 3], flexShrink: [1, 2, 3] };
 const viewsFlex = {
   flexGrow: [0.5, 0.5, 1],
   flexShrink: [0.5, 0.5, 1],
   justifyContent: "flex-end"
 };
-const actionsFlex = { flexGrow: [1, 1, 2.5], flexShrink: [1, 1, 2.5] };
+const actionsFlex = { flexGrow: [1, 1, 3], flexShrink: [1, 1, 3] };
 
 interface RowProps {
   index: number;
@@ -108,6 +109,7 @@ interface BanForm {
 interface EditForm {
   target: string;
   address: string;
+  description: string;
 }
 
 const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
@@ -118,7 +120,8 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
   const [editFormState, { text, label }] = useFormState<EditForm>(
     {
       target: link.target,
-      address: link.address
+      address: link.address,
+      description: link.description
     },
     { withIds: true }
   );
@@ -175,6 +178,8 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
       <Tr key={link.id}>
         <Td {...ogLinkFlex} withFade>
           <ALink href={link.target}>{link.target}</ALink>
+        </Td>        
+        <Td {...descriptionFlex} withFade>{link.description}
         </Td>
         <Td {...createdFlex}>{`${formatDistanceToNow(
           new Date(link.created_at)
@@ -310,7 +315,31 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                     placeholderSize={[13, 14]}
                     fontSize={[14, 15]}
                     height={[40, 44]}
-                    width={[1, 300, 420]}
+                    width={[1, 150, 200]}
+                    pl={[3, 24]}
+                    pr={[3, 24]}
+                    required
+                  />
+                </Flex>
+              </Col>
+              <Col alignItems="flex-start" mr={[0, 3, 3]}>
+                <Text
+                  {...label("description")}
+                  as="label"
+                  mb={2}
+                  fontSize={[14, 15]}
+                  bold
+                >
+                  Description:
+                </Text>
+                <Flex as="form">
+                  <TextInput
+                    {...text("description")}
+                    placeholder="description..."
+                    placeholderSize={[13, 14]}
+                    fontSize={[14, 15]}
+                    height={[40, 44]}
+                    width={[1, 150, 200]}
                     pl={[3, 24]}
                     pr={[3, 24]}
                     required
@@ -560,6 +589,7 @@ const LinksTable: FC = () => {
           </Tr>
           <Tr>
             <Th {...ogLinkFlex}>Original URL</Th>
+            <Th {...descriptionFlex}>Description</Th>
             <Th {...createdFlex}>Created</Th>
             <Th {...shortLinkFlex}>Short URL</Th>
             <Th {...viewsFlex}>Views</Th>
