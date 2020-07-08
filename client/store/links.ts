@@ -16,6 +16,7 @@ export interface Link {
   domain_id?: number;
   password?: string;
   description?: string;
+  isSearchable: boolean;
   target: string;
   updated_at: string;
   user_id?: number;
@@ -44,6 +45,7 @@ export interface EditLink {
   target: string;
   address: string;
   description: string;
+  isSearchable: Boolean;
 }
 
 export interface LinksQuery {
@@ -51,6 +53,7 @@ export interface LinksQuery {
   skip: string;
   search: string;
   all: boolean;
+  pageSearch: boolean;
 }
 
 export interface LinksListRes {

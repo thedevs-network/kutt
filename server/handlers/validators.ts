@@ -26,6 +26,7 @@ export const preservedUrls = [
   "stats",
   "verify",
   "api",
+  "search",
   "404",
   "static",
   "images",

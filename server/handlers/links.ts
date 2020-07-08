@@ -19,12 +19,19 @@ import env from "../env";
 const dnsLookup = promisify(dns.lookup);
 
 export const get: Handler = async (req, res) => {
-  const { limit, skip, search, all } = req.query;
-  const userId = req.user.id;
-
-  const match = {
-    ...(!all && { user_id: userId })
-  };
+  const { limit, skip, search, all, pageSearch } = req.query;
+  let match;
+  if (req.user !== undefined) {
+    const userId = req.user.id;
+    match = {
+      ...(!all && { "links.user_id": userId }),
+      ...(pageSearch && env.SEARCH_ENABLED && { "links.isSearchable": true })
+    };
+  } else if (env.SEARCH_ENABLED) {
+    match = {
+      ...{ isSearchable: true }
+    };
+  }
 
   const [links, total] = await Promise.all([
     query.link.get(match, { limit, search, skip }),
@@ -42,7 +49,15 @@ export const get: Handler = async (req, res) => {
 };
 
 export const create: Handler = async (req: CreateLinkReq, res) => {
-  const { reuse, password, customurl, description, target, domain } = req.body;
+  const {
+    reuse,
+    password,
+    customurl,
+    description,
+    target,
+    domain,
+    isSearchable = false
+  } = req.body;
   const domain_id = domain ? domain.id : null;
 
   const targetDomain = URL.parse(target).hostname;
@@ -86,6 +101,7 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
     address,
     domain_id,
     description,
+    isSearchable,
     target,
     user_id: req.user && req.user.id
   });
@@ -271,9 +287,14 @@ export const redirect = (app: ReturnType<typeof next>): Handler => async (
   });
 
   // 3. When no link, if has domain redirect to domain's homepage
+  //if searchable is activated redirect to search
   // otherwise rediredt to 404
   if (!link) {
-    return res.redirect(301, domain ? domain.homepage : "/404");
+    if (env.SEARCH_ENABLED) {
+      return res.redirect(301, domain ? domain.homepage : "/search");
+    } else {
+      return res.redirect(301, domain ? domain.homepage : "/404");
+    }
   }
 
   // 4. If link is banned, redirect to banned page.

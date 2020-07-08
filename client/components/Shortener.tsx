@@ -14,6 +14,8 @@ import { Link } from "../store/links";
 import Animation from "./Animation";
 import { Colors } from "../consts";
 import Icon from "./Icon";
+import env from '../env'
+
 
 const SubmitIconWrapper = styled.div`
   content: "";
@@ -52,6 +54,7 @@ interface Form {
   customurl?: string;
   password?: string;
   description?: string;
+  isSearchable?: boolean;
   showAdvanced?: boolean;
 }
 
@@ -68,89 +71,90 @@ const Shortener = () => {
   const [formState, { raw, password, text, select, label }] = useFormState<
     Form
   >(
-    { showAdvanced: false },
-    {
-      withIds: true,
-      onChange(e, stateValues, nextStateValues) {
-        if (stateValues.showAdvanced && !nextStateValues.showAdvanced) {
-          formState.clear();
-          formState.setField("target", stateValues.target);
-        }
+    { showAdvanced: false ,
+    isSearchable: false},
+  {
+    withIds: true,
+    onChange(e, stateValues, nextStateValues) {
+      if (stateValues.showAdvanced && !nextStateValues.showAdvanced) {
+        formState.clear();
+        formState.setField("target", stateValues.target);
       }
     }
+    }
   );
 
-  const submitLink = async (reCaptchaToken?: string) => {
-    try {
-      const link = await submit({ ...formState.values, reCaptchaToken });
-      setLink(link);
-      formState.clear();
-    } catch (err) {
-      setMessage(
-        err?.response?.data?.error || "Couldn't create the short link."
-      );
-    }
-    setLoading(false);
-  };
+const submitLink = async (reCaptchaToken?: string) => {
+  try {
+    const link = await submit({ ...formState.values, reCaptchaToken });
+    setLink(link);
+    formState.clear();
+  } catch (err) {
+    setMessage(
+      err?.response?.data?.error || "Couldn't create the short link."
+    );
+  }
+  setLoading(false);
+};
 
-  const onSubmit = async e => {
-    e.preventDefault();
-    if (loading) return;
-    setCopied(false);
-    setLoading(true);
+const onSubmit = async e => {
+  e.preventDefault();
+  if (loading) return;
+  setCopied(false);
+  setLoading(true);
 
-    if (process.env.NODE_ENV === "production" && !isAuthenticated) {
-      window.grecaptcha.execute(window.captchaId);
-      const getCaptchaToken = () => {
-        setTimeout(() => {
-          if (window.isCaptchaReady) {
-            const reCaptchaToken = window.grecaptcha.getResponse(
-              window.captchaId
-            );
-            window.isCaptchaReady = false;
-            window.grecaptcha.reset(window.captchaId);
-            return submitLink(reCaptchaToken);
-          }
-          return getCaptchaToken();
-        }, 200);
-      };
-      return getCaptchaToken();
-    }
+  if (process.env.NODE_ENV === "production" && !isAuthenticated) {
+    window.grecaptcha.execute(window.captchaId);
+    const getCaptchaToken = () => {
+      setTimeout(() => {
+        if (window.isCaptchaReady) {
+          const reCaptchaToken = window.grecaptcha.getResponse(
+            window.captchaId
+          );
+          window.isCaptchaReady = false;
+          window.grecaptcha.reset(window.captchaId);
+          return submitLink(reCaptchaToken);
+        }
+        return getCaptchaToken();
+      }, 200);
+    };
+    return getCaptchaToken();
+  }
 
-    return submitLink();
-  };
+  return submitLink();
+};
 
-  const title = !link && (
-    <H1 fontSize={[25, 27, 32]} light>
-      Kutt your links{" "}
-      <Span style={{ borderBottom: "2px dotted #999" }} light>
-        shorter
+const title = !link && (
+  <H1 fontSize={[25, 27, 32]} light>
+    Kutt your links{" "}
+    <Span style={{ borderBottom: "2px dotted #999" }} light>
+      shorter
       </Span>
       .
-    </H1>
-  );
+  </H1>
+);
 
-  const result = link && (
-    <Animation
-      as={RowCenter}
-      offset="-20px"
-      duration="0.4s"
-      style={{ position: "relative" }}
-    >
-      {copied ? (
-        <Animation offset="10px" duration="0.2s" alignItems="center">
-          <Icon
-            size={[30, 35]}
-            py={0}
-            px={0}
-            mr={3}
-            p={["4px", "5px"]}
-            name="check"
-            strokeWidth="3"
-            stroke={Colors.CheckIcon}
-          />
-        </Animation>
-      ) : (
+const result = link && (
+  <Animation
+    as={RowCenter}
+    offset="-20px"
+    duration="0.4s"
+    style={{ position: "relative" }}
+  >
+    {copied ? (
+      <Animation offset="10px" duration="0.2s" alignItems="center">
+        <Icon
+          size={[30, 35]}
+          py={0}
+          px={0}
+          mr={3}
+          p={["4px", "5px"]}
+          name="check"
+          strokeWidth="3"
+          stroke={Colors.CheckIcon}
+        />
+      </Animation>
+    ) : (
         <Animation offset="-10px" duration="0.2s">
           <CopyToClipboard text={link.link} onCopy={setCopied}>
             <Icon
@@ -168,58 +172,58 @@ const Shortener = () => {
           </CopyToClipboard>
         </Animation>
       )}
-      <CopyToClipboard text={link.link} onCopy={setCopied}>
-        <ShortenedLink fontSize={[24, 26, 30]} pb="2px" light>
-          {removeProtocol(link.link)}
-        </ShortenedLink>
-      </CopyToClipboard>
-    </Animation>
-  );
+    <CopyToClipboard text={link.link} onCopy={setCopied}>
+      <ShortenedLink fontSize={[24, 26, 30]} pb="2px" light>
+        {removeProtocol(link.link)}
+      </ShortenedLink>
+    </CopyToClipboard>
+  </Animation>
+);
 
-  return (
-    <Col width={800} maxWidth="100%" px={[3]} flex="0 0 auto" mt={4}>
-      <RowCenterH mb={[4, 48]}>
-        {title}
-        {result}
-      </RowCenterH>
-      <Flex
-        as="form"
-        id="shortenerform"
+return (
+  <Col width={800} maxWidth="100%" px={[3]} flex="0 0 auto" mt={4}>
+    <RowCenterH mb={[4, 48]}>
+      {title}
+      {result}
+    </RowCenterH>
+    <Flex
+      as="form"
+      id="shortenerform"
+      width={1}
+      alignItems="center"
+      justifyContent="center"
+      style={{ position: "relative" }}
+      onSubmit={onSubmit}
+    >
+      <TextInput
+        {...text("target")}
+        placeholder="Paste your long URL"
+        placeholderSize={[16, 17, 18]}
+        fontSize={[18, 20, 22]}
         width={1}
-        alignItems="center"
-        justifyContent="center"
-        style={{ position: "relative" }}
-        onSubmit={onSubmit}
-      >
-        <TextInput
-          {...text("target")}
-          placeholder="Paste your long URL"
-          placeholderSize={[16, 17, 18]}
-          fontSize={[18, 20, 22]}
-          width={1}
-          height={[58, 64, 72]}
-          px={0}
-          pr={[48, 84]}
-          pl={[32, 40]}
-          autoFocus
-          data-lpignore
+        height={[58, 64, 72]}
+        px={0}
+        pr={[48, 84]}
+        pl={[32, 40]}
+        autoFocus
+        data-lpignore
+      />
+      <SubmitIconWrapper onClick={onSubmit}>
+        <Icon
+          name={loading ? "spinner" : "send"}
+          size={[22, 26, 28]}
+          fill={loading ? "none" : "#aaa"}
+          stroke={loading ? Colors.Spinner : "none"}
+          mb={1}
+          mr={1}
         />
-        <SubmitIconWrapper onClick={onSubmit}>
-          <Icon
-            name={loading ? "spinner" : "send"}
-            size={[22, 26, 28]}
-            fill={loading ? "none" : "#aaa"}
-            stroke={loading ? Colors.Spinner : "none"}
-            mb={1}
-            mr={1}
-          />
-        </SubmitIconWrapper>
-      </Flex>
-      {message.text && (
-        <Text color={message.color} mt={24} mb={1} textAlign="center">
-          {message.text}
-        </Text>
-      )}
+      </SubmitIconWrapper>
+    </Flex>
+    {message.text && (
+      <Text color={message.color} mt={24} mb={1} textAlign="center">
+        {message.text}
+      </Text>
+    )}
       <Checkbox
         {...raw({
           name: "showAdvanced",
@@ -345,5 +349,6 @@ const Shortener = () => {
     </Col>
   );
 };
+
 
 export default Shortener;
