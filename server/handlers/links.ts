@@ -116,7 +116,7 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
 };
 
 export const edit: Handler = async (req, res) => {
-  const { address, target, description } = req.body;
+  const { address, target, description, isSearchable } = req.body;
 
   if (!address && !target) {
     throw new CustomError("Should at least update one field.");
@@ -160,7 +160,8 @@ export const edit: Handler = async (req, res) => {
     {
       ...(address && { address }),
       ...(description && { description }),
-      ...(target && { target })
+      ...(target && { target }),
+      ...(isSearchable !== undefined && { isSearchable })
     }
   );
 

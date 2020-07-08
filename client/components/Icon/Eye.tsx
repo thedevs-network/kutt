@@ -3,16 +3,18 @@ import React from "react";
 function Eye() {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="32"
-      height="32"
-      fill="currentColor"
-      className="jam jam-qr-code"
-      preserveAspectRatio="xMinYMin"
-      viewBox="-2 -2 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    width="80"
+    height="80"
+    fill="none"
+    stroke="#000"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="2"
+      viewBox="-1 49 384.9 231.9"
     >
-        <path d="M8,6c0,1.104-0.896,2-2,2c0,1.104,0.896,2,2,2s2-0.896,2-2S9.104,6,8,6z M8,2C3.898,2,0,6.648,0,8s3.898,6,8,6s8-4.648,8-6  
-        S12.102,2,8,2z M8,12c-2.209,0-4-1.791-4-4s1.791-4,4-4s4,1.791,4,4S10.209,12,8,12z"/>
+    <path fill="currentColor" d="M200 150c0 27.6-22.4 50-50 50 0 27.6 22.4 50 50 50s50-22.4 50-50S227.6 150 200 150zM200 50C97.45 50 0 166.2 0 200s97.45 150 200 150 200-116.2 200-150S302.55 50 200 50zM200 300c-55.225 0-100-44.775-100-100s44.775-100 100-100 100 44.775 100 100S255.225 300 200 300z
+      "/>
       </svg>
   );
 }
