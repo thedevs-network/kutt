@@ -25,17 +25,17 @@ const authenticate = (
     passport.authenticate(type, (err, user) => {
       if (err) return next(err);
 
-      if (!user && isStrict) {
+      if (!env.SEARCH_ENABLED && !user && isStrict) {
         throw new CustomError(error, 401);
       }
 
-      if (user && isStrict && !user.verified) {
-        throw new CustomError(
-          "Your email address is not verified. " +
-            "Click on signup to get the verification link again.",
-          400
-        );
-      }
+      // if (user && isStrict && !user.verified) {
+      //   throw new CustomError(
+      //     "Your email address is not verified. " +
+      //       "Click on signup to get the verification link again.",
+      //     400
+      //   );
+      // }
 
       if (user && user.banned) {
         throw new CustomError("You're banned from using this website.", 403);

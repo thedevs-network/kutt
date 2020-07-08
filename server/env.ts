@@ -38,7 +38,8 @@ const env = cleanEnv(process.env, {
   MAIL_PASSWORD: str(),
   REPORT_EMAIL: str({ default: "" }),
   CONTACT_EMAIL: str({ default: "" }),
-  RAVEN_DSN: str({ default: "" })
+  RAVEN_DSN: str({ default: "" }),
+  SEARCH_ENABLED: bool({ default: false })
 });
 
 export default env;

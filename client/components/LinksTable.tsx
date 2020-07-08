@@ -23,18 +23,19 @@ import Table from "./Table";
 import ALink from "./ALink";
 import Modal from "./Modal";
 import Icon from "./Icon";
+import env from '../env'
 
 const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
 const Th = styled(Flex)``;
 Th.defaultProps = { as: "th", flexBasis: 0, py: [12, 12, 3], px: [12, 12, 3] };
 
-const Td = styled(Flex)<{ withFade?: boolean }>`
+const Td = styled(Flex) <{ withFade?: boolean }>`
   position: relative;
   white-space: nowrap;
 
   ${ifProp(
-    "withFade",
-    css`
+  "withFade",
+  css`
       :after {
         content: "";
         position: absolute;
@@ -53,7 +54,7 @@ const Td = styled(Flex)<{ withFade?: boolean }>`
         );
       }
     `
-  )}
+)}
 `;
 Td.defaultProps = {
   as: "td",
@@ -110,6 +111,7 @@ interface EditForm {
   target: string;
   address: string;
   description: string;
+  isSearchable: Boolean;
 }
 
 const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
@@ -178,7 +180,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
       <Tr key={link.id}>
         <Td {...ogLinkFlex} withFade>
           <ALink href={link.target}>{link.target}</ALink>
-        </Td>        
+        </Td>
         <Td {...descriptionFlex} withFade>{link.description}
         </Td>
         <Td {...createdFlex}>{`${formatDistanceToNow(
@@ -275,6 +277,23 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
             backgroundColor={Colors.EditIconBg}
             onClick={toggleEdit}
           />
+          {env.SEARCH_ENABLED && (
+            link.isSearchable
+              ? (
+                <Action
+                  name="eye"
+                  stroke={Colors.Eye}
+                  backgroundColor={Colors.EyeBg}
+                />
+              ) : (
+                <Action
+                  name="eyeSlash"
+                  stroke={Colors.EyeSlash}
+                  backgroundColor={Colors.EyeSlashBg}
+                />
+              )
+          )}
+
           {isAdmin && !link.banned && (
             <Action
               name="stop"
@@ -454,6 +473,7 @@ interface Form {
   limit: string;
   skip: string;
   search: string;
+  pageSearch: boolean;
 }
 
 const LinksTable: FC = () => {
@@ -465,7 +485,7 @@ const LinksTable: FC = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteMessage, setDeleteMessage] = useMessage();
   const [formState, { label, checkbox, text }] = useFormState<Form>(
-    { skip: "0", limit: "10", all: false },
+    { skip: "0", limit: "10", all: false, pageSearch: false },
     { withIds: true }
   );
 

@@ -22,6 +22,8 @@ import Heart from "./Heart";
 import Stop from "./Stop";
 import Plus from "./Plus";
 import Lock from "./Lock";
+import Eye from "./Eye";
+import EyeSlash from "./EyeSlash";
 import Edit from "./Edit";
 import Copy from "./Copy";
 import Send from "./Send";
@@ -49,7 +51,9 @@ const icons = {
   send: Send,
   shuffle: Shuffle,
   signup: Signup,
-  spinner: Spinner,
+  spinner: Spinner,  
+  eye: Eye,
+  eyeSlash: EyeSlash,
   stop: Stop,
   trash: Trash,
   x: X,

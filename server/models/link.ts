@@ -11,6 +11,10 @@ export async function createLinkTable(knex: Knex) {
       table.string("address").notNullable();
       table.string("description");
       table
+        .boolean("isSearchable")
+        .notNullable()
+        .defaultTo(false);
+      table
         .boolean("banned")
         .notNullable()
         .defaultTo(false);

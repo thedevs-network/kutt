@@ -12,7 +12,7 @@ const router = Router();
 router.get(
   "/",
   asyncHandler(auth.apikey),
-  asyncHandler(auth.jwt),
+  asyncHandler(auth.jwtLoose),
   helpers.query,
   asyncHandler(link.get)
 );
