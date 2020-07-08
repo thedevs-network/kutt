@@ -119,11 +119,12 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
   const ban = useStoreActions(s => s.links.ban);
   const edit = useStoreActions(s => s.links.edit);
   const [banFormState, { checkbox }] = useFormState<BanForm>();
-  const [editFormState, { text, label }] = useFormState<EditForm>(
+  const [editFormState, { text, label,checkbox: checkboxEdit }] = useFormState<EditForm>(
     {
       target: link.target,
       address: link.address,
-      description: link.description
+      description: link.description,
+      isSearchable: link.isSearchable
     },
     { withIds: true }
   );
@@ -282,6 +283,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
               ? (
                 <Action
                   name="eye"
+                  strokeWidth="2"
                   stroke={Colors.Eye}
                   backgroundColor={Colors.EyeBg}
                 />
@@ -388,6 +390,9 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                     required
                   />
                 </Flex>
+              </Col>
+              <Col alignItems="flex-start">
+                <Checkbox {...checkboxEdit( 'isSearchable')} label="Is searchable" mb={12}/>
               </Col>
             </Flex>
             <Button
