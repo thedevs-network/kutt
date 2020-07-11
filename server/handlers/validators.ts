@@ -88,7 +88,13 @@ export const createLink = [
     .isString()
     .withMessage("Domain should be string.")
     .customSanitizer(value => value.toLowerCase())
+    .customSanitizer(value => URL.parse(value).hostname || value)
     .custom(async (address, { req }) => {
+      if (address === env.DEFAULT_DOMAIN) {
+        req.body.domain = null;
+        return;
+      }
+
       const domain = await query.domain.find({
         address,
         user_id: req.user.id
