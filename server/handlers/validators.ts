@@ -161,11 +161,6 @@ export const addDomain = [
     .custom(value => urlRegex({ exact: true, strict: false }).test(value))
     .custom(value => value !== env.DEFAULT_DOMAIN)
     .withMessage("You can't use the default domain.")
-    .custom(async (value, { req }) => {
-      const domains = await query.domain.get({ user_id: req.user.id });
-      if (domains.length !== 0) return Promise.reject();
-    })
-    .withMessage("You already own a domain. Contact support if you need more.")
     .custom(async value => {
       const domain = await query.domain.find({ address: value });
       if (domain?.user_id || domain?.banned) return Promise.reject();
