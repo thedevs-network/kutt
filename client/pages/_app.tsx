@@ -11,7 +11,11 @@ import { initializeStore } from "../store";
 import { TokenPayload } from "../types";
 import AppWrapper from "../components/AppWrapper";
 
+import  appWithTranslation  from '../../i18n'
+
 const isProd = process.env.NODE_ENV === "production";
+
+
 
 // TODO: types
 class MyApp extends App<any> {
@@ -69,6 +73,7 @@ class MyApp extends App<any> {
 
   render() {
     const { Component, pageProps } = this.props;
+    const { i18n, initialI18nStore, initialLanguage } = pageProps || {};
 
     return (
       <>
@@ -78,11 +83,10 @@ class MyApp extends App<any> {
           </title>
         </Head>
         <StoreProvider store={this.store}>
-          <Component {...pageProps} />
+            <Component {...pageProps} />
         </StoreProvider>
       </>
     );
   }
 }
-
-export default MyApp;
+export default appWithTranslation.appWithTranslation(MyApp);

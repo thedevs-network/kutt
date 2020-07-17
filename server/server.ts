@@ -17,6 +17,9 @@ import routes from "./routes";
 
 import "./cron";
 import "./passport";
+import nextI18next from "../i18n";
+
+const nextI18NextMiddleware = require("next-i18next/middleware").default;
 
 if (env.RAVEN_DSN) {
   Raven.config(env.RAVEN_DSN).install();
@@ -34,6 +37,8 @@ app.prepare().then(async () => {
     server.use(morgan("dev"));
   }
 
+  await nextI18next.initPromise;
+  server.use(nextI18NextMiddleware(nextI18next));
   server.use(helmet());
   server.use(cookieParser());
   server.use(express.json());

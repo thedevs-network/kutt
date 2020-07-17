@@ -16,6 +16,8 @@ import { Colors } from "../consts";
 import Icon from "./Icon";
 import env from '../env'
 
+import { useTranslation } from 'react-i18next';
+
 
 const SubmitIconWrapper = styled.div`
   content: "";
@@ -61,6 +63,7 @@ interface Form {
 const defaultDomain = process.env.DEFAULT_DOMAIN;
 
 const Shortener = () => {
+  const { t, i18n } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
   const domains = useStoreState(s => s.settings.domains);
   const submit = useStoreActions(s => s.links.submit);
@@ -126,7 +129,7 @@ const onSubmit = async e => {
 
 const title = !link && (
   <H1 fontSize={[25, 27, 32]} light>
-    Kutt your links{" "}
+    {`${t('links')} `}
     <Span style={{ borderBottom: "2px dotted #999" }} light>
       shorter
       </Span>
@@ -365,5 +368,4 @@ return (
     </Col >
   );
 };
-
 export default Shortener;
