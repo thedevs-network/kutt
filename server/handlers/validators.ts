@@ -81,6 +81,12 @@ export const createLink = [
     .withMessage("Only users can use this field.")
     .isBoolean()
     .withMessage("Reuse must be boolean."),
+  body("description")
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ min: 0, max: 2040 })
+    .withMessage("Description length must be between 0 and 2040."),
   body("domain")
     .optional()
     .custom(checkUser)
@@ -132,6 +138,12 @@ export const editLink = [
     .withMessage("Custom URL is not valid")
     .custom(value => !preservedUrls.some(url => url.toLowerCase() === value))
     .withMessage("You can't use this custom URL."),
+  body("description")
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ min: 0, max: 2040 })
+    .withMessage("Description length must be between 0 and 2040."),
   param("id", "ID is invalid.")
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 36, max: 36 })

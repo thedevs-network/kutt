@@ -75,7 +75,8 @@ interface Link {
   banned_by_id?: number;
   created_at: string;
   domain_id?: number;
-  password?: string;
+  password?: string;  
+  description: string;
   target: string;
   updated_at: string;
   user_id?: number;
