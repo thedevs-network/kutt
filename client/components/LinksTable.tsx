@@ -300,9 +300,15 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
       </Tr>
       {showEdit && (
         <EditContent as="tr">
-          <Col as="td" alignItems="flex-start" px={[3, 3, 24]} py={[3, 3, 24]}>
-            <Flex alignItems="flex-start">
-              <Col alignItems="flex-start" mr={[0, 3, 3]}>
+          <Col
+            as="td"
+            alignItems="flex-start"
+            px={[3, 3, 24]}
+            py={[3, 3, 24]}
+            width={1}
+          >
+            <Flex alignItems="flex-start" width={1}>
+              <Col alignItems="flex-start" mr={3}>
                 <Text
                   {...label("target")}
                   as="label"
@@ -319,31 +325,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                     placeholderSize={[13, 14]}
                     fontSize={[14, 15]}
                     height={[40, 44]}
-                    width={[1, 150, 200]}
-                    pl={[3, 24]}
-                    pr={[3, 24]}
-                    required
-                  />
-                </Flex>
-              </Col>
-              <Col alignItems="flex-start" mr={[0, 3, 3]}>
-                <Text
-                  {...label("description")}
-                  as="label"
-                  mb={2}
-                  fontSize={[14, 15]}
-                  bold
-                >
-                  Description:
-                </Text>
-                <Flex as="form">
-                  <TextInput
-                    {...text("description")}
-                    placeholder="description..."
-                    placeholderSize={[13, 14]}
-                    fontSize={[14, 15]}
-                    height={[40, 44]}
-                    width={[1, 150, 200]}
+                    width={[1, 300, 420]}
                     pl={[3, 24]}
                     pr={[3, 24]}
                     required
@@ -368,6 +350,32 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                     fontSize={[14, 15]}
                     height={[40, 44]}
                     width={[1, 210, 240]}
+                    pl={[3, 24]}
+                    pr={[3, 24]}
+                    required
+                  />
+                </Flex>
+              </Col>
+            </Flex>
+            <Flex alignItems="flex-start" width={1} mt={3}>
+              <Col alignItems="flex-start">
+                <Text
+                  {...label("description")}
+                  as="label"
+                  mb={2}
+                  fontSize={[14, 15]}
+                  bold
+                >
+                  Description:
+                </Text>
+                <Flex as="form">
+                  <TextInput
+                    {...text("description")}
+                    placeholder="description..."
+                    placeholderSize={[13, 14]}
+                    fontSize={[14, 15]}
+                    height={[40, 44]}
+                    width={[1, 300, 420]}
                     pl={[3, 24]}
                     pr={[3, 24]}
                     required
