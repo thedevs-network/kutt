@@ -76,6 +76,7 @@ const Action = (props: React.ComponentProps<typeof Icon>) => (
     px={0}
     mr={2}
     size={[23, 24]}
+    flexShrink={0}
     p={["4px", "5px"]}
     stroke="#666"
     {...props}
