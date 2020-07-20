@@ -9,6 +9,7 @@ import styled from "styled-components";
 import { RowCenterV } from "./Layout";
 import { Button } from "./Button";
 import ALink from "./ALink";
+import { useTranslation } from 'react-i18next';
 
 const Li = styled(Flex).attrs({ ml: [12, 24, 32] })`
   a {
@@ -46,6 +47,7 @@ const LogoImage = styled.div`
 `;
 
 const Header: FC = () => {
+  const { t, i18n } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
   const isMobile = useMedia({ maxWidth: 640 });
 
@@ -53,7 +55,7 @@ const Header: FC = () => {
     <Li>
       <Link href="/login">
         <ALink href="/login" title="login / signup" forButton>
-          <Button height={[32, 40]}>Login / Sign up</Button>
+          <Button height={[32, 40]}>{t('header.login')}</Button>
         </ALink>
       </Link>
     </Li>
@@ -62,7 +64,7 @@ const Header: FC = () => {
     <Li>
       <Link href="/logout">
         <ALink href="/logout" title="logout" fontSize={[14, 16]}>
-          Log out
+        {t('header.logout')}
         </ALink>
       </Link>
     </Li>
@@ -71,7 +73,7 @@ const Header: FC = () => {
     <Li>
       <Link href="/settings">
         <ALink href="/settings" title="Settings" forButton>
-          <Button height={[32, 40]}>Settings</Button>
+          <Button height={[32, 40]}>{t('header.settings')}</Button>
         </ALink>
       </Link>
     </Li>
@@ -122,13 +124,13 @@ const Header: FC = () => {
                 title="GitHub"
                 fontSize={[14, 16]}
               >
-                GitHub
+                {t('header.gitHub')}
               </ALink>
             </Li>
             <Li>
               <Link href="/report">
                 <ALink href="/report" title="Report abuse" fontSize={[14, 16]}>
-                  Report
+                {t('header.report')}
                 </ALink>
               </Link>
             </Li>

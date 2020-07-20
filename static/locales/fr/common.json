@@ -1,3 +1,124 @@
 {
-    "links": "Raccourci ton lien"
+    "header": {
+        "gitHub": "",
+        "report": "",
+        "logout": "",
+        "login": "",
+        "settings": ""
+
+    },
+    "shortener": {
+        "title": "",
+        "title2": "",
+        "phUrl": "",
+        "advanced": {
+            "chAdvanced": "",
+            "domain": "",
+            "phCustomAddress": "",
+            "password": "",
+            "description": "",
+            "chSearchable": ""
+        }
+
+    },
+    "linksTable": {
+        "title": "",
+        "phSearch": "",
+        "cBoxAllLink": "",
+        "table": {
+            "originalURL": "",
+            "description": "",
+            "created": "",
+            "shortURL": "",
+            "views": ""
+        }
+
+    },
+    "feature": {
+        "title": "",
+        "f1": {
+            "title": "",
+            "description": ""
+        },
+        "f2": {
+            "title": "",
+            "description": ""
+        },
+        "f3": {
+            "title": "",
+            "description": ""
+        },
+        "f4": {
+            "title": "",
+            "description": ""
+        }
+    },
+    "extensions": {
+        "title": "",
+        "btnChrome": "",
+        "btnFirefox": ""
+
+    },
+    "settings": {
+        "title": "",
+        "domain": {
+            "title": "",
+            "description1": "",
+            "description2": "",
+            "description3": "",
+            "description4": "",
+            "description5": "",
+            "description6": "",
+            "colDomain": "",
+            "colHomePage": "",
+            "colHomePageOpt": "",
+            "modal": {
+                "title": "",
+                "description": ""
+            }
+        },
+        "password": {
+            "title": "",
+            "description": "",
+            "newPassword": ""
+        },
+        "api": {
+            "title": "",
+            "description1": "",
+            "description2": "",
+            "btnGenerateKey": "",
+            "btnRegenerateKey": ""
+        },
+        "account": {
+            "title": "",
+            "description": "",
+            "password": "",
+            "modal": {
+                "title": "",
+                "description1": "",
+                "description2": "",
+                "description3": "",
+                "description4": "",
+                "description5": ""
+            }
+        }
+
+    },
+    "button": {
+        "cancel": "",
+        "delete": "",
+        "update": "",
+        "updating": ""
+    },
+    "footer": {
+        "made": "",
+        "theDevs": "",
+        "gitHub": "",
+        "termsOfService": "",
+        "report": "",
+        "contact": ""
+
+    }
+
+
 }

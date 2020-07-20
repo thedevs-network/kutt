@@ -1,3 +1,125 @@
 {
-    "links": "Kutt your links"
+    "header": {
+        "gitHub": "GitHub",
+        "report": "Report",
+        "logout": "Log out",
+        "login": "Login / Sign up",
+        "settings": "Settings"
+
+    },
+    "shortener": {
+        "title": "Kutt your links",
+        "title2": "shorter",
+        "phUrl": "Paste your long URL",
+        "advanced": {
+            "chAdvanced": "Show advanced options",
+            "domain": "Domain",
+            "phCustomAddress": "Custom address",
+            "password": "Password",
+            "description": "Description",
+            "chSearchable": "Is searchable"
+        }
+
+    },
+    "linksTable": {
+        "title": "Recent shortened links",
+        "phSearch": "Search",
+        "cBoxAllLink": "All links",
+        "table": {
+            "originalURL": "Original URL",
+            "description": "Description",
+            "created": "Created",
+            "shortURL": "Short URL",
+            "views": "Views"
+        }
+
+    },
+    "feature": {
+        "title": "Kutting edge features.",
+        "f1": {
+            "title": "Managing links",
+            "description": "Create, protect and delete your links and monitor them with detailed statistics."
+        },
+        "f2": {
+            "title": "Custom domain",
+            "description": "Use custom domains for your links. Add or remove them for free."
+        },
+        "f3": {
+            "title": "API",
+            "description": "Use the provided API to create, delete and get URLs from anywhere."
+        },
+        "f4": {
+            "title": "Free & open source",
+            "description": "Completely open source and free. You can host it on your own server."
+        }
+    },
+    "extensions": {
+        "title": "Browser extensions.",
+        "btnChrome": "Download for Chrome",
+        "btnFirefox": "Download for Firefox"
+
+    },
+    "settings": {
+        "title": "Welcome,",
+        "domain": {
+            "title": "Custom domain",
+            "description1": "You can set a custom domain for your short URLs, so instead of ",
+            "description2": "/shorturl ",
+            "description3": "you can have ",
+            "description4": "example.com/shorturl.",
+            "description5": "Point your domain A record to ",
+            "description6": " then add the domain via form below:",
+            "colDomain": "Domain",
+            "colHomePage": "Homepage",
+            "colHomePageOpt": "Homepage (optional)",
+            "modal": {
+                "title": "Delete domain?",
+                "description": "Are you sure do you want to delete the domain"
+            }
+        },
+        "password": {
+            "title": "Change password",
+            "description": "Enter a new password to change your current password.",
+            "newPassword": "New password"
+        },
+        "api": {
+            "title": "API",
+            "description1": "In additional to this website, you can use the API to create, delete and get shortend URLs. If you're not familiar with API, don't generate the key. DO NOT share this key on the client side of your website.",
+            "description2": " Read API docs.",
+            "btnGenerateKey": "Generate key",
+            "btnRegenerateKey": "Regenerate key",
+            "btnGenerating": "Generating..."
+        },
+        "account": {
+            "title": "Delete account",
+            "description": "Delete your account from ",
+            "password": "Password",
+            "modal": {
+                "title": "Delete account?",
+                "description1": "All of your data including your ",
+                "description2": "LINKS ",
+                "description3": "and ",
+                "description4": "STATS ",
+                "description5": "will be deleted."
+            }
+        }
+
+    },
+    "button": {
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "update": "Update",
+        "updating": "Updating"
+    },
+    "footer": {
+        "made": "Made with love by",
+        "theDevs": "The Devs.",
+        "gitHub": "GitHub",
+        "termsOfService": "Terms of Service",
+        "report": "Report Abuse",
+        "contact": "Contact us."
+
+    }
+
+
 }

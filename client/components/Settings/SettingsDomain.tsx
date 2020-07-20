@@ -15,6 +15,7 @@ import { Col } from "../Layout";
 import Table from "../Table";
 import Modal from "../Modal";
 import Icon from "../Icon";
+import { useTranslation } from 'react-i18next';
 
 const Th = styled(Flex).attrs({ as: "th", py: 3, px: 3 })`
   font-size: 15px;
@@ -24,6 +25,7 @@ const Td = styled(Flex).attrs({ as: "td", py: 12, px: 3 })`
 `;
 
 const SettingsDomain: FC = () => {
+  const { t, i18n } = useTranslation();
   const { saveDomain, deleteDomain } = useStoreActions(s => s.settings);
   const [domainToDelete, setDomainToDelete] = useState<Domain>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -67,23 +69,22 @@ const SettingsDomain: FC = () => {
   return (
     <Col alignItems="flex-start" maxWidth="100%">
       <H2 mb={4} bold>
-        Custom domain
+        {t('settings.domain.title')}
       </H2>
       <Text mb={3}>
-        You can set a custom domain for your short URLs, so instead of{" "}
-        <b>{process.env.DEFAULT_DOMAIN}/shorturl</b> you can have{" "}
-        <b>example.com/shorturl.</b>
+      {t('settings.domain.description1')}
+        <b>{process.env.DEFAULT_DOMAIN}{t('settings.domain.description2')}</b>{t('settings.domain.description3')}
+        <b>{t('settings.domain.description4')}</b>
       </Text>
       <Text mb={4}>
-        Point your domain A record to <b>192.64.116.170</b> then add the domain
-        via form below:
+      {t('settings.domain.description5')}<b>192.64.116.170</b> {t('settings.domain.description6')}
       </Text>
       {domains.length ? (
         <Table my={3} scrollWidth="550px">
           <thead>
             <tr>
-              <Th width={2 / 5}>Domain</Th>
-              <Th width={2 / 5}>Homepage</Th>
+              <Th width={2 / 5}>{t('settings.domain.colDomain')}</Th>
+              <Th width={2 / 5}>{t('settings.domain.colHomePage')}</Th>
               <Th width={1 / 5}></Th>
             </tr>
           </thead>
@@ -149,7 +150,7 @@ const SettingsDomain: FC = () => {
                 fontSize={[15, 16]}
                 bold
               >
-                Homepage (optional)
+                {t('settings.domain.colHomePageOpt')}
               </Text>
               <TextInput
                 {...text("homepage")}
@@ -168,10 +169,10 @@ const SettingsDomain: FC = () => {
       <Text color={message.color}>{message.text}</Text>
       <Modal id="delete-custom-domain" show={modal} closeHandler={closeModal}>
         <H2 mb={24} textAlign="center" bold>
-          Delete domain?
+        {t('settings.domain.modal.title')}
         </H2>
         <Text textAlign="center">
-          Are you sure do you want to delete the domain{" "}
+        {t('settings.domain.modal.description')}
           <Span bold>"{domainToDelete && domainToDelete.address}"</Span>?
         </Text>
         <Flex justifyContent="center" mt={44}>
@@ -182,11 +183,11 @@ const SettingsDomain: FC = () => {
           ) : (
             <>
               <Button color="gray" mr={3} onClick={closeModal}>
-                Cancel
+              {t('button.cancel')}
               </Button>
               <Button color="red" ml={3} onClick={onDelete}>
                 <Icon name="trash" stroke="white" mr={2} />
-                Delete
+                {t('button.delete')}
               </Button>
             </>
           )}

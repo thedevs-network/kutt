@@ -24,6 +24,7 @@ import ALink from "./ALink";
 import Modal from "./Modal";
 import Icon from "./Icon";
 import env from '../env'
+import { useTranslation } from 'react-i18next';
 
 const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
 const Th = styled(Flex)``;
@@ -482,6 +483,7 @@ interface Form {
 }
 
 const LinksTable: FC = () => {
+  const { t, i18n } = useTranslation();
   const isAdmin = useStoreState(s => s.auth.isAdmin);
   const links = useStoreState(s => s.links);
   const { get, remove } = useStoreActions(s => s.links);
@@ -577,7 +579,7 @@ const LinksTable: FC = () => {
   return (
     <Col width={1200} maxWidth="95%" margin="40px 0 120px" my={6}>
       <H2 mb={3} light>
-        Recent shortened links.
+        {t('linksTable.title')}
       </H2>
       <Table scrollWidth="800px">
         <thead>
@@ -586,7 +588,7 @@ const LinksTable: FC = () => {
               <Flex as="form" onSubmit={onSubmit}>
                 <TextInput
                   {...text("search")}
-                  placeholder="Search..."
+                  placeholder={t('linksTable.phSearch')+"..."}
                   height={[30, 32]}
                   placeholderSize={[13, 13, 13, 13]}
                   fontSize={[14]}
@@ -601,7 +603,7 @@ const LinksTable: FC = () => {
                   <Checkbox
                     {...label("all")}
                     {...checkbox("all")}
-                    label="All links"
+                    label={t('linksTable.cBoxAllLink')}
                     ml={3}
                     fontSize={[14, 15]}
                     width={[15, 16]}
@@ -613,11 +615,11 @@ const LinksTable: FC = () => {
             {Nav}
           </Tr>
           <Tr>
-            <Th {...ogLinkFlex}>Original URL</Th>
-            <Th {...descriptionFlex}>Description</Th>
-            <Th {...createdFlex}>Created</Th>
-            <Th {...shortLinkFlex}>Short URL</Th>
-            <Th {...viewsFlex}>Views</Th>
+            <Th {...ogLinkFlex}>{t('linksTable.table.originalURL')}</Th>
+            <Th {...descriptionFlex}>{t('linksTable.table.description')}</Th>
+            <Th {...createdFlex}>{t('linksTable.table.created')}</Th>
+            <Th {...shortLinkFlex}>{t('linksTable.table.shortURL')} </Th>
+            <Th {...viewsFlex}>{t('linksTable.table.views')}</Th>
             <Th {...actionsFlex}></Th>
           </Tr>
         </thead>

@@ -11,8 +11,10 @@ import { Button } from "../Button";
 import Text, { H2 } from "../Text";
 import { Col } from "../Layout";
 import Icon from "../Icon";
+import { useTranslation } from 'react-i18next';
 
 const SettingsPassword: FC = () => {
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useMessage(2000);
   const [formState, { password, label }] = useFormState<{ password: string }>(
@@ -45,9 +47,9 @@ const SettingsPassword: FC = () => {
   return (
     <Col alignItems="flex-start" maxWidth="100%">
       <H2 mb={4} bold>
-        Change password
+        {t('settings.password.title')} 
       </H2>
-      <Text mb={4}>Enter a new password to change your current password.</Text>
+      <Text mb={4}>{t('settings.password.description')}</Text>
       <Text
         {...label("password")}
         as="label"
@@ -55,7 +57,7 @@ const SettingsPassword: FC = () => {
         fontSize={[15, 16]}
         bold
       >
-        New password
+        {t('settings.password.newPassword')}
       </Text>
       <Flex as="form" onSubmit={onSubmit}>
         <TextInput
@@ -69,14 +71,14 @@ const SettingsPassword: FC = () => {
             }
           })}
           autocomplete="off"
-          placeholder="New password..."
+          placeholder={t('settings.password.newPassword')+"..."}
           width={[1, 2 / 3]}
           mr={3}
           required
         />
         <Button type="submit" disabled={loading}>
           <Icon name={loading ? "spinner" : "refresh"} mr={2} stroke="white" />
-          {loading ? "Updating..." : "Update"}
+          {loading ? t('button.updating') : t('button.updating')}
         </Button>
       </Flex>
       <Text color={message.color} mt={3} fontSize={15}>

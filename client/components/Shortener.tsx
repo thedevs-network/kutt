@@ -129,9 +129,9 @@ const onSubmit = async e => {
 
 const title = !link && (
   <H1 fontSize={[25, 27, 32]} light>
-    {`${t('links')} `}
+    {`${t('shortener.title')} `}
     <Span style={{ borderBottom: "2px dotted #999" }} light>
-      shorter
+    {t('shortener.title2')}
       </Span>
       .
   </H1>
@@ -200,7 +200,7 @@ return (
     >
       <TextInput
         {...text("target")}
-        placeholder="Paste your long URL"
+        placeholder={t('shortener.phUrl')}
         placeholderSize={[16, 17, 18]}
         fontSize={[18, 20, 22]}
         width={1}
@@ -241,7 +241,7 @@ return (
         }
       })}
       checked={formState.values.showAdvanced}
-      label="Show advanced options"
+      label={t('shortener.advanced.chAdvanced')}
       mt={[3, 24]}
       alignSelf="flex-start"
     />
@@ -256,7 +256,7 @@ return (
               mb={2}
               bold
             >
-              Domain
+              {t('shortener.advanced.domain')}
               </Text>
             <Select
               {...select("domain")}
@@ -287,7 +287,7 @@ return (
               </Text>
             <TextInput
               {...text("customurl")}
-              placeholder="Custom address..."
+              placeholder={t('shortener.advanced.phCustomAddress')+"..."}
               autocomplete="off"
               data-lpignore
               pl={[3, 24]}
@@ -306,11 +306,11 @@ return (
               mb={2}
               bold
             >
-              Password:
+              {t('shortener.advanced.password')}
               </Text>
             <TextInput
               {...password("password")}
-              placeholder="Password..."
+              placeholder={t('shortener.advanced.password')+"..."}
               autocomplete="off"
               data-lpignore
               pl={[3, 24]}
@@ -331,11 +331,11 @@ return (
               mb={2}
               bold
             >
-              Description
+              {t('shortener.advanced.description')}
               </Text>
             <TextInput
               {...text("description")}
-              placeholder="Description"
+              placeholder={t('shortener.advanced.description')+"..."}
               data-lpignore
               pl={[3, 24]}
               pr={[3, 24]}
@@ -357,7 +357,7 @@ return (
                 }
               })}
               checked={formState.values.isSearchable}
-              label="Is searchable"
+              label={t('shortener.advanced.chSearchable')}
               mt={[3, 24]} />
           </Flex>
           )}
