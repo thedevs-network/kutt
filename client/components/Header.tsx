@@ -55,7 +55,7 @@ const Header: FC = () => {
     <Li>
       <Link href="/login">
         <ALink href="/login" title="login / signup" forButton>
-          <Button height={[32, 40]}>{t('header.login')}</Button>
+          <Button height={[32, 40]}>{t('button.login')}</Button>
         </ALink>
       </Link>
     </Li>
@@ -64,7 +64,7 @@ const Header: FC = () => {
     <Li>
       <Link href="/logout">
         <ALink href="/logout" title="logout" fontSize={[14, 16]}>
-        {t('header.logout')}
+        {t('button.logout')}
         </ALink>
       </Link>
     </Li>

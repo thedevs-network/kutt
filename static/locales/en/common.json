@@ -2,10 +2,7 @@
     "header": {
         "gitHub": "GitHub",
         "report": "Report",
-        "logout": "Log out",
-        "login": "Login / Sign up",
         "settings": "Settings"
-
     },
     "shortener": {
         "title": "Kutt your links",
@@ -33,6 +30,12 @@
             "views": "Views"
         }
 
+    },
+    "needLogin": {
+        "title1": "",
+        "title2": "",
+        "title3": "",
+        "title4": ""
     },
     "feature": {
         "title": "Kutting edge features.",
@@ -109,7 +112,9 @@
         "cancel": "Cancel",
         "delete": "Delete",
         "update": "Update",
-        "updating": "Updating"
+        "updating": "Updating",
+        "login": "Login / Sign up",
+        "logout": "Log out"
     },
     "footer": {
         "made": "Made with love by",
