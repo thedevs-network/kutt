@@ -1,5 +1,6 @@
 import { Handler } from "express";
 import query from "../queries";
+import * as redis from "../redis";
 import { CustomError, sanitize } from "../utils";
 
 export const add: Handler = async (req, res) => {
@@ -22,6 +23,8 @@ export const remove: Handler = async (req, res) => {
     },
     { user_id: null }
   );
+
+  redis.remove.domain(domain);
 
   if (!domain) {
     throw new CustomError("Could not delete the domain.", 500);
