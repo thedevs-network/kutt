@@ -50,7 +50,7 @@ interface Form {
   target: string;
   domain?: string;
   customurl?: string;
-  password?: string;  
+  password?: string;
   description?: string;
   showAdvanced?: boolean;
 }
@@ -238,8 +238,8 @@ const Shortener = () => {
         mt={[3, 24]}
         alignSelf="flex-start"
       />
-      {formState.values.showAdvanced && (        
-      <div>
+      {formState.values.showAdvanced && (
+        <div>
           <Flex mt={4} flexDirection={["column", "row"]}>
             <Col mb={[3, 0]}>
               <Text
@@ -258,7 +258,7 @@ const Shortener = () => {
                 pr={[3, 24]}
                 fontSize={[14, 15]}
                 height={[40, 44]}
-                width={[170, 200]}
+                width={[1, 210, 240]}
                 options={[
                   { key: defaultDomain, value: "" },
                   ...domains.map(d => ({
@@ -288,7 +288,7 @@ const Shortener = () => {
                 placeholderSize={[13, 14]}
                 fontSize={[14, 15]}
                 height={[40, 44]}
-                width={[210, 240]}
+                width={[1, 210, 240]}
               />
             </Col>
             <Col ml={[0, 24]}>
@@ -311,12 +311,12 @@ const Shortener = () => {
                 placeholderSize={[13, 14]}
                 fontSize={[14, 15]}
                 height={[40, 44]}
-                width={[210, 240]}
+                width={[1, 210, 240]}
               />
             </Col>
           </Flex>
-          <Flex mt={4} flexDirection={["column", "row"]}>
-            <Col >
+          <Flex mt={[3]} flexDirection={["column", "row"]}>
+            <Col width={1}>
               <Text
                 as="description"
                 {...label("description")}
@@ -335,12 +335,12 @@ const Shortener = () => {
                 placeholderSize={[13, 14]}
                 fontSize={[14, 15]}
                 height={[40, 44]}
-                width={[752, 752]}
+                width={1}
+                maxWidth="100%"
               />
             </Col>
           </Flex>
-          </div>
-
+        </div>
       )}
     </Col>
   );

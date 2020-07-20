@@ -14,7 +14,7 @@ export interface Link {
   link: string;
   domain?: string;
   domain_id?: number;
-  password?: string;  
+  password?: string;
   description?: string;
   target: string;
   updated_at: string;
@@ -120,7 +120,9 @@ export const links: Links = {
     actions.update(res.data);
   }),
   add: action((state, payload) => {
-    state.items.pop();
+    if (state.items.length >= 10) {
+      state.items.pop();
+    }
     state.items.unshift(payload);
   }),
   set: action((state, payload) => {
