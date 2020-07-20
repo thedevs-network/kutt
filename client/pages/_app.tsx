@@ -89,4 +89,5 @@ class MyApp extends App<any> {
     );
   }
 }
+console.log(appWithTranslation);
 export default appWithTranslation.appWithTranslation(MyApp);

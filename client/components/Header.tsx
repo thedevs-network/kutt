@@ -55,7 +55,7 @@ const Header: FC = () => {
     <Li>
       <Link href="/login">
         <ALink href="/login" title="login / signup" forButton>
-          <Button height={[32, 40]}>{t('button.login')}</Button>
+          <Button height={[32, 40]}>{t('button.login')+" / "+('button.signUp')}</Button>
         </ALink>
       </Link>
     </Li>

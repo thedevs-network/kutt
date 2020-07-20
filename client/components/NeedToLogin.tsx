@@ -57,8 +57,6 @@ const Image = styled.img`
 `;
 
 const NeedToLogin = () => {
-
-
   const { t, i18n } = useTranslation();
   return (
     <Wrapper>
@@ -68,11 +66,11 @@ const NeedToLogin = () => {
         mb={[32, 32, 0]}
       >
         <Title>
-          Manage links, set custom <b>domains</b> and view <b>stats</b>.
+          {t('needLogin.title1')}<b>{t('needLogin.title2')}</b>{t('needLogin.title3')}<b>{t('needLogin.title4')}</b>.
       </Title>
         <Link href="/login">
           <a href="/login" title="login / signup">
-            <Button>{t('button.login')}</Button>
+            <Button>{t('button.login')+" / "+('button.signUp')}</Button>
           </a>
         </Link>
       </Col>

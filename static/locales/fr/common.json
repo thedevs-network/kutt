@@ -2,8 +2,6 @@
     "header": {
         "gitHub": "",
         "report": "",
-        "logout": "",
-        "login": "",
         "settings": ""
 
     },
@@ -33,6 +31,12 @@
             "views": ""
         }
 
+    },
+    "needLogin": {
+        "title1": "",
+        "title2": "",
+        "title3": "",
+        "title4": ""
     },
     "feature": {
         "title": "",
@@ -108,7 +112,9 @@
         "cancel": "",
         "delete": "",
         "update": "",
-        "updating": ""
+        "updating": "",
+        "logout": "",
+        "login": ""
     },
     "footer": {
         "made": "",

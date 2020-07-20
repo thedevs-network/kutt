@@ -1,0 +1,14 @@
+{
+    "login": {
+        "email": "",
+        "password": "",
+        "password2": "",
+        "forgotPassword": "",
+        "verificationEmail": " ",
+        "error": {
+            "emailEmpty": "",
+            "emailValid": "",
+            "passwordLenght": ""
+        }
+    }
+}

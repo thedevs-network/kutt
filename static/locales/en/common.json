@@ -32,10 +32,10 @@
 
     },
     "needLogin": {
-        "title1": "",
-        "title2": "",
-        "title3": "",
-        "title4": ""
+        "title1": "Manage links, set custom ",
+        "title2": "domains ",
+        "title3": "and view ",
+        "title4": "stats"
     },
     "feature": {
         "title": "Kutting edge features.",
@@ -106,14 +106,14 @@
                 "description5": "will be deleted."
             }
         }
-
     },
     "button": {
         "cancel": "Cancel",
         "delete": "Delete",
         "update": "Update",
         "updating": "Updating",
-        "login": "Login / Sign up",
+        "login": "Login",
+        "signUp": "Sign up",
         "logout": "Log out"
     },
     "footer": {
@@ -125,6 +125,4 @@
         "contact": "Contact us."
 
     }
-
-
 }
