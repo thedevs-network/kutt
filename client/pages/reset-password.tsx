@@ -18,11 +18,13 @@ import { useMessage } from "../hooks";
 import Icon from "../components/Icon";
 import { API, APIv2 } from "../consts";
 
+import { useTranslation } from 'react-i18next';
 interface Props {
   token?: string;
 }
 
 const ResetPassword: NextPage<Props> = ({ token }) => {
+  const { t } = useTranslation('resetPassword');
   const auth = useStoreState(s => s.auth);
   const addAuth = useStoreActions(s => s.auth.add);
   const [loading, setLoading] = useState(false);
@@ -54,9 +56,9 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
       await axios.post(APIv2.AuthResetPassword, {
         email: formState.values.email
       });
-      setMessage("Reset password email has been sent.", "green");
+      setMessage(t("message"), "green");
     } catch (error) {
-      setMessage(error?.response?.data?.error || "Couldn't reset password.");
+      setMessage(error?.response?.data?.error || t("Couldn't reset password."));
     }
     setLoading(false);
   };
@@ -66,14 +68,13 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
     <AppWrapper>
       <Col width={600} maxWidth="100%" px={3}>
         <H2 my={3} bold>
-          Reset password
+          {t('title')}
         </H2>
         <Text mb={4}>
-          If you forgot you password you can use the form below to get reset
-          password link.
+          {t('description')}
         </Text>
         <Text {...label("homepage")} as="label" mt={2} fontSize={[15, 16]} bold>
-          Email address
+        {t('emailAddress')}
         </Text>
         <Flex
           as="form"
@@ -83,7 +84,7 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
         >
           <TextInput
             {...email("email")}
-            placeholder="Email address..."
+            placeholder={t('emailAddress')+"..."}
             height={[44, 54]}
             width={[1, 1 / 2]}
             mr={3}
@@ -92,7 +93,7 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
           />
           <Button type="submit" height={[40, 44]} my={3}>
             {loading && <Icon name={"spinner"} stroke="white" mr={2} />}
-            Reset password
+            {t('btnResetPassword')}
           </Button>
         </Flex>
         <Text fontSize={14} color={message.color} mt={2} normal>

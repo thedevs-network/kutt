@@ -11,7 +11,7 @@ import { initializeStore } from "../store";
 import { TokenPayload } from "../types";
 import AppWrapper from "../components/AppWrapper";
 
-import  appWithTranslation  from '../../i18n'
+import  i18nExport  from '../../i18n'
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -89,5 +89,4 @@ class MyApp extends App<any> {
     );
   }
 }
-console.log(appWithTranslation);
-export default appWithTranslation.appWithTranslation(MyApp);
+export default i18nExport.appWithTranslation(MyApp);

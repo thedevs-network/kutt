@@ -18,7 +18,6 @@ import ALink from "../components/ALink";
 import Icon from "../components/Icon";
 import { APIv2 } from "../consts";
 import { useTranslation } from 'react-i18next';
-import i18n from '../../i18n'
 
 const LoginForm = styled(Flex).attrs({
   as: "form",
@@ -34,7 +33,8 @@ const Email = styled.span`
 `;
 
 const LoginPage = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation('login');
+  const { t : tcommon } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
   const login = useStoreActions(s => s.auth.login);
   const [error, setError] = useState("");
@@ -57,15 +57,15 @@ const LoginPage = () => {
       if (loading.login || loading.signup) return null;
 
       if (!email) {
-        return setError(t("login.error.emailEmpty"));
+        return setError(t("error.emailEmpty"));
       }
 
       if (!emailValidator.validate(email)) {
-        return setError(t("login.error.emailValid"));
+        return setError(t("error.emailValid"));
       }
 
       if (password.trim().length < 8) {
-        return setError(t("login.error.passwordLenght"));
+        return setError(t("error.passwordLenght"));
       }
 
       setError("");
@@ -98,20 +98,18 @@ const LoginPage = () => {
     return null;
   }
 
-  console.log("i18n ",i18n);
-  console.log("------------------------------------------------------------------------")
   return (
     <AppWrapper>
       <ColCenterV maxWidth="100%" px={3} flex="0 0 auto" mt={4}>
         {verifying ? (
           <H2 textAlign="center" light>
-            {t('login.verificationEmail')}
+            {t('verificationEmail')}
             <Email>{formState.values.email}</Email>.
           </H2>
         ) : (
           <LoginForm id="login-form" onSubmit={onSubmit("login")}>
             <Text {...label("email")} as="label" mb={2} bold>
-              {t('login.email') }
+              {t('email') }
             </Text>
             <TextInput
               {...email("email")}
@@ -125,11 +123,11 @@ const LoginPage = () => {
               autoFocus
             />
             <Text {...label("password")} as="label" mb={2} bold>
-              {t('login.password') + t('login.password2')}
+              {t('password') + t('password2')}
             </Text>
             <TextInput
               {...password("password")}
-              placeholder={t('login.password')+"..."}
+              placeholder={t('password')+"..."}
               px={[4, 40]}
               height={[56, 64, 72]}
               fontSize={[15, 16]}
@@ -149,7 +147,7 @@ const LoginPage = () => {
                   stroke="white"
                   mr={2}
                 />
-                {t('button.login')}
+                {tcommon('button.login')}
               </Button>
               <Button
                 flex="1 1 auto"
@@ -163,7 +161,7 @@ const LoginPage = () => {
                   stroke="white"
                   mr={2}
                 />
-                {t('button.signUp')}
+                {tcommon('button.signUp')}
               </Button>
             </Flex>
             <Link href="/reset-password">
@@ -174,7 +172,7 @@ const LoginPage = () => {
                 alignSelf="flex-start"
                 my={16}
               >
-                {t('login.forgotPassword')}
+                {t('forgotPassword')}
               </ALink>
             </Link>
             <Text color="red" mt={1} normal>
@@ -186,5 +184,4 @@ const LoginPage = () => {
     </AppWrapper>
   );
 };
-
-export default i18n.withTranslation('login')(LoginPage);
+export default LoginPage;
