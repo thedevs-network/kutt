@@ -346,7 +346,7 @@ return (
           </Flex>
         </div>
       )}
-    </Col>
+    </Col >
   );
 };
 
