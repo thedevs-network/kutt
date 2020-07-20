@@ -84,14 +84,14 @@ const Action = (props: React.ComponentProps<typeof Icon>) => (
 );
 
 const ogLinkFlex = { flexGrow: [1, 3, 7], flexShrink: [1, 3, 7] };
-const createdFlex = { flexGrow: [1, 1, 3], flexShrink: [1, 1, 3] };
+const createdFlex = { flexGrow: [1, 1, 2.5], flexShrink: [1, 1, 2.5] };
 const shortLinkFlex = { flexGrow: [1, 1, 3], flexShrink: [1, 1, 3] };
 const viewsFlex = {
   flexGrow: [0.5, 0.5, 1],
   flexShrink: [0.5, 0.5, 1],
   justifyContent: "flex-end"
 };
-const actionsFlex = { flexGrow: [1, 1, 2.5], flexShrink: [1, 1, 2.5] };
+const actionsFlex = { flexGrow: [1, 1, 3], flexShrink: [1, 1, 3] };
 
 interface RowProps {
   index: number;
@@ -109,6 +109,7 @@ interface BanForm {
 interface EditForm {
   target: string;
   address: string;
+  description: string;
 }
 
 const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
@@ -119,7 +120,8 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
   const [editFormState, { text, label }] = useFormState<EditForm>(
     {
       target: link.target,
-      address: link.address
+      address: link.address,
+      description: link.description
     },
     { withIds: true }
   );
@@ -175,7 +177,14 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
     <>
       <Tr key={link.id}>
         <Td {...ogLinkFlex} withFade>
-          <ALink href={link.target}>{link.target}</ALink>
+          <Col alignItems="flex-start">
+            <ALink href={link.target}>{link.target}</ALink>
+            {link.description && (
+              <Text fontSize={[13, 14]} color="#888">
+                {link.description}
+              </Text>
+            )}
+          </Col>
         </Td>
         <Td {...createdFlex}>{`${formatDistanceToNow(
           new Date(link.created_at)
@@ -292,9 +301,15 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
       </Tr>
       {showEdit && (
         <EditContent as="tr">
-          <Col as="td" alignItems="flex-start" px={[3, 3, 24]} py={[3, 3, 24]}>
-            <Flex alignItems="flex-start">
-              <Col alignItems="flex-start" mr={[0, 3, 3]}>
+          <Col
+            as="td"
+            alignItems="flex-start"
+            px={[3, 3, 24]}
+            py={[3, 3, 24]}
+            width={1}
+          >
+            <Flex alignItems="flex-start" width={1}>
+              <Col alignItems="flex-start" mr={3}>
                 <Text
                   {...label("target")}
                   as="label"
@@ -336,6 +351,32 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                     fontSize={[14, 15]}
                     height={[40, 44]}
                     width={[1, 210, 240]}
+                    pl={[3, 24]}
+                    pr={[3, 24]}
+                    required
+                  />
+                </Flex>
+              </Col>
+            </Flex>
+            <Flex alignItems="flex-start" width={1} mt={3}>
+              <Col alignItems="flex-start">
+                <Text
+                  {...label("description")}
+                  as="label"
+                  mb={2}
+                  fontSize={[14, 15]}
+                  bold
+                >
+                  Description:
+                </Text>
+                <Flex as="form">
+                  <TextInput
+                    {...text("description")}
+                    placeholder="description..."
+                    placeholderSize={[13, 14]}
+                    fontSize={[14, 15]}
+                    height={[40, 44]}
+                    width={[1, 300, 420]}
                     pl={[3, 24]}
                     pr={[3, 24]}
                     required

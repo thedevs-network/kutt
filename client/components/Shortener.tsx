@@ -51,6 +51,7 @@ interface Form {
   domain?: string;
   customurl?: string;
   password?: string;
+  description?: string;
   showAdvanced?: boolean;
 }
 
@@ -238,81 +239,108 @@ const Shortener = () => {
         alignSelf="flex-start"
       />
       {formState.values.showAdvanced && (
-        <Flex mt={4} flexDirection={["column", "row"]}>
-          <Col mb={[3, 0]}>
-            <Text
-              as="label"
-              {...label("domain")}
-              fontSize={[14, 15]}
-              mb={2}
-              bold
-            >
-              Domain
-            </Text>
-            <Select
-              {...select("domain")}
-              data-lpignore
-              pl={[3, 24]}
-              pr={[3, 24]}
-              fontSize={[14, 15]}
-              height={[40, 44]}
-              width={[170, 200]}
-              options={[
-                { key: defaultDomain, value: "" },
-                ...domains.map(d => ({
-                  key: d.address,
-                  value: d.address
-                }))
-              ]}
-            />
-          </Col>
-          <Col mb={[3, 0]} ml={[0, 24]}>
-            <Text
-              as="label"
-              {...label("customurl")}
-              fontSize={[14, 15]}
-              mb={2}
-              bold
-            >
-              {formState.values.domain || defaultDomain}/
-            </Text>
-            <TextInput
-              {...text("customurl")}
-              placeholder="Custom address..."
-              autocomplete="off"
-              data-lpignore
-              pl={[3, 24]}
-              pr={[3, 24]}
-              placeholderSize={[13, 14]}
-              fontSize={[14, 15]}
-              height={[40, 44]}
-              width={[210, 240]}
-            />
-          </Col>
-          <Col ml={[0, 24]}>
-            <Text
-              as="label"
-              {...label("password")}
-              fontSize={[14, 15]}
-              mb={2}
-              bold
-            >
-              Password:
-            </Text>
-            <TextInput
-              {...password("password")}
-              placeholder="Password..."
-              autocomplete="off"
-              data-lpignore
-              pl={[3, 24]}
-              pr={[3, 24]}
-              placeholderSize={[13, 14]}
-              fontSize={[14, 15]}
-              height={[40, 44]}
-              width={[210, 240]}
-            />
-          </Col>
-        </Flex>
+        <div>
+          <Flex mt={4} flexDirection={["column", "row"]}>
+            <Col mb={[3, 0]}>
+              <Text
+                as="label"
+                {...label("domain")}
+                fontSize={[14, 15]}
+                mb={2}
+                bold
+              >
+                Domain
+              </Text>
+              <Select
+                {...select("domain")}
+                data-lpignore
+                pl={[3, 24]}
+                pr={[3, 24]}
+                fontSize={[14, 15]}
+                height={[40, 44]}
+                width={[1, 210, 240]}
+                options={[
+                  { key: defaultDomain, value: "" },
+                  ...domains.map(d => ({
+                    key: d.address,
+                    value: d.address
+                  }))
+                ]}
+              />
+            </Col>
+            <Col mb={[3, 0]} ml={[0, 24]}>
+              <Text
+                as="label"
+                {...label("customurl")}
+                fontSize={[14, 15]}
+                mb={2}
+                bold
+              >
+                {formState.values.domain || defaultDomain}/
+              </Text>
+              <TextInput
+                {...text("customurl")}
+                placeholder="Custom address..."
+                autocomplete="off"
+                data-lpignore
+                pl={[3, 24]}
+                pr={[3, 24]}
+                placeholderSize={[13, 14]}
+                fontSize={[14, 15]}
+                height={[40, 44]}
+                width={[1, 210, 240]}
+              />
+            </Col>
+            <Col ml={[0, 24]}>
+              <Text
+                as="label"
+                {...label("password")}
+                fontSize={[14, 15]}
+                mb={2}
+                bold
+              >
+                Password:
+              </Text>
+              <TextInput
+                {...password("password")}
+                placeholder="Password..."
+                autocomplete="off"
+                data-lpignore
+                pl={[3, 24]}
+                pr={[3, 24]}
+                placeholderSize={[13, 14]}
+                fontSize={[14, 15]}
+                height={[40, 44]}
+                width={[1, 210, 240]}
+              />
+            </Col>
+          </Flex>
+          <Flex mt={[3]} flexDirection={["column", "row"]}>
+            <Col width={1}>
+              <Text
+                as="description"
+                {...label("description")}
+                fontSize={[14, 15]}
+                mb={2}
+                bold
+              >
+                Description
+              </Text>
+              <TextInput
+                {...text("description")}
+                placeholder="Description"
+                data-lpignore
+                pl={[3, 24]}
+                pr={[3, 24]}
+                placeholderSize={[13, 14]}
+                fontSize={[14, 15]}
+                height={[40, 44]}
+                width={1}
+                maxWidth="100%"
+              />
+            </Col>
+          </Flex>
+        </div>
       )}
     </Col>
   );

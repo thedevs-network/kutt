@@ -12,6 +12,7 @@ const selectable = [
   "links.domain_id",
   "links.updated_at",
   "links.password",
+  "links.description",
   "links.target",
   "links.visit_count",
   "links.user_id",
@@ -52,9 +53,10 @@ export const total = async (match: Match<Link>, params: TotalParams = {}) => {
   });
 
   if (params.search) {
-    query.andWhereRaw("links.address || ' ' || target ILIKE '%' || ? || '%'", [
-      params.search
-    ]);
+    query.andWhereRaw(
+      "links.description || ' '  || links.address || ' ' || target ILIKE '%' || ? || '%'",
+      [params.search]
+    );
   }
 
   const [{ count }] = await query.count("id");
@@ -77,9 +79,10 @@ export const get = async (match: Partial<Link>, params: GetParams) => {
     .orderBy("created_at", "desc");
 
   if (params.search) {
-    query.andWhereRaw("links.address || ' ' || target ILIKE '%' || ? || '%'", [
-      params.search
-    ]);
+    query.andWhereRaw(
+      "links.description || ' '  || links.address || ' ' || target ILIKE '%' || ? || '%'",
+      [params.search]
+    );
   }
 
   query.leftJoin("domains", "links.domain_id", "domains.id");
@@ -131,6 +134,7 @@ export const create = async (params: Create) => {
       domain_id: params.domain_id || null,
       user_id: params.user_id || null,
       address: params.address,
+      description: params.description || null,
       target: params.target
     },
     "*"

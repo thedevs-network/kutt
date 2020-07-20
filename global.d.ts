@@ -76,6 +76,7 @@ interface Link {
   created_at: string;
   domain_id?: number;
   password?: string;
+  description?: string;
   target: string;
   updated_at: string;
   user_id?: number;

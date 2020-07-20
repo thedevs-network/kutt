@@ -9,6 +9,7 @@ export async function createLinkTable(knex: Knex) {
       knex.raw('create extension if not exists "uuid-ossp"');
       table.increments("id").primary();
       table.string("address").notNullable();
+      table.string("description");
       table
         .boolean("banned")
         .notNullable()
