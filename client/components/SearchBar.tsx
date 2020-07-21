@@ -44,17 +44,18 @@ const SearchBar = () => {
       justifyContent="center"
       style={{ position: "relative" }}
     >
-    <H2 my={4} light>
-      go/
+    <H2 my={4} light >
+      {process.env.SITE_NAME}/
     </H2>
     <TextInput
         {...text("search")}
         placeholder="Search your url"
-        autocomplete="off"
+        autoComplete="off"
         placeholderSize={[16, 17, 18]}
         fontSize={[18, 20, 22]}
-        width={1}
         height={[58, 64, 72]}
+        width={[400, 500, 700]}
+        style={{marginLeft:"5px"}}
         px={0}
         pr={[48, 84]}
         pl={[32, 40]}
@@ -64,7 +65,7 @@ const SearchBar = () => {
     </Flex>
       <ul>
       {links.items.map(link => (
-          <li key={link.address}><a href={"http://localhost:3000/"+link.address}>/{link.address}</a> {link.description}</li>
+          <li key={link.address}><a href={link.target}>/{link.address}</a> {link.description}</li>
         ))}
       </ul>
   </Col>
