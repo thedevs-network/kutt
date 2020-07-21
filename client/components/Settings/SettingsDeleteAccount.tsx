@@ -15,7 +15,8 @@ import Modal from "../Modal";
 import { useTranslation } from 'react-i18next';
 
 const SettingsDeleteAccount: FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation("setting");
+  const { t : tcommon } = useTranslation();
   const [message, setMessage] = useMessage(1500);
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState(false);
@@ -52,9 +53,9 @@ const SettingsDeleteAccount: FC = () => {
   return (
     <Col alignItems="flex-start" maxWidth="100%">
       <H2 mb={4} bold>
-        {t('settings.account.title')}
+        {t('account.title')}
       </H2>
-      <Text mb={4}>{t('settings.account.description')}{process.env.SITE_NAME}.</Text>
+      <Text mb={4}>{t('account.description')}{process.env.SITE_NAME}.</Text>
       <Text
         {...label("password")}
         as="label"
@@ -62,18 +63,18 @@ const SettingsDeleteAccount: FC = () => {
         fontSize={[15, 16]}
         bold
       >
-        {t('settings.account.password')}
+        {t('account.password')}
       </Text>
       <RowCenterV as="form" onSubmit={onSubmit}>
         <TextInput
           {...password("accpass")}
-          placeholder={t('settings.account.password')}
+          placeholder={t('account.password')}
           autocomplete="off"
           mr={3}
         />
         <Button color="red" type="submit" disabled={loading}>
           <Icon name={loading ? "spinner" : "trash"} mr={2} stroke="white" />
-          {t('button.delete')}
+          {tcommon('button.delete')}
         </Button>
       </RowCenterV>
       <Modal
@@ -83,11 +84,11 @@ const SettingsDeleteAccount: FC = () => {
       >
         <>
           <H2 mb={24} textAlign="center" bold>
-          {t('settings.account.modal.title')}
+          {t('account.modal.title')}
           </H2>
           <Text textAlign="center">
-          {t('settings.account.modal.description1')}<Span bold>{t('settings.account.modal.description2')}</Span> {t('settings.account.modal.description3')}
-            <Span bold>{t('settings.account.modal.description4')}</Span>{t('settings.account.modal.description5')}
+          {t('account.modal.description1')}<Span bold>{t('account.modal.description2')}</Span> {t('account.modal.description3')}
+            <Span bold>{t('account.modal.description4')}</Span>{t('account.modal.description5')}
           </Text>
           <RowCenterH mt={44}>
             {loading ? (
@@ -101,11 +102,11 @@ const SettingsDeleteAccount: FC = () => {
             ) : (
               <>
                 <Button color="gray" mr={3} onClick={() => setModal(false)}>
-                {t('button.cancel')}
+                {tcommon('button.cancel')}
                 </Button>
                 <Button color="red" ml={3} onClick={onDelete}>
                   <Icon name="trash" stroke="white" mr={2} />
-                  {t('button.delete')}
+                  {tcommon('button.delete')}
                 </Button>
               </>
             )}

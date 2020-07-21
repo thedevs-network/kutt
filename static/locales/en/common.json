@@ -70,7 +70,9 @@
         "updating": "Updating",
         "login": "Login",
         "signUp": "Sign up",
-        "logout": "Log out"
+        "logout": "Log out",
+        "backHome": "Back to homepage",
+        "backSignUp": "Back to signup"
     },
     "footer": {
         "made": "Made with love by",
@@ -80,5 +82,8 @@
         "report": "Report Abuse",
         "contact": "Contact us."
 
+    },
+    "error": {
+        "404": "404 | Link could not be found."
     }
 }

@@ -8,6 +8,8 @@ import { useStoreActions, useStoreState } from "../store";
 import {  TextInput } from "./Input";
 import { Col } from "./Layout";
 import { H2 } from "../components/Text";
+import { useTranslation } from 'react-i18next';
+
 
 interface Form {
     all: boolean;
@@ -20,6 +22,7 @@ interface Form {
 const defaultDomain = process.env.DEFAULT_DOMAIN;
 
 const SearchBar = () => {
+  const { t } = useTranslation("urlInfo");
   const links = useStoreState(s => s.links);
   const { get } = useStoreActions(s => s.links);
     const [formState, { label, checkbox, text }] = useFormState<Form>(
@@ -45,11 +48,11 @@ const SearchBar = () => {
       style={{ position: "relative" }}
     >
     <H2 my={4} light>
-      go/
+    {process.env.SITE_NAME}/
     </H2>
     <TextInput
         {...text("search")}
-        placeholder="Search your url"
+        placeholder={t('phSearch')}
         autocomplete="off"
         placeholderSize={[16, 17, 18]}
         fontSize={[18, 20, 22]}

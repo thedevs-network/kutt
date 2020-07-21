@@ -30,7 +30,7 @@ const ApiKey = styled(Text).attrs({
 `;
 
 const SettingsApi: FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation("setting");
   const [copied, setCopied] = useCopy();
   const [message, setMessage] = useMessage(1500);
   const [loading, setLoading] = useState(false);
@@ -47,12 +47,12 @@ const SettingsApi: FC = () => {
   return (
     <Col alignItems="flex-start" maxWidth="100%">
       <H2 mb={4} bold>
-      {t('settings.api.title')}
+      {t('api.title')}
       </H2>
       <Text mb={4}>
-        {t('settings.api.description1')}
+        {t('api.description1')}
         <ALink href="https://docs.kutt.it" title="API Docs" target="_blank">
-        {t('settings.api.description2')}
+        {t('api.description2')}
         </ALink>
       </Text>
       {apikey && (
@@ -95,7 +95,7 @@ const SettingsApi: FC = () => {
       )}
       <Button mt={3} color="purple" onClick={onSubmit} disabled={loading}>
         <Icon name={loading ? "spinner" : "zap"} mr={2} stroke="white" />
-        {loading ? t('settings.api.btnGenerating') : apikey ? t('settings.api.btnRegenerateKey') : t('settings.api.btnGenerateKey')}
+        {loading ? t('api.button.generating') : apikey ? t('api.button.regenerateKey') : t('api.button.generateKey')}
       </Button>
       <Text fontSize={15} mt={3} color={message.color}>
         {message.text}

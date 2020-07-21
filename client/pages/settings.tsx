@@ -14,14 +14,14 @@ import { useStoreState } from "../store";
 import { useTranslation } from 'react-i18next';
 
 const SettingsPage: NextPage = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation("setting");
   const email = useStoreState(s => s.auth.email);
 
   return (
     <AppWrapper>
       <Col width={600} maxWidth="90%" alignItems="flex-start" pb={80} mt={4}>
         <H1 alignItems="center" fontSize={[24, 28]} light>
-          {`${t('settings.title')} `}
+          {`${t('title')} `}
           <Span pb="2px" style={{ borderBottom: "2px dotted #999" }}>
             {email}
           </Span>

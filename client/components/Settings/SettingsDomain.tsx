@@ -25,7 +25,8 @@ const Td = styled(Flex).attrs({ as: "td", py: 12, px: 3 })`
 `;
 
 const SettingsDomain: FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation("setting");
+  const { t : tcommon } = useTranslation();
   const { saveDomain, deleteDomain } = useStoreActions(s => s.settings);
   const [domainToDelete, setDomainToDelete] = useState<Domain>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -69,22 +70,22 @@ const SettingsDomain: FC = () => {
   return (
     <Col alignItems="flex-start" maxWidth="100%">
       <H2 mb={4} bold>
-        {t('settings.domain.title')}
+        {t('domain.title')}
       </H2>
       <Text mb={3}>
-      {t('settings.domain.description1')}
-        <b>{process.env.DEFAULT_DOMAIN}{t('settings.domain.description2')}</b>{t('settings.domain.description3')}
-        <b>{t('settings.domain.description4')}</b>
+      {t('domain.description1')}
+        <b>{process.env.DEFAULT_DOMAIN}{t('domain.description2')}</b>{t('domain.description3')}
+        <b>{t('domain.description4')}</b>
       </Text>
       <Text mb={4}>
-      {t('settings.domain.description5')}<b>192.64.116.170</b> {t('settings.domain.description6')}
+      {t('domain.description5')}<b>192.64.116.170</b> {t('domain.description6')}
       </Text>
       {domains.length ? (
         <Table my={3} scrollWidth="550px">
           <thead>
             <tr>
-              <Th width={2 / 5}>{t('settings.domain.colDomain')}</Th>
-              <Th width={2 / 5}>{t('settings.domain.colHomePage')}</Th>
+              <Th width={2 / 5}>{t('domain.colDomain')}</Th>
+              <Th width={2 / 5}>{t('domain.colHomePage')}</Th>
               <Th width={1 / 5}></Th>
             </tr>
           </thead>
@@ -150,7 +151,7 @@ const SettingsDomain: FC = () => {
                 fontSize={[15, 16]}
                 bold
               >
-                {t('settings.domain.colHomePageOpt')}
+                {t('domain.colHomePageOpt')}
               </Text>
               <TextInput
                 {...text("homepage")}
@@ -169,10 +170,10 @@ const SettingsDomain: FC = () => {
       <Text color={message.color}>{message.text}</Text>
       <Modal id="delete-custom-domain" show={modal} closeHandler={closeModal}>
         <H2 mb={24} textAlign="center" bold>
-        {t('settings.domain.modal.title')}
+        {t('domain.modal.title')}
         </H2>
         <Text textAlign="center">
-        {t('settings.domain.modal.description')}
+        {t('domain.modal.description')}
           <Span bold>"{domainToDelete && domainToDelete.address}"</Span>?
         </Text>
         <Flex justifyContent="center" mt={44}>
@@ -183,11 +184,11 @@ const SettingsDomain: FC = () => {
           ) : (
             <>
               <Button color="gray" mr={3} onClick={closeModal}>
-              {t('button.cancel')}
+              {tcommon('button.cancel')}
               </Button>
               <Button color="red" ml={3} onClick={onDelete}>
                 <Icon name="trash" stroke="white" mr={2} />
-                {t('button.delete')}
+                {tcommon('button.delete')}
               </Button>
             </>
           )}
