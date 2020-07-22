@@ -9,7 +9,7 @@ import Text, { H3 } from "./Text";
 import { useTranslation } from 'react-i18next';
 
 const Features = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   return (
     <ColCenterH
       width={1}

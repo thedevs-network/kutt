@@ -10,7 +10,7 @@ import { Col } from "../components/Layout";
 import { useTranslation } from 'react-i18next';
 
 const BannedPage = () => {
-  const { t, i18n } = useTranslation("banned");
+  const { t } = useTranslation("banned");
   return (
     <AppWrapper>
       <Col flex="1 1 100%" alignItems="center">

@@ -55,7 +55,7 @@ const Header: FC = () => {
     <Li>
       <Link href="/login">
         <ALink href="/login" title="login / signup" forButton>
-          <Button height={[32, 40]}>{t('button.login')+" / "+('button.signUp')}</Button>
+          <Button height={[32, 40]}>{t('button.login')+" / "+t('button.signUp')}</Button>
         </ALink>
       </Link>
     </Li>
@@ -148,11 +148,16 @@ const Header: FC = () => {
           <Flex display={["flex", "none"]}>
             <Link href="/report">
               <ALink href="/report" title="Report" fontSize={[14, 16]}>
-                Report
+              {t('header.report')}
               </ALink>
             </Link>
           </Flex>
         </Li>
+        <button onClick ={() => {
+          console.log("i18n ------------------------------>", i18n)
+          i18n.changeLanguage(i18n.language === 'en'? 'fr' : 'en')
+        }
+        }>anglais</button>
         {logout}
         {settings}
         {login}

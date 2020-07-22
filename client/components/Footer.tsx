@@ -9,7 +9,7 @@ import Text from "./Text";
 import { useTranslation } from 'react-i18next';
 
 const Footer: FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
 
   useEffect(() => {

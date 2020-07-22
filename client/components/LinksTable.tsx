@@ -116,11 +116,12 @@ interface EditForm {
 }
 
 const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
+  const { t } = useTranslation();
   const isAdmin = useStoreState(s => s.auth.isAdmin);
   const ban = useStoreActions(s => s.links.ban);
   const edit = useStoreActions(s => s.links.edit);
   const [banFormState, { checkbox }] = useFormState<BanForm>();
-  const [editFormState, { text, label,checkbox: checkboxEdit }] = useFormState<EditForm>(
+  const [editFormState, { text, label, checkbox: checkboxEdit }] = useFormState<EditForm>(
     {
       target: link.target,
       address: link.address,
@@ -208,17 +209,17 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
               />
             </Animation>
           ) : (
-            <Animation minWidth={32} offset="-10px" duration="0.2s">
-              <CopyToClipboard text={link.link} onCopy={onCopy}>
-                <Action
-                  name="copy"
-                  strokeWidth="2.5"
-                  stroke={Colors.CopyIcon}
-                  backgroundColor={Colors.CopyIconBg}
-                />
-              </CopyToClipboard>
-            </Animation>
-          )}
+              <Animation minWidth={32} offset="-10px" duration="0.2s">
+                <CopyToClipboard text={link.link} onCopy={onCopy}>
+                  <Action
+                    name="copy"
+                    strokeWidth="2.5"
+                    stroke={Colors.CopyIcon}
+                    backgroundColor={Colors.CopyIconBg}
+                  />
+                </CopyToClipboard>
+              </Animation>
+            )}
           <ALink href={link.link}>{removeProtocol(link.link)}</ALink>
         </Td>
         <Td {...viewsFlex}>{withComma(link.visit_count)}</Td>
@@ -226,7 +227,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
           {link.password && (
             <>
               <Tooltip id={`${index}-tooltip-password`}>
-                Password protected
+                {t('linksTable.tooltip.passwordProtected')}
               </Tooltip>
               <Action
                 as="span"
@@ -241,7 +242,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
           )}
           {link.banned && (
             <>
-              <Tooltip id={`${index}-tooltip-banned`}>Banned</Tooltip>
+              <Tooltip id={`${index}-tooltip-banned`}>{t('linksTable.tooltip.banned')}</Tooltip>
               <Action
                 as="span"
                 data-tip
@@ -328,7 +329,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                   fontSize={[14, 15]}
                   bold
                 >
-                  Target:
+                  {t('linksTable.table.target')}:
                 </Text>
                 <Flex as="form">
                   <TextInput
@@ -352,7 +353,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                   fontSize={[14, 15]}
                   bold
                 >
-                  Description:
+                  {t('linksTable.table.description')}:
                 </Text>
                 <Flex as="form">
                   <TextInput
@@ -393,7 +394,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 </Flex>
               </Col>
               <Col alignItems="flex-start">
-                <Checkbox {...checkboxEdit( 'isSearchable')} label="Is searchable" mb={12}/>
+                <Checkbox {...checkboxEdit('isSearchable')} label="Is searchable" mb={12} />
               </Col>
             </Flex>
             <Button
@@ -435,10 +436,10 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
       >
         <>
           <H2 mb={24} textAlign="center" bold>
-            Ban link?
+            {t('linksTable.banModal.title')}
           </H2>
           <Text mb={24} textAlign="center">
-            Are you sure do you want to ban the link{" "}
+            {t('linksTable.banModal.description')}
             <Span bold>"{removeProtocol(link.link)}"</Span>?
           </Text>
           <RowCenter>
@@ -457,16 +458,16 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 {banMessage.text}
               </Text>
             ) : (
-              <>
-                <Button color="gray" mr={3} onClick={() => setBanModal(false)}>
-                  Cancel
-                </Button>
-                <Button color="red" ml={3} onClick={onBan}>
-                  <Icon name="stop" stroke="white" mr={2} />
-                  Ban
-                </Button>
-              </>
-            )}
+                  <>
+                    <Button color="gray" mr={3} onClick={() => setBanModal(false)}>
+                      {t('button.cancel')}
+                    </Button>
+                    <Button color="red" ml={3} onClick={onBan}>
+                      <Icon name="stop" stroke="white" mr={2} />
+                      {t('button.ban')}
+                    </Button>
+                  </>
+                )}
           </Flex>
         </>
       </Modal>
@@ -483,7 +484,7 @@ interface Form {
 }
 
 const LinksTable: FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const isAdmin = useStoreState(s => s.auth.isAdmin);
   const links = useStoreState(s => s.links);
   const { get, remove } = useStoreActions(s => s.links);
@@ -588,7 +589,7 @@ const LinksTable: FC = () => {
               <Flex as="form" onSubmit={onSubmit}>
                 <TextInput
                   {...text("search")}
-                  placeholder={t('linksTable.phSearch')+"..."}
+                  placeholder={t('linksTable.phSearch') + "..."}
                   height={[30, 32]}
                   placeholderSize={[13, 13, 13, 13]}
                   fontSize={[14]}
@@ -633,17 +634,17 @@ const LinksTable: FC = () => {
               </Td>
             </Tr>
           ) : (
-            <>
-              {links.items.map((link, index) => (
-                <Row
-                  setDeleteModal={setDeleteModal}
-                  index={index}
-                  link={link}
-                  key={link.id}
-                />
-              ))}
-            </>
-          )}
+              <>
+                {links.items.map((link, index) => (
+                  <Row
+                    setDeleteModal={setDeleteModal}
+                    index={index}
+                    link={link}
+                    key={link.id}
+                  />
+                ))}
+              </>
+            )}
         </tbody>
         <tfoot>
           <Tr justifyContent="flex-end">{Nav}</Tr>
@@ -657,10 +658,10 @@ const LinksTable: FC = () => {
         {linkToDelete && (
           <>
             <H2 mb={24} textAlign="center" bold>
-              Delete link?
+              {t('linksTable.deleteModal.title')}
             </H2>
             <Text textAlign="center">
-              Are you sure do you want to delete the link{" "}
+              {t('linksTable.deleteModal.description')}
               <Span bold>"{removeProtocol(linkToDelete.link)}"</Span>?
             </Text>
             <Flex justifyContent="center" mt={44}>
@@ -673,20 +674,20 @@ const LinksTable: FC = () => {
                   {deleteMessage.text}
                 </Text>
               ) : (
-                <>
-                  <Button
-                    color="gray"
-                    mr={3}
-                    onClick={() => setDeleteModal(-1)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button color="red" ml={3} onClick={onDelete}>
-                    <Icon name="trash" stroke="white" mr={2} />
-                    Delete
-                  </Button>
-                </>
-              )}
+                    <>
+                      <Button
+                        color="gray"
+                        mr={3}
+                        onClick={() => setDeleteModal(-1)}
+                      >
+                        {t('button.cancel')}
+                      </Button>
+                      <Button color="red" ml={3} onClick={onDelete}>
+                        <Icon name="trash" stroke="white" mr={2} />
+                        {t('button.delete')}
+                      </Button>
+                    </>
+                  )}
             </Flex>
           </>
         )}

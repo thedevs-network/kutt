@@ -22,7 +22,7 @@ interface Form {
 const defaultDomain = process.env.DEFAULT_DOMAIN;
 
 const SearchBar = () => {
-  const { t } = useTranslation("urlInfo");
+  const { t } = useTranslation("search");
   const links = useStoreState(s => s.links);
   const { get } = useStoreActions(s => s.links);
     const [formState, { label, checkbox, text }] = useFormState<Form>(

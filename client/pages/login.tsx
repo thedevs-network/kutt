@@ -113,7 +113,7 @@ const LoginPage = () => {
             </Text>
             <TextInput
               {...email("email")}
-              placeholder={t('login.email') +"..."}
+              placeholder={t('email') +"..."}
               height={[56, 64, 72]}
               fontSize={[15, 16]}
               px={[4, 40]}

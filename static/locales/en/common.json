@@ -27,7 +27,20 @@
             "description": "Description",
             "created": "Created",
             "shortURL": "Short URL",
-            "views": "Views"
+            "views": "Views",
+            "target": "Target"
+        },
+        "tooltip": {
+            "passwordProtected": "Password protected",
+            "banned": "Banned"
+        },
+        "banModal": {
+            "title": "Ban link?",
+            "description": " Are you sure do you want to ban the link "
+        },
+        "deleteModal": {
+            "title": "Delete link?",
+            "description": "Are you sure do you want to delete the link "
         }
 
     },
@@ -72,7 +85,8 @@
         "signUp": "Sign up",
         "logout": "Log out",
         "backHome": "Back to homepage",
-        "backSignUp": "Back to signup"
+        "backSignUp": "Back to signup",
+        "ban": "Ban"
     },
     "footer": {
         "made": "Made with love by",

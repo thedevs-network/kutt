@@ -1,130 +1,103 @@
 {
     "header": {
-        "gitHub": "",
-        "report": "",
-        "settings": ""
-
+        "gitHub": "GitHub",
+        "report": "Report",
+        "settings": "Paramètres"
     },
     "shortener": {
-        "title": "",
-        "title2": "",
-        "phUrl": "",
+        "title": "Raccourcissez vos ",
+        "title2": "liens",
+        "phUrl": "Paste your long URL",
         "advanced": {
-            "chAdvanced": "",
-            "domain": "",
-            "phCustomAddress": "",
-            "password": "",
-            "description": "",
-            "chSearchable": ""
+            "chAdvanced": " Afficher les options avancées",
+            "domain": "Domaine",
+            "phCustomAddress": "Adresse custom",
+            "password": "Mot de passe",
+            "description": "Description",
+            "chSearchable": "Est recherchable"
         }
 
     },
     "linksTable": {
-        "title": "",
-        "phSearch": "",
-        "cBoxAllLink": "",
+        "title": "Liens récemment raccourcis",
+        "phSearch": "Recherche",
+        "cBoxAllLink": "Tous les liens",
         "table": {
-            "originalURL": "",
-            "description": "",
-            "created": "",
-            "shortURL": "",
-            "views": ""
+            "originalURL": "URL d'origine",
+            "description": "Description",
+            "created": "Créé",
+            "shortURL": "URL court",
+            "views": "Vues",
+            "target": "URL d'origine"
+        },
+        "tooltip": {
+            "passwordProtected": "Protégé par un mot de passe",
+            "banned": "Bannie"
+        },
+        "banModal": {
+            "title": "Bannir le lien ?",
+            "description": " Êtes-vous sûr de vouloir bannir le lien  "
+        },
+        "deleteModal": {
+            "title": "Supprimer le lien ?",
+            "description": "Êtes-vous sûr de vouloir supprimer le lien"
         }
 
     },
     "needLogin": {
-        "title1": "",
-        "title2": "",
-        "title3": "",
-        "title4": ""
+        "title1": "Gérer vos liens, définissez vos ",
+        "title2": "domaines ",
+        "title3": "et consultez les ",
+        "title4": "statistiques."
     },
     "feature": {
-        "title": "",
+        "title": "Kutting edge fonctionnalités.",
         "f1": {
-            "title": "",
-            "description": ""
+            "title": "Gestion des liens",
+            "description": "Créez, protégez et supprimez vos liens et surveillez-les à l'aide de statistiques détaillées."
         },
         "f2": {
-            "title": "",
-            "description": ""
+            "title": "Domaine personnalisé",
+            "description": "Utilisez des domaines personnalisés pour vos liens. Ajoutez ou supprimez-les librement."
         },
         "f3": {
-            "title": "",
-            "description": ""
+            "title": "API",
+            "description": "Utilisez l'API fournie pour créer, supprimer et obtenir des URL de n'importe où."
         },
         "f4": {
-            "title": "",
-            "description": ""
+            "title": "Gratuit & open source",
+            "description": "Entièrement open source et gratuit. Vous pouvez l'héberger sur votre propre serveur."
         }
     },
     "extensions": {
-        "title": "",
-        "btnChrome": "",
-        "btnFirefox": ""
+        "title": "Extensions de navigateur.",
+        "btnChrome": "Télécharger pour Chrome",
+        "btnFirefox": "Télécharger pour Firefox"
 
     },
-    "settings": {
-        "title": "",
-        "domain": {
-            "title": "",
-            "description1": "",
-            "description2": "",
-            "description3": "",
-            "description4": "",
-            "description5": "",
-            "description6": "",
-            "colDomain": "",
-            "colHomePage": "",
-            "colHomePageOpt": "",
-            "modal": {
-                "title": "",
-                "description": ""
-            }
-        },
-        "password": {
-            "title": "",
-            "description": "",
-            "newPassword": ""
-        },
-        "api": {
-            "title": "",
-            "description1": "",
-            "description2": "",
-            "btnGenerateKey": "",
-            "btnRegenerateKey": ""
-        },
-        "account": {
-            "title": "",
-            "description": "",
-            "password": "",
-            "modal": {
-                "title": "",
-                "description1": "",
-                "description2": "",
-                "description3": "",
-                "description4": "",
-                "description5": ""
-            }
-        }
 
-    },
     "button": {
-        "cancel": "",
-        "delete": "",
-        "update": "",
-        "updating": "",
-        "logout": "",
-        "login": ""
+        "cancel": "Annuler",
+        "delete": "Supprimer",
+        "update": "Mettre à jour",
+        "updating": "Mise à jour",
+        "login": "Connexion",
+        "signUp": "S'inscrire",
+        "logout": "Déconnexion",
+        "backHome": "Retour Accueil",
+        "backSignUp": "Retour à l'inscription",
+        "ban": "Ban"
     },
     "footer": {
-        "made": "",
-        "theDevs": "",
-        "gitHub": "",
-        "termsOfService": "",
-        "report": "",
-        "contact": ""
+        "made": "Made with love by ",
+        "theDevs": "The Devs",
+        "gitHub": "GitHub",
+        "termsOfService": "Les conditions d'utilisation",
+        "report": "Signaler un abus",
+        "contact": "Contactez-nous."
 
+    },
+    "error": {
+        "404": "404 | Le lien n'a pas pu être trouvé."
     }
-
-
 }

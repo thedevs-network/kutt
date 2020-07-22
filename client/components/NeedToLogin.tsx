@@ -57,7 +57,7 @@ const Image = styled.img`
 `;
 
 const NeedToLogin = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   return (
     <Wrapper>
       <Col

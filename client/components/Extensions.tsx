@@ -73,7 +73,7 @@ const Icon = styled(SVG)`
 `;
 
 const Extensions = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   return (
     <ColCenterH
       width={1}

@@ -63,7 +63,7 @@ interface Form {
 const defaultDomain = process.env.DEFAULT_DOMAIN;
 
 const Shortener = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
   const domains = useStoreState(s => s.settings.domains);
   const submit = useStoreActions(s => s.links.submit);

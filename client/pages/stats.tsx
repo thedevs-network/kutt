@@ -25,7 +25,7 @@ interface Props {
 
 const StatsPage: NextPage<Props> = ({ id }) => {
   const { t } = useTranslation("stats");
-  const { t : tcommon} = useTranslation();
+  const { t: tcommon } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -72,9 +72,6 @@ const StatsPage: NextPage<Props> = ({ id }) => {
   const loader = loading && <PageLoading />;
 
   const total = stats && stats.views.reduce((sum, view) => sum + view, 0);
-  const periodText = period.includes("last")
-    ? `the last ${period.replace("last", "").toLocaleLowerCase()}`
-    : "all time";
 
   return (
     <AppWrapper>
@@ -144,7 +141,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                   >
                     {total}
                   </Span>{" "}
-                  {t('trackedClicks')} {periodText}.
+                  {t('trackedClicks')+ t(`timeClick.${period}`)}.
                 </H2>
                 <Text fontSize={[13, 14]} color={Colors.StatsLastUpdateText}>
                   {t('lastUpdate')}
@@ -159,13 +156,13 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                     <Flex width={1}>
                       <Col flex="1 1 0">
                         <H2 mb={3} light>
-                          {t('chart.referrals')} 
+                          {t('chart.referrals')}
                         </H2>
                         <Pie data={stats.stats.referrer} />
                       </Col>
                       <Col flex="1 1 0">
                         <H2 mb={3} light>
-                        {t('chart.browsers')} 
+                          {t('chart.browsers')}
                         </H2>
                         <Bar data={stats.stats.browser} />
                       </Col>
@@ -174,13 +171,13 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                     <Flex width={1}>
                       <Col flex="1 1 0">
                         <H2 mb={3} light>
-                        {t('chart.country')}
+                          {t('chart.country')}
                         </H2>
                         <Map data={stats.stats.country} />
                       </Col>
                       <Col flex="1 1 0">
                         <H2 mb={3} light>
-                        {t('chart.os')}
+                          {t('chart.os')}
                         </H2>
                         <Bar data={stats.stats.os} />
                       </Col>

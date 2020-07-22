@@ -15,7 +15,7 @@ import { APIv2 } from "../consts";
 import { useTranslation } from 'react-i18next';
 
 const ReportPage = () => {
-  const { t, i18n } = useTranslation("report");
+  const { t } = useTranslation("report");
   const [formState, { text }] = useFormState<{ url: string }>();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useMessage(5000);

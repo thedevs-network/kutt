@@ -1,5 +1,5 @@
  
-import NextI18Next from 'next-i18next';
+import NextI18Next from 'next-i18next'
 
 export default new NextI18Next({
     defaultLanguage: 'en',
@@ -10,3 +10,4 @@ export default new NextI18Next({
     },
     localePath : '/static/locales'
 })
+
