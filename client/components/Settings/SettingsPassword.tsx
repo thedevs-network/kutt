@@ -40,7 +40,7 @@ const SettingsPassword: FC = () => {
       formState.clear();
       setMessage(res.data.message, "green");
     } catch (err) {
-      setMessage(err?.response?.data?.error || t('password.error.updatePassword'));/////////////////////////////////////////////////:
+      setMessage(err?.response?.data?.error || t('password.error.updatePassword'));
     }
     setLoading(false);
   };

@@ -129,7 +129,7 @@ const onSubmit = async e => {
 
 const title = !link && (
   <H1 fontSize={[25, 27, 32]} light>
-    {`${t('shortener.title')} `}
+    {t('shortener.title')}
     <Span style={{ borderBottom: "2px dotted #999" }} light>
     {t('shortener.title2')}
       </Span>

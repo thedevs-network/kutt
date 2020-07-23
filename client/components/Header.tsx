@@ -79,7 +79,6 @@ const Header: FC = () => {
       </Link>
     </Li>
   );
-  console.log("-------------------------------------------->", i18n.languages)
   return (
     <Flex
       width={1232}
