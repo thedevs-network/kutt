@@ -1,4 +1,8 @@
 {
+    "language": {
+        "fr": "Français",
+        "en": "Anglais"
+    },
     "header": {
         "gitHub": "GitHub",
         "report": "Report",

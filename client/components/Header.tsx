@@ -9,6 +9,7 @@ import styled from "styled-components";
 import { RowCenterV } from "./Layout";
 import { Button } from "./Button";
 import ALink from "./ALink";
+import { Select } from "./Input";
 import { useTranslation } from 'react-i18next';
 
 const Li = styled(Flex).attrs({ ml: [12, 24, 32] })`
@@ -78,7 +79,7 @@ const Header: FC = () => {
       </Link>
     </Li>
   );
-
+  console.log("-------------------------------------------->", i18n.languages)
   return (
     <Flex
       width={1232}
@@ -153,11 +154,23 @@ const Header: FC = () => {
             </Link>
           </Flex>
         </Li>
-        <button onClick ={() => {
-          console.log("i18n ------------------------------>", i18n)
-          i18n.changeLanguage(i18n.language === 'en'? 'fr' : 'en')
+        {i18n.languages.length > 1 &&
+         <Select
+            pl={[3, 24]}
+            pr={[3, 24]}
+            fontSize={[14, 15]}
+            height={[32, 37]}
+            width={[110, 150]}
+            onChange= {(event) =>i18n.changeLanguage(event.target.value)}
+            options={
+              i18n.languages.map(d => ({
+                key: t(`language.${d}`)+"",
+                value: d
+              }))
+            }
+            value={i18n.language}
+          /> 
         }
-        }>anglais</button>
         {logout}
         {settings}
         {login}
