@@ -76,7 +76,7 @@ interface Link {
   created_at: string;
   domain_id?: number;
   password?: string;  
-  description: string;
+  description?: string;
   isSearchable: boolean;
   target: string;
   updated_at: string;

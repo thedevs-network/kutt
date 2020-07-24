@@ -32,7 +32,9 @@
             "created": "Créé",
             "shortURL": "URL court",
             "views": "Vues",
-            "target": "URL d'origine"
+            "target": "URL d'origine",
+            "customAddress": "Adresse custom",
+            "chSearchable": "Est recherchable"
         },
         "tooltip": {
             "passwordProtected": "Protégé par un mot de passe",

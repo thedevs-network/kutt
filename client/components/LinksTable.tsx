@@ -30,6 +30,7 @@ const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
 const Th = styled(Flex)``;
 Th.defaultProps = { as: "th", flexBasis: 0, py: [12, 12, 3], px: [12, 12, 3] };
 
+
 const Td = styled(Flex) <{ withFade?: boolean }>`
   position: relative;
   white-space: nowrap;
@@ -78,16 +79,16 @@ const Action = (props: React.ComponentProps<typeof Icon>) => (
     px={0}
     mr={2}
     size={[23, 24]}
+    flexShrink={0}
     p={["4px", "5px"]}
     stroke="#666"
     {...props}
   />
 );
 
-const ogLinkFlex = { flexGrow: [1, 2, 4], flexShrink: [1, 2, 4] };
-const descriptionFlex = { flexGrow: [2, 2, 3], flexShrink: [2, 2, 3] };
-const createdFlex = { flexGrow: [1, 1, 3], flexShrink: [1, 1, 3] };
-const shortLinkFlex = { flexGrow: [1, 2, 3], flexShrink: [1, 2, 3] };
+const ogLinkFlex = { flexGrow: [1, 3, 7], flexShrink: [1, 3, 7] };
+const createdFlex = { flexGrow: [1, 1, 2.5], flexShrink: [1, 1, 2.5] };
+const shortLinkFlex = { flexGrow: [1, 1, 3], flexShrink: [1, 1, 3] };
 const viewsFlex = {
   flexGrow: [0.5, 0.5, 1],
   flexShrink: [0.5, 0.5, 1],
@@ -182,9 +183,14 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
     <>
       <Tr key={link.id}>
         <Td {...ogLinkFlex} withFade>
-          <ALink href={link.target}>{link.target}</ALink>
-        </Td>
-        <Td {...descriptionFlex} withFade>{link.description}
+          <Col alignItems="flex-start">
+            <ALink href={link.target}>{link.target}</ALink>
+            {link.description && (
+              <Text fontSize={[13, 14]} color="#888">
+                {link.description}
+              </Text>
+            )}
+          </Col>
         </Td>
         <Td {...createdFlex}>{`${formatDistanceToNow(
           new Date(link.created_at)
@@ -319,9 +325,15 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
       </Tr>
       {showEdit && (
         <EditContent as="tr">
-          <Col as="td" alignItems="flex-start" px={[3, 3, 24]} py={[3, 3, 24]}>
-            <Flex alignItems="flex-start">
-              <Col alignItems="flex-start" mr={[0, 3, 3]}>
+          <Col
+            as="td"
+            alignItems="flex-start"
+            px={[3, 3, 24]}
+            py={[3, 3, 24]}
+            width={1}
+          >
+            <Flex alignItems="flex-start" width={1}>
+              <Col alignItems="flex-start" mr={3}>
                 <Text
                   {...label("target")}
                   as="label"
@@ -334,35 +346,11 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 <Flex as="form">
                   <TextInput
                     {...text("target")}
-                    placeholder="Target..."
+                    placeholder={t('linksTable.table.target')+"..."}
                     placeholderSize={[13, 14]}
                     fontSize={[14, 15]}
                     height={[40, 44]}
-                    width={[1, 150, 200]}
-                    pl={[3, 24]}
-                    pr={[3, 24]}
-                    required
-                  />
-                </Flex>
-              </Col>
-              <Col alignItems="flex-start" mr={[0, 3, 3]}>
-                <Text
-                  {...label("description")}
-                  as="label"
-                  mb={2}
-                  fontSize={[14, 15]}
-                  bold
-                >
-                  {t('linksTable.table.description')}:
-                </Text>
-                <Flex as="form">
-                  <TextInput
-                    {...text("description")}
-                    placeholder="description..."
-                    placeholderSize={[13, 14]}
-                    fontSize={[14, 15]}
-                    height={[40, 44]}
-                    width={[1, 150, 200]}
+                    width={[1, 300, 420]}
                     pl={[3, 24]}
                     pr={[3, 24]}
                     required
@@ -382,7 +370,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 <Flex as="form">
                   <TextInput
                     {...text("address")}
-                    placeholder="Custom address..."
+                    placeholder={t('linksTable.table.customAddress')+"..."}
                     placeholderSize={[13, 14]}
                     fontSize={[14, 15]}
                     height={[40, 44]}
@@ -393,8 +381,34 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                   />
                 </Flex>
               </Col>
+            </Flex>
+            <Flex alignItems="flex-start" width={1} mt={3}>
               <Col alignItems="flex-start">
-                <Checkbox {...checkboxEdit('isSearchable')} label="Is searchable" mb={12} />
+                <Text
+                  {...label("description")}
+                  as="label"
+                  mb={2}
+                  fontSize={[14, 15]}
+                  bold
+                >
+                  {t('linksTable.table.description')}:
+                </Text>
+                <Flex as="form">
+                  <TextInput
+                    {...text("description")}
+                    placeholder={t('linksTable.table.description')+"..."}
+                    placeholderSize={[13, 14]}
+                    fontSize={[14, 15]}
+                    height={[40, 44]}
+                    width={[1, 300, 420]}
+                    pl={[3, 24]}
+                    pr={[3, 24]}
+                    required
+                  />
+                </Flex>
+              </Col>
+              <Col alignItems="flex-start">
+                <Checkbox {...checkboxEdit('isSearchable')} label={t('linksTable.table.chSearchable')} mb={12} />
               </Col>
             </Flex>
             <Button
@@ -617,7 +631,6 @@ const LinksTable: FC = () => {
           </Tr>
           <Tr>
             <Th {...ogLinkFlex}>{t('linksTable.table.originalURL')}</Th>
-            <Th {...descriptionFlex}>{t('linksTable.table.description')}</Th>
             <Th {...createdFlex}>{t('linksTable.table.created')}</Th>
             <Th {...shortLinkFlex}>{t('linksTable.table.shortURL')} </Th>
             <Th {...viewsFlex}>{t('linksTable.table.views')}</Th>

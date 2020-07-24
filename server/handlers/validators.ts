@@ -98,7 +98,13 @@ export const createLink = [
     .isString()
     .withMessage("Domain should be string.")
     .customSanitizer(value => value.toLowerCase())
+    .customSanitizer(value => URL.parse(value).hostname || value)
     .custom(async (address, { req }) => {
+      if (address === env.DEFAULT_DOMAIN) {
+        req.body.domain = null;
+        return;
+      }
+
       const domain = await query.domain.find({
         address,
         user_id: req.user.id
@@ -174,11 +180,6 @@ export const addDomain = [
     .custom(value => urlRegex({ exact: true, strict: false }).test(value))
     .custom(value => value !== env.DEFAULT_DOMAIN)
     .withMessage("You can't use the default domain.")
-    .custom(async (value, { req }) => {
-      const domains = await query.domain.get({ user_id: req.user.id });
-      if (domains.length !== 0) return Promise.reject();
-    })
-    .withMessage("You already own a domain. Contact support if you need more.")
     .custom(async value => {
       const domain = await query.domain.find({ address: value });
       if (domain?.user_id || domain?.banned) return Promise.reject();

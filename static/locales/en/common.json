@@ -32,7 +32,9 @@
             "created": "Created",
             "shortURL": "Short URL",
             "views": "Views",
-            "target": "Target"
+            "target": "Target",
+            "customAddress": "Custom address",
+            "chSearchable": "Is searchable"
         },
         "tooltip": {
             "passwordProtected": "Password protected",

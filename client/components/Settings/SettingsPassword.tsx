@@ -71,7 +71,7 @@ const SettingsPassword: FC = () => {
               }
             }
           })}
-          autocomplete="off"
+          autoComplete="off"
           placeholder={t('password.newPassword')+"..."}
           width={[1, 2 / 3]}
           mr={3}
