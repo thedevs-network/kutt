@@ -11,6 +11,8 @@ import { Button } from "./Button";
 import ALink from "./ALink";
 import { Select } from "./Input";
 import { useTranslation } from 'react-i18next';
+import { useToggleDarkMode } from "./ThemeProvider";
+import Icon from "./Icon";
 
 const Li = styled(Flex).attrs({ ml: [12, 24, 32] })`
   a {
@@ -21,6 +23,20 @@ const Li = styled(Flex).attrs({ ml: [12, 24, 32] })`
     }
   }
 `;
+const Action = (props: React.ComponentProps<typeof Icon>) => (
+  <Icon
+    as="button"
+    py={0}
+    px={0}
+    mr={2}
+    size={[28, 28]}
+    p={["4px", "5px"]}
+    fill="#666"
+    stroke="#666"
+    flexShrink={0}
+    {...props}
+  />
+);
 
 const LogoImage = styled.div`
   & > a {
@@ -56,7 +72,7 @@ const Header: FC = () => {
     <Li>
       <Link href="/login">
         <ALink href="/login" title="login / signup" forButton>
-          <Button height={[32, 40]}>{t('button.login')+" / "+t('button.signUp')}</Button>
+        <Button height={[32, 40]} color="primary">{t('button.login')+" / "+t('button.signUp')}</Button>
         </ALink>
       </Link>
     </Li>
@@ -74,11 +90,13 @@ const Header: FC = () => {
     <Li>
       <Link href="/settings">
         <ALink href="/settings" title="Settings" forButton>
-          <Button height={[32, 40]}>{t('header.settings')}</Button>
+          <Button height={[32, 40]} color="primary" >{t('header.settings')}</Button>
         </ALink>
       </Link>
     </Li>
   );
+  const [darkModeEnabled, toggleDarkMode] = useToggleDarkMode()
+
   return (
     <Flex
       width={1232}
@@ -153,6 +171,29 @@ const Header: FC = () => {
             </Link>
           </Flex>
         </Li>
+        {darkModeEnabled ? (
+          <Action
+            name="sun"
+            strokeWidth="1"
+
+            fill="black"
+            stroke="black"
+            backgroundColor="white"
+            onClick={toggleDarkMode}
+          />
+
+        ):(
+          <Action
+            name="moon"
+            strokeWidth="2.5"
+
+            fill="white"
+            backgroundColor="black"
+            onClick={toggleDarkMode}
+          />
+
+        )}
+
         {i18n.languages.length > 1 &&
          <Select
             pl={[3, 24]}

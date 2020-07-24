@@ -2,7 +2,6 @@
 import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 import React from "react";
-import styled from "styled-components";
 
 import { useStoreActions, useStoreState } from "../store";
 import {  TextInput } from "./Input";

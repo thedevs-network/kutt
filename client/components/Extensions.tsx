@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Flex } from "reflexbox/styled-components";
 import SVG from "react-inlinesvg"; // TODO: another solution
-import { Colors } from "../consts";
+import {useTheme} from "../hooks";
 import { ColCenterH } from "./Layout";
 import { H3 } from "./Text";
 import { useTranslation } from 'react-i18next';
@@ -14,8 +14,9 @@ const Button = styled.button`
   margin: 0 16px;
   padding: 12px 28px;
   font-family: "Nunito", sans-serif;
-  background-color: #eee;
-  border: 1px solid #aaa;
+  background-color: ${({ theme }) => theme.background.default};
+  border: 1px solid ${({ theme }) => theme.background.default};
+
   font-size: 14px;
   font-weight: bold;
   text-decoration: none;
@@ -41,11 +42,11 @@ const Button = styled.button`
 `;
 
 const FirefoxButton = styled(Button)`
-  color: #e0890f;
+  color: ${({ theme }) => theme.icon.firefox.main};
 `;
 
 const ChromeButton = styled(Button)`
-  color: #4285f4;
+  color: ${({ theme }) => theme.icon.chrome.main};
 `;
 
 const Link = styled.a`
@@ -58,6 +59,9 @@ const Link = styled.a`
     text-decoration: none;
   }
 `;
+const Container = styled(ColCenterH)`
+  background-color: ${({ theme }) => theme.background.extensions};
+`
 
 const Icon = styled(SVG)`
   width: 18px;
@@ -73,16 +77,16 @@ const Icon = styled(SVG)`
 `;
 
 const Extensions = () => {
+  const theme = useTheme()   
   const { t } = useTranslation();
   return (
-    <ColCenterH
+    <Container
       width={1}
       flex="0 0 auto"
       flexWrap={["wrap", "wrap", "nowrap"]}
       py={[64, 96]}
-      backgroundColor={Colors.ExtensionsBg}
     >
-      <H3 fontSize={[26, 28]} mb={5} color="white" light>
+      <H3 fontSize={[26, 28]} mb={5} color={theme.text.extensions} light>
         {t('extensions.title')}
       </H3>
       <Flex
@@ -98,7 +102,7 @@ const Extensions = () => {
           rel="noopener noreferrer"
         >
           <ChromeButton>
-            <Icon src="/images/googlechrome.svg" color="#4285f4" />
+          <Icon src="/images/googlechrome.svg" color={theme.icon.chrome.main} />
             <span>{t('extensions.btnChrome')}</span>
           </ChromeButton>
         </Link>
@@ -108,12 +112,12 @@ const Extensions = () => {
           rel="noopener noreferrer"
         >
           <FirefoxButton>
-            <Icon src="/images/mozillafirefox.svg" color="#e0890f" />
+          <Icon src="/images/mozillafirefox.svg" color={theme.icon.firefox.main} />
             <span>{t('extensions.btnFirefox')}</span>
           </FirefoxButton>
         </Link>
       </Flex>
-    </ColCenterH>
+    </Container>
   );
 }
 

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { ThemeContext } from "styled-components";
 
 const initialMessage = { color: "red", text: "" };
 
@@ -29,3 +30,8 @@ export const useCopy = (timeout = 1500) => {
 
   return [copied, setCopied] as const;
 };
+
+export const useTheme = () => {
+  const theme = useContext(ThemeContext) 
+  return theme;
+}

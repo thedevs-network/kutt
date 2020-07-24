@@ -1,11 +1,12 @@
 import React, { FC } from "react";
 import styled from "styled-components";
 import { Flex } from "reflexbox/styled-components";
+import {prop} from "styled-tools";
 
 import { fadeIn } from "../helpers/animations";
 import Icon from "./Icon";
 import { Icons } from "./Icon/Icon";
-
+import {useTheme} from "../hooks";
 interface Props {
   title: string;
   icon: Icons;
@@ -33,7 +34,7 @@ const IconBox = styled(Flex).attrs({
 })`
   border-radius: 100%;
   box-sizing: border-box;
-  background-color: #2196f3;
+  background-color: ${prop("theme.background.primary")};
 `;
 
 const Title = styled.h3`
@@ -57,14 +58,18 @@ const Description = styled.p`
   }
 `;
 
-const FeaturesItem: FC<Props> = ({ children, icon, title }) => (
-  <Block>
-    <IconBox>
-      <Icon name={icon} stroke="white" strokeWidth="2" />
-    </IconBox>
-    <Title>{title}</Title>
-    <Description>{children}</Description>
-  </Block>
-);
+const FeaturesItem: FC<Props> = ({ children, icon, title }) => {
+  const theme = useTheme()   
+    return (
+    <Block>
+      <IconBox>
+        <Icon name={icon} stroke={theme.icon.feature.main} strokeWidth="2" />
+      </IconBox>
+      <Title>{title}</Title>
+      <Description>{children}</Description>
+    </Block>
+  )
+};
+
 
 export default FeaturesItem;

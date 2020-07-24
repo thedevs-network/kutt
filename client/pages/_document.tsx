@@ -2,7 +2,6 @@ import React from "react";
 import Document, { Head, Main, NextScript } from "next/document";
 import { ServerStyleSheet } from "styled-components";
 
-import { Colors } from "../consts";
 
 interface Props {
   styleTags: any;
@@ -88,12 +87,9 @@ class AppDocument extends Document<Props> {
         </Head>
         <body
           style={{
-            margin: 0,
-            backgroundColor: Colors.Bg,
-            font: '16px/1.45 "Nunito", sans-serif',
-            overflowX: "hidden",
-            color: Colors.Text
+            overflowX: "hidden"
           }}
+
         >
           <Main />
           <NextScript />

@@ -4,18 +4,19 @@ import { Flex } from "reflexbox/styled-components";
 
 import FeaturesItem from "./FeaturesItem";
 import { ColCenterH } from "./Layout";
-import { Colors } from "../consts";
+import { useTheme } from "../hooks";
 import Text, { H3 } from "./Text";
 import { useTranslation } from 'react-i18next';
 
 const Features = () => {
   const { t } = useTranslation();
+  const theme = useTheme()   
   return (
     <ColCenterH
       width={1}
       flex="0 0 auto"
       py={[64, 100]}
-      backgroundColor={Colors.FeaturesBg}
+      backgroundColor={theme.background.features}
     >
       <H3 fontSize={[26, 28]} mb={72} light>
         {t('feature.title')}

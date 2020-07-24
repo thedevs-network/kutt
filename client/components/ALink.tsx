@@ -12,8 +12,8 @@ interface Props extends BoxProps {
 const ALink = styled(Box).attrs({
   as: "a"
 })<Props>`
-  cursor: pointer;
-  color: #2196f3;
+  cursor: pointer; 
+  color: ${({ theme }) => theme.text.links};
   border-bottom: 1px dotted transparent;
   text-decoration: none;
   transition: all 0.2s ease-out;
@@ -22,7 +22,7 @@ const ALink = styled(Box).attrs({
     { forButton: false },
     css`
       :hover {
-        border-bottom-color: #2196f3;
+        border-bottom-color: ${({ theme }) => theme.background.primary};
       }
     `
   )}

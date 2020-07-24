@@ -2,12 +2,11 @@ import { Flex } from "reflexbox/styled-components";
 import styled, { css } from "styled-components";
 import { ifProp, prop } from "styled-tools";
 
-import { Colors } from "../consts";
-
+// @ts-ignore
 const Table = styled(Flex)<{ scrollWidth?: string }>`
-  background-color: white;
+  background-color:  ${prop("theme.table.row")};
   border-radius: 12px;
-  box-shadow: 0 6px 15px ${Colors.TableShadow};
+  box-shadow: 0 6px 15px ${prop("theme.table.shadow")};
   text-align: center;
   overflow: auto;
 
@@ -28,7 +27,7 @@ const Table = styled(Flex)<{ scrollWidth?: string }>`
   }
 
   tr {
-    border-bottom: 1px solid ${Colors.TableHeadBorder};
+    border-bottom: 1px solid ${prop("theme.table.headBorder")};
   }
 
   tbody {
@@ -42,22 +41,22 @@ const Table = styled(Flex)<{ scrollWidth?: string }>`
   }
 
   tbody tr:hover {
-    background-color: ${Colors.TableRowHover};
+    background: ${prop("theme.table.row")};
   }
 
   thead {
-    background-color: ${Colors.TableHeadBg};
+    background-color: ${prop("theme.table.headBg")};
     border-top-right-radius: 12px;
     border-top-left-radius: 12px;
     font-weight: bold;
 
     tr {
-      border-bottom: 1px solid ${Colors.TableBorder};
+      border-bottom: 1px solid ${prop("theme.table.border")};
     }
   }
 
   tfoot {
-    background-color: ${Colors.TableHeadBg};
+    background-color: ${prop("theme.table.headBg")};
     border-bottom-right-radius: 12px;
     border-bottom-left-radius: 12px;
   }

@@ -7,8 +7,10 @@ import ReCaptcha from "./ReCaptcha";
 import ALink from "./ALink";
 import Text from "./Text";
 import { useTranslation } from 'react-i18next';
+import {useTheme} from "../hooks";
 
 const Footer: FC = () => {
+  const theme = useTheme()   
   const { t } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
 
@@ -20,7 +22,7 @@ const Footer: FC = () => {
     <ColCenter
       as="footer"
       width={1}
-      backgroundColor="white"
+      backgroundColor={theme.background.footer}
       p={isAuthenticated ? 2 : 24}
     >
       {!isAuthenticated && <ReCaptcha />}

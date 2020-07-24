@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
   Tooltip
 } from "recharts";
+import {useTheme} from "../../hooks";
 
 interface Props {
   data: number[];
@@ -19,6 +20,7 @@ interface Props {
 }
 
 const ChartArea: FC<Props> = ({ data: rawData, period }) => {
+  const theme = useTheme()   
   const now = new Date();
   const getDate = index => {
     switch (period) {
@@ -56,8 +58,9 @@ const ChartArea: FC<Props> = ({ data: rawData, period }) => {
       >
         <defs>
           <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#B39DDB" stopOpacity={0.8} />
-            <stop offset="95%" stopColor="#B39DDB" stopOpacity={0} />
+          <stop offset="5%" stopColor={theme.stats.map05} stopOpacity={0.8} />
+            <stop offset="95%" stopColor={theme.stats.map05}stopOpacity={0} />
+
           </linearGradient>
         </defs>
         <XAxis dataKey="name" />
@@ -68,7 +71,7 @@ const ChartArea: FC<Props> = ({ data: rawData, period }) => {
           type="monotone"
           dataKey="views"
           isAnimationActive={false}
-          stroke="#B39DDB"
+          stroke={theme.stats.map05}
           fillOpacity={1}
           fill="url(#colorUv)"
         />

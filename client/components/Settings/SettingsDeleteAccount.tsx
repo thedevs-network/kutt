@@ -2,19 +2,26 @@ import { useFormState } from "react-use-form-state";
 import React, { FC, useState } from "react";
 import Router from "next/router";
 import axios from "axios";
+import styled  from "styled-components";
 
 import { getAxiosConfig } from "../../utils";
 import { Col, RowCenterV, RowCenterH } from "../Layout";
 import Text, { H2, Span } from "../Text";
 import { useMessage } from "../../hooks";
 import { TextInput } from "../Input";
-import { APIv2, Colors } from "../../consts";
+import { APIv2 } from "../../consts";
 import { Button } from "../Button";
 import Icon from "../Icon";
 import Modal from "../Modal";
 import { useTranslation } from 'react-i18next';
+import {useTheme} from "../../hooks";
+
+const ModalStyled = styled.div`
+  background-color: blue;
+`
 
 const SettingsDeleteAccount: FC = () => {
+  const theme = useTheme()   
   const { t } = useTranslation("setting");
   const { t : tcommon } = useTranslation();
   const [message, setMessage] = useMessage(1500);
@@ -72,8 +79,8 @@ const SettingsDeleteAccount: FC = () => {
           autoComplete="off"
           mr={3}
         />
-        <Button color="red" type="submit" disabled={loading}>
-          <Icon name={loading ? "spinner" : "trash"} mr={2} stroke="white" />
+        <Button color="warning" type="submit" disabled={loading}>
+          <Icon name={loading ? "spinner" : "trash"} mr={2} stroke={theme.icon.feature.main} />
           {tcommon('button.delete')}
         </Button>
       </RowCenterV>
@@ -93,7 +100,7 @@ const SettingsDeleteAccount: FC = () => {
           <RowCenterH mt={44}>
             {loading ? (
               <>
-                <Icon name="spinner" size={20} stroke={Colors.Spinner} />
+                <Icon name="spinner" size={20} stroke={theme.component.spinner} />
               </>
             ) : message.text ? (
               <Text fontSize={15} color={message.color}>
@@ -101,11 +108,11 @@ const SettingsDeleteAccount: FC = () => {
               </Text>
             ) : (
               <>
-                <Button color="gray" mr={3} onClick={() => setModal(false)}>
+                <Button color="default" mr={3} onClick={() => setModal(false)}>
                 {tcommon('button.cancel')}
                 </Button>
-                <Button color="red" ml={3} onClick={onDelete}>
-                  <Icon name="trash" stroke="white" mr={2} />
+                <Button color="warning" ml={3} onClick={onDelete}>
+                  <Icon name="trash" stroke={theme.icon.feature.main} mr={2} />
                   {tcommon('button.delete')}
                 </Button>
               </>

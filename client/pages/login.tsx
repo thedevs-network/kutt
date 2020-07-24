@@ -18,6 +18,8 @@ import ALink from "../components/ALink";
 import Icon from "../components/Icon";
 import { APIv2 } from "../consts";
 import { useTranslation } from 'react-i18next';
+import { theme } from "styled-tools";
+import {useTheme} from "../hooks";
 
 const LoginForm = styled(Flex).attrs({
   as: "form",
@@ -33,6 +35,7 @@ const Email = styled.span`
 `;
 
 const LoginPage = () => {
+  const theme = useTheme()   
   const { t } = useTranslation('login');
   const { t : tcommon } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
@@ -140,11 +143,13 @@ const LoginPage = () => {
                 flex="1 1 auto"
                 mr={["8px", 16]}
                 height={[44, 56]}
-                onClick={onSubmit("login")}
+                onClick={onSubmit("login")}                
+                color="primary"
+
               >
                 <Icon
                   name={loading.login ? "spinner" : "login"}
-                  stroke="white"
+                  stroke={theme.background.accent} 
                   mr={2}
                 />
                 {tcommon('button.login')}
@@ -153,12 +158,12 @@ const LoginPage = () => {
                 flex="1 1 auto"
                 ml={["8px", 16]}
                 height={[44, 56]}
-                color="purple"
+                color="secondary"
                 onClick={onSubmit("signup")}
               >
                 <Icon
                   name={loading.signup ? "spinner" : "signup"}
-                  stroke="white"
+                  stroke={theme.background.accent}
                   mr={2}
                 />
                 {tcommon('button.signUp')}
@@ -175,7 +180,7 @@ const LoginPage = () => {
                 {t('forgotPassword')}
               </ALink>
             </Link>
-            <Text color="red" mt={1} normal>
+             <Text color={theme.text.error} mt={1} normal>
               {error}
             </Text>
           </LoginForm>

@@ -12,7 +12,7 @@ import { removeProtocol } from "../utils";
 import Text, { H1, Span } from "./Text";
 import { Link } from "../store/links";
 import Animation from "./Animation";
-import { Colors } from "../consts";
+import {useTheme} from "../hooks";
 import Icon from "./Icon";
 import env from '../env'
 
@@ -42,7 +42,7 @@ const SubmitIconWrapper = styled.div`
 
 const ShortenedLink = styled(H1)`
   cursor: "pointer";
-  border-bottom: 1px dotted ${Colors.StatsTotalUnderline};
+  border-bottom: 1px dotted ${({ theme }) => theme.stats.totalUnderline};
   cursor: pointer;
 
   :hover {
@@ -63,6 +63,7 @@ interface Form {
 const defaultDomain = process.env.DEFAULT_DOMAIN;
 
 const Shortener = () => {
+  const theme = useTheme()   
   const { t } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
   const domains = useStoreState(s => s.settings.domains);
@@ -156,7 +157,7 @@ const title = !link && (
             p={["4px", "5px"]}
             name="check"
             strokeWidth="3"
-            stroke={Colors.CheckIcon}
+            stroke={theme.icon.check.main}
           />
         </Animation>
       ) : (
@@ -171,8 +172,8 @@ const title = !link && (
                 p={["6px", "7px"]}
                 name="copy"
                 strokeWidth="2.5"
-                stroke={Colors.CopyIcon}
-                backgroundColor={Colors.CopyIconBg}
+                stroke={theme.icon.copy.main}
+                backgroundColor={theme.icon.copy.bg}
               />
             </CopyToClipboard>
           </Animation>
@@ -217,8 +218,9 @@ const title = !link && (
           <Icon
             name={loading ? "spinner" : "send"}
             size={[22, 26, 28]}
-            fill={loading ? "none" : "#aaa"}
-            stroke={loading ? Colors.Spinner : "none"}
+            fill={loading ? "none" : theme.icon.send.main}
+            stroke={loading ? theme.component.spinner : "none"}
+
             mb={1}
             mr={1}
           />

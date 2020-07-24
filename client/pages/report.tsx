@@ -66,7 +66,7 @@ const ReportPage = () => {
             mr={3}
             required
           />
-          <Button type="submit" flex="0 0 auto" height={[40, 44]} mt={[3, 0]}>
+          <Button type="submit" flex="0 0 auto" height={[40, 44]} mt={[3, 0]} color="primary">
             {loading && <Icon name={"spinner"} stroke="white" mr={2} />}
             {t('sendReport')}
           </Button>

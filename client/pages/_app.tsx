@@ -5,17 +5,23 @@ import decode from "jwt-decode";
 import cookie from "js-cookie";
 import Head from "next/head";
 import React from "react";
+import styled from 'styled-components'
 
 import { initGA, logPageView } from "../helpers/analytics";
 import { initializeStore } from "../store";
 import { TokenPayload } from "../types";
 import AppWrapper from "../components/AppWrapper";
-
+import { theme } from "../consts/theme";
 import  i18n  from '../../i18n'
-
+import ThemeProvider from '../components/ThemeProvider'
 const isProd = process.env.NODE_ENV === "production";
 
 
+const PageWrapper = styled.div`
+  background-color: ${({ theme }) => theme.background.main};
+  font: 16px/1.45 "Nunito", sans-serif;
+  color: ${({ theme }) => theme.text.main};
+`
 
 // TODO: types
 class MyApp extends App<any> {
@@ -31,12 +37,14 @@ class MyApp extends App<any> {
     const token =
       ctx.req && (ctx.req as any).cookies && (ctx.req as any).cookies.token;
     const tokenPayload: TokenPayload = token ? decode(token) : null;
+    const darkModeEnabled =
+      ctx.req && (ctx.req as any).cookies && (ctx.req as any).cookies.darkModeEnabled === "true";
 
     if (tokenPayload) {
       store.dispatch.auth.add(tokenPayload);
     }
+    return { pageProps, tokenPayload, initialState: store.getState(), darkModeEnabled };
 
-    return { pageProps, tokenPayload, initialState: store.getState() };
   }
 
   store: ReturnType<typeof initializeStore>;
@@ -72,9 +80,7 @@ class MyApp extends App<any> {
   }
 
   render() {
-    const { Component, pageProps } = this.props;
-    const { i18n, initialI18nStore, initialLanguage } = pageProps || {};
-
+    const { i18n, Component, pageProps, darkModeEnabled } = this.props|| {};
     return (
       <>
         <Head>
@@ -82,9 +88,14 @@ class MyApp extends App<any> {
             {process.env.SITE_NAME} | Modern Open Source URL shortener.
           </title>
         </Head>
-        <StoreProvider store={this.store}>
-            <Component {...pageProps} />
-        </StoreProvider>
+        <ThemeProvider defaultValue={darkModeEnabled}>
+          <StoreProvider store={this.store}>
+            <PageWrapper className="styleBody">
+              <Component {...pageProps} />
+            </PageWrapper>
+          </StoreProvider>
+        </ThemeProvider>
+
       </>
     );
   }

@@ -2,6 +2,8 @@ import { Flex, BoxProps } from "reflexbox/styled-components";
 import styled, { css, keyframes } from "styled-components";
 import { withProp, prop, ifProp } from "styled-tools";
 import { FC } from "react";
+import {useTheme} from "../hooks";
+import { transparentize } from 'polished';
 
 import { Span } from "./Text";
 
@@ -25,24 +27,25 @@ export const TextInput = styled(Flex).attrs({
   position: relative;
   box-sizing: border-box;
   letter-spacing: 0.05em;
-  color: #444;
-  background-color: white;
-  box-shadow: 0 10px 35px hsla(200, 15%, 70%, 0.2);
+  color: ${prop("theme.text.main")};
+  background-color: ${prop("theme.background.accent")};
+  box-shadow: 0 10px 35px ${({theme}) => transparentize(0.9, theme.text.main)};
+
   border: none;
   border-radius: ${prop("br", "100px")};
-  border-bottom: 5px solid #f5f5f5;
+  border-bottom: 5px solid ${({theme}) => theme.background.main};
   border-bottom-width: ${prop("bbw", "5px")};
   transition: all 0.5s ease-out;
 
   :focus {
     outline: none;
-    box-shadow: 0 20px 35px hsla(200, 15%, 70%, 0.4);
+    box-shadow: 0 20px 35px ${({theme}) => transparentize(0.8, theme.text.main)};
   }
 
   ::placeholder {
     font-size: ${withProp("placeholderSize", s => s[0] || 14)}px;
     letter-spacing: 0.05em;
-    color: #888;
+    color: ${prop("theme.text.placeholder")};;
   }
 
   @media screen and (min-width: 64em) {
@@ -102,12 +105,12 @@ const StyledSelect: FC<StyledSelectProps> = styled(Flex).attrs({
   position: relative;
   box-sizing: border-box;
   letter-spacing: 0.05em;
-  color: #444;
-  background-color: white;
-  box-shadow: 0 10px 35px hsla(200, 15%, 70%, 0.2);
+  color: ${prop("theme.text.main")};
+  background-color: ${prop("theme.background.accent")};
+  box-shadow: 0 10px 35px ${({theme}) => transparentize(0.9, theme.text.main)};
   border: none;
   border-radius: ${prop("br", "100px")};
-  border-bottom: 5px solid #f5f5f5;
+  border-bottom: 5px solid ${({theme}) => theme.background.main};
   border-bottom-width: ${prop("bbw", "5px")};
   transition: all 0.5s ease-out;
   appearance: none;
@@ -118,7 +121,7 @@ const StyledSelect: FC<StyledSelectProps> = styled(Flex).attrs({
 
   :focus {
     outline: none;
-    box-shadow: 0 20px 35px hsla(200, 15%, 70%, 0.4);
+    box-shadow: 0 20px 35px ${({theme}) => transparentize(0.8, theme.text.main)};
   }
 
   @media screen and (min-width: 52em) {
@@ -172,7 +175,7 @@ const CheckboxBox = styled(Flex).attrs({
   position: relative;
   transition: color 0.3s ease-out;
   border-radius: 4px;
-  background-color: white;
+  background-color: ${prop("theme.background.accent")};
   box-shadow: 0 2px 4px rgba(50, 50, 50, 0.2);
   cursor: pointer;
 
@@ -192,7 +195,7 @@ const CheckboxBox = styled(Flex).attrs({
         height: 80%;
         display: block;
         border-radius: 2px;
-        background-color: #9575cd;
+        background-color: ${prop("theme.background.secondary")};
         box-shadow: 0 2px 4px rgba(50, 50, 50, 0.2);
         cursor: pointer;
         animation: ${keyframes`
@@ -224,6 +227,7 @@ export const Checkbox: FC<CheckboxProps> = ({
   onChange,
   ...rest
 }) => {
+  const theme = useTheme()   
   return (
     <Flex
       flex="0 0 auto"
@@ -239,7 +243,7 @@ export const Checkbox: FC<CheckboxProps> = ({
         checked={checked}
       />
       <CheckboxBox checked={checked} width={width} height={height} />
-      <Span ml={[10, 12]} mt="1px" color="#555">
+      <Span ml={[10, 12]} mt="1px" color={theme.text.main}>
         {label}
       </Span>
     </Flex>

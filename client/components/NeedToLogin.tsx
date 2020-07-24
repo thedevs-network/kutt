@@ -70,7 +70,7 @@ const NeedToLogin = () => {
       </Title>
         <Link href="/login">
           <a href="/login" title="login / signup">
-            <Button>{t('button.login')+" / "+('button.signUp')}</Button>
+            <Button color="primary">{t('button.login')+" / "+('button.signUp')}</Button>
           </a>
         </Link>
       </Col>

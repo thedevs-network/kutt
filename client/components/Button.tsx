@@ -1,14 +1,41 @@
 import styled, { css } from "styled-components";
-import { switchProp, prop, ifProp } from "styled-tools";
+import {  ifProp, prop } from "styled-tools";
+
 import { Flex, BoxProps } from "reflexbox/styled-components";
 
+import { darken, lighten, transparentize } from 'polished';
+import { theme, Colors } from "../consts/theme";
+
+const propAndCall = (key, callback) => (props) => {
+  const prop = props[key]
+  if (!props) return ''
+  return callback(prop)
+} 
+
 interface Props extends BoxProps {
-  color?: "purple" | "gray" | "blue" | "red";
+  theme: typeof theme,
   disabled?: boolean;
   icon?: string; // TODO: better typing
   isRound?: boolean;
   onClick?: any; // TODO: better typing
   type?: "button" | "submit" | "reset";
+}
+function getBackground(props: Props): string {
+  const { theme: { background }, color } = props
+  if (!background[color]) return ''
+  const start = lighten(0.1, background[color])
+  const end = darken(.08, background[color])
+  return `linear-gradient(to right, ${start},  ${end})`
+}
+
+const getBoxShadow = (isFocused = false) => (props: Props) => {
+  const { theme: { background }, color } = props
+  if (!background[color]) return ''
+  const transColor = transparentize(0.5, background[color])
+  if(isFocused){
+    return `0 6px 15px ${transColor}`
+  }
+    return `0 5px 6px ${transColor}`
 }
 
 export const Button = styled(Flex)<Props>`
@@ -19,24 +46,10 @@ export const Button = styled(Flex)<Props>`
   text-align: center;
   line-height: 1;
   word-break: keep-all;
-  color: ${switchProp(prop("color", "blue"), {
-    blue: "white",
-    red: "white",
-    purple: "white",
-    gray: "#444"
-  })};
-  background: ${switchProp(prop("color", "blue"), {
-    blue: "linear-gradient(to right, #42a5f5, #2979ff)",
-    red: "linear-gradient(to right, #ee3b3b, #e11c1c)",
-    purple: "linear-gradient(to right, #7e57c2, #6200ea)",
-    gray: "linear-gradient(to right, #e0e0e0, #bdbdbd)"
-  })};
-  box-shadow: ${switchProp(prop("color", "blue"), {
-    blue: "0 5px 6px rgba(66, 165, 245, 0.5)",
-    red: "0 5px 6px rgba(168, 45, 45, 0.5)",
-    purple: "0 5px 6px rgba(81, 45, 168, 0.5)",
-    gray: "0 5px 6px rgba(160, 160, 160, 0.5)"
-  })};
+  color: ${props => props.theme.text[props.color]};
+   background:${getBackground};
+  box-shadow: ${getBoxShadow(false)};
+
   border: none;
   border-radius: 100px;
   transition: all 0.4s ease-out;
@@ -46,13 +59,9 @@ export const Button = styled(Flex)<Props>`
   :hover,
   :focus {
     outline: none;
-    box-shadow: ${switchProp(prop("color", "blue"), {
-      blue: "0 6px 15px rgba(66, 165, 245, 0.5)",
-      red: "0 6px 15px rgba(168, 45, 45, 0.5)",
-      purple: "0 6px 15px rgba(81, 45, 168, 0.5)",
-      gray: "0 6px 15px rgba(160, 160, 160, 0.5)"
-    })};
-    transform: translateY(-2px) scale(1.02, 1.02);
+    box-shadow: ${getBoxShadow(true)};
+    transform:  translateY(-2px) scale(1.02, 1.02);
+
   }
 `;
 
@@ -81,7 +90,7 @@ export const NavButton = styled(Flex)<NavButtonProps>`
   border: none;
   border-radius: 4px;
   box-shadow: 0 0px 10px rgba(100, 100, 100, 0.1);
-  background-color: white;
+  background-color: ${prop("theme.background.accent")};
   cursor: pointer;
   transition: all 0.2s ease-out;
   box-sizing: border-box;
@@ -93,7 +102,7 @@ export const NavButton = styled(Flex)<NavButtonProps>`
   ${ifProp(
     "disabled",
     css`
-      background-color: #f6f6f6;
+      background-color: ${prop("theme.background.disabled")};
       box-shadow: 0 0px 5px rgba(150, 150, 150, 0.1);
       cursor: default;
 
