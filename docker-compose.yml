@@ -17,6 +17,7 @@ services:
       DB_NAME: kutt
       DB_USER: user
       DB_PASSWORD: pass
+      REDIS_HOST: redis
     networks:
       - kutt-network
 
