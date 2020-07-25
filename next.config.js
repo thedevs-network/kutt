@@ -1,12 +1,12 @@
-const env = require("./production-server/env").default;
+const { parsed: localEnv } = require("dotenv").config();
 
 module.exports = {
   publicRuntimeConfig: {
-    CONTACT_EMAIL: env.CONTACT_EMAIL,
-    SITE_NAME: env.SITE_NAME,
-    DEFAULT_DOMAIN: env.DEFAULT_DOMAIN,
-    RECAPTCHA_SITE_KEY: env.RECAPTCHA_SITE_KEY,
-    GOOGLE_ANALYTICS: env.GOOGLE_ANALYTICS,
-    REPORT_EMAIL: env.REPORT_EMAIL
+    CONTACT_EMAIL: localEnv.CONTACT_EMAIL,
+    SITE_NAME: localEnv.SITE_NAME,
+    DEFAULT_DOMAIN: localEnv.DEFAULT_DOMAIN,
+    RECAPTCHA_SITE_KEY: localEnv.RECAPTCHA_SITE_KEY,
+    GOOGLE_ANALYTICS: localEnv.GOOGLE_ANALYTICS,
+    REPORT_EMAIL: localEnv.REPORT_EMAIL
   }
 };
