@@ -2,6 +2,7 @@ import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 import React, { FC, useState } from "react";
 import styled from "styled-components";
+import getConfig from "next/config";
 
 import { useStoreState, useStoreActions } from "../../store";
 import { Domain } from "../../store/settings";
@@ -15,6 +16,8 @@ import { Col } from "../Layout";
 import Table from "../Table";
 import Modal from "../Modal";
 import Icon from "../Icon";
+
+const { publicRuntimeConfig } = getConfig();
 
 const Th = styled(Flex).attrs({ as: "th", py: 3, px: 3 })`
   font-size: 15px;
@@ -71,7 +74,7 @@ const SettingsDomain: FC = () => {
       </H2>
       <Text mb={3}>
         You can set a custom domain for your short URLs, so instead of{" "}
-        <b>{process.env.DEFAULT_DOMAIN}/shorturl</b> you can have{" "}
+        <b>{publicRuntimeConfig.DEFAULT_DOMAIN}/shorturl</b> you can have{" "}
         <b>example.com/shorturl.</b>
       </Text>
       <Text mb={4}>
@@ -92,7 +95,7 @@ const SettingsDomain: FC = () => {
               <tr key={d.address}>
                 <Td width={2 / 5}>{d.address}</Td>
                 <Td width={2 / 5}>
-                  {d.homepage || process.env.DEFAULT_DOMAIN}
+                  {d.homepage || publicRuntimeConfig.DEFAULT_DOMAIN}
                 </Td>
                 <Td width={1 / 5} justifyContent="center">
                   <Icon
@@ -116,54 +119,54 @@ const SettingsDomain: FC = () => {
           </tbody>
         </Table>
       )}
-        <Col
-          alignItems="flex-start"
-          onSubmit={onSubmit}
-          width={1}
-          as="form"
-          my={[3, 4]}
-        >
-          <Flex width={1} flexDirection={["column", "row"]}>
-            <Col mr={[0, 2]} mb={[3, 0]} flex="0 0 auto">
-              <Text
-                {...label("address")}
-                as="label"
-                mb={[2, 3]}
-                fontSize={[15, 16]}
-                bold
-              >
-                Domain
-              </Text>
-              <TextInput
-                {...text("address")}
-                placeholder="example.com"
-                maxWidth="240px"
-                required
-              />
-            </Col>
-            <Col ml={[0, 2]} flex="0 0 auto">
-              <Text
-                {...label("homepage")}
-                as="label"
-                mb={[2, 3]}
-                fontSize={[15, 16]}
-                bold
-              >
-                Homepage (optional)
-              </Text>
-              <TextInput
-                {...text("homepage")}
-                placeholder="Homepage URL"
-                flex="1 1 auto"
-                maxWidth="240px"
-              />
-            </Col>
-          </Flex>
-          <Button type="submit" color="purple" mt={[24, 3]} disabled={loading}>
-            <Icon name={loading ? "spinner" : "plus"} mr={2} stroke="white" />
-            {loading ? "Setting..." : "Set domain"}
-          </Button>
-        </Col>
+      <Col
+        alignItems="flex-start"
+        onSubmit={onSubmit}
+        width={1}
+        as="form"
+        my={[3, 4]}
+      >
+        <Flex width={1} flexDirection={["column", "row"]}>
+          <Col mr={[0, 2]} mb={[3, 0]} flex="0 0 auto">
+            <Text
+              {...label("address")}
+              as="label"
+              mb={[2, 3]}
+              fontSize={[15, 16]}
+              bold
+            >
+              Domain
+            </Text>
+            <TextInput
+              {...text("address")}
+              placeholder="example.com"
+              maxWidth="240px"
+              required
+            />
+          </Col>
+          <Col ml={[0, 2]} flex="0 0 auto">
+            <Text
+              {...label("homepage")}
+              as="label"
+              mb={[2, 3]}
+              fontSize={[15, 16]}
+              bold
+            >
+              Homepage (optional)
+            </Text>
+            <TextInput
+              {...text("homepage")}
+              placeholder="Homepage URL"
+              flex="1 1 auto"
+              maxWidth="240px"
+            />
+          </Col>
+        </Flex>
+        <Button type="submit" color="purple" mt={[24, 3]} disabled={loading}>
+          <Icon name={loading ? "spinner" : "plus"} mr={2} stroke="white" />
+          {loading ? "Setting..." : "Set domain"}
+        </Button>
+      </Col>
       <Text color={message.color}>{message.text}</Text>
       <Modal id="delete-custom-domain" show={modal} closeHandler={closeModal}>
         <H2 mb={24} textAlign="center" bold>

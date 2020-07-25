@@ -3,6 +3,7 @@ import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 import React, { FC, useState } from "react";
 import styled from "styled-components";
+import getConfig from "next/config";
 
 import { useStoreActions, useStoreState } from "../store";
 import { Checkbox, Select, TextInput } from "./Input";
@@ -14,6 +15,8 @@ import { Link } from "../store/links";
 import Animation from "./Animation";
 import { Colors } from "../consts";
 import Icon from "./Icon";
+
+const { publicRuntimeConfig } = getConfig();
 
 const SubmitIconWrapper = styled.div`
   content: "";
@@ -55,7 +58,7 @@ interface Form {
   showAdvanced?: boolean;
 }
 
-const defaultDomain = process.env.DEFAULT_DOMAIN;
+const defaultDomain = publicRuntimeConfig.DEFAULT_DOMAIN;
 
 const Shortener = () => {
   const { isAuthenticated } = useStoreState(s => s.auth);

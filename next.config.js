@@ -1,10 +1,12 @@
-const { parsed: localEnv } = require("dotenv").config();
-const webpack = require("webpack");
+const env = require("./production-server/env").default;
 
 module.exports = {
-  webpack(config) {
-    config.plugins.push(new webpack.EnvironmentPlugin(localEnv));
-
-    return config;
+  publicRuntimeConfig: {
+    CONTACT_EMAIL: env.CONTACT_EMAIL,
+    SITE_NAME: env.SITE_NAME,
+    DEFAULT_DOMAIN: env.DEFAULT_DOMAIN,
+    RECAPTCHA_SITE_KEY: env.RECAPTCHA_SITE_KEY,
+    GOOGLE_ANALYTICS: env.GOOGLE_ANALYTICS,
+    REPORT_EMAIL: env.REPORT_EMAIL
   }
 };
