@@ -8,3 +8,7 @@ export async function up(knex: Knex): Promise<any> {
     });
   }
 }
+
+export async function down(): Promise<any> {
+  return null;
+}
