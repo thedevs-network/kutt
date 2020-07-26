@@ -65,7 +65,10 @@ You need to have [Node.js](https://nodejs.org/), [PostgreSQL](https://www.postgr
 
 ### Docker
 
-You can use Docker to start the app. The simplest way is to just run `docker-compose up` command and then the app should be ready on port "3000".
+You need to run the app with the required envrironment variables listed in [.example.env](https://github.com/thedevs-network/kutt/blob/develop/.example.env). 
+
+* [Official Docker hub image](https://hub.docker.com/r/kutt/kutt). 
+* Or simply run `docker-compose up` command and then the app should be ready on port "3000".
 
 ## Browser Extensions
 
