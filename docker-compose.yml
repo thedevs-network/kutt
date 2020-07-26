@@ -2,7 +2,7 @@ version: "3"
 
 services:
   kutt:
-    build: .
+    image: kutt/kutt
     container_name: kutt
     depends_on:
       - postgres
