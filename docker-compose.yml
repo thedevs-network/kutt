@@ -3,7 +3,6 @@ version: "3"
 services:
   kutt:
     image: kutt/kutt
-    container_name: kutt
     depends_on:
       - postgres
       - redis
@@ -18,27 +17,21 @@ services:
       DB_USER: user
       DB_PASSWORD: pass
       REDIS_HOST: redis
-    networks:
-      - kutt-network
 
   redis:
-    image: redis:alpine
-    container_name: redis
-    networks:
-      - kutt-network
+    image: redis:6.0-alpine
+    volumes:
+      - redis_data:/data
 
   postgres:
     image: postgres:12-alpine
-    container_name: postgres
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: kutt
-    ports:
-      - "54323:5432"
-    networks:
-      - kutt-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
-networks:
-  kutt-network:
-    driver: "bridge"
+volumes:
+  redis_data:
+  postgres_data:
