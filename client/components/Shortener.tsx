@@ -347,18 +347,16 @@ const Shortener = () => {
             </Col>
           </Flex>
           {env.SEARCH_ENABLED && (
-            <Flex mt={4} flexDirection={["column", "row"]}>
-              <Checkbox
-                {...raw({
-                  name: "isSearchable",
-                  onChange: e => {
-                    return !formState.values.isSearchable;
-                  }
-                })}
-                checked={formState.values.isSearchable}
-                label="Is searchable"
-                mt={[3, 24]} />
-            </Flex>
+            <Checkbox
+              {...raw({
+                name: "isSearchable",
+                onChange: e => {
+                  return !formState.values.isSearchable;
+                }
+              })}
+              checked={formState.values.isSearchable}
+              label="Is searchable"
+              mt={[3, 24]} />
           )}
         </div>
       )}

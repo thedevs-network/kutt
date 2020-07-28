@@ -258,6 +258,22 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
               />
             </>
           )}
+          {env.SEARCH_ENABLED && link.isSearchable && (
+            <>
+              <Tooltip id={`${index}-tooltip-searchable`}>
+                Searchable
+              </Tooltip>
+              <Action
+                as="span"
+                data-tip
+                data-for={`${index}-tooltip-searchable`}
+                name="eye"
+                color={Colors.Eye}
+                strokeWidth="2"
+                backgroundColor={Colors.EyeBg}
+              />
+            </>
+          )}
           {link.visit_count > 0 && (
             <Link href={`/stats?id=${link.id}`}>
               <ALink title="View stats" forButton>
@@ -284,23 +300,6 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
             backgroundColor={Colors.EditIconBg}
             onClick={toggleEdit}
           />
-          {env.SEARCH_ENABLED && (
-            link.isSearchable
-              ? (
-                <Action
-                  name="eye"
-                  strokeWidth="2"
-                  stroke={Colors.Eye}
-                  backgroundColor={Colors.EyeBg}
-                />
-              ) : (
-                <Action
-                  name="eyeSlash"
-                  stroke={Colors.EyeSlash}
-                  backgroundColor={Colors.EyeSlashBg}
-                />
-              )
-          )}
 
           {isAdmin && !link.banned && (
             <Action
