@@ -28,6 +28,7 @@ If you're coming from v1, refer to [MIGRATION.md](MIGRATION.md) to migrate data 
 - [API](#api)
 - [Integrations](#integrations)
 - [3rd Party Packages](#3rd-party-packages)
+- [Donate](#donate)
 - [Contributing](#contributing)
 
 ## Key Features
@@ -104,6 +105,12 @@ Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app f
 | Java       | [kutt-desktop](https://github.com/cipher812/kutt-desktop)  | A Cross platform Java desktop application for Kutt |
 | Go         | [kutt-go](https://github.com/raahii/kutt-go)               | Go client for Kutt.it url shortener                |
 
+## Donate
+
+Kutt is free of charge and free of ads. Help us keep our servers running and motivate us to work on this project by donating to our Bitcoin wallet.
+
+<div style="display:flex;align-items:center"><img src="./btc.png" alt="Kutt.it" width="24px" height="24px" style="margin-right:16px;"><code>1P89WxNTinKxxDQ4FmC4jis3KUdfA9fLJB</code></div>
+
 ## Contributing
 
 Pull requests are welcome. You'll probably find lots of improvements to be made.
@@ -111,3 +118,4 @@ Pull requests are welcome. You'll probably find lots of improvements to be made.
 Open issues for feedback, requesting features, reporting bugs or discussing ideas.
 
 Special thanks to [Thomas](https://github.com/trgwii) and [Muthu](https://github.com/MKRhere). Logo design by [Muthu](https://github.com/MKRhere).
+
