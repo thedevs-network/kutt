@@ -107,9 +107,13 @@ Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app f
 
 ## Donate
 
-Kutt is free of charge and free of ads. Help us keep our servers running and motivate us to work on this project by donating to our Bitcoin wallet.
+<img src="./btc.png" alt="Kutt.it" width="32px" height="32px">
 
-<div style="display:flex;align-items:center"><img src="./btc.png" alt="Kutt.it" width="24px" height="24px" style="margin-right:16px;"><code>1P89WxNTinKxxDQ4FmC4jis3KUdfA9fLJB</code></div>
+Kutt is free of charge and free of ads. Help us keep our servers running and motivate us to work on this project by donating to our Bitcoin wallet:
+
+```
+1P89WxNTinKxxDQ4FmC4jis3KUdfA9fLJB
+```
 
 ## Contributing
 
