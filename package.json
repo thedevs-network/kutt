@@ -42,6 +42,7 @@
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "date-fns": "^2.9.0",
+    "debounce": "^1.2.0",
     "dotenv": "^8.2.0",
     "easy-peasy": "^3.3.0",
     "email-validator": "^1.2.3",

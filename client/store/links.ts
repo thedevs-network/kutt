@@ -53,7 +53,7 @@ export interface LinksQuery {
   skip: string;
   search: string;
   all: boolean;
-  pageSearch: boolean;
+  searchable: boolean;
 }
 
 export interface LinksListRes {
@@ -72,6 +72,7 @@ export interface Links {
   get: Thunk<Links, LinksQuery>;
   add: Action<Links, Link>;
   set: Action<Links, LinksListRes>;
+  reset: Action<Links>;
   update: Action<Links, Partial<Link>>;
   remove: Thunk<Links, string>;
   edit: Thunk<Links, EditLink>;
@@ -131,6 +132,10 @@ export const links: Links = {
   set: action((state, payload) => {
     state.items = payload.data;
     state.total = payload.total;
+  }),
+  reset: action(state => {
+    state.items = [];
+    state.total = 0;
   }),
   update: action((state, payload) => {
     state.items = state.items.map(item =>

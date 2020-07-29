@@ -19,19 +19,14 @@ import env from "../env";
 const dnsLookup = promisify(dns.lookup);
 
 export const get: Handler = async (req, res) => {
-  const { limit, skip, search, all, pageSearch } = req.query;
-  let match;
-  if (req.user !== undefined) {
-    const userId = req.user.id;
-    match = {
-      ...(!all && { "links.user_id": userId }),
-      ...(pageSearch && env.SEARCH_ENABLED && { "links.isSearchable": true })
-    };
-  } else if (env.SEARCH_ENABLED) {
-    match = {
-      ...{ isSearchable: true }
-    };
-  }
+  const { limit, skip, search, all, searchable } = req.query;
+  const userId = req?.user?.id;
+
+  const searchableMatch = { isSearchable: true };
+  const tableMatch = {
+    ...(!all && userId !== undefined && { user_id: userId })
+  };
+  const match = searchable ? searchableMatch : tableMatch;
 
   const [links, total] = await Promise.all([
     query.link.get(match, { limit, search, skip }),

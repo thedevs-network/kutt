@@ -14,6 +14,7 @@ router.get(
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwtLoose),
   helpers.query,
+  asyncHandler(auth.search),
   asyncHandler(link.get)
 );
 

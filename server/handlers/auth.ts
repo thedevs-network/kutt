@@ -25,7 +25,7 @@ const authenticate = (
     passport.authenticate(type, (err, user) => {
       if (err) return next(err);
 
-      if (!env.SEARCH_ENABLED && !user && isStrict) {
+      if (!user && isStrict) {
         throw new CustomError(error, 401);
       }
 
@@ -220,4 +220,14 @@ export const resetPassword = async (req, res, next) => {
     }
   }
   return next();
+};
+
+/**
+ * Allow not logged user to search {seachable=true} links
+ */
+export const search = async (req, res, next) => {
+  if (!req.query.searchable && !req.user) {
+    throw new CustomError("Unauthorized", 401);
+  }
+  next();
 };

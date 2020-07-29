@@ -79,15 +79,10 @@ interface GetParams {
 export const get = async (match: Partial<Link>, params: GetParams) => {
   const query = knex<LinkJoinedDomain>("links")
     .select(...selectable)
+    .where(normalizeMatch(match))
     .offset(params.skip)
     .limit(params.limit)
     .orderBy("created_at", "desc");
-
-  query.where(function() {
-    Object.entries(match).forEach(([key, value]) => {
-      this.orWhere(key, ...(Array.isArray(value) ? value : [value]));
-    });
-  });
 
   if (params.search) {
     query.andWhereRaw(

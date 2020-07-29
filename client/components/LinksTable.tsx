@@ -491,7 +491,7 @@ interface Form {
   limit: string;
   skip: string;
   search: string;
-  pageSearch: boolean;
+  searchable: boolean;
 }
 
 const LinksTable: FC = () => {
@@ -503,7 +503,7 @@ const LinksTable: FC = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteMessage, setDeleteMessage] = useMessage();
   const [formState, { label, checkbox, text }] = useFormState<Form>(
-    { skip: "0", limit: "10", all: false, pageSearch: false },
+    { skip: "0", limit: "10", all: false, searchable: false },
     { withIds: true }
   );
 

@@ -14,10 +14,10 @@ const search = () => {
     <AppWrapper>
       <Col flex="1 1 100%" alignItems="center">
         <H2 my={4} light>
-          Welcom to {process.env.SITE_NAME}
+          Welcome to {process.env.SITE_NAME}
         </H2>
         <Col width={800} maxWidth="100%" px={[3]} flex="0 0 auto" mt={4}>
-          <SearchBar></SearchBar>
+          <SearchBar />
         </Col>
       </Col>
       <Footer />

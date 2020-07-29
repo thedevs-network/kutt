@@ -40,11 +40,8 @@ export const verify = (req, res, next) => {
 };
 
 export const query: Handler = (req, res, next) => {
-  const { limit, skip, all, pageSearch } = req.query;
+  const { limit, skip, all, searchable } = req.query;
   const { admin } = req.user || {};
-  if (req.user == null && env.SEARCH_ENABLED) {
-    req.query.isSearchable = true;
-  }
 
   req.query.limit = parseInt(limit) || 10;
   req.query.skip = parseInt(skip) || 0;
@@ -54,7 +51,7 @@ export const query: Handler = (req, res, next) => {
   }
 
   req.query.all = admin ? all === "true" : false;
-  req.query.pageSearch = pageSearch === "true";
+  req.query.searchable = env.SEARCH_ENABLED && searchable === "true";
 
   next();
 };
