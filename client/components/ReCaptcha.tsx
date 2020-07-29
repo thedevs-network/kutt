@@ -6,9 +6,8 @@ import React from "react";
 const { publicRuntimeConfig } = getConfig();
 
 const ReCaptcha = () => {
-  if (process.env.NODE_ENV !== "production") {
-    return null;
-  }
+  if (process.env.NODE_ENV !== "production") return null;
+  if (!publicRuntimeConfig.RECAPTCHA_SITE_KEY) return null;
 
   return (
     <Flex
