@@ -57,14 +57,14 @@ export const createLink = [
     .custom(value => URL.parse(value).host !== env.DEFAULT_DOMAIN)
     .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
   body("password")
-    .optional({ nullable: true })
+    .optional({ nullable: true, checkFalsy: true })
     .custom(checkUser)
     .withMessage("Only users can use this field.")
     .isString()
     .isLength({ min: 3, max: 64 })
     .withMessage("Password length must be between 3 and 64."),
   body("customurl")
-    .optional({ nullable: true })
+    .optional({ nullable: true, checkFalsy: true })
     .custom(checkUser)
     .withMessage("Only users can use this field.")
     .isString()
@@ -82,13 +82,13 @@ export const createLink = [
     .isBoolean()
     .withMessage("Reuse must be boolean."),
   body("description")
-    .optional({ nullable: true })
+    .optional({ nullable: true, checkFalsy: true })
     .isString()
     .trim()
     .isLength({ min: 0, max: 2040 })
     .withMessage("Description length must be between 0 and 2040."),
   body("domain")
-    .optional({ nullable: true })
+    .optional({ nullable: true, checkFalsy: true })
     .custom(checkUser)
     .withMessage("Only users can use this field.")
     .isString()
