@@ -88,7 +88,7 @@ export const createLink = [
     .trim()
     .isLength({ min: 0, max: 2040 })
     .withMessage("Description length must be between 0 and 2040."),
-  body("isSearchable")
+  body("searchable")
     .optional()
     .isBoolean(),
   body("domain")
@@ -148,7 +148,7 @@ export const editLink = [
     .trim()
     .isLength({ min: 0, max: 2040 })
     .withMessage("Description length must be between 0 and 2040."),
-  body("isSearchable")
+  body("searchable")
     .optional()
     .isBoolean(),
   param("id", "ID is invalid.")

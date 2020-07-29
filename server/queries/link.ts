@@ -13,7 +13,7 @@ const selectable = [
   "links.updated_at",
   "links.password",
   "links.description",
-  "links.isSearchable",
+  "links.searchable",
   "links.target",
   "links.visit_count",
   "links.user_id",
@@ -39,9 +39,9 @@ const normalizeMatch = (match: Partial<Link>): Partial<Link> => {
     delete newMatch.uuid;
   }
 
-  if (newMatch.isSearchable) {
-    newMatch["links.isSearchable"] = newMatch.isSearchable;
-    delete newMatch.isSearchable;
+  if (newMatch.searchable) {
+    newMatch["links.searchable"] = newMatch.searchable;
+    delete newMatch.searchable;
   }
 
   return newMatch;
@@ -141,7 +141,7 @@ export const create = async (params: Create) => {
       user_id: params.user_id || null,
       address: params.address,
       description: params.description || null,
-      isSearchable: params.isSearchable,
+      searchable: params.searchable,
       target: params.target
     },
     "*"

@@ -54,7 +54,7 @@ interface Form {
   customurl?: string;
   password?: string;
   description?: string;
-  isSearchable?: boolean;
+  searchable?: boolean;
   showAdvanced?: boolean;
 }
 
@@ -73,7 +73,7 @@ const Shortener = () => {
   >(
     {
       showAdvanced: false,
-      isSearchable: false
+      searchable: false
     },
     {
       withIds: true,
@@ -349,13 +349,13 @@ const Shortener = () => {
           {env.SEARCH_ENABLED && (
             <Checkbox
               {...raw({
-                name: "isSearchable",
+                name: "searchable",
                 onChange: e => {
-                  return !formState.values.isSearchable;
+                  return !formState.values.searchable;
                 }
               })}
-              checked={formState.values.isSearchable}
-              label="Is searchable"
+              checked={formState.values.searchable}
+              label="Searchable"
               mt={[3, 24]} />
           )}
         </div>

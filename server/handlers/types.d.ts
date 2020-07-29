@@ -6,7 +6,7 @@ export interface CreateLinkReq extends Request {
     password?: string;
     customurl?: string;
     description?: string;
-    isSearchable?: boolean;
+    searchable?: boolean;
     domain?: Domain;
     target: string;
   };

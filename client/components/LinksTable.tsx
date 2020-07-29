@@ -112,7 +112,7 @@ interface EditForm {
   target: string;
   address: string;
   description: string;
-  isSearchable: Boolean;
+  searchable: Boolean;
 }
 
 const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
@@ -125,7 +125,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
       target: link.target,
       address: link.address,
       description: link.description,
-      isSearchable: link.isSearchable
+      searchable: link.searchable
     },
     { withIds: true }
   );
@@ -258,7 +258,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
               />
             </>
           )}
-          {env.SEARCH_ENABLED && link.isSearchable && (
+          {env.SEARCH_ENABLED && link.searchable && (
             <>
               <Tooltip id={`${index}-tooltip-searchable`}>
                 Searchable
@@ -405,7 +405,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 </Flex>
               </Col>
               <Col alignItems="flex-start">
-                <Checkbox {...checkboxEdit( 'isSearchable')} label="Is searchable" mb={12}/>
+                <Checkbox {...checkboxEdit( 'searchable')} label="Searchable" mb={12}/>
               </Col>
             </Flex>
             <Button

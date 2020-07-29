@@ -22,7 +22,7 @@ export const get: Handler = async (req, res) => {
   const { limit, skip, search, all, searchable } = req.query;
   const userId = req?.user?.id;
 
-  const searchableMatch = { isSearchable: true };
+  const searchableMatch = { searchable: true };
   const tableMatch = {
     ...(!all && userId !== undefined && { user_id: userId })
   };
@@ -51,7 +51,7 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
     description,
     target,
     domain,
-    isSearchable = false
+    searchable = false
   } = req.body;
   const domain_id = domain ? domain.id : null;
 
@@ -96,7 +96,7 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
     address,
     domain_id,
     description,
-    isSearchable,
+    searchable,
     target,
     user_id: req.user && req.user.id
   });
@@ -111,7 +111,7 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
 };
 
 export const edit: Handler = async (req, res) => {
-  const { address, target, description, isSearchable } = req.body;
+  const { address, target, description, searchable } = req.body;
 
   if (!address && !target) {
     throw new CustomError("Should at least update one field.");
@@ -156,7 +156,7 @@ export const edit: Handler = async (req, res) => {
       ...(address && { address }),
       ...(description && { description }),
       ...(target && { target }),
-      ...(isSearchable !== undefined && { isSearchable })
+      ...(searchable !== undefined && { searchable })
     }
   );
 

@@ -11,7 +11,7 @@ export async function createLinkTable(knex: Knex) {
       table.string("address").notNullable();
       table.string("description");
       table
-        .boolean("isSearchable")
+        .boolean("searchable")
         .notNullable()
         .defaultTo(false);
       table
