@@ -8,10 +8,10 @@ import axios from "axios";
 
 import { CustomError } from "../utils";
 import * as utils from "../utils";
+import * as redis from "../redis";
+import queries from "../queries";
 import * as mail from "../mail";
 import query from "../queries";
-import knex from "../knex";
-import * as redis from "../redis";
 import env from "../env";
 
 const authenticate = (
@@ -65,14 +65,10 @@ export const cooldown: Handler = async (req, res, next) => {
   const cooldownConfig = env.NON_USER_COOLDOWN;
   if (req.user || !cooldownConfig) return next();
 
-  const ip = await knex<IP>("ips")
-    .where({ ip: req.realIP.toLowerCase() })
-    .andWhere(
-      "created_at",
-      ">",
-      subMinutes(new Date(), cooldownConfig).toISOString()
-    )
-    .first();
+  const ip = await queries.ip.find({
+    ip: req.realIP.toLowerCase(),
+    created_at: [">", subMinutes(new Date(), cooldownConfig).toISOString()]
+  });
 
   if (ip) {
     const timeToWait =

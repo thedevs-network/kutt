@@ -23,6 +23,7 @@ router.post(
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwtLoose),
   asyncHandler(auth.recaptcha),
+  asyncHandler(auth.cooldown),
   validators.createLink,
   asyncHandler(helpers.verify),
   asyncHandler(link.create)
