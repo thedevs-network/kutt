@@ -1,5 +1,4 @@
 import { Flex } from "reflexbox/styled-components";
-import styled from "styled-components";
 import getConfig from "next/config";
 import React from "react";
 
