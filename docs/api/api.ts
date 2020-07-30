@@ -371,6 +371,9 @@ export default {
           target: {
             type: "string"
           },
+          description: {
+            type: "string"
+          },
           updated_at: {
             type: "string",
             format: "date-time"
@@ -516,6 +519,9 @@ export default {
         required: ["target"],
         properties: {
           target: {
+            type: "string"
+          },
+          description: {
             type: "string"
           },
           password: {
