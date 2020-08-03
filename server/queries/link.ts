@@ -60,7 +60,7 @@ export const total = async (match: Match<Link>, params: TotalParams = {}) => {
 
   if (params.search) {
     query.andWhereRaw(
-      "links.description || ' '  || links.address || ' ' || target ILIKE '%' || ? || '%'",
+      " COALESCE(description, '') || ' ' || links.address || ' ' || target LIKE '%' || ? || '%' ",
       [params.search]
     );
   }
@@ -86,7 +86,7 @@ export const get = async (match: Partial<Link>, params: GetParams) => {
 
   if (params.search) {
     query.andWhereRaw(
-      "links.description || ' '  || links.address || ' ' || target ILIKE '%' || ? || '%'",
+      " COALESCE(description, '') || ' ' || links.address || ' ' || target LIKE '%' || ? || '%' ",
       [params.search]
     );
   }
