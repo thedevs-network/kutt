@@ -143,7 +143,7 @@ export const editLink = [
     .custom(value => !preservedUrls.some(url => url.toLowerCase() === value))
     .withMessage("You can't use this custom URL."),
   body("description")
-    .optional()
+    .optional({ nullable: true })
     .isString()
     .trim()
     .isLength({ min: 0, max: 2040 })

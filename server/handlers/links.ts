@@ -154,7 +154,7 @@ export const edit: Handler = async (req, res) => {
     },
     {
       ...(address && { address }),
-      ...(description && { description }),
+      description ,
       ...(target && { target }),
       ...(searchable !== undefined && { searchable })
     }
