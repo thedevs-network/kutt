@@ -8,3 +8,9 @@ if (env.NON_USER_COOLDOWN) {
     query.ip.clear().catch();
   });
 }
+
+cron.schedule("*/15 * * * * *", () => {
+  query.link
+    .batchRemove({ expire_in: ["<", new Date().toISOString()] })
+    .catch();
+});

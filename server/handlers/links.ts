@@ -42,7 +42,15 @@ export const get: Handler = async (req, res) => {
 };
 
 export const create: Handler = async (req: CreateLinkReq, res) => {
-  const { reuse, password, customurl, description, target, domain } = req.body;
+  const {
+    reuse,
+    password,
+    customurl,
+    description,
+    target,
+    domain,
+    expire_in
+  } = req.body;
   const domain_id = domain ? domain.id : null;
 
   const targetDomain = URL.parse(target).hostname;
@@ -87,6 +95,7 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
     domain_id,
     description,
     target,
+    expire_in,
     user_id: req.user && req.user.id
   });
 
@@ -100,7 +109,7 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
 };
 
 export const edit: Handler = async (req, res) => {
-  const { address, target, description } = req.body;
+  const { address, target, description, expire_in } = req.body;
 
   if (!address && !target) {
     throw new CustomError("Should at least update one field.");
@@ -144,7 +153,8 @@ export const edit: Handler = async (req, res) => {
     {
       ...(address && { address }),
       ...(description && { description }),
-      ...(target && { target })
+      ...(target && { target }),
+      ...(expire_in && { expire_in })
     }
   );
 

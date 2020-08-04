@@ -8,6 +8,8 @@ import { ifProp } from "styled-tools";
 import getConfig from "next/config";
 import QRCode from "qrcode.react";
 import Link from "next/link";
+import differenceInMilliseconds from "date-fns/differenceInMilliseconds";
+import ms from "ms";
 
 import { removeProtocol, withComma, errorMessage } from "../utils";
 import { useStoreActions, useStoreState } from "../store";
@@ -112,7 +114,8 @@ interface BanForm {
 interface EditForm {
   target: string;
   address: string;
-  description: string;
+  description?: string;
+  expire_in?: string;
 }
 
 const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
@@ -124,7 +127,12 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
     {
       target: link.target,
       address: link.address,
-      description: link.description
+      description: link.description,
+      expire_in: link.expire_in
+        ? ms(differenceInMilliseconds(new Date(link.expire_in), new Date()), {
+            long: true
+          })
+        : ""
     },
     { withIds: true }
   );
@@ -189,9 +197,20 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
             )}
           </Col>
         </Td>
-        <Td {...createdFlex}>{`${formatDistanceToNow(
-          new Date(link.created_at)
-        )} ago`}</Td>
+        <Td {...createdFlex} flexDirection="column" alignItems="flex-start">
+          <Text>{formatDistanceToNow(new Date(link.created_at))} ago</Text>
+          {link.expire_in && (
+            <Text fontSize={[13, 14]} color="#888">
+              Expires in{" "}
+              {ms(
+                differenceInMilliseconds(new Date(link.expire_in), new Date()),
+                {
+                  long: true
+                }
+              )}
+            </Text>
+          )}
+        </Td>
         <Td {...shortLinkFlex} withFade>
           {copied ? (
             <Animation
@@ -362,7 +381,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
               </Col>
             </Flex>
             <Flex alignItems="flex-start" width={1} mt={3}>
-              <Col alignItems="flex-start">
+              <Col alignItems="flex-start" mr={3}>
                 <Text
                   {...label("description")}
                   as="label"
@@ -380,6 +399,30 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                     fontSize={[14, 15]}
                     height={[40, 44]}
                     width={[1, 300, 420]}
+                    pl={[3, 24]}
+                    pr={[3, 24]}
+                    required
+                  />
+                </Flex>
+              </Col>
+              <Col alignItems="flex-start">
+                <Text
+                  {...label("expire_in")}
+                  as="label"
+                  mb={2}
+                  fontSize={[14, 15]}
+                  bold
+                >
+                  Expire in:
+                </Text>
+                <Flex as="form">
+                  <TextInput
+                    {...text("expire_in")}
+                    placeholder="2 minutes/hours/days"
+                    placeholderSize={[13, 14]}
+                    fontSize={[14, 15]}
+                    height={[40, 44]}
+                    width={[1, 210, 240]}
                     pl={[3, 24]}
                     pr={[3, 24]}
                     required

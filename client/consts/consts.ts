@@ -47,6 +47,8 @@ export enum Colors {
   TableHeadBg = "hsl(200, 12%, 95%)",
   TableHeadBorder = "hsl(200, 14%, 94%)",
   TableRowHover = "hsl(200, 14%, 98%)",
+  TableRowBanned = "hsl(0, 100%, 98%)",
+  TableRowBannedHower = "hsl(0, 100%, 96%)",
   TableShadow = "hsla(200, 20%, 70%, 0.3)",
   Text = "hsl(200, 35%, 25%)",
   TrashIcon = "hsl(0, 100%, 69%)",

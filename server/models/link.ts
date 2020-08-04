@@ -23,6 +23,7 @@ export async function createLinkTable(knex: Knex) {
         .references("id")
         .inTable("domains");
       table.string("password");
+      table.dateTime("expire_in");
       table.string("target", 2040).notNullable();
       table
         .integer("user_id")

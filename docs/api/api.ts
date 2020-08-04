@@ -524,6 +524,10 @@ export default {
           description: {
             type: "string"
           },
+          expire_in: {
+            type: "string",
+            example: "2 minutes/hours/days"
+          },
           password: {
             type: "string"
           },
@@ -547,12 +551,20 @@ export default {
         }
       },
       body_1: {
+        required: ["target", "address"],
         properties: {
           target: {
             type: "string"
           },
           address: {
             type: "string"
+          },
+          description: {
+            type: "string"
+          },
+          expire_in: {
+            type: "string",
+            example: "2 minutes/hours/days"
           }
         }
       },

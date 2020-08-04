@@ -55,6 +55,7 @@ interface Form {
   customurl?: string;
   password?: string;
   description?: string;
+  expire_in?: string;
   showAdvanced?: boolean;
 }
 
@@ -256,7 +257,7 @@ const Shortener = () => {
                 mb={2}
                 bold
               >
-                Domain
+                Domain:
               </Text>
               <Select
                 {...select("domain")}
@@ -323,15 +324,38 @@ const Shortener = () => {
             </Col>
           </Flex>
           <Flex mt={[3]} flexDirection={["column", "row"]}>
-            <Col width={1}>
+            <Col>
               <Text
-                as="description"
+                as="label"
+                {...label("expire_in")}
+                fontSize={[14, 15]}
+                mb={2}
+                bold
+              >
+                Expire in:
+              </Text>
+              <TextInput
+                {...text("expire_in")}
+                placeholder="2 minutes/hours/days"
+                data-lpignore
+                pl={[3, 24]}
+                pr={[3, 24]}
+                placeholderSize={[13, 14]}
+                fontSize={[14, 15]}
+                height={[40, 44]}
+                width={[1, 210, 240]}
+                maxWidth="100%"
+              />
+            </Col>
+            <Col width={2 / 3} ml={[0, 26]}>
+              <Text
+                as="label"
                 {...label("description")}
                 fontSize={[14, 15]}
                 mb={2}
                 bold
               >
-                Description
+                Description:
               </Text>
               <TextInput
                 {...text("description")}
