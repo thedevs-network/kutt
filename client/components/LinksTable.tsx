@@ -3,10 +3,13 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import React, { FC, useState, useEffect } from "react";
 import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { ifProp } from "styled-tools";
+import getConfig from "next/config";
 import QRCode from "qrcode.react";
 import Link from "next/link";
+import differenceInMilliseconds from "date-fns/differenceInMilliseconds";
+import ms from "ms";
 
 import { removeProtocol, withComma, errorMessage } from "../utils";
 import { useStoreActions, useStoreState } from "../store";
@@ -23,7 +26,8 @@ import Table from "./Table";
 import ALink from "./ALink";
 import Modal from "./Modal";
 import Icon from "./Icon";
-import env from '../env'
+
+const { publicRuntimeConfig } = getConfig();
 
 const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
 const Th = styled(Flex)``;
@@ -36,7 +40,7 @@ const Td = styled(Flex) <{ withFade?: boolean }>`
 
   ${ifProp(
   "withFade",
-  css`
+  `
       :after {
         content: "";
         position: absolute;
@@ -111,7 +115,8 @@ interface BanForm {
 interface EditForm {
   target: string;
   address: string;
-  description: string;
+  description?: string;
+  expire_in?: string;
   searchable: Boolean;
 }
 
@@ -120,12 +125,17 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
   const ban = useStoreActions(s => s.links.ban);
   const edit = useStoreActions(s => s.links.edit);
   const [banFormState, { checkbox }] = useFormState<BanForm>();
-  const [editFormState, { text, label,checkbox: checkboxEdit }] = useFormState<EditForm>(
+  const [editFormState, { text, label, checkbox: checkboxEdit }] = useFormState<EditForm>(
     {
       target: link.target,
       address: link.address,
       description: link.description,
-      searchable: link.searchable
+      searchable: link.searchable,
+      expire_in: link.expire_in
+        ? ms(differenceInMilliseconds(new Date(link.expire_in), new Date()), {
+          long: true
+        })
+        : ""
     },
     { withIds: true }
   );
@@ -190,9 +200,20 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
             )}
           </Col>
         </Td>
-        <Td {...createdFlex}>{`${formatDistanceToNow(
-          new Date(link.created_at)
-        )} ago`}</Td>
+        <Td {...createdFlex} flexDirection="column" alignItems="flex-start">
+          <Text>{formatDistanceToNow(new Date(link.created_at))} ago</Text>
+          {link.expire_in && (
+            <Text fontSize={[13, 14]} color="#888">
+              Expires in{" "}
+              {ms(
+                differenceInMilliseconds(new Date(link.expire_in), new Date()),
+                {
+                  long: true
+                }
+              )}
+            </Text>
+          )}
+        </Td>
         <Td {...shortLinkFlex} withFade>
           {copied ? (
             <Animation
@@ -213,17 +234,17 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
               />
             </Animation>
           ) : (
-            <Animation minWidth={32} offset="-10px" duration="0.2s">
-              <CopyToClipboard text={link.link} onCopy={onCopy}>
-                <Action
-                  name="copy"
-                  strokeWidth="2.5"
-                  stroke={Colors.CopyIcon}
-                  backgroundColor={Colors.CopyIconBg}
-                />
-              </CopyToClipboard>
-            </Animation>
-          )}
+              <Animation minWidth={32} offset="-10px" duration="0.2s">
+                <CopyToClipboard text={link.link} onCopy={onCopy}>
+                  <Action
+                    name="copy"
+                    strokeWidth="2.5"
+                    stroke={Colors.CopyIcon}
+                    backgroundColor={Colors.CopyIconBg}
+                  />
+                </CopyToClipboard>
+              </Animation>
+            )}
           <ALink href={link.link}>{removeProtocol(link.link)}</ALink>
         </Td>
         <Td {...viewsFlex}>{withComma(link.visit_count)}</Td>
@@ -258,7 +279,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
               />
             </>
           )}
-          {env.SEARCH_ENABLED && link.searchable && (
+          {publicRuntimeConfig.SEARCH_ENABLED && link.searchable && (
             <>
               <Tooltip id={`${index}-tooltip-searchable`}>
                 Searchable
@@ -347,7 +368,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                     placeholderSize={[13, 14]}
                     fontSize={[14, 15]}
                     height={[40, 44]}
-                    width={[1, 300, 420]}
+                    width={[1, 250, 420]}
                     pl={[3, 24]}
                     pr={[3, 24]}
                     required
@@ -362,7 +383,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                   fontSize={[14, 15]}
                   bold
                 >
-                  {link.domain || process.env.DEFAULT_DOMAIN}/
+                  {link.domain || publicRuntimeConfig.DEFAULT_DOMAIN}/
                 </Text>
                 <Flex as="form">
                   <TextInput
@@ -378,9 +399,15 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                   />
                 </Flex>
               </Col>
+              <Col alignItems="flex-start"
+                style={{ marginTop: "33px" }}>
+                <Flex style={{ marginLeft: "20px" }} as="form">
+                  <Checkbox {...checkboxEdit('searchable')} label="Searchable" mb={12} />
+                </Flex>
+              </Col>
             </Flex>
             <Flex alignItems="flex-start" width={1} mt={3}>
-              <Col alignItems="flex-start">
+              <Col alignItems="flex-start" mr={3}>
                 <Text
                   {...label("description")}
                   as="label"
@@ -397,7 +424,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                     placeholderSize={[13, 14]}
                     fontSize={[14, 15]}
                     height={[40, 44]}
-                    width={[1, 300, 420]}
+                    width={[1, 400, 550]}
                     pl={[3, 24]}
                     pr={[3, 24]}
                     required
@@ -405,7 +432,28 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 </Flex>
               </Col>
               <Col alignItems="flex-start">
-                <Checkbox {...checkboxEdit( 'searchable')} label="Searchable" mb={12}/>
+                <Text
+                  {...label("expire_in")}
+                  as="label"
+                  mb={2}
+                  fontSize={[14, 15]}
+                  bold
+                >
+                  Expire in:
+                </Text>
+                <Flex as="form">
+                  <TextInput
+                    {...text("expire_in")}
+                    placeholder="2 minutes/hours/days"
+                    placeholderSize={[13, 14]}
+                    fontSize={[14, 15]}
+                    height={[40, 44]}
+                    width={[1, 210, 240]}
+                    pl={[3, 24]}
+                    pr={[3, 24]}
+                    required
+                  />
+                </Flex>
               </Col>
             </Flex>
             <Button
@@ -469,16 +517,16 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 {banMessage.text}
               </Text>
             ) : (
-              <>
-                <Button color="gray" mr={3} onClick={() => setBanModal(false)}>
-                  Cancel
+                  <>
+                    <Button color="gray" mr={3} onClick={() => setBanModal(false)}>
+                      Cancel
                 </Button>
-                <Button color="red" ml={3} onClick={onBan}>
-                  <Icon name="stop" stroke="white" mr={2} />
+                    <Button color="red" ml={3} onClick={onBan}>
+                      <Icon name="stop" stroke="white" mr={2} />
                   Ban
                 </Button>
-              </>
-            )}
+                  </>
+                )}
           </Flex>
         </>
       </Modal>
@@ -643,17 +691,17 @@ const LinksTable: FC = () => {
               </Td>
             </Tr>
           ) : (
-            <>
-              {links.items.map((link, index) => (
-                <Row
-                  setDeleteModal={setDeleteModal}
-                  index={index}
-                  link={link}
-                  key={link.id}
-                />
-              ))}
-            </>
-          )}
+              <>
+                {links.items.map((link, index) => (
+                  <Row
+                    setDeleteModal={setDeleteModal}
+                    index={index}
+                    link={link}
+                    key={link.id}
+                  />
+                ))}
+              </>
+            )}
         </tbody>
         <tfoot>
           <Tr justifyContent="flex-end">{Nav}</Tr>
@@ -683,20 +731,20 @@ const LinksTable: FC = () => {
                   {deleteMessage.text}
                 </Text>
               ) : (
-                <>
-                  <Button
-                    color="gray"
-                    mr={3}
-                    onClick={() => setDeleteModal(-1)}
-                  >
-                    Cancel
+                    <>
+                      <Button
+                        color="gray"
+                        mr={3}
+                        onClick={() => setDeleteModal(-1)}
+                      >
+                        Cancel
                   </Button>
-                  <Button color="red" ml={3} onClick={onDelete}>
-                    <Icon name="trash" stroke="white" mr={2} />
+                      <Button color="red" ml={3} onClick={onDelete}>
+                        <Icon name="trash" stroke="white" mr={2} />
                     Delete
                   </Button>
-                </>
-              )}
+                    </>
+                  )}
             </Flex>
           </>
         )}

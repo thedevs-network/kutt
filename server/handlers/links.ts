@@ -51,7 +51,8 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
     description,
     target,
     domain,
-    searchable = false
+    searchable = false,
+    expire_in
   } = req.body;
   const domain_id = domain ? domain.id : null;
 
@@ -98,6 +99,7 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
     description,
     searchable,
     target,
+    expire_in,
     user_id: req.user && req.user.id
   });
 
@@ -111,7 +113,7 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
 };
 
 export const edit: Handler = async (req, res) => {
-  const { address, target, description, searchable } = req.body;
+  const { address, target, description, searchable, expire_in } = req.body;
 
   if (!address && !target) {
     throw new CustomError("Should at least update one field.");
@@ -154,9 +156,10 @@ export const edit: Handler = async (req, res) => {
     },
     {
       ...(address && { address }),
-      description ,
+      description,
       ...(target && { target }),
-      ...(searchable !== undefined && { searchable })
+      ...(searchable !== undefined && { searchable }),
+      ...(expire_in && { expire_in })
     }
   );
 

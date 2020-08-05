@@ -25,6 +25,18 @@ export const add = async (ipToAdd: string) => {
   return ip;
 };
 
+export const find = async (match: Match<IP>) => {
+  const query = knex<IP>("ips");
+
+  Object.entries(match).forEach(([key, value]) => {
+    query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+  });
+
+  const ip = await query.first();
+
+  return ip;
+};
+
 export const clear = async () =>
   knex<IP>("ips")
     .where(

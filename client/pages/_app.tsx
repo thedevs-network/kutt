@@ -1,5 +1,6 @@
 import App, { AppContext } from "next/app";
 import { StoreProvider } from "easy-peasy";
+import getConfig from "next/config";
 import Router from "next/router";
 import decode from "jwt-decode";
 import cookie from "js-cookie";
@@ -9,9 +10,9 @@ import React from "react";
 import { initGA, logPageView } from "../helpers/analytics";
 import { initializeStore } from "../store";
 import { TokenPayload } from "../types";
-import AppWrapper from "../components/AppWrapper";
 
 const isProd = process.env.NODE_ENV === "production";
+const { publicRuntimeConfig } = getConfig();
 
 // TODO: types
 class MyApp extends App<any> {
@@ -74,7 +75,7 @@ class MyApp extends App<any> {
       <>
         <Head>
           <title>
-            {process.env.SITE_NAME} | Modern Open Source URL shortener.
+            {publicRuntimeConfig.SITE_NAME} | Modern Open Source URL shortener.
           </title>
         </Head>
         <StoreProvider store={this.store}>

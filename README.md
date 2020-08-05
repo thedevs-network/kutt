@@ -28,6 +28,7 @@ If you're coming from v1, refer to [MIGRATION.md](MIGRATION.md) to migrate data 
 - [API](#api)
 - [Integrations](#integrations)
 - [3rd Party Packages](#3rd-party-packages)
+- [Donate](#donate)
 - [Contributing](#contributing)
 
 ## Key Features
@@ -65,7 +66,10 @@ You need to have [Node.js](https://nodejs.org/), [PostgreSQL](https://www.postgr
 
 ### Docker
 
-You can use Docker to start the app. The simplest way is to just run `docker-compose up` command and then the app should be ready on port "3000".
+You need to run the app with the required envrironment variables listed in [.example.env](https://github.com/thedevs-network/kutt/blob/develop/.example.env). 
+
+* [Official Docker hub image](https://hub.docker.com/r/kutt/kutt). 
+* Or simply run `docker-compose up` command and then the app should be ready on port "3000".
 
 ## Browser Extensions
 
@@ -101,6 +105,16 @@ Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app f
 | Java       | [kutt-desktop](https://github.com/cipher812/kutt-desktop)  | A Cross platform Java desktop application for Kutt |
 | Go         | [kutt-go](https://github.com/raahii/kutt-go)               | Go client for Kutt.it url shortener                |
 
+## Donate
+
+<img src="./btc.png" alt="Kutt.it" width="32px" height="32px">
+
+Kutt is free of charge and free of ads. Help us keep our servers running and motivate us to work on this project by donating to our Bitcoin wallet:
+
+```
+1P89WxNTinKxxDQ4FmC4jis3KUdfA9fLJB
+```
+
 ## Contributing
 
 Pull requests are welcome. You'll probably find lots of improvements to be made.
@@ -108,3 +122,4 @@ Pull requests are welcome. You'll probably find lots of improvements to be made.
 Open issues for feedback, requesting features, reporting bugs or discussing ideas.
 
 Special thanks to [Thomas](https://github.com/trgwii) and [Muthu](https://github.com/MKRhere). Logo design by [Muthu](https://github.com/MKRhere).
+

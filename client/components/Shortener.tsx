@@ -3,6 +3,7 @@ import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 import React, { FC, useState } from "react";
 import styled from "styled-components";
+import getConfig from "next/config";
 
 import { useStoreActions, useStoreState } from "../store";
 import { Checkbox, Select, TextInput } from "./Input";
@@ -14,8 +15,9 @@ import { Link } from "../store/links";
 import Animation from "./Animation";
 import { Colors } from "../consts";
 import Icon from "./Icon";
-import env from '../env'
 
+
+const { publicRuntimeConfig } = getConfig();
 
 const SubmitIconWrapper = styled.div`
   content: "";
@@ -55,10 +57,11 @@ interface Form {
   password?: string;
   description?: string;
   searchable?: boolean;
+  expire_in?: string;
   showAdvanced?: boolean;
 }
 
-const defaultDomain = process.env.DEFAULT_DOMAIN;
+const defaultDomain = publicRuntimeConfig.DEFAULT_DOMAIN;
 
 const Shortener = () => {
   const { isAuthenticated } = useStoreState(s => s.auth);
@@ -105,7 +108,11 @@ const Shortener = () => {
     setCopied(false);
     setLoading(true);
 
-    if (process.env.NODE_ENV === "production" && !isAuthenticated) {
+    if (
+      process.env.NODE_ENV === "production" &&
+      !!publicRuntimeConfig.RECAPTCHA_SITE_KEY &&
+      !isAuthenticated
+    ) {
       window.grecaptcha.execute(window.captchaId);
       const getCaptchaToken = () => {
         setTimeout(() => {
@@ -255,7 +262,7 @@ const Shortener = () => {
                 mb={2}
                 bold
               >
-                Domain
+                Domain:
               </Text>
               <Select
                 {...select("domain")}
@@ -322,15 +329,38 @@ const Shortener = () => {
             </Col>
           </Flex>
           <Flex mt={[3]} flexDirection={["column", "row"]}>
-            <Col width={1}>
+            <Col>
               <Text
-                as="description"
+                as="label"
+                {...label("expire_in")}
+                fontSize={[14, 15]}
+                mb={2}
+                bold
+              >
+                Expire in:
+              </Text>
+              <TextInput
+                {...text("expire_in")}
+                placeholder="2 minutes/hours/days"
+                data-lpignore
+                pl={[3, 24]}
+                pr={[3, 24]}
+                placeholderSize={[13, 14]}
+                fontSize={[14, 15]}
+                height={[40, 44]}
+                width={[1, 210, 240]}
+                maxWidth="100%"
+              />
+            </Col>
+            <Col width={2 / 3} ml={[0, 26]}>
+              <Text
+                as="label"
                 {...label("description")}
                 fontSize={[14, 15]}
                 mb={2}
                 bold
               >
-                Description
+                Description:
               </Text>
               <TextInput
                 {...text("description")}
@@ -346,7 +376,7 @@ const Shortener = () => {
               />
             </Col>
           </Flex>
-          {env.SEARCH_ENABLED && (
+          {publicRuntimeConfig.SEARCH_ENABLED && (
             <Checkbox
               {...raw({
                 name: "searchable",

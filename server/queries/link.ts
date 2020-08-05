@@ -14,6 +14,7 @@ const selectable = [
   "links.password",
   "links.description",
   "links.searchable",
+  "links.expire_in",
   "links.target",
   "links.visit_count",
   "links.user_id",
@@ -86,7 +87,7 @@ export const get = async (match: Partial<Link>, params: GetParams) => {
 
   if (params.search) {
     query.andWhereRaw(
-      " COALESCE(description, '') || ' ' || links.address || ' ' || target LIKE '%' || ? || '%' ",
+      "concat_ws(' ', description, links.address, target) ILIKE '%' || ? || '%'",
       [params.search]
     );
   }
@@ -142,6 +143,7 @@ export const create = async (params: Create) => {
       address: params.address,
       description: params.description || null,
       searchable: params.searchable,
+      expire_in: params.expire_in || null,
       target: params.target
     },
     "*"
@@ -166,6 +168,22 @@ export const remove = async (match: Partial<Link>) => {
   redis.remove.link(link);
 
   return !!deletedLink;
+};
+
+export const batchRemove = async (match: Match<Link>) => {
+  const deleteQuery = knex<Link>("links");
+  const findQuery = knex<Link>("links");
+
+  Object.entries(match).forEach(([key, value]) => {
+    findQuery.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+    deleteQuery.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+  });
+
+  const links = await findQuery;
+
+  links.forEach(redis.remove.link);
+
+  await deleteQuery.delete();
 };
 
 export const update = async (match: Partial<Link>, update: Partial<Link>) => {

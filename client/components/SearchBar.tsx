@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useFormState } from "react-use-form-state";
-import { Flex, BoxProps} from "reflexbox/styled-components";
+import { Flex, BoxProps } from "reflexbox/styled-components";
 import debounce from 'debounce'
+import getConfig from "next/config";
 
-import styled  from "styled-components";
-import {  prop, ifProp} from "styled-tools";
+import styled from "styled-components";
+import { prop, ifProp } from "styled-tools";
 import { useStoreActions, useStoreState } from "../store";
 import { Col } from "./Layout";
 import Text, { H2 } from "../components/Text";
@@ -13,6 +14,8 @@ import ALink from "./ALink";
 import { TextInput } from "./Input";
 import { NavButton } from "./Button";
 import Icon from "./Icon";
+
+const { publicRuntimeConfig } = getConfig();
 interface Form {
   all: boolean;
   limit: string;
@@ -34,7 +37,7 @@ const FORM_OPTIONS = {
 interface ContainerProps extends BoxProps {
   notEmpty?: boolean;
 }
-const Container = styled(Col)<ContainerProps>`
+const Container = styled(Col) <ContainerProps>`
   margin-left: 10px;
   margin-top: 10px;
   background-color: white;
@@ -59,7 +62,7 @@ interface LinksContainerProps extends BoxProps {
   selected?: boolean;
 }
 
-const LinksContainer = styled(Flex)<LinksContainerProps>`
+const LinksContainer = styled(Flex) <LinksContainerProps>`
   box-sizing: border-box;
   position: relative;
   letter-spacing: 0.05em;
@@ -73,8 +76,8 @@ const LinksContainer = styled(Flex)<LinksContainerProps>`
   };
 
   ${ifProp(
-    "selected",
-    `
+  "selected",
+  `
       background-color: #DADBDB;
       box-shadow: 0 0px 2px rgba(150, 150, 150, 0.1);
       cursor: default;
@@ -82,7 +85,7 @@ const LinksContainer = styled(Flex)<LinksContainerProps>`
         transform: none;
       }
     `
-  )}
+)}
 ￼`
 
 const LinkTarget = styled(ALink)`
@@ -98,6 +101,7 @@ const SearchBar = () => {
   const links = useStoreState(s => s.links);
   const [position, setPosition] = useState<number>(0)
   const [selected, setSelected] = useState<string>()
+  const [change, setChange] = useState<boolean>(false)
   const get = useStoreActions(s => s.links.get);
   const reset = useStoreActions(s => s.links.reset)
   const [formState, { text }] = useFormState<Form>(
@@ -107,46 +111,47 @@ const SearchBar = () => {
 
   const debouncedGet = useCallback(debounce(get, 300), [get]);
 
-  const options = formState.values;
+  let options = formState.values;
 
   const onNavChange = (nextPage: number) => () => {
     formState.setField("skip", (parseInt(options.skip) + nextPage).toString());
+    setChange(true)
   };
+  // const 
   useEffect(() => {
-    if(options.skip != "0"){
-      get(options)
-    }
-  }, [ options.skip]);
+    get(options)
+  }, [options.skip]);
 
   useEffect(() => {
     formState.setField("skip", "0");
     if (formState.values.search.length === 0) {
       reset();
     } else {
-      debouncedGet(options);
+      debouncedGet({ ...options, skip: "0" });
     }
   }, [formState.values?.search]);
 
 
-  //reset link selected by the first link
+  //reset (link selected by the first link)
   useEffect(() => {
     if (links.items[0] === undefined) {
       setPosition(undefined)
-      setSelected("") 
-    }else {
+      setSelected("")
+    } else {
       setPosition(0)
       setSelected(links.items[0]?.id)
     }
-    if(formState.values?.search === "" && links.items[0] !== undefined) {
+    if (formState.values?.search === "" && links.items[0] !== undefined) {
       reset();
     }
-  }, [ get, links])
+  }, [get, links])
 
   //updates link selected
   useEffect(() => {
     position === undefined ? setSelected("") : setSelected(links.items[position]?.id)
   }, [position, setPosition])
 
+  //special key
   const handleUserKeyPress = event => {
     const { key } = event;
     if (links.items.length != 0) {
@@ -169,7 +174,7 @@ const SearchBar = () => {
       window.removeEventListener('keyup', handleUserKeyPress);
     };
   }, [handleUserKeyPress]);
-  
+
 
   return (
     <Col width={800} maxWidth="100%" px={[3]} flex="0 0 auto" mt={4}>
@@ -181,12 +186,12 @@ const SearchBar = () => {
         style={{ position: "relative" }}
       >
         <H2 my={4} light >
-          {process.env.SITE_NAME}/
+          {publicRuntimeConfig.SITE_NAME}/
         </H2>
-        <Container 
-            width={[400, 500, 650]}
-            notEmpty= {links.items.length>0}
-            data-lpignore>
+        <Container
+          width={[400, 500, 650]}
+          notEmpty={links.items.length > 0}
+          data-lpignore>
           <TextInput
             {...text("search")}
             placeholder="Search your url"
@@ -205,24 +210,25 @@ const SearchBar = () => {
             shadow={false}
           />
           {links.items.map(link => (
-            <LinksContainer selected = {link.id === selected } 
-            fontSize={[14, 16, 18]}
-            height={(link.id === selected) ? 1: [40,45,50]}
-            minHeight= {[40,45,50]}
-            pr={[15, 20]}
-            pl={[15, 20]}
-            key= {link.id}>
+            <LinksContainer
+              selected={link.id === selected}
+              fontSize={[14, 16, 18]}
+              height={(link.id === selected) ? "auto" : [40, 45, 50]}
+              minHeight={[40, 45, 50]}
+              pr={[15, 20]}
+              pl={[15, 20]}
+              key={link.id}>
               <Col alignItems="flex-start" >
-                
+
                 <Flex>
                   <ALink href={link.target} >go/{link.address}</ALink>
-                  <LinkTarget href={link.target} 
+                  <LinkTarget href={link.target}
                     fontSize={[13, 14]}
                     width={[200, 300, 400]}>
-                      ({link.target})
+                    ({link.target})
                     </LinkTarget>
-                  </Flex>
-                
+                </Flex>
+
                 {link.description && (
                   <Text fontSize={[13, 14]} color="#888">
                     {link.description}
@@ -231,9 +237,9 @@ const SearchBar = () => {
                 )}
               </Col></LinksContainer>
           ))}
-           {links.total > parseInt(FORM_PARAMS.limit) && (<Flex
-              alignItems="center"
-              justifyContent="center">
+          {links.total > parseInt(FORM_PARAMS.limit) && (<Flex
+            alignItems="center"
+            justifyContent="center">
             <NavButton
               onClick={onNavChange(-parseInt(options.limit))}
               disabled={options.skip === "0"}

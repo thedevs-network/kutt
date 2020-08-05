@@ -1,11 +1,12 @@
 import { body, param } from "express-validator";
-import { isAfter, subDays, subHours } from "date-fns";
+import { isAfter, subDays, subHours, addMilliseconds } from "date-fns";
 import urlRegex from "url-regex";
 import { promisify } from "util";
 import bcrypt from "bcryptjs";
 import axios from "axios";
 import dns from "dns";
 import URL from "url";
+import ms from "ms";
 
 import { CustomError, addProtocol } from "../utils";
 import query from "../queries";
@@ -58,14 +59,14 @@ export const createLink = [
     .custom(value => URL.parse(value).host !== env.DEFAULT_DOMAIN)
     .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
   body("password")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .custom(checkUser)
     .withMessage("Only users can use this field.")
     .isString()
     .isLength({ min: 3, max: 64 })
     .withMessage("Password length must be between 3 and 64."),
   body("customurl")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .custom(checkUser)
     .withMessage("Only users can use this field.")
     .isString()
@@ -77,13 +78,13 @@ export const createLink = [
     .custom(value => !preservedUrls.some(url => url.toLowerCase() === value))
     .withMessage("You can't use this custom URL."),
   body("reuse")
-    .optional()
+    .optional({ nullable: true })
     .custom(checkUser)
     .withMessage("Only users can use this field.")
     .isBoolean()
     .withMessage("Reuse must be boolean."),
   body("description")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .isString()
     .trim()
     .isLength({ min: 0, max: 140 })
@@ -91,8 +92,24 @@ export const createLink = [
   body("searchable")
     .optional()
     .isBoolean(),
+  body("expire_in")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .custom(value => {
+      try {
+        return !!ms(value);
+      } catch {
+        return false;
+      }
+    })
+    .withMessage("Expire format is invalid. Valid examples: 1m, 8h, 42 days.")
+    .customSanitizer(ms)
+    .custom(value => value >= ms("1m"))
+    .withMessage("Minimum expire time should be '1 minute'.")
+    .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
   body("domain")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .custom(checkUser)
     .withMessage("Only users can use this field.")
     .isString()
@@ -142,8 +159,24 @@ export const editLink = [
     .withMessage("Custom URL is not valid")
     .custom(value => !preservedUrls.some(url => url.toLowerCase() === value))
     .withMessage("You can't use this custom URL."),
+  body("expire_in")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .custom(value => {
+      try {
+        return !!ms(value);
+      } catch {
+        return false;
+      }
+    })
+    .withMessage("Expire format is invalid. Valid examples: 1m, 8h, 42 days.")
+    .customSanitizer(ms)
+    .custom(value => value >= ms("1m"))
+    .withMessage("Minimum expire time should be '1 minute'.")
+    .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
   body("description")
-    .optional({ nullable: true })
+    .optional({ nullable: true, checkFalsy: true })
     .isString()
     .trim()
     .isLength({ min: 0, max: 140 })

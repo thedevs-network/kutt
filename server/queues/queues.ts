@@ -15,6 +15,6 @@ export const visit = new Queue("visit", { redis });
 
 visit.clean(5000, "completed");
 
-visit.process(4, path.resolve(__dirname, "visit.js"));
+visit.process(8, path.resolve(__dirname, "visit.js"));
 
 visit.on("completed", removeJob);

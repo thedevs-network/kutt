@@ -17,6 +17,7 @@ export interface Link {
   password?: string;
   description?: string;
   searchable: boolean;
+  expire_in?: string;
   target: string;
   updated_at: string;
   user_id?: number;
@@ -44,8 +45,9 @@ export interface EditLink {
   id: string;
   target: string;
   address: string;
-  description: string;
+  description?: string;
   searchable: Boolean;
+  expire_in?: string;
 }
 
 export interface LinksQuery {
