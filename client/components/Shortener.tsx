@@ -1,7 +1,7 @@
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
-import React, { FC, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import getConfig from "next/config";
 
@@ -324,7 +324,7 @@ const Shortener = () => {
             </Col>
           </Flex>
           <Flex mt={[3]} flexDirection={["column", "row"]}>
-            <Col>
+            <Col mb={[3, 0]}>
               <Text
                 as="label"
                 {...label("expire_in")}
@@ -347,7 +347,7 @@ const Shortener = () => {
                 maxWidth="100%"
               />
             </Col>
-            <Col width={2 / 3} ml={[0, 26]}>
+            <Col width={[1, 2 / 3]} ml={[0, 26]}>
               <Text
                 as="label"
                 {...label("description")}
