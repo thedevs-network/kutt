@@ -76,7 +76,6 @@ const LinksContainer = styled(Flex)<LinksContainerProps>`
       background-color: #DADBDB;
       box-shadow: 0 0px 2px rgba(150, 150, 150, 0.1);
       cursor: default;
-
       :hover {
         transform: none;
       }
@@ -190,7 +189,8 @@ const SearchBar = () => {
           {links.items.map(link => (
             <LinksContainer selected = {link.id === selected } 
             fontSize={[14, 16, 18]}
-            height={[40,45,50]}
+            height={(link.id === selected) ? 1: [40,45,50]}
+            minHeight= {[40,45,50]}
             pr={[15, 20]}
             pl={[15, 20]}>
               <Col alignItems="flex-start" >
