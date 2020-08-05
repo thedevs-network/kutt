@@ -84,8 +84,8 @@ const LinksContainer = styled(Flex)<LinksContainerProps>`
   )}
 ￼`
 
-const TextTarget = styled(Text)`
-  color: #888;
+const LinkTarget = styled(ALink)`
+  border-bottom: none;
   margin-left: 15px;
   margin-top: 4px;
   text-overflow: ellipsis;
@@ -197,11 +197,11 @@ const SearchBar = () => {
                 
                 <Flex>
                   <ALink href={link.target} >go/{link.address}</ALink>
-                  <TextTarget 
+                  <LinkTarget href={link.target} 
                     fontSize={[13, 14]}
-                    width={[200, 300, 500]}>
+                    width={[200, 300, 400]}>
                       ({link.target})
-                    </TextTarget>
+                    </LinkTarget>
                   </Flex>
                 
                 {link.description && (
