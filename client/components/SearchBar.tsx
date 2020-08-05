@@ -11,6 +11,8 @@ import { Col } from "./Layout";
 import Text, { H2 } from "../components/Text";
 import ALink from "./ALink";
 import { TextInput } from "./Input";
+import { NavButton } from "./Button";
+import Icon from "./Icon";
 interface Form {
   all: boolean;
   limit: string;
@@ -105,28 +107,45 @@ const SearchBar = () => {
 
   const debouncedGet = useCallback(debounce(get, 300), [get]);
 
+  const options = formState.values;
+
+  const onNavChange = (nextPage: number) => () => {
+    formState.setField("skip", (parseInt(options.skip) + nextPage).toString());
+  };
   useEffect(() => {
+    if(options.skip != "0"){
+      get(options)
+    }
+  }, [ options.skip]);
+
+  useEffect(() => {
+    formState.setField("skip", "0");
     if (formState.values.search.length === 0) {
       reset();
     } else {
-      debouncedGet(formState.values);
+      debouncedGet(options);
     }
   }, [formState.values?.search]);
-  
+
+
   //reset link selected by the first link
   useEffect(() => {
-    if (links.items[0] !== undefined) {
-      setSelected(links.items[0].id)
+    if (links.items[0] === undefined) {
+      setPosition(undefined)
+      setSelected("") 
+    }else {
+      setPosition(0)
+      setSelected(links.items[0]?.id)
     }
-    setPosition(0)
-  }, [get, links])
+    if(formState.values?.search === "" && links.items[0] !== undefined) {
+      reset();
+    }
+  }, [ get, links])
 
   //updates link selected
   useEffect(() => {
-    if (links.items[position] !== undefined) {
-      setSelected(links.items[position].id)
-    }
-  }, [position])
+    position === undefined ? setSelected("") : setSelected(links.items[position]?.id)
+  }, [position, setPosition])
 
   const handleUserKeyPress = event => {
     const { key } = event;
@@ -150,7 +169,6 @@ const SearchBar = () => {
       window.removeEventListener('keyup', handleUserKeyPress);
     };
   }, [handleUserKeyPress]);
-
   
 
   return (
@@ -192,7 +210,8 @@ const SearchBar = () => {
             height={(link.id === selected) ? 1: [40,45,50]}
             minHeight= {[40,45,50]}
             pr={[15, 20]}
-            pl={[15, 20]}>
+            pl={[15, 20]}
+            key= {link.id}>
               <Col alignItems="flex-start" >
                 
                 <Flex>
@@ -212,6 +231,27 @@ const SearchBar = () => {
                 )}
               </Col></LinksContainer>
           ))}
+           {links.total > parseInt(FORM_PARAMS.limit) && (<Flex
+              alignItems="center"
+              justifyContent="center">
+            <NavButton
+              onClick={onNavChange(-parseInt(options.limit))}
+              disabled={options.skip === "0"}
+              px={2}
+            >
+              <Icon name="chevronLeft" size={15} />
+            </NavButton>
+            <NavButton
+              onClick={onNavChange(parseInt(options.limit))}
+              disabled={
+                parseInt(options.skip) + parseInt(options.limit) > links.total
+              }
+              ml={12}
+              px={2}
+            >
+              <Icon name="chevronRight" size={15} />
+            </NavButton>
+          </Flex>)}
         </Container>
       </Flex>
     </Col>

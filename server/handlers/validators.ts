@@ -86,8 +86,8 @@ export const createLink = [
     .optional()
     .isString()
     .trim()
-    .isLength({ min: 0, max: 2040 })
-    .withMessage("Description length must be between 0 and 2040."),
+    .isLength({ min: 0, max: 140 })
+    .withMessage("Description length must be between 0 and 140."),
   body("searchable")
     .optional()
     .isBoolean(),
@@ -146,8 +146,8 @@ export const editLink = [
     .optional({ nullable: true })
     .isString()
     .trim()
-    .isLength({ min: 0, max: 2040 })
-    .withMessage("Description length must be between 0 and 2040."),
+    .isLength({ min: 0, max: 140 })
+    .withMessage("Description length must be between 0 and 140."),
   body("searchable")
     .optional()
     .isBoolean(),
