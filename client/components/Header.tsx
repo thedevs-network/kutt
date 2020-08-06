@@ -1,4 +1,5 @@
 import { Flex } from "reflexbox/styled-components";
+import getConfig from "next/config";
 import React, { FC } from "react";
 import Router from "next/router";
 import useMedia from "use-media";
@@ -11,6 +12,8 @@ import { Button } from "./Button";
 import ALink from "./ALink";
 import { Select } from "./Input";
 import { useTranslation } from 'react-i18next';
+
+const { publicRuntimeConfig } = getConfig();
 
 const Li = styled(Flex).attrs({ ml: [12, 24, 32] })`
   a {
@@ -103,7 +106,7 @@ const Header: FC = () => {
             }}
           >
             <img src="/images/logo.svg" alt="" />
-            {process.env.SITE_NAME}
+            {publicRuntimeConfig.SITE_NAME}
           </a>
         </LogoImage>
         {!isMobile && (

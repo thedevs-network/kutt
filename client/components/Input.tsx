@@ -17,6 +17,7 @@ interface StyledTextProps extends BoxProps {
   br?: string;
   bbw?: string;
   autoComplete?: "on" | "off";
+  shadow?: boolean;
 }
 
 export const TextInput = styled(Flex).attrs({
@@ -27,7 +28,9 @@ export const TextInput = styled(Flex).attrs({
   letter-spacing: 0.05em;
   color: #444;
   background-color: white;
-  box-shadow: 0 10px 35px hsla(200, 15%, 70%, 0.2);
+  ${ifProp("shadow",
+    `box-shadow: 0 10px 35px hsla(200, 15%, 70%, 0.2);`
+  )}
   border: none;
   border-radius: ${prop("br", "100px")};
   border-bottom: 5px solid #f5f5f5;
@@ -36,7 +39,9 @@ export const TextInput = styled(Flex).attrs({
 
   :focus {
     outline: none;
-    box-shadow: 0 20px 35px hsla(200, 15%, 70%, 0.4);
+    ${ifProp("shadow",
+     `box-shadow: 0 20px 35px hsla(200, 15%, 70%, 0.4);`
+     )}
   }
 
   ::placeholder {
@@ -78,7 +83,8 @@ TextInput.defaultProps = {
   py: 0,
   px: [3, 24],
   fontSize: [14, 15],
-  placeholderSize: [13, 14]
+  placeholderSize: [13, 14],
+  shadow: true
 };
 
 interface StyledSelectProps extends BoxProps {

@@ -1,4 +1,5 @@
 import React, { FC, useEffect } from "react";
+import getConfig from "next/config";
 
 import showRecaptcha from "../helpers/recaptcha";
 import { useStoreState } from "../store";
@@ -7,6 +8,8 @@ import ReCaptcha from "./ReCaptcha";
 import ALink from "./ALink";
 import Text from "./Text";
 import { useTranslation } from 'react-i18next';
+
+const { publicRuntimeConfig } = getConfig();
 
 const Footer: FC = () => {
   const { t } = useTranslation();
@@ -45,11 +48,11 @@ const Footer: FC = () => {
         <ALink href="/report" title="Report abuse">
         {t('footer.report')}
         </ALink>
-        {process.env.CONTACT_EMAIL && (
+        {publicRuntimeConfig.CONTACT_EMAIL && (
           <>
             {" | "}
             <ALink
-              href={`mailto:${process.env.CONTACT_EMAIL}`}
+              href={`mailto:${publicRuntimeConfig.CONTACT_EMAIL}`}
               title="Contact us"
             >
               {t('footer.contact')}

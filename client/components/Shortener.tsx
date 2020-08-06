@@ -3,6 +3,7 @@ import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 import React, { FC, useState } from "react";
 import styled from "styled-components";
+import getConfig from "next/config";
 
 import { useStoreActions, useStoreState } from "../store";
 import { Checkbox, Select, TextInput } from "./Input";
@@ -14,10 +15,11 @@ import { Link } from "../store/links";
 import Animation from "./Animation";
 import { Colors } from "../consts";
 import Icon from "./Icon";
-import env from '../env'
 
 import { useTranslation } from 'react-i18next';
 
+
+const { publicRuntimeConfig } = getConfig();
 
 const SubmitIconWrapper = styled.div`
   content: "";
@@ -56,11 +58,12 @@ interface Form {
   customurl?: string;
   password?: string;
   description?: string;
-  isSearchable?: boolean;
+  searchable?: boolean;
+  expire_in?: string;
   showAdvanced?: boolean;
 }
 
-const defaultDomain = process.env.DEFAULT_DOMAIN;
+const defaultDomain = publicRuntimeConfig.DEFAULT_DOMAIN;
 
 const Shortener = () => {
   const { t } = useTranslation();
@@ -76,7 +79,7 @@ const Shortener = () => {
   >(
     {
       showAdvanced: false,
-      isSearchable: false
+      searchable: false
     },
     {
       withIds: true,
@@ -108,7 +111,11 @@ const Shortener = () => {
     setCopied(false);
     setLoading(true);
 
-    if (process.env.NODE_ENV === "production" && !isAuthenticated) {
+    if (
+      process.env.NODE_ENV === "production" &&
+      !!publicRuntimeConfig.RECAPTCHA_SITE_KEY &&
+      !isAuthenticated
+    ) {
       window.grecaptcha.execute(window.captchaId);
       const getCaptchaToken = () => {
         setTimeout(() => {
@@ -325,9 +332,32 @@ const title = !link && (
             </Col>
           </Flex>
           <Flex mt={[3]} flexDirection={["column", "row"]}>
-            <Col width={1}>
+            <Col>
               <Text
-                as="description"
+                as="label"
+                {...label("expire_in")}
+                fontSize={[14, 15]}
+                mb={2}
+                bold
+              >
+                Expire in:
+              </Text>
+              <TextInput
+                {...text("expire_in")}
+                placeholder="2 minutes/hours/days"
+                data-lpignore
+                pl={[3, 24]}
+                pr={[3, 24]}
+                placeholderSize={[13, 14]}
+                fontSize={[14, 15]}
+                height={[40, 44]}
+                width={[1, 210, 240]}
+                maxWidth="100%"
+              />
+            </Col>
+            <Col width={2 / 3} ml={[0, 26]}>
+              <Text
+                as="label"
                 {...label("description")}
                 fontSize={[14, 15]}
                 mb={2}
@@ -349,19 +379,17 @@ const title = !link && (
               />
             </Col>
           </Flex>
-          {env.SEARCH_ENABLED && (
-            <Flex mt={4} flexDirection={["column", "row"]}>
-              <Checkbox
-                {...raw({
-                  name: "isSearchable",
-                  onChange: e => {
-                    return !formState.values.isSearchable;
-                  }
-                })}
-                checked={formState.values.isSearchable}
-                label={t('shortener.advanced.chSearchable')}
-                mt={[3, 24]} />
-            </Flex>
+          {publicRuntimeConfig.SEARCH_ENABLED && (
+            <Checkbox
+              {...raw({
+                name: "searchable",
+                onChange: e => {
+                  return !formState.values.searchable;
+                }
+              })}
+              checked={formState.values.searchable}
+              label={t('shortener.advanced.chSearchable')}
+              mt={[3, 24]} />
           )}
         </div>
       )}

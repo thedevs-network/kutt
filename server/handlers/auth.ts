@@ -8,10 +8,10 @@ import axios from "axios";
 
 import { CustomError } from "../utils";
 import * as utils from "../utils";
+import * as redis from "../redis";
+import queries from "../queries";
 import * as mail from "../mail";
 import query from "../queries";
-import knex from "../knex";
-import * as redis from "../redis";
 import env from "../env";
 
 const authenticate = (
@@ -25,7 +25,7 @@ const authenticate = (
     passport.authenticate(type, (err, user) => {
       if (err) return next(err);
 
-      if (!env.SEARCH_ENABLED && !user && isStrict) {
+      if (!user && isStrict) {
         throw new CustomError(error, 401);
       }
 
@@ -65,14 +65,10 @@ export const cooldown: Handler = async (req, res, next) => {
   const cooldownConfig = env.NON_USER_COOLDOWN;
   if (req.user || !cooldownConfig) return next();
 
-  const ip = await knex<IP>("ips")
-    .where({ ip: req.realIP.toLowerCase() })
-    .andWhere(
-      "created_at",
-      ">",
-      subMinutes(new Date(), cooldownConfig).toISOString()
-    )
-    .first();
+  const ip = await queries.ip.find({
+    ip: req.realIP.toLowerCase(),
+    created_at: [">", subMinutes(new Date(), cooldownConfig).toISOString()]
+  });
 
   if (ip) {
     const timeToWait =
@@ -87,6 +83,7 @@ export const cooldown: Handler = async (req, res, next) => {
 
 export const recaptcha: Handler = async (req, res, next) => {
   if (env.isDev || req.user) return next();
+  if (!env.RECAPTCHA_SECRET_KEY) return next();
 
   const isReCaptchaValid = await axios({
     method: "post",
@@ -220,4 +217,14 @@ export const resetPassword = async (req, res, next) => {
     }
   }
   return next();
+};
+
+/**
+ * Allow not logged user to search {seachable=true} links
+ */
+export const search = async (req, res, next) => {
+  if (!req.query.searchable && !req.user) {
+    throw new CustomError("Unauthorized", 401);
+  }
+  next();
 };
