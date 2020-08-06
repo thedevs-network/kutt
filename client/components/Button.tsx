@@ -13,7 +13,8 @@ const propAndCall = (key, callback) => (props) => {
 } 
 
 interface Props extends BoxProps {
-  theme: typeof theme,
+  theme: typeof theme;
+  color?: Colors; 
   disabled?: boolean;
   icon?: string; // TODO: better typing
   isRound?: boolean;
@@ -73,7 +74,7 @@ Button.defaultProps = {
   py: 0,
   px: [24, 32],
   fontSize: [12, 13],
-  color: "blue",
+  color: "primary",
   icon: "",
   isRound: false
 };
