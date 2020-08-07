@@ -2,38 +2,37 @@ import styled from "styled-components";
 import React, { FC } from "react";
 // import { VectorMap } from "@south-paw/react-vector-maps";
 
-import { Colors } from "../../consts";
 import Tooltip from "../Tooltip";
 import world from "./world.json";
 
 const Svg = styled.svg`
   path {
-    fill: ${Colors.Map0};
+    fill: ${({ theme }) => theme.stats.map0};
     stroke: #fff;
   }
 
   path.country-6 {
-    fill: ${Colors.Map06};
+    fill: ${({ theme }) => theme.stats.map06};
     stroke: #fff;
   }
   path.country-5 {
-    fill: ${Colors.Map05};
+    fill: ${({ theme }) => theme.stats.map05};
     stroke: #fff;
   }
   path.country-4 {
-    fill: ${Colors.Map04};
+    fill: ${({ theme }) => theme.stats.map04};
     stroke: #fff;
   }
   path.country-3 {
-    fill: ${Colors.Map03};
+    fill: ${({ theme }) => theme.stats.map03};
     stroke: #fff;
   }
   path.country-2 {
-    fill: ${Colors.Map02};
+    fill: ${({ theme }) => theme.stats.map02};
     stroke: #fff;
   }
   path.country-1 {
-    fill: ${Colors.Map01};
+    fill: ${({ theme }) => theme.stats.map01};
     stroke: #fff;
   }
 `;

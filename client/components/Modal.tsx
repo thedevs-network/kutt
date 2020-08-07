@@ -4,7 +4,7 @@ import React, { FC } from "react";
 import ReactDOM from "react-dom";
 
 import Animation from "./Animation";
-
+import {useTheme} from "../hooks";
 interface Props extends React.ComponentProps<typeof Flex> {
   show: boolean;
   id?: string;
@@ -25,6 +25,7 @@ const Wrapper = styled.div`
 `;
 
 const Modal: FC<Props> = ({ children, id, show, closeHandler, ...rest }) => {
+  const theme = useTheme()   
   if (!show) return null;
 
   const onClickOutside = e => {
@@ -40,7 +41,7 @@ const Modal: FC<Props> = ({ children, id, show, closeHandler, ...rest }) => {
         maxWidth="90%"
         py={[32, 32, 48]}
         px={[24, 24, 32]}
-        style={{ borderRadius: 8, backgroundColor: "white" }}
+        style={{ borderRadius: 8, backgroundColor: theme.background.accent }}
         flexDirection="column"
         {...rest}
       >

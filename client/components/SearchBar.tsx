@@ -15,6 +15,8 @@ import ALink from "./ALink";
 import { TextInput } from "./Input";
 import { NavButton } from "./Button";
 import Icon from "./Icon";
+import { transparentize } from 'polished';
+import { useTheme } from "../hooks";
 
 const { publicRuntimeConfig } = getConfig();
 interface Form {
@@ -41,13 +43,13 @@ interface ContainerProps extends BoxProps {
 const Container = styled(Col) <ContainerProps>`
   margin-left: 10px;
   margin-top: 10px;
-  background-color: white;
+  background-color: ${prop("theme.background.accent")};
   box-sizing: border-box;
   position: relative;
-  box-shadow: 0 10px 35px hsla(200, 15%, 70%, 0.2);
+  box-shadow: 0 10px 35px ${prop("theme.table.shadow")};
   border: none;
   border-radius: ${prop("br", "30px")};
-  border-bottom: 5px solid #f5f5f5;
+  border-bottom: 5px solid ${prop("theme.table.border")};
   ${ifProp("notEmpty", `padding-bottom: 18px;`)}  
   border-bottom-width: ${prop("bbw", "5px")};
   transition: all 0.5s ease-out;
@@ -67,20 +69,20 @@ const LinksContainer = styled(Flex) <LinksContainerProps>`
   box-sizing: border-box;
   position: relative;
   letter-spacing: 0.05em;
-  background-color: white;
+  background-color: ${prop("theme.table.row")};
   color: #444; 
   border: none;
-  border-top: 1px solid hsl(200, 14%, 90%);
+  border-top: 1px solid ${prop("theme.table.border")};
   transition: all 0.5s ease-out;
   :hover { 
-    background-color: #E7E7E7;
+    background-color: ${prop("theme.table.rowHover")};
   };
 
   ${ifProp(
   "selected",
   `
-      background-color: #DADBDB;
-      box-shadow: 0 0px 2px rgba(150, 150, 150, 0.1);
+      background-color:  ${prop("theme.table.rowHover")};
+      box-shadow: 0 0px 2px  ${({theme}) => transparentize(0.9, theme.text.main)};
       cursor: default;
       :hover {
         transform: none;
@@ -99,6 +101,7 @@ const LinkTarget = styled(ALink)`
 `
 
 const SearchBar = () => {
+  const theme = useTheme()
   const { t } = useTranslation("search");
   const links = useStoreState(s => s.links);
   const [position, setPosition] = useState<number>(0)
@@ -232,7 +235,7 @@ const SearchBar = () => {
                 </Flex>
 
                 {link.description && (
-                  <Text fontSize={[13, 14]} color="#888">
+                  <Text fontSize={[13, 14]} color={theme.text.placeholder}>
                     {link.description}
 
                   </Text>

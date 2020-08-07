@@ -12,8 +12,10 @@ import Text, { H2 } from "../Text";
 import { Col } from "../Layout";
 import Icon from "../Icon";
 import { useTranslation } from 'react-i18next';
+import {useTheme} from "../../hooks";
 
 const SettingsPassword: FC = () => {
+  const theme = useTheme()   
   const { t } = useTranslation("setting");
   const { t : tcommon } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -77,8 +79,8 @@ const SettingsPassword: FC = () => {
           mr={3}
           required
         />
-        <Button type="submit" disabled={loading}>
-          <Icon name={loading ? "spinner" : "refresh"} mr={2} stroke="white" />
+        <Button type="submit" disabled={loading} color="primary">
+          <Icon name={loading ? "spinner" : "refresh"} mr={2} stroke={theme.icon.feature.main} />
           {loading ? tcommon('button.updating') : tcommon('button.updating')}
         </Button>
       </Flex>

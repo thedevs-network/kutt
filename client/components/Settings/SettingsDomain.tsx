@@ -9,7 +9,7 @@ import { Domain } from "../../store/settings";
 import { errorMessage } from "../../utils";
 import { useMessage } from "../../hooks";
 import Text, { H2, Span } from "../Text";
-import { Colors } from "../../consts";
+import {useTheme} from "../../hooks";
 import { TextInput } from "../Input";
 import { Button } from "../Button";
 import { Col } from "../Layout";
@@ -28,6 +28,7 @@ const Td = styled(Flex).attrs({ as: "td", py: 12, px: 3 })`
 `;
 
 const SettingsDomain: FC = () => {
+  const theme = useTheme()  
   const { t } = useTranslation("setting");
   const { t : tcommon } = useTranslation();
   const { saveDomain, deleteDomain } = useStoreActions(s => s.settings);
@@ -103,9 +104,9 @@ const SettingsDomain: FC = () => {
                   <Icon
                     as="button"
                     name="trash"
-                    stroke={Colors.TrashIcon}
+                    stroke={theme.icon.trash.main}
                     strokeWidth="2.5"
-                    backgroundColor={Colors.TrashIconBg}
+                    backgroundColor={theme.icon.trash.bg}
                     py={0}
                     px={0}
                     size={[23, 24]}
@@ -138,7 +139,6 @@ const SettingsDomain: FC = () => {
               bold
             >
             {t('domain.colDomain')}
-              Domain
             </Text>
             <TextInput
               {...text("address")}
@@ -165,10 +165,10 @@ const SettingsDomain: FC = () => {
             />
           </Col>
         </Flex>
-        <Button type="submit" color="purple" mt={[24, 3]} disabled={loading}>
-          <Icon name={loading ? "spinner" : "plus"} mr={2} stroke="white" />
-          {loading ? "Setting..." : "Set domain"}
-        </Button>
+        <Button type="submit" color="secondary" mt={[24, 3]} disabled={loading}>
+            <Icon name={loading ? "spinner" : "plus"} mr={2} stroke={theme.icon.feature.main} />
+            {loading ? "Setting..." : "Set domain"}
+          </Button>
       </Col>
       <Text color={message.color}>{message.text}</Text>
       <Modal id="delete-custom-domain" show={modal} closeHandler={closeModal}>
@@ -182,14 +182,14 @@ const SettingsDomain: FC = () => {
         <Flex justifyContent="center" mt={44}>
           {deleteLoading ? (
             <>
-              <Icon name="spinner" size={20} stroke={Colors.Spinner} />
+              <Icon name="spinner" size={20} stroke={theme.component.spinner} />
             </>
           ) : (
             <>
-              <Button color="gray" mr={3} onClick={closeModal}>
+              <Button color="default" mr={3} onClick={closeModal}>
               {tcommon('button.cancel')}
               </Button>
-              <Button color="red" ml={3} onClick={onDelete}>
+              <Button color="warning" ml={3} onClick={onDelete}>
                 <Icon name="trash" stroke="white" mr={2} />
                 {tcommon('button.delete')}
               </Button>

@@ -5,7 +5,6 @@ import React, { FC } from "react";
 
 import ChevronRight from "./ChevronRight";
 import ChevronLeft from "./ChevronLeft";
-import { Colors } from "../../consts";
 import Clipboard from "./Clipboard";
 import ArrowLeft from "./ArrowLeft";
 import PieChart from "./PieChart";
@@ -24,6 +23,8 @@ import Plus from "./Plus";
 import Lock from "./Lock";
 import Eye from "./Eye";
 import EyeSlash from "./EyeSlash";
+import Sun from "./Sun";
+import Moon from "./Moon";
 import Edit from "./Edit";
 import Copy from "./Copy";
 import Send from "./Send";
@@ -53,7 +54,9 @@ const icons = {
   signup: Signup,
   spinner: Spinner,  
   eye: Eye,
-  eyeSlash: EyeSlash,
+  eyeSlash: EyeSlash,  
+  sun: Sun,
+  moon: Moon,
   stop: Stop,
   trash: Trash,
   x: X,
@@ -133,7 +136,7 @@ const CustomIcon: FC<React.ComponentProps<typeof Flex>> = styled(Flex)`
       background-color: none !important;
       cursor: pointer;
       box-sizing: border-box;
-      box-shadow: 0 2px 1px ${Colors.IconShadow};
+      box-shadow: 0 2px 1px ${({ theme }) => theme.icon.default.shadow}};
 
       :hover,
       :focus {

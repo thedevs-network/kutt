@@ -13,17 +13,20 @@ import { Area, Bar, Pie, Map } from "../components/Charts";
 import PageLoading from "../components/PageLoading";
 import AppWrapper from "../components/AppWrapper";
 import Divider from "../components/Divider";
-import { APIv2, Colors } from "../consts";
+import { APIv2 } from "../consts";
 import { useStoreState } from "../store";
 import ALink from "../components/ALink";
 import Icon from "../components/Icon";
 import { useTranslation } from 'react-i18next';
+import {useTheme} from "../hooks";
+import { transparentize } from 'polished';
 
 interface Props {
   id?: string;
 }
 
 const StatsPage: NextPage<Props> = ({ id }) => {
+  const theme = useTheme()  
   const { t } = useTranslation("stats");
   const { t: tcommon } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
@@ -54,7 +57,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
   if (!isAuthenticated) {
     errorMessage = (
       <Flex mt={3}>
-        <Icon name="x" size={32} mr={3} stroke={Colors.TrashIcon} />
+        <Icon name="x" size={32} mr={3} stroke={theme.icon.trash.main} />
         <H2>{t('error.needLogin')}</H2>
       </Flex>
     );
@@ -63,7 +66,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
   if (!id || error) {
     errorMessage = (
       <Flex mt={3}>
-        <Icon name="x" size={32} mr={3} stroke={Colors.TrashIcon} />
+        <Icon name="x" size={32} mr={3} stroke={theme.icon.trash.main} />
         <H2>{t('error.couldntStats')}</H2>
       </Flex>
     );
@@ -96,16 +99,16 @@ const StatsPage: NextPage<Props> = ({ id }) => {
               </Text>
             </Flex>
             <Col
-              backgroundColor="white"
+              backgroundColor={theme.background.accent}
               style={{
                 borderRadius: 12,
-                boxShadow: "0 6px 15px hsla(200, 20%, 70%, 0.3)",
+                boxShadow: "0 6px 15px "+ transparentize(0.8, theme.text.main) +"",
                 overflow: "hidden"
               }}
             >
               <RowCenterV
                 flex="1 1 auto"
-                backgroundColor={Colors.TableHeadBg}
+                backgroundColor={theme.table.headBg}
                 justifyContent="space-between"
                 py={[3, 3, 24]}
                 px={[3, 4]}
@@ -135,7 +138,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                 <H2 mb={2} light>
                   <Span
                     style={{
-                      borderBottom: `1px dotted ${Colors.StatsTotalUnderline}`
+                      borderBottom: `1px dotted ${theme.stats.totalUnderline}`
                     }}
                     bold
                   >
@@ -143,7 +146,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                   </Span>{" "}
                   {t('trackedClicks')+ t(`timeClick.${period}`)}.
                 </H2>
-                <Text fontSize={[13, 14]} color={Colors.StatsLastUpdateText}>
+                <Text fontSize={[13, 14]} color={theme.stats.lastUpdateText}>
                   {t('lastUpdate')}
                   {formatDate(new Date(data.updatedAt), "hh:mm aa")}
                 </Text>
@@ -189,7 +192,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
             <Box alignSelf="center" my={64}>
               <Link href="/">
                 <ALink href="/" title="Back to homepage" forButton>
-                  <Button>
+                  <Button color="primary">
                     <Icon name="arrowLeft" stroke="white" mr={2} />
                     {tcommon('button.backHome')}
                   </Button>
