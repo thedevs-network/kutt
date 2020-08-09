@@ -62,6 +62,7 @@ export const apikey = authenticate(
 );
 
 export const cooldown: Handler = async (req, res, next) => {
+  if (env.DISALLOW_ANONYMOUS_LINKS) return next();
   const cooldownConfig = env.NON_USER_COOLDOWN;
   if (req.user || !cooldownConfig) return next();
 
@@ -83,6 +84,7 @@ export const cooldown: Handler = async (req, res, next) => {
 
 export const recaptcha: Handler = async (req, res, next) => {
   if (env.isDev || req.user) return next();
+  if (env.DISALLOW_ANONYMOUS_LINKS) return next();
   if (!env.RECAPTCHA_SECRET_KEY) return next();
 
   const isReCaptchaValid = await axios({
@@ -167,7 +169,7 @@ export const changePassword: Handler = async (req, res) => {
     .send({ message: "Your password has been changed successfully." });
 };
 
-export const generateApiKey = async (req, res) => {
+export const generateApiKey: Handler = async (req, res) => {
   const apikey = nanoid(40);
 
   redis.remove.user(req.user);
@@ -181,7 +183,7 @@ export const generateApiKey = async (req, res) => {
   return res.status(201).send({ apikey });
 };
 
-export const resetPasswordRequest = async (req, res) => {
+export const resetPasswordRequest: Handler = async (req, res) => {
   const [user] = await query.user.update(
     { email: req.body.email },
     {
@@ -199,7 +201,7 @@ export const resetPasswordRequest = async (req, res) => {
   });
 };
 
-export const resetPassword = async (req, res, next) => {
+export const resetPassword: Handler = async (req, res, next) => {
   const { resetPasswordToken } = req.params;
 
   if (resetPasswordToken) {
@@ -217,4 +219,9 @@ export const resetPassword = async (req, res, next) => {
     }
   }
   return next();
+};
+
+export const signupAccess: Handler = (req, res, next) => {
+  if (!env.DISALLOW_REGISTRATION) return next();
+  return res.status(403).send({ message: "Registration is not allowed." });
 };

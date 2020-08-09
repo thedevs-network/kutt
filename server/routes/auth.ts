@@ -17,6 +17,7 @@ router.post(
 
 router.post(
   "/signup",
+  auth.signupAccess,
   validators.signup,
   asyncHandler(helpers.verify),
   asyncHandler(auth.signup)
