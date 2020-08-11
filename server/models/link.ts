@@ -11,7 +11,7 @@ export async function createLinkTable(knex: Knex) {
       table.string("address").notNullable();
       table.string("description");
       table
-        .boolean("isSearchable")
+        .boolean("searchable")
         .notNullable()
         .defaultTo(false);
       table
@@ -27,6 +27,7 @@ export async function createLinkTable(knex: Knex) {
         .references("id")
         .inTable("domains");
       table.string("password");
+      table.dateTime("expire_in");
       table.string("target", 2040).notNullable();
       table
         .integer("user_id")

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect} from "react";
 import { ThemeContext } from "styled-components";
 
 const initialMessage = { color: "red", text: "" };
@@ -31,7 +31,16 @@ export const useCopy = (timeout = 1500) => {
   return [copied, setCopied] as const;
 };
 
+
 export const useTheme = () => {
   const theme = useContext(ThemeContext) 
   return theme;
 }
+export const useWindowEvent = (name, callback) => {
+  useEffect(() => {
+    window.addEventListener(name, callback);
+    return () => {
+      window.removeEventListener(name, callback);
+    };
+  }, [callback]);
+} 

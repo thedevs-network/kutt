@@ -1,9 +1,7 @@
 language: node_js
 
 node_js:
-  - "9"
+  - "12"
 
 script:
   - yarn run lint:nofix
-  - yarn test
-  - yarn build

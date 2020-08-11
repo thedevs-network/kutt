@@ -2,7 +2,7 @@ import { Flex, BoxProps } from "reflexbox/styled-components";
 import styled, { css, keyframes } from "styled-components";
 import { withProp, prop, ifProp } from "styled-tools";
 import { FC } from "react";
-import {useTheme} from "../hooks";
+import { useTheme } from "../hooks";
 import { transparentize } from 'polished';
 
 import { Span } from "./Text";
@@ -19,27 +19,34 @@ interface StyledTextProps extends BoxProps {
   br?: string;
   bbw?: string;
   autoComplete?: "on" | "off";
+  shadow?: boolean;
 }
 
 export const TextInput = styled(Flex).attrs({
   as: "input"
-})<StyledTextProps>`
+}) <StyledTextProps>`
   position: relative;
   box-sizing: border-box;
   letter-spacing: 0.05em;
   color: ${prop("theme.text.main")};
   background-color: ${prop("theme.background.accent")};
-  box-shadow: 0 10px 35px ${({theme}) => transparentize(0.9, theme.text.main)};
+  
+  ${ifProp("shadow",
+  `box-shadow: 0 10px 35px ${({ theme }) => transparentize(0.9, theme.text.main)};`
+)}
 
   border: none;
   border-radius: ${prop("br", "100px")};
-  border-bottom: 5px solid ${({theme}) => theme.background.main};
+  border-bottom: 5px solid ${({ theme }) => theme.background.main};
   border-bottom-width: ${prop("bbw", "5px")};
   transition: all 0.5s ease-out;
 
   :focus {
     outline: none;
-    box-shadow: 0 20px 35px ${({theme}) => transparentize(0.8, theme.text.main)};
+
+  ${ifProp("shadow",
+    `box-shadow: 0 20px 35px ${({ theme }) => transparentize(0.8, theme.text.main)};`
+  )}
   }
 
   ::placeholder {
@@ -51,9 +58,9 @@ export const TextInput = styled(Flex).attrs({
   @media screen and (min-width: 64em) {
     ::placeholder {
       font-size: ${withProp(
-        "placeholderSize",
-        s => s[3] || s[2] || s[1] || s[0] || 16
-      )}px;
+  "placeholderSize",
+  s => s[3] || s[2] || s[1] || s[0] || 16
+)}px;
     }
   }
 
@@ -62,9 +69,9 @@ export const TextInput = styled(Flex).attrs({
     border-bottom-width: ${prop("bbw", "6px")};
     ::placeholder {
       font-size: ${withProp(
-        "placeholderSize",
-        s => s[2] || s[1] || s[0] || 15
-      )}px;
+  "placeholderSize",
+  s => s[2] || s[1] || s[0] || 15
+)}px;
     }
   }
 
@@ -81,7 +88,8 @@ TextInput.defaultProps = {
   py: 0,
   px: [3, 24],
   fontSize: [14, 15],
-  placeholderSize: [13, 14]
+  placeholderSize: [13, 14],
+  shadow: true
 };
 
 interface StyledSelectProps extends BoxProps {
@@ -101,16 +109,16 @@ interface SelectOptions extends StyledSelectProps {
 
 const StyledSelect: FC<StyledSelectProps> = styled(Flex).attrs({
   as: "select"
-})<StyledSelectProps>`
+}) <StyledSelectProps>`
   position: relative;
   box-sizing: border-box;
   letter-spacing: 0.05em;
   color: ${prop("theme.text.main")};
   background-color: ${prop("theme.background.accent")};
-  box-shadow: 0 10px 35px ${({theme}) => transparentize(0.9, theme.text.main)};
+  box-shadow: 0 10px 35px ${({ theme }) => transparentize(0.9, theme.text.main)};
   border: none;
   border-radius: ${prop("br", "100px")};
-  border-bottom: 5px solid ${({theme}) => theme.background.main};
+  border-bottom: 5px solid ${({ theme }) => theme.background.main};
   border-bottom-width: ${prop("bbw", "5px")};
   transition: all 0.5s ease-out;
   appearance: none;
@@ -121,7 +129,7 @@ const StyledSelect: FC<StyledSelectProps> = styled(Flex).attrs({
 
   :focus {
     outline: none;
-    box-shadow: 0 20px 35px ${({theme}) => transparentize(0.8, theme.text.main)};
+    box-shadow: 0 20px 35px ${({ theme }) => transparentize(0.8, theme.text.main)};
   }
 
   @media screen and (min-width: 52em) {
@@ -163,7 +171,7 @@ const CheckboxInput = styled(Flex).attrs({
   width: 0,
   height: 0,
   opacity: 0
-})<ChecknoxInputProps>`
+}) <ChecknoxInputProps>`
   position: relative;
   opacity: 0;
 `;
@@ -171,7 +179,7 @@ const CheckboxInput = styled(Flex).attrs({
 const CheckboxBox = styled(Flex).attrs({
   alignItems: "center",
   justifyContent: "center"
-})<{ checked: boolean }>`
+}) <{ checked: boolean }>`
   position: relative;
   transition: color 0.3s ease-out;
   border-radius: 4px;
@@ -184,8 +192,8 @@ const CheckboxBox = styled(Flex).attrs({
   }
 
   ${ifProp(
-    "checked",
-    css`
+  "checked",
+  css`
       box-shadow: 0 3px 5px rgba(50, 50, 50, 0.4);
 
       :after {
@@ -210,7 +218,7 @@ const CheckboxBox = styled(Flex).attrs({
         `} 0.1s ease-in;
       }
     `
-  )}
+)}
 `;
 
 interface CheckboxProps extends ChecknoxInputProps, BoxProps {
@@ -227,7 +235,7 @@ export const Checkbox: FC<CheckboxProps> = ({
   onChange,
   ...rest
 }) => {
-  const theme = useTheme()   
+  const theme = useTheme()
   return (
     <Flex
       flex="0 0 auto"

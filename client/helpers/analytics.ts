@@ -1,7 +1,10 @@
+import getConfig from "next/config";
 import ReactGA from "react-ga";
 
+const { publicRuntimeConfig } = getConfig();
+
 export const initGA = () => {
-  ReactGA.initialize(process.env.GOOGLE_ANALYTICS);
+  ReactGA.initialize(publicRuntimeConfig.GOOGLE_ANALYTICS);
 };
 
 export const logPageView = () => {

@@ -1,7 +1,10 @@
-import React from "react";
 import Document, { Head, Main, NextScript } from "next/document";
 import { ServerStyleSheet } from "styled-components";
+import getConfig from "next/config";
+import React from "react";
 
+
+const { publicRuntimeConfig } = getConfig();
 
 interface Props {
   styleTags: any;
@@ -28,7 +31,7 @@ class AppDocument extends Document<Props> {
           />
           <meta
             name="description"
-            content={`${process.env.SITE_NAME} is a free and open source URL shortener with custom domains and stats.`}
+            content={`${publicRuntimeConfig.SITE_NAME} is a free and open source URL shortener with custom domains and stats.`}
           />
           <link
             href="https://fonts.googleapis.com/css?family=Nunito:300,400,700"
@@ -45,13 +48,13 @@ class AppDocument extends Document<Props> {
           <meta property="fb:app_id" content="123456789" />
           <meta
             property="og:url"
-            content={`https://${process.env.DEFAULT_DOMAIN}`}
+            content={`https://${publicRuntimeConfig.DEFAULT_DOMAIN}`}
           />
           <meta property="og:type" content="website" />
-          <meta property="og:title" content={process.env.SITE_NAME} />
+          <meta property="og:title" content={publicRuntimeConfig.SITE_NAME} />
           <meta
             property="og:image"
-            content={`https://${process.env.DEFAULT_DOMAIN}/images/card.png`}
+            content={`https://${publicRuntimeConfig.DEFAULT_DOMAIN}/images/card.png`}
           />
           <meta
             property="og:description"
@@ -59,16 +62,16 @@ class AppDocument extends Document<Props> {
           />
           <meta
             name="twitter:url"
-            content={`https://${process.env.DEFAULT_DOMAIN}`}
+            content={`https://${publicRuntimeConfig.DEFAULT_DOMAIN}`}
           />
-          <meta name="twitter:title" content={process.env.SITE_NAME} />
+          <meta name="twitter:title" content={publicRuntimeConfig.SITE_NAME} />
           <meta
             name="twitter:description"
             content="Free & Open Source Modern URL Shortener"
           />
           <meta
             name="twitter:image"
-            content={`https://${process.env.DEFAULT_DOMAIN}/images/card.png`}
+            content={`https://${publicRuntimeConfig.DEFAULT_DOMAIN}/images/card.png`}
           />
 
           {this.props.styleTags}

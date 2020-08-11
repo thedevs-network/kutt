@@ -19,19 +19,14 @@ import env from "../env";
 const dnsLookup = promisify(dns.lookup);
 
 export const get: Handler = async (req, res) => {
-  const { limit, skip, search, all, pageSearch } = req.query;
-  let match;
-  if (req.user !== undefined) {
-    const userId = req.user.id;
-    match = {
-      ...(!all && { "links.user_id": userId }),
-      ...(pageSearch && env.SEARCH_ENABLED && { "links.isSearchable": true })
-    };
-  } else if (env.SEARCH_ENABLED) {
-    match = {
-      ...{ isSearchable: true }
-    };
-  }
+  const { limit, skip, search, all, searchable } = req.query;
+  const userId = req?.user?.id;
+
+  const searchableMatch = { searchable: true };
+  const tableMatch = {
+    ...(!all && userId !== undefined && { user_id: userId })
+  };
+  const match = searchable ? searchableMatch : tableMatch;
 
   const [links, total] = await Promise.all([
     query.link.get(match, { limit, search, skip }),
@@ -56,7 +51,8 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
     description,
     target,
     domain,
-    isSearchable = false
+    searchable = false,
+    expire_in
   } = req.body;
   const domain_id = domain ? domain.id : null;
 
@@ -101,8 +97,9 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
     address,
     domain_id,
     description,
-    isSearchable,
+    searchable,
     target,
+    expire_in,
     user_id: req.user && req.user.id
   });
 
@@ -116,7 +113,7 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
 };
 
 export const edit: Handler = async (req, res) => {
-  const { address, target, description, isSearchable } = req.body;
+  const { address, target, description, searchable, expire_in } = req.body;
 
   if (!address && !target) {
     throw new CustomError("Should at least update one field.");
@@ -159,9 +156,10 @@ export const edit: Handler = async (req, res) => {
     },
     {
       ...(address && { address }),
-      ...(description && { description }),
+      description,
       ...(target && { target }),
-      ...(isSearchable !== undefined && { isSearchable })
+      ...(searchable !== undefined && { searchable }),
+      ...(expire_in && { expire_in })
     }
   );
 

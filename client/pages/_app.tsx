@@ -1,5 +1,6 @@
 import App, { AppContext } from "next/app";
 import { StoreProvider } from "easy-peasy";
+import getConfig from "next/config";
 import Router from "next/router";
 import decode from "jwt-decode";
 import cookie from "js-cookie";
@@ -15,6 +16,7 @@ import { theme } from "../consts/theme";
 import  i18n  from '../../i18n'
 import ThemeProvider from '../components/ThemeProvider'
 const isProd = process.env.NODE_ENV === "production";
+const { publicRuntimeConfig } = getConfig();
 
 
 const PageWrapper = styled.div`
@@ -85,7 +87,7 @@ class MyApp extends App<any> {
       <>
         <Head>
           <title>
-            {process.env.SITE_NAME} | Modern Open Source URL shortener.
+            {publicRuntimeConfig.SITE_NAME} | Modern Open Source URL shortener.
           </title>
         </Head>
         <ThemeProvider defaultValue={darkModeEnabled}>

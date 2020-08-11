@@ -8,6 +8,7 @@ import Link from "next/link";
 import axios from "axios";
 
 import { useStoreState, useStoreActions } from "../store";
+import { APIv2, DISALLOW_REGISTRATION } from "../consts";
 import { ColCenterV } from "../components/Layout";
 import AppWrapper from "../components/AppWrapper";
 import { TextInput } from "../components/Input";
@@ -16,7 +17,6 @@ import { Button } from "../components/Button";
 import Text, { H2 } from "../components/Text";
 import ALink from "../components/ALink";
 import Icon from "../components/Icon";
-import { APIv2 } from "../consts";
 import { useTranslation } from 'react-i18next';
 import { theme } from "styled-tools";
 import {useTheme} from "../hooks";
@@ -83,7 +83,7 @@ const LoginPage = () => {
         }
       }
 
-      if (type === "signup") {
+      if (type === "signup" && !DISALLOW_REGISTRATION) {
         setLoading(s => ({ ...s, signup: true }));
         try {
           await axios.post(APIv2.AuthSignup, { email, password });
@@ -126,7 +126,7 @@ const LoginPage = () => {
               autoFocus
             />
             <Text {...label("password")} as="label" mb={2} bold>
-              {t('password') + t('password2')}
+              {t('password') + (!DISALLOW_REGISTRATION ? t('password2'): "")}
             </Text>
             <TextInput
               {...password("password")}
@@ -141,7 +141,7 @@ const LoginPage = () => {
             <Flex justifyContent="center">
               <Button
                 flex="1 1 auto"
-                mr={["8px", 16]}
+                mr={!DISALLOW_REGISTRATION ? ["8px", 16] : 0}
                 height={[44, 56]}
                 onClick={onSubmit("login")}                
                 color="primary"
@@ -154,20 +154,22 @@ const LoginPage = () => {
                 />
                 {tcommon('button.login')}
               </Button>
-              <Button
-                flex="1 1 auto"
-                ml={["8px", 16]}
-                height={[44, 56]}
-                color="secondary"
-                onClick={onSubmit("signup")}
-              >
-                <Icon
-                  name={loading.signup ? "spinner" : "signup"}
-                  stroke={theme.background.accent}
-                  mr={2}
-                />
-                {tcommon('button.signUp')}
-              </Button>
+              {!DISALLOW_REGISTRATION && (
+                <Button
+                  flex="1 1 auto"
+                  ml={["8px", 16]}
+                  height={[44, 56]}
+                  color="secondary"
+                  onClick={onSubmit("signup")}
+                >
+                  <Icon
+                    name={loading.signup ? "spinner" : "signup"}
+                    stroke={theme.background.accent}
+                    mr={2}
+                  />
+                  {tcommon('button.signUp')}
+                </Button>
+              )}
             </Flex>
             <Link href="/reset-password">
               <ALink

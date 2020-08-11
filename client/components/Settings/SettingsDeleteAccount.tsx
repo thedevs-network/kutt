@@ -1,5 +1,6 @@
 import { useFormState } from "react-use-form-state";
 import React, { FC, useState } from "react";
+import getConfig from "next/config";
 import Router from "next/router";
 import axios from "axios";
 import styled  from "styled-components";
@@ -19,6 +20,8 @@ import {useTheme} from "../../hooks";
 const ModalStyled = styled.div`
   background-color: blue;
 `
+
+const { publicRuntimeConfig } = getConfig();
 
 const SettingsDeleteAccount: FC = () => {
   const theme = useTheme()   
@@ -62,7 +65,7 @@ const SettingsDeleteAccount: FC = () => {
       <H2 mb={4} bold>
         {t('account.title')}
       </H2>
-      <Text mb={4}>{t('account.description')}{process.env.SITE_NAME}.</Text>
+      <Text mb={4}>{t('account.description')}{publicRuntimeConfig.SITE_NAME}.</Text>
       <Text
         {...label("password")}
         as="label"

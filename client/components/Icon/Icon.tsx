@@ -22,7 +22,6 @@ import Stop from "./Stop";
 import Plus from "./Plus";
 import Lock from "./Lock";
 import Eye from "./Eye";
-import EyeSlash from "./EyeSlash";
 import Sun from "./Sun";
 import Moon from "./Moon";
 import Edit from "./Edit";
@@ -54,7 +53,6 @@ const icons = {
   signup: Signup,
   spinner: Spinner,  
   eye: Eye,
-  eyeSlash: EyeSlash,  
   sun: Sun,
   moon: Moon,
   stop: Stop,
