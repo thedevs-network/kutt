@@ -1,3 +1,13 @@
+import getConfig from "next/config";
+
+const { publicRuntimeConfig } = getConfig();
+
+export const DISALLOW_ANONYMOUS_LINKS =
+  publicRuntimeConfig.DISALLOW_ANONYMOUS_LINKS === "true";
+
+export const DISALLOW_REGISTRATION =
+  publicRuntimeConfig.DISALLOW_REGISTRATION === "true";
+
 export enum API {
   BAN_LINK = "/api/url/admin/ban",
   STATS = "/api/url/stats"
@@ -23,10 +33,8 @@ export enum Colors {
   Divider = "hsl(200, 20%, 92%)",
   EditIcon = "hsl(46, 90%, 50%)",
   EditIconBg = "hsl(46, 100%, 94%)",
-  Eye = "hsl(0, 0%, 35%)",
-  EyeBg = "hsl(0, 0%, 94%)",
-  EyeSlash = "hsl(0, 0%, 35%)",
-  EyeSlashBg = "hsl(0, 0%, 94%)",
+  Eye = "hsl(0, 0%, 73%)",
+  EyeBg = "transparent",
   ExtensionsBg = "hsl(230, 15%, 20%)",
   FeaturesBg = "hsl(230, 15%, 92%)",
   Icon = "hsl(200, 35%, 45%)",
@@ -51,6 +59,8 @@ export enum Colors {
   TableHeadBg = "hsl(200, 12%, 95%)",
   TableHeadBorder = "hsl(200, 14%, 94%)",
   TableRowHover = "hsl(200, 14%, 98%)",
+  TableRowBanned = "hsl(0, 100%, 98%)",
+  TableRowBannedHower = "hsl(0, 100%, 96%)",
   TableShadow = "hsla(200, 20%, 70%, 0.3)",
   Text = "hsl(200, 35%, 25%)",
   TrashIcon = "hsl(0, 100%, 69%)",

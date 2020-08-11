@@ -1,10 +1,10 @@
 import * as Knex from "knex";
 
 export async function up(knex: Knex): Promise<any> {
-  const hasDescription = await knex.schema.hasColumn("links", "description");
-  if (!hasDescription) {
+  const hasExpireIn = await knex.schema.hasColumn("links", "expire_in");
+  if (!hasExpireIn) {
     await knex.schema.alterTable("links", table => {
-      table.string("description");
+      table.dateTime("expire_in");
     });
   }
 }

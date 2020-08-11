@@ -1,8 +1,9 @@
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
-import React, { FC, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import getConfig from "next/config";
 
 import { useStoreActions, useStoreState } from "../store";
 import { Checkbox, Select, TextInput } from "./Input";
@@ -14,10 +15,11 @@ import { Link } from "../store/links";
 import Animation from "./Animation";
 import { Colors } from "../consts";
 import Icon from "./Icon";
-import env from '../env'
 
 import { useTranslation } from 'react-i18next';
 
+
+const { publicRuntimeConfig } = getConfig();
 
 const SubmitIconWrapper = styled.div`
   content: "";
@@ -56,11 +58,12 @@ interface Form {
   customurl?: string;
   password?: string;
   description?: string;
-  isSearchable?: boolean;
+  searchable?: boolean;
+  expire_in?: string;
   showAdvanced?: boolean;
 }
 
-const defaultDomain = process.env.DEFAULT_DOMAIN;
+const defaultDomain = publicRuntimeConfig.DEFAULT_DOMAIN;
 
 const Shortener = () => {
   const { t } = useTranslation();
@@ -76,7 +79,7 @@ const Shortener = () => {
   >(
     {
       showAdvanced: false,
-      isSearchable: false
+      searchable: false
     },
     {
       withIds: true,
@@ -108,7 +111,11 @@ const Shortener = () => {
     setCopied(false);
     setLoading(true);
 
-    if (process.env.NODE_ENV === "production" && !isAuthenticated) {
+    if (
+      process.env.NODE_ENV === "production" &&
+      !!publicRuntimeConfig.RECAPTCHA_SITE_KEY &&
+      !isAuthenticated
+    ) {
       window.grecaptcha.execute(window.captchaId);
       const getCaptchaToken = () => {
         setTimeout(() => {
@@ -129,11 +136,11 @@ const Shortener = () => {
     return submitLink();
   };
 
-const title = !link && (
-  <H1 fontSize={[25, 27, 32]} light>
-    {t('shortener.title')}
-    <Span style={{ borderBottom: "2px dotted #999" }} light>
-    {t('shortener.title2')}
+  const title = !link && (
+    <H1 fontSize={[25, 27, 32]} light>
+      {t('shortener.title')}
+      <Span style={{ borderBottom: "2px dotted #999" }} light>
+        {t('shortener.title2')}
       </Span>
       .
     </H1>
@@ -243,7 +250,7 @@ const title = !link && (
           }
         })}
         checked={formState.values.showAdvanced}
-      label={t('shortener.advanced.chAdvanced')}
+        label={t('shortener.advanced.chAdvanced')}
         mt={[3, 24]}
         alignSelf="flex-start"
       />
@@ -289,7 +296,7 @@ const title = !link && (
               </Text>
               <TextInput
                 {...text("customurl")}
-                placeholder={t('shortener.advanced.phCustomAddress')+"..."}
+                placeholder={t('shortener.advanced.phCustomAddress') + "..."}
                 autoComplete="off"
                 data-lpignore
                 pl={[3, 24]}
@@ -308,11 +315,11 @@ const title = !link && (
                 mb={2}
                 bold
               >
-              {t('shortener.advanced.password')}
+                {t('shortener.advanced.password')}
               </Text>
               <TextInput
                 {...password("password")}
-                placeholder={t('shortener.advanced.password')+"..."}
+                placeholder={t('shortener.advanced.password') + "..."}
                 autoComplete="off"
                 data-lpignore
                 pl={[3, 24]}
@@ -325,19 +332,43 @@ const title = !link && (
             </Col>
           </Flex>
           <Flex mt={[3]} flexDirection={["column", "row"]}>
-            <Col width={1}>
+            <Col mb={[3, 0]}>
               <Text
-                as="description"
+                as="label"
+                {...label("expire_in")}
+                fontSize={[14, 15]}
+                mb={2}
+                bold
+              >
+
+                {t('shortener.advanced.expireIn')} :
+              </Text>
+              <TextInput
+                {...text("expire_in")}
+                placeholder={t('shortener.advanced.phExpireIn')}
+                data-lpignore
+                pl={[3, 24]}
+                pr={[3, 24]}
+                placeholderSize={[13, 14]}
+                fontSize={[14, 15]}
+                height={[40, 44]}
+                width={[1, 210, 240]}
+                maxWidth="100%"
+              />
+            </Col>
+            <Col width={[1, 2 / 3]} ml={[0, 26]}>
+              <Text
+                as="label"
                 {...label("description")}
                 fontSize={[14, 15]}
                 mb={2}
                 bold
               >
-              {t('shortener.advanced.description')}
+                {t('shortener.advanced.description')}
               </Text>
               <TextInput
                 {...text("description")}
-                placeholder={t('shortener.advanced.description')+"..."}
+                placeholder={t('shortener.advanced.description') + "..."}
                 data-lpignore
                 pl={[3, 24]}
                 pr={[3, 24]}
@@ -349,19 +380,17 @@ const title = !link && (
               />
             </Col>
           </Flex>
-          {env.SEARCH_ENABLED && (
-            <Flex mt={4} flexDirection={["column", "row"]}>
-              <Checkbox
-                {...raw({
-                  name: "isSearchable",
-                  onChange: e => {
-                    return !formState.values.isSearchable;
-                  }
-                })}
-                checked={formState.values.isSearchable}
-                label={t('shortener.advanced.chSearchable')}
-                mt={[3, 24]} />
-            </Flex>
+          {publicRuntimeConfig.SEARCH_ENABLED && (
+            <Checkbox
+              {...raw({
+                name: "searchable",
+                onChange: e => {
+                  return !formState.values.searchable;
+                }
+              })}
+              checked={formState.values.searchable}
+              label={t('shortener.advanced.chSearchable')}
+              mt={[3, 24]} />
           )}
         </div>
       )}

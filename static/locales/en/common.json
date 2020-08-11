@@ -18,7 +18,9 @@
             "phCustomAddress": "Custom address",
             "password": "Password",
             "description": "Description",
-            "chSearchable": "Is searchable"
+            "chSearchable": "Is searchable",
+            "expireIn": "Expire in ",
+            "phExpireIn": "2 minutes/hours/days"
         }
 
     },
@@ -34,7 +36,9 @@
             "views": "Views",
             "target": "Target",
             "customAddress": "Custom address",
-            "chSearchable": "Is searchable"
+            "chSearchable": "Is searchable",
+            "expireIn": "Expire in ",
+            "phExpireIn": "2 minutes/hours/days"
         },
         "tooltip": {
             "passwordProtected": "Password protected",

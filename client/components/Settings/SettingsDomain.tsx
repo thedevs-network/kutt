@@ -2,6 +2,7 @@ import { useFormState } from "react-use-form-state";
 import { Flex } from "reflexbox/styled-components";
 import React, { FC, useState } from "react";
 import styled from "styled-components";
+import getConfig from "next/config";
 
 import { useStoreState, useStoreActions } from "../../store";
 import { Domain } from "../../store/settings";
@@ -16,6 +17,8 @@ import Table from "../Table";
 import Modal from "../Modal";
 import Icon from "../Icon";
 import { useTranslation } from 'react-i18next';
+
+const { publicRuntimeConfig } = getConfig();
 
 const Th = styled(Flex).attrs({ as: "th", py: 3, px: 3 })`
   font-size: 15px;
@@ -74,7 +77,7 @@ const SettingsDomain: FC = () => {
       </H2>
       <Text mb={3}>
       {t('domain.description1')}
-        <b>{process.env.DEFAULT_DOMAIN}{t('domain.description2')}</b>{t('domain.description3')}
+        <b>{publicRuntimeConfig.DEFAULT_DOMAIN}{t('domain.description2')}</b>{t('domain.description3')}
         <b>{t('domain.description4')}</b>
       </Text>
       <Text mb={4}>
@@ -94,7 +97,7 @@ const SettingsDomain: FC = () => {
               <tr key={d.address}>
                 <Td width={2 / 5}>{d.address}</Td>
                 <Td width={2 / 5}>
-                  {d.homepage || process.env.DEFAULT_DOMAIN}
+                  {d.homepage || publicRuntimeConfig.DEFAULT_DOMAIN}
                 </Td>
                 <Td width={1 / 5} justifyContent="center">
                   <Icon
@@ -134,7 +137,7 @@ const SettingsDomain: FC = () => {
                 fontSize={[15, 16]}
                 bold
               >
-                Domain
+              {t('domain.colDomain')}
               </Text>
               <TextInput
                 {...text("address")}

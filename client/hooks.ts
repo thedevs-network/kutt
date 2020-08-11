@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const initialMessage = { color: "red", text: "" };
 
@@ -29,3 +29,13 @@ export const useCopy = (timeout = 1500) => {
 
   return [copied, setCopied] as const;
 };
+
+
+export const useWindowEvent = (name, callback) => {
+  useEffect(() => {
+    window.addEventListener(name, callback);
+    return () => {
+      window.removeEventListener(name, callback);
+    };
+  }, [callback]);
+} 

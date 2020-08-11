@@ -1,9 +1,11 @@
 import { Flex } from "reflexbox/styled-components";
+import getConfig from "next/config";
 import React, { FC } from "react";
 import Router from "next/router";
 import useMedia from "use-media";
 import Link from "next/link";
 
+import { DISALLOW_REGISTRATION } from "../consts";
 import { useStoreState } from "../store";
 import styled from "styled-components";
 import { RowCenterV } from "./Layout";
@@ -11,6 +13,8 @@ import { Button } from "./Button";
 import ALink from "./ALink";
 import { Select } from "./Input";
 import { useTranslation } from 'react-i18next';
+
+const { publicRuntimeConfig } = getConfig();
 
 const Li = styled(Flex).attrs({ ml: [12, 24, 32] })`
   a {
@@ -55,8 +59,14 @@ const Header: FC = () => {
   const login = !isAuthenticated && (
     <Li>
       <Link href="/login">
-        <ALink href="/login" title="login / signup" forButton>
-          <Button height={[32, 40]}>{t('button.login')+" / "+t('button.signUp')}</Button>
+        <ALink
+          href="/login"
+          title={!DISALLOW_REGISTRATION ? "login / signup" : "login"}
+          forButton
+        >
+          <Button height={[32, 40]}>
+            {!DISALLOW_REGISTRATION ? t('button.login')+" / "+t('button.signUp') : t('button.login')}
+          </Button>
         </ALink>
       </Link>
     </Li>
@@ -103,7 +113,7 @@ const Header: FC = () => {
             }}
           >
             <img src="/images/logo.svg" alt="" />
-            {process.env.SITE_NAME}
+            {publicRuntimeConfig.SITE_NAME}
           </a>
         </LogoImage>
         {!isMobile && (

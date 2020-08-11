@@ -13,7 +13,8 @@ const selectable = [
   "links.updated_at",
   "links.password",
   "links.description",
-  "links.isSearchable",
+  "links.searchable",
+  "links.expire_in",
   "links.target",
   "links.visit_count",
   "links.user_id",
@@ -39,9 +40,9 @@ const normalizeMatch = (match: Partial<Link>): Partial<Link> => {
     delete newMatch.uuid;
   }
 
-  if (newMatch.isSearchable) {
-    newMatch["links.isSearchable"] = newMatch.isSearchable;
-    delete newMatch.isSearchable;
+  if (newMatch.searchable) {
+    newMatch["links.searchable"] = newMatch.searchable;
+    delete newMatch.searchable;
   }
 
   return newMatch;
@@ -60,7 +61,7 @@ export const total = async (match: Match<Link>, params: TotalParams = {}) => {
 
   if (params.search) {
     query.andWhereRaw(
-      "links.description || ' '  || links.address || ' ' || target ILIKE '%' || ? || '%'",
+      " COALESCE(description, '') || ' ' || links.address || ' ' || target LIKE '%' || ? || '%' ",
       [params.search]
     );
   }
@@ -79,19 +80,14 @@ interface GetParams {
 export const get = async (match: Partial<Link>, params: GetParams) => {
   const query = knex<LinkJoinedDomain>("links")
     .select(...selectable)
+    .where(normalizeMatch(match))
     .offset(params.skip)
     .limit(params.limit)
     .orderBy("created_at", "desc");
 
-  query.where(function() {
-    Object.entries(match).forEach(([key, value]) => {
-      this.orWhere(key, ...(Array.isArray(value) ? value : [value]));
-    });
-  });
-
   if (params.search) {
     query.andWhereRaw(
-      "links.description || ' '  || links.address || ' ' || target ILIKE '%' || ? || '%'",
+      "concat_ws(' ', description, links.address, target) ILIKE '%' || ? || '%'",
       [params.search]
     );
   }
@@ -146,7 +142,8 @@ export const create = async (params: Create) => {
       user_id: params.user_id || null,
       address: params.address,
       description: params.description || null,
-      isSearchable: params.isSearchable,
+      searchable: params.searchable,
+      expire_in: params.expire_in || null,
       target: params.target
     },
     "*"
@@ -171,6 +168,22 @@ export const remove = async (match: Partial<Link>) => {
   redis.remove.link(link);
 
   return !!deletedLink;
+};
+
+export const batchRemove = async (match: Match<Link>) => {
+  const deleteQuery = knex<Link>("links");
+  const findQuery = knex<Link>("links");
+
+  Object.entries(match).forEach(([key, value]) => {
+    findQuery.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+    deleteQuery.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+  });
+
+  const links = await findQuery;
+
+  links.forEach(redis.remove.link);
+
+  await deleteQuery.delete();
 };
 
 export const update = async (match: Partial<Link>, update: Partial<Link>) => {

@@ -13,6 +13,9 @@ import { useMessage } from "../hooks";
 import { APIv2 } from "../consts";
 
 import { useTranslation } from 'react-i18next';
+import getConfig from "next/config";
+
+const { publicRuntimeConfig } = getConfig();
 
 const ReportPage = () => {
   const { t } = useTranslation("report");
@@ -45,7 +48,7 @@ const ReportPage = () => {
           {t('description')}
         </Text>
         <Text mb={4}>
-          {(process.env.REPORT_EMAIL || "").replace("@", "[at]")}
+          {(publicRuntimeConfig.REPORT_EMAIL || "").replace("@", "[at]")}
         </Text>
         <Text mb={3}>
           <Span bold>{t('urlMalware')}</Span>
@@ -59,7 +62,7 @@ const ReportPage = () => {
         >
           <TextInput
             {...text("url")}
-            placeholder={process.env.DEFAULT_DOMAIN + "/"+t("exemple")}
+            placeholder={publicRuntimeConfig.DEFAULT_DOMAIN + "/"+t("exemple")}
             height={[44, 54]}
             width={[1, 1 / 2]}
             flex="0 0 auto"

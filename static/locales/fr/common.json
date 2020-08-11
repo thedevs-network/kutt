@@ -18,7 +18,9 @@
             "phCustomAddress": "Adresse custom",
             "password": "Mot de passe",
             "description": "Description",
-            "chSearchable": "Est recherchable"
+            "chSearchable": "Est recherchable",
+            "expireIn": "Expiration dans ",
+            "phExpireIn": "2 minutes/hours/days"
         }
 
     },
@@ -34,7 +36,9 @@
             "views": "Vues",
             "target": "URL d'origine",
             "customAddress": "Adresse custom",
-            "chSearchable": "Est recherchable"
+            "chSearchable": "Est recherchable",
+            "expireIn": "Expiration dans ",
+            "phExpireIn": "2 minutes/hours/days"
         },
         "tooltip": {
             "passwordProtected": "Protégé par un mot de passe",
