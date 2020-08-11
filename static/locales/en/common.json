@@ -42,7 +42,8 @@
         },
         "tooltip": {
             "passwordProtected": "Password protected",
-            "banned": "Banned"
+            "banned": "Banned",
+            "stat": "View stats"
         },
         "banModal": {
             "title": "Ban link?",

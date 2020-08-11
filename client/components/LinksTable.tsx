@@ -284,7 +284,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
           {publicRuntimeConfig.SEARCH_ENABLED && link.searchable && (
             <>
               <Tooltip id={`${index}-tooltip-searchable`}>
-                Searchable
+￼                {t('linksTable.table.chSearchable')}
               </Tooltip>
               <Action
                 as="span"
@@ -299,7 +299,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
           )}
           {link.visit_count > 0 && (
             <Link href={`/stats?id=${link.id}`}>
-              <ALink title="View stats" forButton>
+              <ALink title={t('linksTable.tooltip.stat')} forButton>
                 <Action
                   name="pieChart"
                   stroke={Colors.PieIcon}
