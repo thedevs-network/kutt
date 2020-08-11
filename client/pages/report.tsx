@@ -12,8 +12,8 @@ import Icon from "../components/Icon";
 import { useMessage } from "../hooks";
 import { APIv2 } from "../consts";
 
-import getConfig from "next/config";
 import { useTranslation } from 'react-i18next';
+import getConfig from "next/config";
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -62,7 +62,7 @@ const ReportPage = () => {
         >
           <TextInput
             {...text("url")}
-            placeholder={publicRuntimeConfig.DEFAULT_DOMAIN+ "/"+t("exemple")}
+            placeholder={publicRuntimeConfig.DEFAULT_DOMAIN + "/"+t("exemple")}
             height={[44, 54]}
             width={[1, 1 / 2]}
             flex="0 0 auto"

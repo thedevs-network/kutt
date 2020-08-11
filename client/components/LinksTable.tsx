@@ -8,6 +8,7 @@ import { ifProp } from "styled-tools";
 import getConfig from "next/config";
 import QRCode from "qrcode.react";
 import Link from "next/link";
+
 import differenceInMilliseconds from "date-fns/differenceInMilliseconds";
 import ms from "ms";
 
@@ -26,8 +27,8 @@ import Table from "./Table";
 import ALink from "./ALink";
 import Modal from "./Modal";
 import Icon from "./Icon";
-import { useTranslation } from 'react-i18next';
 
+import { useTranslation } from 'react-i18next';
 const { publicRuntimeConfig } = getConfig();
 
 const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
@@ -269,9 +270,9 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 data-tip
                 data-for={`${index}-tooltip-password`}
                 name="key"
-                stroke={"#bbb"}
+                stroke={theme.icon.activate.main}
                 strokeWidth="2.5"
-                backgroundColor="none"
+                backgroundColor={theme.icon.activate.bg}
               />
             </>
           )}
@@ -283,31 +284,31 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 data-tip
                 data-for={`${index}-tooltip-banned`}
                 name="stop"
-                stroke="#bbb"
+                stroke={theme.icon.activate.main}
                 strokeWidth="2.5"
-                backgroundColor="none"
+                backgroundColor={theme.icon.activate.bg}
               />
             </>
           )}
           {publicRuntimeConfig.SEARCH_ENABLED && link.searchable && (
             <>
               <Tooltip id={`${index}-tooltip-searchable`}>
-                Searchable
+                {t('linksTable.table.chSearchable')}
               </Tooltip>
               <Action
                 as="span"
                 data-tip
                 data-for={`${index}-tooltip-searchable`}
                 name="eye"
-                color={theme.icon.eye.main}
+                color={theme.icon.activate.main}
                 strokeWidth="2"
-                backgroundColor={theme.icon.eye.bg}
+                backgroundColor={theme.icon.activate.bg}
               />
             </>
           )}
           {link.visit_count > 0 && (
             <Link href={`/stats?id=${link.id}`}>
-              <PieALink title="View stats" forButton>
+              <PieALink title={t('linksTable.tooltip.stat')} forButton>
                 <Action
                   name="pieChart"
                   strokeWidth="2.5"
@@ -450,12 +451,12 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                   fontSize={[14, 15]}
                   bold
                 >
-                  Expire in:
+                {t('linksTable.table.expireIn')} :
                 </Text>
                 <Flex as="form">
                   <TextInput
                     {...text("expire_in")}
-                    placeholder="2 minutes/hours/days"
+                    placeholder={t('linksTable.table.phExpireIn')}
                     placeholderSize={[13, 14]}
                     fontSize={[14, 15]}
                     height={[40, 44]}

@@ -9,5 +9,7 @@ module.exports = {
         GOOGLE_ANALYTICS: localEnv && localEnv.GOOGLE_ANALYTICS,
         REPORT_EMAIL: localEnv && localEnv.REPORT_EMAIL,
         SEARCH_ENABLED: localEnv && localEnv.SEARCH_ENABLED,
+        DISALLOW_ANONYMOUS_LINKS: localEnv && localEnv.DISALLOW_ANONYMOUS_LINKS,
+        DISALLOW_REGISTRATION: localEnv && localEnv.DISALLOW_REGISTRATION
     }
 };

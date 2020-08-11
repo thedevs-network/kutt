@@ -18,7 +18,7 @@ const search = () => {
     <AppWrapper>
       <Col flex="1 1 100%" alignItems="center">
         <H2 my={4} light>
-          {t('title')}  {publicRuntimeConfig.SITE_NAME}
+          {t('title')} {publicRuntimeConfig.SITE_NAME}
         </H2>
         <Col width={800} maxWidth="100%" px={[3]} flex="0 0 auto" mt={4}>
           <SearchBar />

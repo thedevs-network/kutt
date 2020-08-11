@@ -47,6 +47,10 @@ const dark = {
             main: 'hsl(200, 35%, 45%)',
             shadow: 'hsla(200, 15%, 60%, 0.12)'
         },
+        activate: {
+            main: 'hsl(0, 0%, 73%)',
+            bg: 'transparent'
+        },
         check: {
             main: 'hsl(144, 50%, 60%)'
         },
@@ -74,10 +78,6 @@ const dark = {
             main: 'hsl(0, 70%, 60%)',
             bg: 'hsl(0,  10%, 30%)',
             disabled: '#c7c7c7'
-        },
-        eye: {
-            main: 'hsl(0, 0%, 73%)',
-            bg: 'transparent'
         },
         send: {
             main: '#aaaaaa'
@@ -148,6 +148,10 @@ const light = {
             main: 'hsl(200, 35%, 45%)',
             shadow: 'hsla(200, 15%, 60%, 0.12)'
         },
+        activate: {
+            main: 'hsl(0, 0%, 73%)',
+            bg: 'transparent'
+        },
         check: {
             main: 'hsl(144, 50%, 60%)'
         },
@@ -175,10 +179,6 @@ const light = {
             main: 'hsl(0, 100%, 69%)',
             bg: 'hsl(0, 100%, 96%)',
             disabled: '#c7c7c7'
-        },
-        eye: {
-            main: 'hsl(0, 0%, 73%)',
-            bg: 'transparent'
         },
         send: {
             main: '#aaaaaa'

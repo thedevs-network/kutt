@@ -122,6 +122,7 @@ const SettingsDomain: FC = () => {
           </tbody>
         </Table>
       )}
+<<<<<<< HEAD
       <Col
         alignItems="flex-start"
         onSubmit={onSubmit}
@@ -170,6 +171,56 @@ const SettingsDomain: FC = () => {
             {loading ? "Setting..." : "Set domain"}
           </Button>
       </Col>
+=======
+        <Col
+          alignItems="flex-start"
+          onSubmit={onSubmit}
+          width={1}
+          as="form"
+          my={[3, 4]}
+        >
+          <Flex width={1} flexDirection={["column", "row"]}>
+            <Col mr={[0, 2]} mb={[3, 0]} flex="0 0 auto">
+              <Text
+                {...label("address")}
+                as="label"
+                mb={[2, 3]}
+                fontSize={[15, 16]}
+                bold
+              >
+              {t('domain.colDomain')}
+              </Text>
+              <TextInput
+                {...text("address")}
+                placeholder="example.com"
+                maxWidth="240px"
+                required
+              />
+            </Col>
+            <Col ml={[0, 2]} flex="0 0 auto">
+              <Text
+                {...label("homepage")}
+                as="label"
+                mb={[2, 3]}
+                fontSize={[15, 16]}
+                bold
+              >
+                {t('domain.colHomePageOpt')}
+              </Text>
+              <TextInput
+                {...text("homepage")}
+                placeholder="Homepage URL"
+                flex="1 1 auto"
+                maxWidth="240px"
+              />
+            </Col>
+          </Flex>
+          <Button type="submit" color="secondary" mt={[24, 3]} disabled={loading}>
+            <Icon name={loading ? "spinner" : "plus"} mr={2} stroke={theme.icon.feature.main} />
+            {loading ? "Setting..." : "Set domain"}
+          </Button>
+        </Col>
+>>>>>>> 347_Add_theme_color_customization
       <Text color={message.color}>{message.text}</Text>
       <Modal id="delete-custom-domain" show={modal} closeHandler={closeModal}>
         <H2 mb={24} textAlign="center" bold>

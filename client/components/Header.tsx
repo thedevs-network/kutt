@@ -5,6 +5,7 @@ import Router from "next/router";
 import useMedia from "use-media";
 import Link from "next/link";
 
+import { DISALLOW_REGISTRATION } from "../consts";
 import { useStoreState } from "../store";
 import styled from "styled-components";
 import { RowCenterV } from "./Layout";
@@ -74,8 +75,14 @@ const Header: FC = () => {
   const login = !isAuthenticated && (
     <Li>
       <Link href="/login">
-        <ALink href="/login" title="login / signup" forButton>
-        <Button height={[32, 40]} color="primary">{t('button.login')+" / "+t('button.signUp')}</Button>
+        <ALink
+          href="/login"
+          title={!DISALLOW_REGISTRATION ? "login / signup" : "login"}
+          forButton
+        >
+          <Button height={[32, 40]}  color="primary">
+            {!DISALLOW_REGISTRATION ? t('button.login')+" / "+t('button.signUp') : t('button.login')}
+          </Button>
         </ALink>
       </Link>
     </Li>

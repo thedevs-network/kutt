@@ -19,4 +19,5 @@ function Eye() {
   );
 }
 
-export default React.memo(Eye); 
+
+export default React.memo(Eye);

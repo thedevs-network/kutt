@@ -1,13 +1,13 @@
 import getConfig from "next/config";
 import React from "react";
 import styled from "styled-components";
+import { Flex } from "reflexbox/styled-components";
 
 import AppWrapper from "../components/AppWrapper";
 import { Col } from "../components/Layout";
 import { useTranslation } from 'react-i18next';
 
 const { publicRuntimeConfig } = getConfig();
-
 const Text = styled.p`
   Text-align: justify;
 `;
@@ -19,7 +19,7 @@ const TermsPage = () => {
     <AppWrapper>
       {/* TODO: better container */}
       <Col width={600} maxWidth="97%" alignItems="flex-start">
-        <h3>{publicRuntimeConfig.SITE_NAME+ t('title')}</h3>
+        <h3>{publicRuntimeConfig.SITE_NAME + t('title')}</h3>
         <Text>
           {t('p1.1')}
           <a href={`https://${publicRuntimeConfig.DEFAULT_DOMAIN}`}>
