@@ -5,7 +5,7 @@ import { Flex, BoxProps } from "reflexbox/styled-components";
 import debounce from 'debounce'
 import getConfig from "next/config";
 
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { prop, ifProp } from "styled-tools";
 import { useStoreActions, useStoreState } from "../store";
 import { Col } from "./Layout";
@@ -14,6 +14,7 @@ import ALink from "./ALink";
 import { TextInput } from "./Input";
 import { NavButton } from "./Button";
 import Icon from "./Icon";
+import { useWindowEvent } from "../hooks";
 
 const { publicRuntimeConfig } = getConfig();
 interface Form {
@@ -54,9 +55,9 @@ const Container = styled(Col) <ContainerProps>`
   @media screen and (min-width: 52em) {
     letter-spacing: 0.1em;
     border-bottom-width: ${prop("bbw", "6px")};
-  }
+  };
+￼ `
 
-￼`
 
 interface LinksContainerProps extends BoxProps {
   selected?: boolean;
@@ -100,7 +101,6 @@ const LinkTarget = styled(ALink)`
 const SearchBar = () => {
   const links = useStoreState(s => s.links);
   const [position, setPosition] = useState<number>(0)
-  const [selected, setSelected] = useState<string>()
   const [change, setChange] = useState<boolean>(false)
   const get = useStoreActions(s => s.links.get);
   const reset = useStoreActions(s => s.links.reset)
@@ -134,22 +134,12 @@ const SearchBar = () => {
 
   //reset (link selected by the first link)
   useEffect(() => {
-    if (links.items[0] === undefined) {
-      setPosition(undefined)
-      setSelected("")
-    } else {
-      setPosition(0)
-      setSelected(links.items[0]?.id)
-    }
+    setPosition(links.items[0] ? 0 : undefined)
     if (formState.values?.search === "" && links.items[0] !== undefined) {
       reset();
     }
   }, [get, links])
 
-  //updates link selected
-  useEffect(() => {
-    position === undefined ? setSelected("") : setSelected(links.items[position]?.id)
-  }, [position, setPosition])
 
   //special key
   const handleUserKeyPress = event => {
@@ -160,7 +150,7 @@ const SearchBar = () => {
           window.location.replace(links.items[position].target);
           break;
         case "ArrowUp":
-          setPosition(position == 0 ? links.items.length - 1 : (position - 1))
+          setPosition(position === 0 ? links.items.length - 1 : (position - 1))
           break;
         case "ArrowDown":
           setPosition((position >= (links.items.length - 1)) ? 0 : (position + 1))
@@ -168,12 +158,7 @@ const SearchBar = () => {
       }
     }
   };
-  useEffect(() => {
-    window.addEventListener('keyup', handleUserKeyPress);
-    return () => {
-      window.removeEventListener('keyup', handleUserKeyPress);
-    };
-  }, [handleUserKeyPress]);
+  useWindowEvent('keyup', handleUserKeyPress);
 
 
   return (
@@ -209,11 +194,11 @@ const SearchBar = () => {
             data-lpignore
             shadow={false}
           />
-          {links.items.map(link => (
+          {links.items.map((link, index) => (
             <LinksContainer
-              selected={link.id === selected}
+              selected={index === position}
               fontSize={[14, 16, 18]}
-              height={(link.id === selected) ? "auto" : [40, 45, 50]}
+              height={(index === position) ? "auto" : [40, 45, 50]}
               minHeight={[40, 45, 50]}
               pr={[15, 20]}
               pl={[15, 20]}
