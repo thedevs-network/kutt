@@ -36,9 +36,13 @@ If you're coming from v1, refer to [MIGRATION.md](MIGRATION.md) to migrate data 
 - Free and open source.
 - Custom domain support.
 - Custom URLs for shortened links
-- Setting password for links.
+- Set password for links.
+- Set description for links.
+- Expiration time for links.
 - Private statistics for shortened URLs.
-- View and manage your links.
+- View, edit, delete and manage your links.
+- Admin account to view, delete and ban links.
+- Ability to disable registration and anonymous link creation for private use.
 - RESTful API.
 
 ## Stack
