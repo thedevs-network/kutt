@@ -23,7 +23,7 @@ import Text, { H2, Span } from "./Text";
 import { useMessage } from "../hooks";
 import Animation from "./Animation";
 import Tooltip from "./Tooltip";
-import Table from "./Table";
+import {Table, Tr, Th, Td} from "./Table";
 import ALink from "./ALink";
 import Modal from "./Modal";
 import Icon from "./Icon";
@@ -31,46 +31,6 @@ import Icon from "./Icon";
 import { useTranslation } from 'react-i18next';
 const { publicRuntimeConfig } = getConfig();
 
-const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
-const Th = styled(Flex)``;
-Th.defaultProps = { as: "th", flexBasis: 0, py: [12, 12, 3], px: [12, 12, 3] };
-
-
-const Td = styled(Flex) <{ withFade?: boolean }>`
-  position: relative;
-  white-space: nowrap;
-
-  ${ifProp(
-  "withFade",
-  `
-      :after {
-        content: "";
-        position: absolute;
-        right: 0;
-        top: 0;
-        height: 100%;
-        width: 16px;
-        background: linear-gradient(to left, ${({ theme }) => theme.table.row}, rgba(255, 255, 255, 0.001));
-      }
-
-      tr:hover &:after {
-        background: linear-gradient(
-          to left,
-          ${({ theme }) => theme.table.rowHover},
-          rgba(255, 255, 255, 0.001)
-        );
-      }
-    `
-)}
-`;
-Td.defaultProps = {
-  as: "td",
-  fontSize: [15, 16],
-  alignItems: "center",
-  flexBasis: 0,
-  py: [12, 12, 3],
-  px: [12, 12, 3]
-};
 
 const EditContent = styled(Col)`
   border-bottom: 1px solid ${({ theme }) => theme.table.rowHover};

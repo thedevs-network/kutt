@@ -10,7 +10,6 @@ export const useToggleDarkMode = () : [Boolean, () => void ]=> {
     const toggle = useContext(context)
     return toggle
 }
-const toggle = () => console.log('test')
 
 export default function ThemeProvider({
     defaultValue = false,//Cookies.get('darkModeEnabled'),

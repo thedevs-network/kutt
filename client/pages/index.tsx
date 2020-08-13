@@ -4,7 +4,7 @@ import Router from "next/router";
 import { DISALLOW_ANONYMOUS_LINKS } from "../consts";
 import NeedToLogin from "../components/NeedToLogin";
 import Extensions from "../components/Extensions";
-import LinksTable from "../components/LinksTable";
+import LinksTable from "../components/Links/Links";
 import AppWrapper from "../components/AppWrapper";
 import Shortener from "../components/Shortener";
 import Features from "../components/Features";
