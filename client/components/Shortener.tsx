@@ -13,7 +13,7 @@ import { removeProtocol } from "../utils";
 import Text, { H1, Span } from "./Text";
 import { Link } from "../store/links";
 import Animation from "./Animation";
-import {useTheme} from "../hooks";
+import { useTheme } from "../hooks";
 import Icon from "./Icon";
 
 import { useTranslation } from 'react-i18next';
@@ -66,7 +66,7 @@ interface Form {
 const defaultDomain = publicRuntimeConfig.DEFAULT_DOMAIN;
 
 const Shortener = () => {
-  const theme = useTheme()   
+  const theme = useTheme()
   const { t } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
   const domains = useStoreState(s => s.settings.domains);

@@ -9,11 +9,11 @@ import { Domain } from "../../store/settings";
 import { errorMessage } from "../../utils";
 import { useMessage } from "../../hooks";
 import Text, { H2, Span } from "../Text";
-import {useTheme} from "../../hooks";
+import { useTheme } from "../../hooks";
 import { TextInput } from "../Input";
 import { Button } from "../Button";
 import { Col } from "../Layout";
-import {Table} from "../Table";
+import { Table } from "../Table";
 import Modal from "../Modal";
 import Icon from "../Icon";
 import { useTranslation } from 'react-i18next';
@@ -28,9 +28,9 @@ const Td = styled(Flex).attrs({ as: "td", py: 12, px: 3 })`
 `;
 
 const SettingsDomain: FC = () => {
-  const theme = useTheme()  
+  const theme = useTheme()
   const { t } = useTranslation("setting");
-  const { t : tcommon } = useTranslation();
+  const { t: tcommon } = useTranslation();
   const { saveDomain, deleteDomain } = useStoreActions(s => s.settings);
   const [domainToDelete, setDomainToDelete] = useState<Domain>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -77,12 +77,12 @@ const SettingsDomain: FC = () => {
         {t('domain.title')}
       </H2>
       <Text mb={3}>
-      {t('domain.description1')}
+        {t('domain.description1')}
         <b>{publicRuntimeConfig.DEFAULT_DOMAIN}{t('domain.description2')}</b>{t('domain.description3')}
         <b>{t('domain.description4')}</b>
       </Text>
       <Text mb={4}>
-      {t('domain.description5')}<b>192.64.116.170</b> {t('domain.description6')}
+        {t('domain.description5')}<b>192.64.116.170</b> {t('domain.description6')}
       </Text>
       {domains.length > 0 && (
         <Table my={3} scrollWidth="550px">
@@ -122,61 +122,61 @@ const SettingsDomain: FC = () => {
           </tbody>
         </Table>
       )}
-        <Col
-          alignItems="flex-start"
-          onSubmit={onSubmit}
-          width={1}
-          as="form"
-          my={[3, 4]}
-        >
-          <Flex width={1} flexDirection={["column", "row"]}>
-            <Col mr={[0, 2]} mb={[3, 0]} flex="0 0 auto">
-              <Text
-                {...label("address")}
-                as="label"
-                mb={[2, 3]}
-                fontSize={[15, 16]}
-                bold
-              >
+      <Col
+        alignItems="flex-start"
+        onSubmit={onSubmit}
+        width={1}
+        as="form"
+        my={[3, 4]}
+      >
+        <Flex width={1} flexDirection={["column", "row"]}>
+          <Col mr={[0, 2]} mb={[3, 0]} flex="0 0 auto">
+            <Text
+              {...label("address")}
+              as="label"
+              mb={[2, 3]}
+              fontSize={[15, 16]}
+              bold
+            >
               {t('domain.colDomain')}
-              </Text>
-              <TextInput
-                {...text("address")}
-                placeholder="example.com"
-                maxWidth="240px"
-                required
-              />
-            </Col>
-            <Col ml={[0, 2]} flex="0 0 auto">
-              <Text
-                {...label("homepage")}
-                as="label"
-                mb={[2, 3]}
-                fontSize={[15, 16]}
-                bold
-              >
-                {t('domain.colHomePageOpt')}
-              </Text>
-              <TextInput
-                {...text("homepage")}
-                placeholder="Homepage URL"
-                flex="1 1 auto"
-                maxWidth="240px"
-              />
-            </Col>
-          </Flex>
-          <Button type="submit" color="secondary" mt={[24, 3]} disabled={loading}>
-            <Icon name={loading ? "spinner" : "plus"} mr={2} stroke={theme.icon.feature.main} />
-            {loading ? "Setting..." : "Set domain"}
-          </Button>
-        </Col>
+            </Text>
+            <TextInput
+              {...text("address")}
+              placeholder="example.com"
+              maxWidth="240px"
+              required
+            />
+          </Col>
+          <Col ml={[0, 2]} flex="0 0 auto">
+            <Text
+              {...label("homepage")}
+              as="label"
+              mb={[2, 3]}
+              fontSize={[15, 16]}
+              bold
+            >
+              {t('domain.colHomePageOpt')}
+            </Text>
+            <TextInput
+              {...text("homepage")}
+              placeholder="Homepage URL"
+              flex="1 1 auto"
+              maxWidth="240px"
+            />
+          </Col>
+        </Flex>
+        <Button type="submit" color="secondary" mt={[24, 3]} disabled={loading}>
+          <Icon name={loading ? "spinner" : "plus"} mr={2} stroke={theme.icon.feature.main} />
+          {loading ? "Setting..." : "Set domain"}
+        </Button>
+      </Col>
       <Text color={message.color}>{message.text}</Text>
       <Modal id="delete-custom-domain" show={modal} closeHandler={closeModal}>
         <H2 mb={24} textAlign="center" bold>
-        {t('domain.modal.title')}
+          {t('domain.modal.title')}
         </H2>
         <Text textAlign="center">
-        {t('domain.modal.description')}
+          {t('domain.modal.description')}
           <Span bold>"{domainToDelete && domainToDelete.address}"</Span>?
         </Text>
         <Flex justifyContent="center" mt={44}>
@@ -185,16 +185,16 @@ const SettingsDomain: FC = () => {
               <Icon name="spinner" size={20} stroke={theme.component.spinner} />
             </>
           ) : (
-            <>
-              <Button color="default" mr={3} onClick={closeModal}>
-              {tcommon('button.cancel')}
-              </Button>
-              <Button color="warning" ml={3} onClick={onDelete}>
-                <Icon name="trash" stroke="white" mr={2} />
-                {tcommon('button.delete')}
-              </Button>
-            </>
-          )}
+              <>
+                <Button color="default" mr={3} onClick={closeModal}>
+                  {tcommon('button.cancel')}
+                </Button>
+                <Button color="warning" ml={3} onClick={onDelete}>
+                  <Icon name="trash" stroke="white" mr={2} />
+                  {tcommon('button.delete')}
+                </Button>
+              </>
+            )}
         </Flex>
       </Modal>
     </Col>
