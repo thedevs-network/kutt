@@ -1,7 +1,6 @@
 
 import React from "react";
 import { Flex } from "reflexbox/styled-components";
-import styled from "styled-components";
 
 import { useTheme } from "../../hooks";
 import {  useStoreState } from "../../store";
@@ -10,10 +9,10 @@ import Icon from "../Icon";
 import {Th} from "../Table";
 
 type Props = {
-  limit: string,
-  skip: string,
-  onLimitChange: (limit: string) => void,
-  onSkipChange: (skip: string) => void
+  limit: number,
+  skip: number,
+  onLimitChange: (limit: number) => void,
+  onSkipChange: (skip: number) => void
 }
   
 const Nav = ({
@@ -25,7 +24,7 @@ const Nav = ({
   const theme = useTheme()
   const links = useStoreState(s => s.links);
   const onNavChange = (nextPage: number) => () => {
-    onSkipChange((parseInt(skip, 10) + nextPage).toString())
+    onSkipChange(skip + nextPage)
   };
   
   return  (
@@ -36,13 +35,13 @@ const Nav = ({
       flexShrink={1}
     >
       <Flex as="ul" m={0} p={0} style={{ listStyle: "none" }}>
-        {["10", "25", "50"].map(count => (
+        {[10, 25, 50].map(count => (
           <Flex key={count} ml={[10, 12]}>
             <NavButton
               disabled={limit === count}
               onClick={() => {
                 onLimitChange(count);
-                onSkipChange("0");
+                onSkipChange(0);
               }}
             >
               {count}
@@ -58,17 +57,15 @@ const Nav = ({
       />
       <Flex>
         <NavButton
-          onClick={onNavChange(-parseInt(limit, 10))}
-          disabled={skip === "0"}
+          onClick={onNavChange(-limit)}
+          disabled={skip === 0}
           px={2}
         >
           <Icon name="chevronLeft" size={15} />
         </NavButton>
         <NavButton
-          onClick={onNavChange(parseInt(limit, 10))}
-          disabled={
-            parseInt(skip) + parseInt(limit, 10) > links.total
-          }
+          onClick={onNavChange(limit)}
+          disabled={skip + limit > links.total}
           ml={12}
           px={2}
         >

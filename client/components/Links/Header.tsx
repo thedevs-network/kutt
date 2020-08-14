@@ -8,12 +8,12 @@ import { useTranslation } from 'react-i18next';
 import {Tr, Th} from "../Table";
 
 type Props = {
-  limit: string;
-  onLimitChange: (limit: string) => void;
-  skip: string;
-  onSkipChange: (skip: string) => void;
-  text: any;//TODO check
-  onSearchSubmit: (search: string) => void;
+  limit: number;
+  onLimitChange: (limit: number) => void;
+  skip: number;
+  onSkipChange: (skip: number) => void;
+  search: any;
+  onSearchChange: (search: string) => void;
   all: boolean;
   onAllChange: (all: boolean) => void;
 }
@@ -23,28 +23,23 @@ const Header = ({
   onLimitChange,
   skip,
   onSkipChange,
-  text,
-  onSearchSubmit,
+  search,
+  onSearchChange,
   all,
-  onAllChange
+  onAllChange,
+  ...props
 }: Props) => {
   const isAdmin = useStoreState(s => s.auth.isAdmin);
   const { t } = useTranslation();
-  let search: string = ""
-   
 
-
-  const onSubmit = e => {
-    e.preventDefault();
-    onSearchSubmit(search);
-  };
   return (
     <thead>
       <Tr justifyContent="space-between">
         <Th flexGrow={1} flexShrink={1}>
-          <Flex as="form" onSubmit={onSubmit}>
+          <Flex>
             <TextInput
-              {...text("search")}       
+              value={search}
+              onChange={onSearchChange}
               placeholder={t('linksTable.phSearch') + "..."}
               height={[30, 32]}
               placeholderSize={[13, 13, 13, 13]}

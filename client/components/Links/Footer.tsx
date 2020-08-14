@@ -6,10 +6,10 @@ import { Flex } from "reflexbox/styled-components";
 
 const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
 type Props = {
-  limit: string;
-  onLimitChange: (limit: string) => void;
-  skip: string;
-  onSkipChange: (skip: string) => void;
+  limit: number;
+  onLimitChange: (limit: number) => void;
+  skip: number;
+  onSkipChange: (skip: number) => void;
 }
 
 const Footer = ({

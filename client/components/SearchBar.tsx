@@ -102,25 +102,29 @@ const SearchBar = () => {
   const { t } = useTranslation("search");
   const links = useStoreState(s => s.links);
   const [position, setPosition] = useState<number>(0)
-  const [change, setChange] = useState<boolean>(false)
   const get = useStoreActions(s => s.links.get);
   const reset = useStoreActions(s => s.links.reset)
   const [formState, { text }] = useFormState<Form>(
     FORM_PARAMS,
     FORM_OPTIONS
   );
-
-  const debouncedGet = useCallback(debounce(get, 300), [get]);
+  const getLinks = useCallback((formValues) =>
+  get({
+    ...formValues,
+    skip: parseInt(formValues.skip, 10),
+    limit: parseInt(formValues.limit, 10)
+  })
+, [get])
+  const debouncedGet = useCallback(debounce(getLinks, 300), [getLinks]);
 
   let options = formState.values;
 
   const onNavChange = (nextPage: number) => () => {
     formState.setField("skip", (parseInt(options.skip) + nextPage).toString());
-    setChange(true)
   };
   // const 
   useEffect(() => {
-    get(options)
+    getLinks(options)
   }, [options.skip]);
 
   useEffect(() => {

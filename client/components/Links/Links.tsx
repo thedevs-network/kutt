@@ -24,31 +24,39 @@ const Links: FC = () => {
   const { t } = useTranslation();
   const { get } = useStoreActions(s => s.links);
   const [tableMessage, setTableMessage] = useState("No links to show.");
-  const [formState, { label, checkbox, text }] = useFormState<Form>(// TOCHECk utile de garder ça ?
-    { skip: "0", limit: "10", all: false, searchable: false },
+  const [formState, { text }] = useFormState<Form>(
+    { skip: '0', limit: '10', all: false, searchable: false },
     { withIds: true }
   );
 
-  const onLimitChange = useCallback((limit: string) => formState.setField("limit", limit), [formState])
-  const onSkipChange = useCallback((skip: string) => formState.setField("skip", skip), [formState])
-  const onSearchSubmit = useCallback((search: string) => formState.setField("search", search), [formState])
+  const getLinks = useCallback((formValues) =>
+    get({
+      ...formValues,
+      skip: parseInt(formValues.skip, 10),
+      limit: parseInt(formValues.limit, 10)
+    })
+  , [get])
+  const onLimitChange = useCallback((limit: number) => formState.setField("limit", `${limit}`), [formState])
+  const onSkipChange = useCallback((skip: number) => formState.setField("skip", `${skip}`), [formState])
   const onAllChange = useCallback((all: boolean) => formState.setField("all", all), [formState])
  
-  const onRemove = useCallback(() => get(formState.values), [formState])
+  const onRemove = useCallback(() => getLinks(formState.values), [formState])
 
-  const debouncedGet = useCallback(debounce(get, 500), [get]);
+  const debouncedGet = useCallback(debounce(getLinks, 500), [getLinks]);
+
+  // dumb component should be agnostic from form library
 
   useEffect(() => {
     debouncedGet(formState.values)
   }, [formState.values.search]);
 
   useEffect(() => {
-    get(formState.values).catch(err =>
+    getLinks(formState.values).catch(err =>
       setTableMessage(err?.response?.data?.error || "An error occurred.")
     );
   }, [formState.values.all, formState.values.skip, formState.values.limit ]);
 
-
+  const searchProps = text("search")
   return (
     <Col width={1200} maxWidth="95%" margin="40px 0 120px" my={6}>
       <H2 mb={3} light>
@@ -56,21 +64,21 @@ const Links: FC = () => {
       </H2>
       <Table scrollWidth="800px">
         <Header
+          limit={parseInt(formState.values.limit, 10)}
           onLimitChange={onLimitChange}
-          limit={formState.values.limit}
+          skip={parseInt(formState.values.skip, 10)}
           onSkipChange={onSkipChange}
-          skip={formState.values.skip}
-          onSearchSubmit={onSearchSubmit}
-          text={text}// TOCHECK 
-          onAllChange={onAllChange}
+          search={searchProps.value} 
+          onSearchChange={searchProps.onChange}
           all={formState.values.all}
+          onAllChange={onAllChange}
            />
         <LinksTable onRemove={onRemove} tableMessage={tableMessage} />
         <Footer
           onLimitChange={onLimitChange}
-          limit={formState.values.limit}
+          limit={parseInt(formState.values.limit, 10)}
           onSkipChange={onSkipChange}
-          skip={formState.values.skip}/>
+          skip={parseInt(formState.values.skip, 10)}/>
       </Table>
     </Col>
   );
