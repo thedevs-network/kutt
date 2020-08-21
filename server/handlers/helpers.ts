@@ -1,6 +1,6 @@
 import { Handler, ErrorRequestHandler } from "express";
 import { validationResult } from "express-validator";
-import Raven from "raven";
+import * as Sentry from "@sentry/node";
 import signale from "signale";
 
 import { CustomError } from "../utils";
@@ -21,10 +21,8 @@ export const error: ErrorRequestHandler = (error, req, res, next) => {
     return res.status(error.statusCode || 500).json({ error: error.message });
   }
 
-  if (env.RAVEN_DSN) {
-    Raven.captureException(error, {
-      user: { email: req.user && req.user.email }
-    });
+  if (env.SENTRY_PRIVATE_DSN) {
+    Sentry.captureException(error);
   }
 
   return res.status(500).json({ error: "An error occurred." });
