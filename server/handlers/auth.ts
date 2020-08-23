@@ -294,3 +294,7 @@ export const changeEmail: Handler = async (req, res, next) => {
   }
   return next();
 };
+
+export const bypass: Handler = async (req, res, next) => {
+  return next();
+};
