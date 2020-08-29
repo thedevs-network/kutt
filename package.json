@@ -35,6 +35,9 @@
   },
   "homepage": "https://github.com/TheDevs-Network/kutt#readme",
   "dependencies": {
+    "@sentry/apm": "^5.21.1",
+    "@sentry/node": "^5.21.1",
+    "@sentry/react": "^5.21.1",
     "axios": "^0.19.1",
     "babel-plugin-inline-react-svg": "^1.1.0",
     "bcryptjs": "^2.4.3",
@@ -74,7 +77,6 @@
     "prop-types": "^15.7.2",
     "qrcode.react": "^0.8.0",
     "query-string": "^6.10.1",
-    "raven": "^2.6.4",
     "react": "^16.12.0",
     "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^16.12.0",
