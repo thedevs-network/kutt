@@ -7,16 +7,16 @@ import cookie from "js-cookie";
 import Head from "next/head";
 import React from "react";
 
-import { initGA, logPageView , initSentry } from "../helpers/analytics";
+import { initGA, logPageView } from "../helpers/analytics";
 import { initializeStore } from "../store";
 import { TokenPayload } from "../types";
+
+import  i18n  from '../../i18n'
 
 const isProd = process.env.NODE_ENV === "production";
 const { publicRuntimeConfig } = getConfig();
 
-if (isProd) {
-  initSentry();
-};
+
 
 // TODO: types
 class MyApp extends App<any> {
@@ -74,6 +74,7 @@ class MyApp extends App<any> {
 
   render() {
     const { Component, pageProps } = this.props;
+    const { i18n, initialI18nStore, initialLanguage } = pageProps || {};
 
     return (
       <>
@@ -83,11 +84,10 @@ class MyApp extends App<any> {
           </title>
         </Head>
         <StoreProvider store={this.store}>
-          <Component {...pageProps} />
+            <Component {...pageProps} />
         </StoreProvider>
       </>
     );
   }
 }
-
-export default MyApp;
+export default i18n.appWithTranslation(MyApp);

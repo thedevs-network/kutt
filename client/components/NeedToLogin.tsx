@@ -6,6 +6,7 @@ import { Flex } from "reflexbox/styled-components";
 import { Button } from "./Button";
 import { fadeIn } from "../helpers/animations";
 import { Col } from "./Layout";
+import { useTranslation } from 'react-i18next';
 
 const Wrapper = styled(Flex).attrs({
   width: 1200,
@@ -55,24 +56,27 @@ const Image = styled.img`
   }
 `;
 
-const NeedToLogin = () => (
-  <Wrapper>
-    <Col
-      alignItems={["center", "center", "flex-start"]}
-      mt={-32}
-      mb={[32, 32, 0]}
-    >
-      <Title>
-        Manage links, set custom <b>domains</b> and view <b>stats</b>.
+const NeedToLogin = () => {
+  const { t } = useTranslation();
+  return (
+    <Wrapper>
+      <Col
+        alignItems={["center", "center", "flex-start"]}
+        mt={-32}
+        mb={[32, 32, 0]}
+      >
+        <Title>
+          {t('needLogin.title1')}<b>{t('needLogin.title2')}</b>{t('needLogin.title3')}<b>{t('needLogin.title4')}</b>.
       </Title>
-      <Link href="/login">
-        <a href="/login" title="login / signup">
-          <Button>Login / Signup</Button>
-        </a>
-      </Link>
-    </Col>
-    <Image src="/images/callout.png" />
-  </Wrapper>
-);
+        <Link href="/login">
+          <a href="/login" title="login / signup">
+            <Button>{t('button.login')+" / "+('button.signUp')}</Button>
+          </a>
+        </Link>
+      </Col>
+      <Image src="/images/callout.png" />
+    </Wrapper>
+  );
+}
 
 export default NeedToLogin;

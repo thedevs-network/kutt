@@ -1,0 +1,114 @@
+{
+    "language": {
+        "fr": "French",
+        "en": "English"
+    },
+    "header": {
+        "gitHub": "GitHub",
+        "report": "Report",
+        "settings": "Settings"
+    },
+    "shortener": {
+        "title": "Kutt your links ",
+        "title2": "shorter",
+        "phUrl": "Paste your long URL",
+        "advanced": {
+            "chAdvanced": "Show advanced options",
+            "domain": "Domain",
+            "phCustomAddress": "Custom address",
+            "password": "Password",
+            "description": "Description",
+            "chSearchable": "Is searchable",
+            "expireIn": "Expire in ",
+            "phExpireIn": "2 minutes/hours/days"
+        }
+
+    },
+    "linksTable": {
+        "title": "Recent shortened links",
+        "phSearch": "Search",
+        "cBoxAllLink": "All links",
+        "table": {
+            "originalURL": "Original URL",
+            "description": "Description",
+            "created": "Created",
+            "shortURL": "Short URL",
+            "views": "Views",
+            "target": "Target",
+            "customAddress": "Custom address",
+            "chSearchable": "Is searchable",
+            "expireIn": "Expire in ",
+            "phExpireIn": "2 minutes/hours/days"
+        },
+        "tooltip": {
+            "passwordProtected": "Password protected",
+            "banned": "Banned",
+            "stat": "View stats"
+        },
+        "banModal": {
+            "title": "Ban link?",
+            "description": " Are you sure do you want to ban the link "
+        },
+        "deleteModal": {
+            "title": "Delete link?",
+            "description": "Are you sure do you want to delete the link "
+        }
+
+    },
+    "needLogin": {
+        "title1": "Manage links, set custom ",
+        "title2": "domains ",
+        "title3": "and view ",
+        "title4": "stats"
+    },
+    "feature": {
+        "title": "Kutting edge features.",
+        "f1": {
+            "title": "Managing links",
+            "description": "Create, protect and delete your links and monitor them with detailed statistics."
+        },
+        "f2": {
+            "title": "Custom domain",
+            "description": "Use custom domains for your links. Add or remove them for free."
+        },
+        "f3": {
+            "title": "API",
+            "description": "Use the provided API to create, delete and get URLs from anywhere."
+        },
+        "f4": {
+            "title": "Free & open source",
+            "description": "Completely open source and free. You can host it on your own server."
+        }
+    },
+    "extensions": {
+        "title": "Browser extensions.",
+        "btnChrome": "Download for Chrome",
+        "btnFirefox": "Download for Firefox"
+
+    },
+
+    "button": {
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "update": "Update",
+        "updating": "Updating",
+        "login": "Login",
+        "signUp": "Sign up",
+        "logout": "Log out",
+        "backHome": "Back to homepage",
+        "backSignUp": "Back to signup",
+        "ban": "Ban"
+    },
+    "footer": {
+        "made": "Made with love by",
+        "theDevs": "The Devs.",
+        "gitHub": "GitHub",
+        "termsOfService": "Terms of Service",
+        "report": "Report Abuse",
+        "contact": "Contact us."
+
+    },
+    "error": {
+        "404": "404 | Link could not be found."
+    }
+}

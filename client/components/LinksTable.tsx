@@ -27,6 +27,7 @@ import ALink from "./ALink";
 import Modal from "./Modal";
 import Icon from "./Icon";
 
+import { useTranslation } from 'react-i18next';
 const { publicRuntimeConfig } = getConfig();
 
 const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
@@ -119,6 +120,7 @@ interface EditForm {
 }
 
 const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
+  const { t } = useTranslation();
   const isAdmin = useStoreState(s => s.auth.isAdmin);
   const ban = useStoreActions(s => s.links.ban);
   const edit = useStoreActions(s => s.links.edit);
@@ -249,7 +251,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
           {link.password && (
             <>
               <Tooltip id={`${index}-tooltip-password`}>
-                Password protected
+                {t('linksTable.tooltip.passwordProtected')}
               </Tooltip>
               <Action
                 as="span"
@@ -264,7 +266,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
           )}
           {link.banned && (
             <>
-              <Tooltip id={`${index}-tooltip-banned`}>Banned</Tooltip>
+              <Tooltip id={`${index}-tooltip-banned`}>{t('linksTable.tooltip.banned')}</Tooltip>
               <Action
                 as="span"
                 data-tip
@@ -278,7 +280,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
           )}
           {link.visit_count > 0 && (
             <Link href={`/stats?id=${link.id}`}>
-              <ALink title="View stats" forButton>
+              <ALink title={t('linksTable.tooltip.stat')} forButton>
                 <Action
                   name="pieChart"
                   stroke={Colors.PieIcon}
@@ -339,12 +341,12 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                   fontSize={[14, 15]}
                   bold
                 >
-                  Target:
+                  {t('linksTable.table.target')}:
                 </Text>
                 <Flex as="form">
                   <TextInput
                     {...text("target")}
-                    placeholder="Target..."
+                    placeholder={t('linksTable.table.target')+"..."}
                     placeholderSize={[13, 14]}
                     fontSize={[14, 15]}
                     height={[40, 44]}
@@ -368,7 +370,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 <Flex as="form">
                   <TextInput
                     {...text("address")}
-                    placeholder="Custom address..."
+                    placeholder={t('linksTable.table.customAddress')+"..."}
                     placeholderSize={[13, 14]}
                     fontSize={[14, 15]}
                     height={[40, 44]}
@@ -389,12 +391,12 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                   fontSize={[14, 15]}
                   bold
                 >
-                  Description:
+                  {t('linksTable.table.description')}:
                 </Text>
                 <Flex as="form">
                   <TextInput
                     {...text("description")}
-                    placeholder="description..."
+                    placeholder={t('linksTable.table.description')+"..."}
                     placeholderSize={[13, 14]}
                     fontSize={[14, 15]}
                     height={[40, 44]}
@@ -413,12 +415,12 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                   fontSize={[14, 15]}
                   bold
                 >
-                  Expire in:
+                {t('linksTable.table.expireIn')} :
                 </Text>
                 <Flex as="form">
                   <TextInput
                     {...text("expire_in")}
-                    placeholder="2 minutes/hours/days"
+                    placeholder={t('linksTable.table.phExpireIn')}
                     placeholderSize={[13, 14]}
                     fontSize={[14, 15]}
                     height={[40, 44]}
@@ -469,10 +471,10 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
       >
         <>
           <H2 mb={24} textAlign="center" bold>
-            Ban link?
+            {t('linksTable.banModal.title')}
           </H2>
           <Text mb={24} textAlign="center">
-            Are you sure do you want to ban the link{" "}
+            {t('linksTable.banModal.description')}
             <Span bold>"{removeProtocol(link.link)}"</Span>?
           </Text>
           <RowCenter>
@@ -493,11 +495,11 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
             ) : (
               <>
                 <Button color="gray" mr={3} onClick={() => setBanModal(false)}>
-                  Cancel
+                {t('button.cancel')}
                 </Button>
                 <Button color="red" ml={3} onClick={onBan}>
                   <Icon name="stop" stroke="white" mr={2} />
-                  Ban
+                  {t('button.ban')}
                 </Button>
               </>
             )}
@@ -516,6 +518,7 @@ interface Form {
 }
 
 const LinksTable: FC = () => {
+  const { t } = useTranslation();
   const isAdmin = useStoreState(s => s.auth.isAdmin);
   const links = useStoreState(s => s.links);
   const { get, remove } = useStoreActions(s => s.links);
@@ -611,7 +614,7 @@ const LinksTable: FC = () => {
   return (
     <Col width={1200} maxWidth="95%" margin="40px 0 120px" my={6}>
       <H2 mb={3} light>
-        Recent shortened links.
+        {t('linksTable.title')}
       </H2>
       <Table scrollWidth="800px">
         <thead>
@@ -620,7 +623,7 @@ const LinksTable: FC = () => {
               <Flex as="form" onSubmit={onSubmit}>
                 <TextInput
                   {...text("search")}
-                  placeholder="Search..."
+                  placeholder={t('linksTable.phSearch') + "..."}
                   height={[30, 32]}
                   placeholderSize={[13, 13, 13, 13]}
                   fontSize={[14]}
@@ -635,7 +638,7 @@ const LinksTable: FC = () => {
                   <Checkbox
                     {...label("all")}
                     {...checkbox("all")}
-                    label="All links"
+                    label={t('linksTable.cBoxAllLink')}
                     ml={3}
                     fontSize={[14, 15]}
                     width={[15, 16]}
@@ -647,10 +650,10 @@ const LinksTable: FC = () => {
             {Nav}
           </Tr>
           <Tr>
-            <Th {...ogLinkFlex}>Original URL</Th>
-            <Th {...createdFlex}>Created</Th>
-            <Th {...shortLinkFlex}>Short URL</Th>
-            <Th {...viewsFlex}>Views</Th>
+            <Th {...ogLinkFlex}>{t('linksTable.table.originalURL')}</Th>
+            <Th {...createdFlex}>{t('linksTable.table.created')}</Th>
+            <Th {...shortLinkFlex}>{t('linksTable.table.shortURL')} </Th>
+            <Th {...viewsFlex}>{t('linksTable.table.views')}</Th>
             <Th {...actionsFlex}></Th>
           </Tr>
         </thead>
@@ -688,10 +691,10 @@ const LinksTable: FC = () => {
         {linkToDelete && (
           <>
             <H2 mb={24} textAlign="center" bold>
-              Delete link?
+              {t('linksTable.deleteModal.title')}
             </H2>
             <Text textAlign="center">
-              Are you sure do you want to delete the link{" "}
+              {t('linksTable.deleteModal.description')}
               <Span bold>"{removeProtocol(linkToDelete.link)}"</Span>?
             </Text>
             <Flex justifyContent="center" mt={44}>

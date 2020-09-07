@@ -1,0 +1,51 @@
+{
+    "title": "Bienvenue,",
+    "domain": {
+        "title": "Domaine personnalisé",
+        "description1": "Vous pouvez définir un domaine personnalisé pour vos URL raccourcis. Ainsi, au lieu de ",
+        "description2": "/shorturl ",
+        "description3": "vous pouvez avoir ",
+        "description4": "example.com/shorturl.",
+        "description5": "Pointez votre enregistrement de domaine vers ",
+        "description6": " puis ajoutez le domaine via le formulaire ci-dessous :",
+        "colDomain": "Domaine",
+        "colHomePage": "Page d'accueil",
+        "colHomePageOpt": "Page d'accueil (Optionnel)",
+        "modal": {
+            "title": "Supprimer le domaine?",
+            "description": "Êtes-vous sûr de vouloir supprimer le domaine"
+        }
+    },
+    "password": {
+        "title": "Changer de mot de passe",
+        "description": "Entrez un nouveau mot de passe pour changer votre mot de passe actuel.",
+        "newPassword": "Nouveau mot de passe",
+        "error": {
+            "updatePassword": "Impossible de mettre à jour le mot de passe.",
+            "passwordLenght": "Le mot de passe doit comporter au moins 8 caractères."
+        }
+    },
+    "api": {
+        "title": "API",
+        "description1": "En plus de ce site web, vous pouvez utiliser l'API pour créer, supprimer et obtenir des URL abrégés. Si vous n'êtes pas familier avec l'API, ne générez pas la clé. NE PAS partager cette clé sur le côté client de votre site web.",
+        "description2": " Lire la docs de l'API.",
+        "button": {
+            "generateKey": "Générer une clé",
+            "regenerateKey": "Régénérer la clé",
+            "generating": "Génération..."
+        }
+    },
+    "account": {
+        "title": "Supprimer le compte",
+        "description": "Supprimez votre compte de ",
+        "password": "Mot de passe",
+        "modal": {
+            "title": "Supprimer le compte?",
+            "description1": "Toutes vos données, y compris vos ",
+            "description2": "LIENS ",
+            "description3": "et vos ",
+            "description4": "STATISTIQUES ",
+            "description5": ", seront supprimées."
+        }
+    }
+}

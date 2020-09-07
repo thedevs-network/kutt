@@ -1,0 +1,7 @@
+{
+    "title": "Report abuse",
+    "description": "Report abuses, malware and phishing links to the below email address or use the form. We will take actions shortly.",
+    "urlMalware": "URL containing malware/scam:",
+    "exemple": "example",
+    "sendReport": "Send report"
+}

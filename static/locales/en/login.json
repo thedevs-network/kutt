@@ -1,0 +1,12 @@
+{
+    "email": "Email address",
+    "password": "Password",
+    "password2": " (min chars: 8):",
+    "forgotPassword": "Forgot your password?",
+    "verificationEmail": "A verification email has been sent to ",
+    "error": {
+        "emailEmpty": "Email address must not be empty.",
+        "emailValid": "Email address is not valid.",
+        "passwordLenght": "Password must be at least 8 chars long."
+    }
+}

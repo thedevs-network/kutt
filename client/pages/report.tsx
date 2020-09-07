@@ -12,11 +12,13 @@ import Icon from "../components/Icon";
 import { useMessage } from "../hooks";
 import { APIv2 } from "../consts";
 
+import { useTranslation } from 'react-i18next';
 import getConfig from "next/config";
 
 const { publicRuntimeConfig } = getConfig();
 
 const ReportPage = () => {
+  const { t } = useTranslation("report");
   const [formState, { text }] = useFormState<{ url: string }>();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useMessage(5000);
@@ -40,17 +42,16 @@ const ReportPage = () => {
     <AppWrapper>
       <Col width={600} maxWidth="97%" alignItems="flex-start">
         <H2 my={3} bold>
-          Report abuse
+          {t('title')} 
         </H2>
         <Text mb={3}>
-          Report abuses, malware and phishing links to the below email address
-          or use the form. We will take actions shortly.
+          {t('description')}
         </Text>
         <Text mb={4}>
           {(publicRuntimeConfig.REPORT_EMAIL || "").replace("@", "[at]")}
         </Text>
         <Text mb={3}>
-          <Span bold>URL containing malware/scam:</Span>
+          <Span bold>{t('urlMalware')}</Span>
         </Text>
         <Flex
           as="form"
@@ -61,7 +62,7 @@ const ReportPage = () => {
         >
           <TextInput
             {...text("url")}
-            placeholder={`${publicRuntimeConfig.DEFAULT_DOMAIN}/example`}
+            placeholder={publicRuntimeConfig.DEFAULT_DOMAIN + "/"+t("exemple")}
             height={[44, 54]}
             width={[1, 1 / 2]}
             flex="0 0 auto"
@@ -70,7 +71,7 @@ const ReportPage = () => {
           />
           <Button type="submit" flex="0 0 auto" height={[40, 44]} mt={[3, 0]}>
             {loading && <Icon name={"spinner"} stroke="white" mr={2} />}
-            Send report
+            {t('sendReport')}
           </Button>
         </Flex>
         <Text fontSize={14} mt={3} color={message.color}>

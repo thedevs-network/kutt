@@ -1,0 +1,29 @@
+{
+    "title": "Statistiques pour: ",
+    "totalClick": "Total des clics: ",
+    "trackedClicks": " clics au cours ",
+    "lastUpdate": "Dernière mise à jour à ",
+    "chart": {
+        "referrals": "Referrals.",
+        "browsers": "Navigateur.",
+        "country": "Pays.",
+        "os": "OS."
+    },
+    "time": {
+        "all": "Tout temps",
+        "month": "Mois",
+        "week": "Semaine",
+        "day": "Jour"
+    },
+    "timeClick": {
+        "allTime": "de toute la période",
+        "lastMonth": "du dernier mois",
+        "lastWeek": "de la dernière semaine",
+        "lastDay": "du dernier jour"
+    },
+    "error": {
+        "needLogin": "Vous devez vous connecter pour consulter les statistiques.",
+        "couldntStats": "Impossible d'obtenir les statistiques."
+    }
+
+}

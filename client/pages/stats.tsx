@@ -17,12 +17,15 @@ import { APIv2, Colors } from "../consts";
 import { useStoreState } from "../store";
 import ALink from "../components/ALink";
 import Icon from "../components/Icon";
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   id?: string;
 }
 
 const StatsPage: NextPage<Props> = ({ id }) => {
+  const { t } = useTranslation("stats");
+  const { t: tcommon } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -52,7 +55,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
     errorMessage = (
       <Flex mt={3}>
         <Icon name="x" size={32} mr={3} stroke={Colors.TrashIcon} />
-        <H2>You need to login to view stats.</H2>
+        <H2>{t('error.needLogin')}</H2>
       </Flex>
     );
   }
@@ -61,7 +64,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
     errorMessage = (
       <Flex mt={3}>
         <Icon name="x" size={32} mr={3} stroke={Colors.TrashIcon} />
-        <H2>Couldn't get stats.</H2>
+        <H2>{t('error.couldntStats')}</H2>
       </Flex>
     );
   }
@@ -69,9 +72,6 @@ const StatsPage: NextPage<Props> = ({ id }) => {
   const loader = loading && <PageLoading />;
 
   const total = stats && stats.views.reduce((sum, view) => sum + view, 0);
-  const periodText = period.includes("last")
-    ? `the last ${period.replace("last", "").toLocaleLowerCase()}`
-    : "all time";
 
   return (
     <AppWrapper>
@@ -81,7 +81,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
           <Col width={1200} maxWidth="95%" alignItems="stretch" m="40px 0">
             <Flex justifyContent="space-between" alignItems="center" mb={3}>
               <H1 fontSize={[18, 20, 24]} light>
-                Stats for:{" "}
+                {t('title')}
                 <ALink href={data.link} title="Short link">
                   {removeProtocol(data.link)}
                 </ALink>
@@ -89,9 +89,9 @@ const StatsPage: NextPage<Props> = ({ id }) => {
               <Text fontSize={[13, 14]} textAlign="right">
                 {data.target.length > 80
                   ? `${data.target
-                      .split("")
-                      .slice(0, 80)
-                      .join("")}...`
+                    .split("")
+                    .slice(0, 80)
+                    .join("")}...`
                   : data.target}
               </Text>
             </Flex>
@@ -111,14 +111,14 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                 px={[3, 4]}
               >
                 <H4>
-                  Total clicks: <Span bold>{data.total}</Span>
+                  {t('totalClick')}<Span bold>{data.total}</Span>
                 </H4>
                 <Flex>
                   {[
-                    ["allTime", "All Time"],
-                    ["lastMonth", "Month"],
-                    ["lastWeek", "Week"],
-                    ["lastDay", "Day"]
+                    ["allTime", t('time.all')],
+                    ["lastMonth", t('time.month')],
+                    ["lastWeek", t('time.week')],
+                    ["lastDay", t('time.day')]
                   ].map(([p, n]) => (
                     <NavButton
                       ml={10}
@@ -141,10 +141,10 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                   >
                     {total}
                   </Span>{" "}
-                  tracked clicks in {periodText}.
+                  {t('trackedClicks')+ t(`timeClick.${period}`)}.
                 </H2>
                 <Text fontSize={[13, 14]} color={Colors.StatsLastUpdateText}>
-                  Last update in{" "}
+                  {t('lastUpdate')}
                   {formatDate(new Date(data.updatedAt), "hh:mm aa")}
                 </Text>
                 <Flex width={1} mt={4}>
@@ -156,13 +156,13 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                     <Flex width={1}>
                       <Col flex="1 1 0">
                         <H2 mb={3} light>
-                          Referrals.
+                          {t('chart.referrals')}
                         </H2>
                         <Pie data={stats.stats.referrer} />
                       </Col>
                       <Col flex="1 1 0">
                         <H2 mb={3} light>
-                          Browsers.
+                          {t('chart.browsers')}
                         </H2>
                         <Bar data={stats.stats.browser} />
                       </Col>
@@ -171,13 +171,13 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                     <Flex width={1}>
                       <Col flex="1 1 0">
                         <H2 mb={3} light>
-                          Country.
+                          {t('chart.country')}
                         </H2>
                         <Map data={stats.stats.country} />
                       </Col>
                       <Col flex="1 1 0">
                         <H2 mb={3} light>
-                          OS.
+                          {t('chart.os')}
                         </H2>
                         <Bar data={stats.stats.os} />
                       </Col>
@@ -191,7 +191,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                 <ALink href="/" title="Back to homepage" forButton>
                   <Button>
                     <Icon name="arrowLeft" stroke="white" mr={2} />
-                    Back to homepage
+                    {tcommon('button.backHome')}
                   </Button>
                 </ALink>
               </Link>

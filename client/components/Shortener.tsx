@@ -4,6 +4,7 @@ import { Flex } from "reflexbox/styled-components";
 import React, { useState } from "react";
 import styled from "styled-components";
 import getConfig from "next/config";
+import { useTranslation } from 'react-i18next';
 
 import { useStoreActions, useStoreState } from "../store";
 import { Checkbox, Select, TextInput } from "./Input";
@@ -62,6 +63,7 @@ interface Form {
 const defaultDomain = publicRuntimeConfig.DEFAULT_DOMAIN;
 
 const Shortener = () => {
+  const { t } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
   const domains = useStoreState(s => s.settings.domains);
   const submit = useStoreActions(s => s.links.submit);
@@ -130,9 +132,9 @@ const Shortener = () => {
 
   const title = !link && (
     <H1 fontSize={[25, 27, 32]} light>
-      Kutt your links{" "}
+      {t('shortener.title')}
       <Span style={{ borderBottom: "2px dotted #999" }} light>
-        shorter
+        {t('shortener.title2')}
       </Span>
       .
     </H1>
@@ -201,7 +203,7 @@ const Shortener = () => {
       >
         <TextInput
           {...text("target")}
-          placeholder="Paste your long URL"
+          placeholder={t('shortener.phUrl')}
           placeholderSize={[16, 17, 18]}
           fontSize={[18, 20, 22]}
           width={1}
@@ -242,7 +244,7 @@ const Shortener = () => {
           }
         })}
         checked={formState.values.showAdvanced}
-        label="Show advanced options"
+        label={t('shortener.advanced.chAdvanced')}
         mt={[3, 24]}
         alignSelf="flex-start"
       />
@@ -257,7 +259,7 @@ const Shortener = () => {
                 mb={2}
                 bold
               >
-                Domain:
+                {t('shortener.advanced.domain')}
               </Text>
               <Select
                 {...select("domain")}
@@ -288,7 +290,7 @@ const Shortener = () => {
               </Text>
               <TextInput
                 {...text("customurl")}
-                placeholder="Custom address..."
+                placeholder={t('shortener.advanced.phCustomAddress') + "..."}
                 autocomplete="off"
                 data-lpignore
                 pl={[3, 24]}
@@ -307,11 +309,11 @@ const Shortener = () => {
                 mb={2}
                 bold
               >
-                Password:
+                {t('shortener.advanced.password')}
               </Text>
               <TextInput
                 {...password("password")}
-                placeholder="Password..."
+                placeholder={t('shortener.advanced.password') + "..."}
                 autocomplete="off"
                 data-lpignore
                 pl={[3, 24]}
@@ -332,11 +334,12 @@ const Shortener = () => {
                 mb={2}
                 bold
               >
-                Expire in:
+
+                {t('shortener.advanced.expireIn')} :
               </Text>
               <TextInput
                 {...text("expire_in")}
-                placeholder="2 minutes/hours/days"
+                placeholder={t('shortener.advanced.phExpireIn')}
                 data-lpignore
                 pl={[3, 24]}
                 pr={[3, 24]}
@@ -355,11 +358,11 @@ const Shortener = () => {
                 mb={2}
                 bold
               >
-                Description:
+                {t('shortener.advanced.description')}
               </Text>
               <TextInput
                 {...text("description")}
-                placeholder="Description"
+                placeholder={t('shortener.advanced.description') + "..."}
                 data-lpignore
                 pl={[3, 24]}
                 pr={[3, 24]}

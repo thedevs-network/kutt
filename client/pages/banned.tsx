@@ -7,25 +7,27 @@ import { H2, H4, Span } from "../components/Text";
 import Footer from "../components/Footer";
 import ALink from "../components/ALink";
 import { Col } from "../components/Layout";
+import { useTranslation } from 'react-i18next';
 
 const { publicRuntimeConfig } = getConfig();
 
 const BannedPage = () => {
+  const { t } = useTranslation("banned");
   return (
     <AppWrapper>
       <Col flex="1 1 100%" alignItems="center">
         <H2 textAlign="center" my={3} normal>
-          Link has been banned and removed because of{" "}
+          {t('title1')}
           <Span style={{ borderBottom: "1px dotted rgba(0, 0, 0, 0.4)" }} bold>
-            malware or scam
+            {t('title2')}
           </Span>
           .
         </H2>
         <H4 textAlign="center" normal>
-          If you noticed a malware/scam link shortened by{" "}
+          {t('description1')}
           {publicRuntimeConfig.SITE_NAME},{" "}
           <Link href="/report">
-            <ALink title="Send report">send us a report</ALink>
+            <ALink title="Send report">{t('description2')}</ALink>
           </Link>
           .
         </H4>

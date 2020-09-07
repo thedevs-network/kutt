@@ -1,0 +1,51 @@
+{
+    "title": "Welcome,",
+    "domain": {
+        "title": "Custom domain",
+        "description1": "You can set a custom domain for your short URLs, so instead of ",
+        "description2": "/shorturl ",
+        "description3": "you can have ",
+        "description4": "example.com/shorturl.",
+        "description5": "Point your domain A record to ",
+        "description6": " then add the domain via form below:",
+        "colDomain": "Domain",
+        "colHomePage": "Homepage",
+        "colHomePageOpt": "Homepage (optional)",
+        "modal": {
+            "title": "Delete domain?",
+            "description": "Are you sure do you want to delete the domain"
+        }
+    },
+    "password": {
+        "title": "Change password",
+        "description": "Enter a new password to change your current password.",
+        "newPassword": "New password",
+        "error": {
+            "updatePassword": "Couldn't update the password.",
+            "passwordLenght": "Password must be at least 8 chars long."
+        }
+    },
+    "api": {
+        "title": "API",
+        "description1": "In additional to this website, you can use the API to create, delete and get shortend URLs. If you're not familiar with API, don't generate the key. DO NOT share this key on the client side of your website.",
+        "description2": " Read API docs.",
+        "button": {
+            "generateKey": "Generate key",
+            "regenerateKey": "Regenerate key",
+            "generating": "Generating..."
+        }
+    },
+    "account": {
+        "title": "Delete account",
+        "description": "Delete your account from ",
+        "password": "Password",
+        "modal": {
+            "title": "Delete account?",
+            "description1": "All of your data including your ",
+            "description2": "LINKS ",
+            "description3": "and ",
+            "description4": "STATS ",
+            "description5": "will be deleted."
+        }
+    }
+}

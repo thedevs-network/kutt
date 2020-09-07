@@ -17,6 +17,7 @@ import { Button } from "../components/Button";
 import Text, { H2 } from "../components/Text";
 import ALink from "../components/ALink";
 import Icon from "../components/Icon";
+import { useTranslation } from 'react-i18next';
 
 const LoginForm = styled(Flex).attrs({
   as: "form",
@@ -32,6 +33,8 @@ const Email = styled.span`
 `;
 
 const LoginPage = () => {
+  const { t } = useTranslation('login');
+  const { t : tcommon } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
   const login = useStoreActions(s => s.auth.login);
   const [error, setError] = useState("");
@@ -54,15 +57,15 @@ const LoginPage = () => {
       if (loading.login || loading.signup) return null;
 
       if (!email) {
-        return setError("Email address must not be empty.");
+        return setError(t("error.emailEmpty"));
       }
 
       if (!emailValidator.validate(email)) {
-        return setError("Email address is not valid.");
+        return setError(t("error.emailValid"));
       }
 
       if (password.trim().length < 8) {
-        return setError("Password must be at least 8 chars long.");
+        return setError(t("error.passwordLenght"));
       }
 
       setError("");
@@ -100,17 +103,17 @@ const LoginPage = () => {
       <ColCenterV maxWidth="100%" px={3} flex="0 0 auto" mt={4}>
         {verifying ? (
           <H2 textAlign="center" light>
-            A verification email has been sent to{" "}
+            {t('verificationEmail')}
             <Email>{formState.values.email}</Email>.
           </H2>
         ) : (
           <LoginForm id="login-form" onSubmit={onSubmit("login")}>
             <Text {...label("email")} as="label" mb={2} bold>
-              Email address:
+              {t('email') }
             </Text>
             <TextInput
               {...email("email")}
-              placeholder="Email address..."
+              placeholder={t('email') +"..."}
               height={[56, 64, 72]}
               fontSize={[15, 16]}
               px={[4, 40]}
@@ -120,11 +123,11 @@ const LoginPage = () => {
               autoFocus
             />
             <Text {...label("password")} as="label" mb={2} bold>
-              Password{!DISALLOW_REGISTRATION ? " (min chars: 8)" : ""}:
+              {t('password') + (!DISALLOW_REGISTRATION ? t('password2'): "")}
             </Text>
             <TextInput
               {...password("password")}
-              placeholder="Password..."
+              placeholder={t('password')+"..."}
               px={[4, 40]}
               height={[56, 64, 72]}
               fontSize={[15, 16]}
@@ -144,7 +147,7 @@ const LoginPage = () => {
                   stroke="white"
                   mr={2}
                 />
-                Log in
+                {tcommon('button.login')}
               </Button>
               {!DISALLOW_REGISTRATION && (
                 <Button
@@ -159,7 +162,7 @@ const LoginPage = () => {
                     stroke="white"
                     mr={2}
                   />
-                  Sign up
+                  {tcommon('button.signUp')}
                 </Button>
               )}
             </Flex>
@@ -171,7 +174,7 @@ const LoginPage = () => {
                 alignSelf="flex-start"
                 my={16}
               >
-                Forgot your password?
+                {t('forgotPassword')}
               </ALink>
             </Link>
             <Text color="red" mt={1} normal>
@@ -183,5 +186,4 @@ const LoginPage = () => {
     </AppWrapper>
   );
 };
-
 export default LoginPage;

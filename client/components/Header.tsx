@@ -11,6 +11,8 @@ import styled from "styled-components";
 import { RowCenterV } from "./Layout";
 import { Button } from "./Button";
 import ALink from "./ALink";
+import { Select } from "./Input";
+import { useTranslation } from 'react-i18next';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -50,6 +52,7 @@ const LogoImage = styled.div`
 `;
 
 const Header: FC = () => {
+  const { t, i18n } = useTranslation();
   const { isAuthenticated } = useStoreState(s => s.auth);
   const isMobile = useMedia({ maxWidth: 640 });
 
@@ -62,7 +65,7 @@ const Header: FC = () => {
           forButton
         >
           <Button height={[32, 40]}>
-            {!DISALLOW_REGISTRATION ? "Log in / Sign up" : "Log in"}
+            {!DISALLOW_REGISTRATION ? t('button.login')+" / "+t('button.signUp') : t('button.login')}
           </Button>
         </ALink>
       </Link>
@@ -72,7 +75,7 @@ const Header: FC = () => {
     <Li>
       <Link href="/logout">
         <ALink href="/logout" title="logout" fontSize={[14, 16]}>
-          Log out
+        {t('button.logout')}
         </ALink>
       </Link>
     </Li>
@@ -81,12 +84,11 @@ const Header: FC = () => {
     <Li>
       <Link href="/settings">
         <ALink href="/settings" title="Settings" forButton>
-          <Button height={[32, 40]}>Settings</Button>
+          <Button height={[32, 40]}>{t('header.settings')}</Button>
         </ALink>
       </Link>
     </Li>
   );
-
   return (
     <Flex
       width={1232}
@@ -132,13 +134,13 @@ const Header: FC = () => {
                 title="GitHub"
                 fontSize={[14, 16]}
               >
-                GitHub
+                {t('header.gitHub')}
               </ALink>
             </Li>
             <Li>
               <Link href="/report">
                 <ALink href="/report" title="Report abuse" fontSize={[14, 16]}>
-                  Report
+                {t('header.report')}
                 </ALink>
               </Link>
             </Li>
@@ -156,11 +158,28 @@ const Header: FC = () => {
           <Flex display={["flex", "none"]}>
             <Link href="/report">
               <ALink href="/report" title="Report" fontSize={[14, 16]}>
-                Report
+              {t('header.report')}
               </ALink>
             </Link>
           </Flex>
         </Li>
+        {i18n.languages.length > 1 &&
+         <Select
+            pl={[3, 24]}
+            pr={[3, 24]}
+            fontSize={[14, 15]}
+            height={[32, 37]}
+            width={[110, 150]}
+            onChange= {(event) =>i18n.changeLanguage(event.target.value)}
+            options={
+              i18n.languages.map(d => ({
+                key: t(`language.${d}`)+"",
+                value: d
+              }))
+            }
+            value={i18n.language}
+          /> 
+        }
         {logout}
         {settings}
         {login}

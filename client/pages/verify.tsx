@@ -14,6 +14,7 @@ import Icon from "../components/Icon";
 import { NextPage } from "next";
 import { Colors } from "../consts";
 import ALink from "../components/ALink";
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   token?: string;
@@ -35,6 +36,8 @@ const Message = styled.p`
 `;
 
 const Verify: NextPage<Props> = ({ token }) => {
+  const { t } = useTranslation("verify");
+  const { t : tcommon } = useTranslation();
   const addAuth = useStoreActions(s => s.auth.add);
 
   useEffect(() => {
@@ -51,13 +54,13 @@ const Verify: NextPage<Props> = ({ token }) => {
         <Col alignItems="center">
           <MessageWrapper>
             <Icon name="check" size={32} mr={3} stroke={Colors.CheckIcon} />
-            <Message>Your account has been verified successfully!</Message>
+            <Message>{t('valid')}</Message>
           </MessageWrapper>
           <Link href="/">
             <ALink href="/" forButton>
               <Button>
                 <Icon name="arrowLeft" stroke="white" mr={2} />
-                Back to homepage
+                {t('button.backHome')}
               </Button>
             </ALink>
           </Link>
@@ -66,13 +69,13 @@ const Verify: NextPage<Props> = ({ token }) => {
         <Col alignItems="center">
           <MessageWrapper>
             <Icon name="x" size={32} mr={3} stroke={Colors.TrashIcon} />
-            <Message>Invalid verification.</Message>
+            <Message>{t('invalid')}</Message>
           </MessageWrapper>
           <Link href="/login">
             <ALink href="/login" forButton>
               <Button color="purple">
                 <Icon name="arrowLeft" stroke="white" mr={2} />
-                Back to signup
+                {t('button.backSignUp')}
               </Button>
             </ALink>
           </Link>

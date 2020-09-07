@@ -7,7 +7,7 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import nextApp from "next";
-import * as Sentry from "@sentry/node";
+import Raven from "raven";
 
 import * as helpers from "./handlers/helpers";
 import * as links from "./handlers/links";
@@ -17,6 +17,13 @@ import routes from "./routes";
 
 import "./cron";
 import "./passport";
+import nextI18next from "../i18n";
+
+const nextI18NextMiddleware = require("next-i18next/middleware").default;
+
+if (env.RAVEN_DSN) {
+  Raven.config(env.RAVEN_DSN).install();
+}
 
 const port = env.PORT;
 const app = nextApp({ dir: "./client", dev: env.isDev });
@@ -24,25 +31,14 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(async () => {
   const server = express();
-
   server.set("trust proxy", true);
 
   if (env.isDev) {
     server.use(morgan("dev"));
-  } else if (env.SENTRY_PRIVATE_DSN) {
-    Sentry.init({
-      dsn: env.SENTRY_PRIVATE_DSN,
-      environment: process.env.NODE_ENV
-    });
-
-    server.use(
-      Sentry.Handlers.requestHandler({
-        ip: true,
-        user: ["id", "email"]
-      })
-    );
   }
 
+  await nextI18next.initPromise;
+  server.use(nextI18NextMiddleware(nextI18next));
   server.use(helmet());
   server.use(cookieParser());
   server.use(express.json());
