@@ -29,13 +29,13 @@ const authenticate = (
         throw new CustomError(error, 401);
       }
 
-      // if (user && isStrict && !user.verified) {
-      //   throw new CustomError(
-      //     "Your email address is not verified. " +
-      //       "Click on signup to get the verification link again.",
-      //     400
-      //   );
-      // }
+      if (user && isStrict && !user.verified) {
+        throw new CustomError(
+          "Your email address is not verified. " +
+            "Click on signup to get the verification link again.",
+          400
+        );
+      }
 
       if (user && user.banned) {
         throw new CustomError("You're banned from using this website.", 403);
