@@ -7,12 +7,13 @@ import { ColCenter } from "./Layout";
 import ReCaptcha from "./ReCaptcha";
 import ALink from "./ALink";
 import Text from "./Text";
+import {useTheme} from "../hooks";
 
 const { publicRuntimeConfig } = getConfig();
 
 const Footer: FC = () => {
   const { isAuthenticated } = useStoreState(s => s.auth);
-
+  const theme = useTheme()   
   useEffect(() => {
     showRecaptcha();
   }, []);
@@ -21,7 +22,7 @@ const Footer: FC = () => {
     <ColCenter
       as="footer"
       width={1}
-      backgroundColor="white"
+      backgroundColor={theme.background.footer}
       p={isAuthenticated ? 2 : 24}
     >
       {!isAuthenticated && <ReCaptcha />}

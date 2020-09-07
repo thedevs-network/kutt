@@ -1,9 +1,9 @@
-import { switchProp, ifNotProp, ifProp } from "styled-tools";
+import { switchProp, ifNotProp, ifProp, prop } from "styled-tools";
 import { Box, BoxProps } from "reflexbox/styled-components";
 import styled, { css } from "styled-components";
 
 import { FC, CSSProperties } from "react";
-import { Colors } from "../consts";
+import { theme } from "../consts/theme";
 
 interface Props extends Omit<BoxProps, "as"> {
   as?: string;
@@ -14,7 +14,8 @@ interface Props extends Omit<BoxProps, "as"> {
   style?: CSSProperties;
 }
 const Text: FC<Props> = styled(Box)<Props>`
-  font-weight: 400;
+  font-weight: 400;  
+  color: ${prop("color", prop("theme.text.main"))};
   ${ifNotProp(
     "fontSize",
     css`
@@ -51,9 +52,6 @@ const Text: FC<Props> = styled(Box)<Props>`
   )}
 `;
 
-Text.defaultProps = {
-  color: Colors.Text
-};
 
 export default Text;
 

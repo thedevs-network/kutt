@@ -17,12 +17,14 @@ import { TokenPayload } from "../types";
 import { useMessage } from "../hooks";
 import Icon from "../components/Icon";
 import { API, APIv2 } from "../consts";
+import {useTheme} from "../hooks";
 
 interface Props {
   token?: string;
 }
 
 const ResetPassword: NextPage<Props> = ({ token }) => {
+  const theme = useTheme()   
   const auth = useStoreState(s => s.auth);
   const addAuth = useStoreActions(s => s.auth.add);
   const [loading, setLoading] = useState(false);
@@ -90,8 +92,8 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
             autoFocus
             required
           />
-          <Button type="submit" height={[40, 44]} my={3}>
-            {loading && <Icon name={"spinner"} stroke="white" mr={2} />}
+          <Button type="submit" height={[40, 44]} my={3} color="primary">
+            {loading && <Icon name={"spinner"} stroke={theme.text.accent} mr={2} />}
             Reset password
           </Button>
         </Flex>

@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { useStoreState, useStoreActions } from "../../store";
 import { useCopy, useMessage } from "../../hooks";
 import { errorMessage } from "../../utils";
-import { Colors } from "../../consts";
+import {useTheme} from "../../hooks";
 import Animation from "../Animation";
 import { Button } from "../Button";
 import Text, { H2 } from "../Text";
@@ -19,7 +19,7 @@ const ApiKey = styled(Text).attrs({
   fontSize: [15, 16],
   bold: true
 })`
-  border-bottom: 1px dotted ${Colors.StatsTotalUnderline};
+  border-bottom: 1px dotted ${({ theme }) => theme.stats.totalUnderline};
   cursor: pointer;
   word-break: break-word;
 
@@ -29,6 +29,7 @@ const ApiKey = styled(Text).attrs({
 `;
 
 const SettingsApi: FC = () => {
+  const theme = useTheme()  
   const [copied, setCopied] = useCopy();
   const [message, setMessage] = useMessage(1500);
   const [loading, setLoading] = useState(false);
@@ -68,7 +69,7 @@ const SettingsApi: FC = () => {
                 p="3px"
                 name="check"
                 strokeWidth="3"
-                stroke={Colors.CheckIcon}
+                stroke={theme.icon.check.main}
               />
             </Animation>
           ) : (
@@ -83,8 +84,8 @@ const SettingsApi: FC = () => {
                   p={["4px", "5px"]}
                   name="copy"
                   strokeWidth="2.5"
-                  stroke={Colors.CopyIcon}
-                  backgroundColor={Colors.CopyIconBg}
+                  stroke={theme.icon.copy.main}
+                  backgroundColor={theme.icon.copy.bg}
                 />
               </CopyToClipboard>
             </Animation>
@@ -94,8 +95,8 @@ const SettingsApi: FC = () => {
           </CopyToClipboard>
         </Flex>
       )}
-      <Button mt={3} color="purple" onClick={onSubmit} disabled={loading}>
-        <Icon name={loading ? "spinner" : "zap"} mr={2} stroke="white" />
+      <Button mt={3} color="secondary" onClick={onSubmit} disabled={loading}>
+        <Icon name={loading ? "spinner" : "zap"} mr={2} stroke={theme.icon.feature.main} />
         {loading ? "Generating..." : apikey ? "Regenerate" : "Generate"} key
       </Button>
       <Text fontSize={15} mt={3} color={message.color}>

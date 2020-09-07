@@ -67,7 +67,7 @@ const NeedToLogin = () => (
       </Title>
       <Link href="/login">
         <a href="/login" title="login / signup">
-          <Button>Login / Signup</Button>
+          <Button color="primary">Login / Signup</Button>
         </a>
       </Link>
     </Col>

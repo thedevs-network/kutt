@@ -5,7 +5,6 @@ import React, { FC } from "react";
 
 import ChevronRight from "./ChevronRight";
 import ChevronLeft from "./ChevronLeft";
-import { Colors } from "../../consts";
 import Clipboard from "./Clipboard";
 import ArrowLeft from "./ArrowLeft";
 import PieChart from "./PieChart";
@@ -27,6 +26,8 @@ import Copy from "./Copy";
 import Send from "./Send";
 import Key from "./Key";
 import Zap from "./Zap";
+import Sun from "./Sun";
+import Moon from "./Moon";
 import X from "./X";
 
 const icons = {
@@ -38,6 +39,8 @@ const icons = {
   copy: Copy,
   edit: Edit,
   editAlt: EditAlt,
+  sun: Sun,
+  moon: Moon,
   heart: Heart,
   key: Key,
   lock: Lock,
@@ -129,7 +132,7 @@ const CustomIcon: FC<React.ComponentProps<typeof Flex>> = styled(Flex)`
       background-color: none !important;
       cursor: pointer;
       box-sizing: border-box;
-      box-shadow: 0 2px 1px ${Colors.IconShadow};
+      box-shadow: 0 2px 1px ${({ theme }) => theme.icon.default.shadow}};
 
       :hover,
       :focus {

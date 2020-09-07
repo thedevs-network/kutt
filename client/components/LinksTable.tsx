@@ -8,6 +8,7 @@ import { ifProp } from "styled-tools";
 import getConfig from "next/config";
 import QRCode from "qrcode.react";
 import Link from "next/link";
+import { useTheme } from "../hooks";
 import differenceInMilliseconds from "date-fns/differenceInMilliseconds";
 import ms from "ms";
 
@@ -20,7 +21,6 @@ import { Col, RowCenter } from "./Layout";
 import Text, { H2, Span } from "./Text";
 import { useMessage } from "../hooks";
 import Animation from "./Animation";
-import { Colors } from "../consts";
 import Tooltip from "./Tooltip";
 import Table from "./Table";
 import ALink from "./ALink";
@@ -47,13 +47,13 @@ const Td = styled(Flex)<{ withFade?: boolean }>`
         top: 0;
         height: 100%;
         width: 16px;
-        background: linear-gradient(to left, white, rgba(255, 255, 255, 0.001));
+        background: linear-gradient(to left, ${({ theme }) => theme.table.row}, rgba(255, 255, 255, 0.001));
       }
 
       tr:hover &:after {
         background: linear-gradient(
           to left,
-          ${Colors.TableRowHover},
+          ${({ theme }) => theme.table.rowHover},
           rgba(255, 255, 255, 0.001)
         );
       }
@@ -70,8 +70,8 @@ Td.defaultProps = {
 };
 
 const EditContent = styled(Col)`
-  border-bottom: 1px solid ${Colors.TableRowHover};
-  background-color: #fafafa;
+  border-bottom: 1px solid ${({ theme }) => theme.table.rowHover};
+  background-color: ${({ theme }) => theme.table.edit};
 `;
 
 const Action = (props: React.ComponentProps<typeof Icon>) => (
@@ -83,10 +83,16 @@ const Action = (props: React.ComponentProps<typeof Icon>) => (
     size={[23, 24]}
     flexShrink={0}
     p={["4px", "5px"]}
-    stroke="#666"
+    stroke="#666"  
+
     {...props}
   />
 );
+const PieALink = styled(ALink)`
+  flex-shrink: 0;
+  padding-bottom: 0px;
+  border-bottom-width: 0px;
+`
 
 const ogLinkFlex = { flexGrow: [1, 3, 7], flexShrink: [1, 3, 7] };
 const createdFlex = { flexGrow: [1, 1, 2.5], flexShrink: [1, 1, 2.5] };
@@ -96,7 +102,7 @@ const viewsFlex = {
   flexShrink: [0.5, 0.5, 1],
   justifyContent: "flex-end"
 };
-const actionsFlex = { flexGrow: [1, 1, 3], flexShrink: [1, 1, 3] };
+const actionsFlex = { flexGrow: [1, 1, 3], flexShrink: [0, 0, 0] };
 
 interface RowProps {
   index: number;
@@ -119,6 +125,7 @@ interface EditForm {
 }
 
 const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
+  const theme = useTheme()
   const isAdmin = useStoreState(s => s.auth.isAdmin);
   const ban = useStoreActions(s => s.links.ban);
   const edit = useStoreActions(s => s.links.edit);
@@ -191,7 +198,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
           <Col alignItems="flex-start">
             <ALink href={link.target}>{link.target}</ALink>
             {link.description && (
-              <Text fontSize={[13, 14]} color="#888">
+              <Text fontSize={[13, 14]} color={theme.text.placeholder}>
                 {link.description}
               </Text>
             )}
@@ -227,7 +234,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 p="3px"
                 name="check"
                 strokeWidth="3"
-                stroke={Colors.CheckIcon}
+                stroke={theme.icon.check.main}
               />
             </Animation>
           ) : (
@@ -236,8 +243,8 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 <Action
                   name="copy"
                   strokeWidth="2.5"
-                  stroke={Colors.CopyIcon}
-                  backgroundColor={Colors.CopyIconBg}
+                  stroke={theme.icon.copy.main}
+                  backgroundColor={theme.icon.copy.bg}
                 />
               </CopyToClipboard>
             </Animation>
@@ -256,9 +263,9 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 data-tip
                 data-for={`${index}-tooltip-password`}
                 name="key"
-                stroke={"#bbb"}
+                stroke={theme.icon.activate.main}
                 strokeWidth="2.5"
-                backgroundColor="none"
+                backgroundColor={theme.icon.activate.bg}
               />
             </>
           )}
@@ -270,9 +277,9 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 data-tip
                 data-for={`${index}-tooltip-banned`}
                 name="stop"
-                stroke="#bbb"
+                stroke={theme.icon.activate.main}
                 strokeWidth="2.5"
-                backgroundColor="none"
+                backgroundColor={theme.icon.activate.bg}
               />
             </>
           )}
@@ -281,9 +288,9 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
               <ALink title="View stats" forButton>
                 <Action
                   name="pieChart"
-                  stroke={Colors.PieIcon}
                   strokeWidth="2.5"
-                  backgroundColor={Colors.PieIconBg}
+                  stroke={theme.icon.pie.main}
+                  backgroundColor={theme.icon.pie.bg}
                 />
               </ALink>
             </Link>
@@ -291,23 +298,23 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
           <Action
             name="qrcode"
             stroke="none"
-            fill={Colors.QrCodeIcon}
-            backgroundColor={Colors.QrCodeIconBg}
+            fill={theme.icon.qrCode.main}
+            backgroundColor={theme.icon.qrCode.bg}
             onClick={() => setQRModal(true)}
           />
           <Action
             name="editAlt"
             strokeWidth="2.5"
-            stroke={Colors.EditIcon}
-            backgroundColor={Colors.EditIconBg}
+            stroke={theme.icon.edit.main}
+            backgroundColor={theme.icon.edit.bg}
             onClick={toggleEdit}
           />
           {isAdmin && !link.banned && (
             <Action
               name="stop"
               strokeWidth="2"
-              stroke={Colors.StopIcon}
-              backgroundColor={Colors.StopIconBg}
+              stroke={theme.icon.stop.main}
+              backgroundColor={theme.icon.stop.bg}
               onClick={() => setBanModal(true)}
             />
           )}
@@ -315,8 +322,8 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
             mr={0}
             name="trash"
             strokeWidth="2"
-            stroke={Colors.TrashIcon}
-            backgroundColor={Colors.TrashIconBg}
+            stroke={theme.icon.trash.main}
+            backgroundColor={theme.icon.trash.bg}
             onClick={() => setDeleteModal(index)}
           />
         </Td>
@@ -431,7 +438,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
               </Col>
             </Flex>
             <Button
-              color="blue"
+              color="primary"
               mt={3}
               height={[30, 38]}
               disabled={editLoading}
@@ -439,7 +446,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
             >
               <Icon
                 name={editLoading ? "spinner" : "refresh"}
-                stroke="white"
+                stroke={theme.component.spinner}
                 mr={2}
               />
               {editLoading ? "Updating..." : "Update"}
@@ -484,7 +491,9 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
           <Flex justifyContent="center" mt={4}>
             {banLoading ? (
               <>
-                <Icon name="spinner" size={20} stroke={Colors.Spinner} />
+                   <Icon name="spinner" size={20} 
+                stroke={theme.components.spinner} />
+
               </>
             ) : banMessage.text ? (
               <Text fontSize={15} color={banMessage.color}>
@@ -492,10 +501,10 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
               </Text>
             ) : (
               <>
-                <Button color="gray" mr={3} onClick={() => setBanModal(false)}>
+                <Button color="default" mr={3} onClick={() => setBanModal(false)}>
                   Cancel
                 </Button>
-                <Button color="red" ml={3} onClick={onBan}>
+                <Button color="warning" ml={3} onClick={onBan}>
                   <Icon name="stop" stroke="white" mr={2} />
                   Ban
                 </Button>
@@ -516,6 +525,7 @@ interface Form {
 }
 
 const LinksTable: FC = () => {
+  const theme = useTheme()  
   const isAdmin = useStoreState(s => s.auth.isAdmin);
   const links = useStoreState(s => s.links);
   const { get, remove } = useStoreActions(s => s.links);
@@ -584,7 +594,7 @@ const LinksTable: FC = () => {
         width="1px"
         height={20}
         mx={[3, 24]}
-        style={{ backgroundColor: "#ccc" }}
+        style={{ backgroundColor: theme.table.border }}
       />
       <Flex>
         <NavButton
@@ -697,7 +707,9 @@ const LinksTable: FC = () => {
             <Flex justifyContent="center" mt={44}>
               {deleteLoading ? (
                 <>
-                  <Icon name="spinner" size={20} stroke={Colors.Spinner} />
+                <Icon name="spinner" size={20} 
+                stroke={theme.components.spinner} />
+
                 </>
               ) : deleteMessage.text ? (
                 <Text fontSize={15} color={deleteMessage.color}>
@@ -706,13 +718,13 @@ const LinksTable: FC = () => {
               ) : (
                 <>
                   <Button
-                    color="gray"
+                    color="default"
                     mr={3}
                     onClick={() => setDeleteModal(-1)}
                   >
                     Cancel
                   </Button>
-                  <Button color="red" ml={3} onClick={onDelete}>
+                  <Button color="warning" ml={3} onClick={onDelete}>
                     <Icon name="trash" stroke="white" mr={2} />
                     Delete
                   </Button>

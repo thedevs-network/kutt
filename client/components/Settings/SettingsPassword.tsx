@@ -11,8 +11,10 @@ import { Button } from "../Button";
 import Text, { H2 } from "../Text";
 import { Col } from "../Layout";
 import Icon from "../Icon";
+import {useTheme} from "../../hooks";
 
 const SettingsPassword: FC = () => {
+ const theme = useTheme()   
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useMessage(2000);
   const [formState, { password, label }] = useFormState<{ password: string }>(
@@ -74,8 +76,8 @@ const SettingsPassword: FC = () => {
           mr={3}
           required
         />
-        <Button type="submit" disabled={loading}>
-          <Icon name={loading ? "spinner" : "refresh"} mr={2} stroke="white" />
+        <Button type="submit" disabled={loading} color="primary">
+          <Icon name={loading ? "spinner" : "refresh"} mr={2} stroke={theme.icon.feature.main}/>
           {loading ? "Updating..." : "Update"}
         </Button>
       </Flex>

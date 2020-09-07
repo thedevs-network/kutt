@@ -11,6 +11,8 @@ import styled from "styled-components";
 import { RowCenterV } from "./Layout";
 import { Button } from "./Button";
 import ALink from "./ALink";
+import { useToggleDarkMode } from "./ThemeProvider";
+import Icon from "./Icon";
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -23,6 +25,20 @@ const Li = styled(Flex).attrs({ ml: [12, 24, 32] })`
     }
   }
 `;
+const Action = (props: React.ComponentProps<typeof Icon>) => (
+  <Icon
+    as="button"
+    py={0}
+    px={0}
+    mr={2}
+    size={[28, 28]}
+    p={["4px", "5px"]}
+    fill="#666"
+    stroke="#666"
+    flexShrink={0}
+    {...props}
+  />
+);
 
 const LogoImage = styled.div`
   & > a {
@@ -61,7 +77,7 @@ const Header: FC = () => {
           title={!DISALLOW_REGISTRATION ? "login / signup" : "login"}
           forButton
         >
-          <Button height={[32, 40]}>
+          <Button height={[32, 40]} color="primary">
             {!DISALLOW_REGISTRATION ? "Log in / Sign up" : "Log in"}
           </Button>
         </ALink>
@@ -81,12 +97,12 @@ const Header: FC = () => {
     <Li>
       <Link href="/settings">
         <ALink href="/settings" title="Settings" forButton>
-          <Button height={[32, 40]}>Settings</Button>
+          <Button height={[32, 40]} color="primary">Settings</Button>
         </ALink>
       </Link>
     </Li>
   );
-
+  const [darkModeEnabled, toggleDarkMode] = useToggleDarkMode()
   return (
     <Flex
       width={1232}
@@ -161,6 +177,28 @@ const Header: FC = () => {
             </Link>
           </Flex>
         </Li>
+        {darkModeEnabled ? (
+          <Action
+            name="sun"
+            strokeWidth="1"
+
+            fill="black"
+            stroke="black"
+            backgroundColor="white"
+            onClick={toggleDarkMode}
+          />
+
+        ):(
+          <Action
+            name="moon"
+            strokeWidth="2.5"
+
+            fill="white"
+            backgroundColor="black"
+            onClick={toggleDarkMode}
+          />
+
+        )}
         {logout}
         {settings}
         {login}

@@ -17,6 +17,8 @@ import { Button } from "../components/Button";
 import Text, { H2 } from "../components/Text";
 import ALink from "../components/ALink";
 import Icon from "../components/Icon";
+import { theme } from "styled-tools";
+import {useTheme} from "../hooks";
 
 const LoginForm = styled(Flex).attrs({
   as: "form",
@@ -32,6 +34,7 @@ const Email = styled.span`
 `;
 
 const LoginPage = () => {
+  const theme = useTheme()   
   const { isAuthenticated } = useStoreState(s => s.auth);
   const login = useStoreActions(s => s.auth.login);
   const [error, setError] = useState("");
@@ -138,10 +141,11 @@ const LoginPage = () => {
                 mr={!DISALLOW_REGISTRATION ? ["8px", 16] : 0}
                 height={[44, 56]}
                 onClick={onSubmit("login")}
+                color="primary"
               >
                 <Icon
                   name={loading.login ? "spinner" : "login"}
-                  stroke="white"
+                  stroke={theme.background.accent} 
                   mr={2}
                 />
                 Log in
@@ -151,12 +155,12 @@ const LoginPage = () => {
                   flex="1 1 auto"
                   ml={["8px", 16]}
                   height={[44, 56]}
-                  color="purple"
+                  color="secondary"
                   onClick={onSubmit("signup")}
                 >
                   <Icon
                     name={loading.signup ? "spinner" : "signup"}
-                    stroke="white"
+                    stroke={theme.background.accent}
                     mr={2}
                   />
                   Sign up
@@ -174,7 +178,7 @@ const LoginPage = () => {
                 Forgot your password?
               </ALink>
             </Link>
-            <Text color="red" mt={1} normal>
+            <Text color={theme.text.error} mt={1} normal>
               {error}
             </Text>
           </LoginForm>

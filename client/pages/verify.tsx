@@ -12,7 +12,7 @@ import { Col } from "../components/Layout";
 import { TokenPayload } from "../types";
 import Icon from "../components/Icon";
 import { NextPage } from "next";
-import { Colors } from "../consts";
+import {useTheme} from "../hooks";
 import ALink from "../components/ALink";
 
 interface Props {
@@ -36,7 +36,7 @@ const Message = styled.p`
 
 const Verify: NextPage<Props> = ({ token }) => {
   const addAuth = useStoreActions(s => s.auth.add);
-
+  const theme = useTheme() 
   useEffect(() => {
     if (token) {
       cookie.set("token", token, { expires: 7 });
@@ -50,12 +50,12 @@ const Verify: NextPage<Props> = ({ token }) => {
       {token ? (
         <Col alignItems="center">
           <MessageWrapper>
-            <Icon name="check" size={32} mr={3} stroke={Colors.CheckIcon} />
+            <Icon name="check" size={32} mr={3} stroke={theme.icon.check.main} />
             <Message>Your account has been verified successfully!</Message>
           </MessageWrapper>
           <Link href="/">
             <ALink href="/" forButton>
-              <Button>
+              <Button color="primary">
                 <Icon name="arrowLeft" stroke="white" mr={2} />
                 Back to homepage
               </Button>
@@ -65,12 +65,12 @@ const Verify: NextPage<Props> = ({ token }) => {
       ) : (
         <Col alignItems="center">
           <MessageWrapper>
-            <Icon name="x" size={32} mr={3} stroke={Colors.TrashIcon} />
+            <Icon name="x" size={32} mr={3} stroke={theme.icon.trash.main} />
             <Message>Invalid verification.</Message>
           </MessageWrapper>
           <Link href="/login">
             <ALink href="/login" forButton>
-              <Button color="purple">
+              <Button color="secondary">
                 <Icon name="arrowLeft" stroke="white" mr={2} />
                 Back to signup
               </Button>
