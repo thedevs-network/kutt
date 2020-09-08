@@ -13,7 +13,7 @@ import { Colors } from "../../consts";
 import { TextInput } from "../Input";
 import { Button } from "../Button";
 import { Col } from "../Layout";
-import Table from "../Table";
+import {Table} from "../Table";
 import Modal from "../Modal";
 import Icon from "../Icon";
 

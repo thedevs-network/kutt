@@ -4,7 +4,8 @@ import { ifProp, prop } from "styled-tools";
 
 import { Colors } from "../consts";
 
-const Table = styled(Flex)<{ scrollWidth?: string }>`
+//@ts-ignore
+export const Table = styled(Flex)<{ scrollWidth?: string }>`
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 6px 15px ${Colors.TableShadow};
@@ -47,8 +48,6 @@ const Table = styled(Flex)<{ scrollWidth?: string }>`
 
   thead {
     background-color: ${Colors.TableHeadBg};
-    border-top-right-radius: 12px;
-    border-top-left-radius: 12px;
     font-weight: bold;
 
     tr {
@@ -81,4 +80,45 @@ Table.defaultProps = {
   width: 1
 };
 
-export default Table;
+export const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
+
+export const Th = styled(Flex)``;
+Th.defaultProps = { as: "th", flexBasis: 0, py: [12, 12, 3], px: [12, 12, 3] };
+
+
+export const Td = styled(Flex) <{ withFade?: boolean }>`
+  position: relative;
+  white-space: nowrap;
+
+  ${ifProp(
+  "withFade",
+  `
+      :after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 16px;
+        background: linear-gradient(to left, ${({ theme }) => theme.table.row}, rgba(255, 255, 255, 0.001));
+      }
+
+      tr:hover &:after {
+        background: linear-gradient(
+          to left,
+          ${({ theme }) => theme.table.rowHover},
+          rgba(255, 255, 255, 0.001)
+        );
+      }
+    `
+)}
+`;
+Td.defaultProps = {
+  as: "td",
+  fontSize: [15, 16],
+  alignItems: "center",
+  flexBasis: 0,
+  py: [12, 12, 3],
+  px: [12, 12, 3]
+};
+

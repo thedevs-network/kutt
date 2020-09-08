@@ -49,8 +49,8 @@ export interface EditLink {
 }
 
 export interface LinksQuery {
-  limit: string;
-  skip: string;
+  limit: number;
+  skip: number;
   search: string;
   all: boolean;
 }
