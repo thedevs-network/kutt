@@ -1,5 +1,7 @@
 import getConfig from "next/config";
 import ReactGA from "react-ga";
+import * as Sentry from '@sentry/react';
+import { Integrations } from '@sentry/apm';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -10,6 +12,19 @@ export const initGA = () => {
 export const logPageView = () => {
   ReactGA.set({ page: window.location.pathname });
   ReactGA.pageview(window.location.pathname);
+};
+
+export const initSentry = () => {
+  if (publicRuntimeConfig.SENTRY_PUBLIC_DSN) {
+    Sentry.init({
+      dsn: publicRuntimeConfig.SENTRY_PUBLIC_DSN,
+      environment: process.env.NODE_ENV,
+      integrations: [
+        new Integrations.Tracing(),
+      ],
+      tracesSampleRate: 1.0,
+    });
+  };
 };
 
 export const logEvent = (category = "", action = "") => {

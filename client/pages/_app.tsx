@@ -7,12 +7,16 @@ import cookie from "js-cookie";
 import Head from "next/head";
 import React from "react";
 
-import { initGA, logPageView } from "../helpers/analytics";
+import { initGA, logPageView , initSentry } from "../helpers/analytics";
 import { initializeStore } from "../store";
 import { TokenPayload } from "../types";
 
 const isProd = process.env.NODE_ENV === "production";
 const { publicRuntimeConfig } = getConfig();
+
+if (isProd) {
+  initSentry();
+};
 
 // TODO: types
 class MyApp extends App<any> {
