@@ -2,6 +2,7 @@ import { NextPage } from "next";
 import React from "react";
 
 import SettingsDeleteAccount from "../components/Settings/SettingsDeleteAccount";
+import SettingsChangeEmail from "../components/Settings/SettingsChangeEmail";
 import SettingsPassword from "../components/Settings/SettingsPassword";
 import SettingsDomain from "../components/Settings/SettingsDomain";
 import SettingsApi from "../components/Settings/SettingsApi";
@@ -28,9 +29,11 @@ const SettingsPage: NextPage = () => {
         <Divider mt={4} mb={48} />
         <SettingsDomain />
         <Divider mt={4} mb={48} />
+        <SettingsApi />
+        <Divider mt={4} mb={48} />
         <SettingsPassword />
         <Divider mt={4} mb={48} />
-        <SettingsApi />
+        <SettingsChangeEmail />
         <Divider mt={4} mb={48} />
         <SettingsDeleteAccount />
       </Col>

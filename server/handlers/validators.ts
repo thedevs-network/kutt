@@ -334,6 +334,19 @@ export const resetPasswordRequest = [
     .trim()
     .isEmail()
     .isLength({ min: 0, max: 255 })
+    .withMessage("Email length must be max 255."),
+  body("password", "Password is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 8, max: 64 })
+    .withMessage("Password length must be between 8 and 64.")
+];
+
+export const resetEmailRequest = [
+  body("email", "Email is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .trim()
+    .isEmail()
+    .isLength({ min: 0, max: 255 })
     .withMessage("Email length must be max 255.")
 ];
 

@@ -19,6 +19,7 @@ export enum APIv2 {
   AuthRenew = "/api/v2/auth/renew",
   AuthResetPassword = "/api/v2/auth/reset-password",
   AuthChangePassword = "/api/v2/auth/change-password",
+  AuthChangeEmail = "/api/v2/auth/change-email",
   AuthGenerateApikey = "/api/v2/auth/apikey",
   Users = "/api/v2/users",
   Domains = "/api/v2/domains",

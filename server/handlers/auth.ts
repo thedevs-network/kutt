@@ -9,7 +9,6 @@ import axios from "axios";
 import { CustomError } from "../utils";
 import * as utils from "../utils";
 import * as redis from "../redis";
-import queries from "../queries";
 import * as mail from "../mail";
 import query from "../queries";
 import env from "../env";
@@ -66,7 +65,7 @@ export const cooldown: Handler = async (req, res, next) => {
   const cooldownConfig = env.NON_USER_COOLDOWN;
   if (req.user || !cooldownConfig) return next();
 
-  const ip = await queries.ip.find({
+  const ip = await query.ip.find({
     ip: req.realIP.toLowerCase(),
     created_at: [">", subMinutes(new Date(), cooldownConfig).toISOString()]
   });
@@ -196,8 +195,8 @@ export const resetPasswordRequest: Handler = async (req, res) => {
     await mail.resetPasswordToken(user);
   }
 
-  return res.status(200).json({
-    error: "If email address exists, a reset password email has been sent."
+  return res.status(200).send({
+    message: "If email address exists, a reset password email has been sent."
   });
 };
 
@@ -224,4 +223,74 @@ export const resetPassword: Handler = async (req, res, next) => {
 export const signupAccess: Handler = (req, res, next) => {
   if (!env.DISALLOW_REGISTRATION) return next();
   return res.status(403).send({ message: "Registration is not allowed." });
+};
+
+export const changeEmailRequest: Handler = async (req, res) => {
+  const { email, password } = req.body;
+
+  const isMatch = await bcrypt.compare(password, req.user.password);
+
+  if (!isMatch) {
+    throw new CustomError("Password is wrong.", 400);
+  }
+
+  const currentUser = await query.user.find({ email });
+
+  if (currentUser) {
+    throw new CustomError("Can't use this email address.", 400);
+  }
+
+  const [updatedUser] = await query.user.update(
+    { id: req.user.id },
+    {
+      change_email_address: email,
+      change_email_token: uuid(),
+      change_email_expires: addMinutes(new Date(), 30).toISOString()
+    }
+  );
+
+  redis.remove.user(updatedUser);
+
+  if (updatedUser) {
+    await mail.changeEmail({ ...updatedUser, email });
+  }
+
+  return res.status(200).send({
+    message:
+      "If email address exists, an email " +
+      "with a verification link has been sent."
+  });
+};
+
+export const changeEmail: Handler = async (req, res, next) => {
+  const { changeEmailToken } = req.params;
+
+  if (changeEmailToken) {
+    const foundUser = await query.user.find({
+      change_email_token: changeEmailToken
+    });
+
+    if (!foundUser) return next();
+
+    const [user] = await query.user.update(
+      {
+        change_email_token: changeEmailToken,
+        change_email_expires: [">", new Date().toISOString()]
+      },
+      {
+        change_email_token: null,
+        change_email_expires: null,
+        change_email_address: null,
+        email: foundUser.change_email_address
+      }
+    );
+
+    redis.remove.user(foundUser);
+
+    if (user) {
+      const token = utils.signToken(user as UserJoined);
+      req.token = token;
+    }
+  }
+  return next();
 };

@@ -34,6 +34,14 @@ router.post(
 );
 
 router.post(
+  "/change-email",
+  asyncHandler(auth.jwt),
+  validators.changePassword,
+  asyncHandler(helpers.verify),
+  asyncHandler(auth.changeEmailRequest)
+);
+
+router.post(
   "/apikey",
   asyncHandler(auth.jwt),
   asyncHandler(auth.generateApiKey)

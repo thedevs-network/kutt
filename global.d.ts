@@ -5,13 +5,16 @@ type Match<T> = {
 };
 
 interface User {
-  id: number;
   apikey?: string;
-  banned: boolean;
   banned_by_id?: number;
+  banned: boolean;
+  change_email_address?: string;
+  change_email_expires?: string;
+  change_email_token?: string;
   cooldowns?: string[];
   created_at: string;
   email: string;
+  id: number;
   password: string;
   reset_password_expires?: string;
   reset_password_token?: string;

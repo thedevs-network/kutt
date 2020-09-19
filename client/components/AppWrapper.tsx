@@ -28,11 +28,15 @@ const AppWrapper = ({ children }: { children: any }) => {
   const loading = useStoreState(s => s.loading.loading);
   const getSettings = useStoreActions(s => s.settings.getSettings);
 
+  const isVerifyEmailPage =
+    typeof window !== "undefined" &&
+    window.location.pathname.includes("verify-email");
+
   useEffect(() => {
-    if (isAuthenticated && !fetched) {
+    if (isAuthenticated && !fetched && !isVerifyEmailPage) {
       getSettings().catch(() => logout());
     }
-  }, []);
+  }, [isVerifyEmailPage]);
 
   return (
     <Wrapper

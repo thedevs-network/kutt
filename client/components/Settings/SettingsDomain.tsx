@@ -135,7 +135,7 @@ const SettingsDomain: FC = () => {
               fontSize={[15, 16]}
               bold
             >
-              Domain
+              Domain:
             </Text>
             <TextInput
               {...text("address")}
@@ -152,7 +152,7 @@ const SettingsDomain: FC = () => {
               fontSize={[15, 16]}
               bold
             >
-              Homepage (optional)
+              Homepage (optional):
             </Text>
             <TextInput
               {...text("homepage")}

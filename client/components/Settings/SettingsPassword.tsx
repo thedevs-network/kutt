@@ -55,7 +55,7 @@ const SettingsPassword: FC = () => {
         fontSize={[15, 16]}
         bold
       >
-        New password
+        New password:
       </Text>
       <Flex as="form" onSubmit={onSubmit}>
         <TextInput

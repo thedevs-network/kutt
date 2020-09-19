@@ -54,6 +54,12 @@ app.prepare().then(async () => {
   );
 
   server.get(
+    "/verify-email/:changeEmailToken",
+    asyncHandler(auth.changeEmail),
+    (req, res) => app.render(req, res, "/verify-email", { token: req.token })
+  );
+
+  server.get(
     "/verify/:verificationToken?",
     asyncHandler(auth.verify),
     (req, res) => app.render(req, res, "/verify", { token: req.token })

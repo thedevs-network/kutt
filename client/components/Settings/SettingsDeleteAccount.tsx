@@ -65,7 +65,7 @@ const SettingsDeleteAccount: FC = () => {
         fontSize={[15, 16]}
         bold
       >
-        Password
+        Password:
       </Text>
       <RowCenterV as="form" onSubmit={onSubmit}>
         <TextInput

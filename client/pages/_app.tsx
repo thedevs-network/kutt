@@ -45,8 +45,11 @@ class MyApp extends App<any> {
   componentDidMount() {
     const { loading, auth } = this.store.dispatch;
     const token = cookie.get("token");
+    const isVerifyEmailPage =
+      typeof window !== "undefined" &&
+      window.location.pathname.includes("verify-email");
 
-    if (token) {
+    if (token && !isVerifyEmailPage) {
       auth.renew().catch(() => {
         auth.logout();
       });
