@@ -44,17 +44,25 @@ const generateId = async () => {
   return generateId();
 };
 
+const getBoolean = (input: any): boolean => {
+  switch(String(input).toLowerCase()) {
+  	case "false": case "no": case "0": case "": return false; 
+  	default: return true;
+  }
+};
+
 export const shortener: Handler = async (req, res) => {
   try {
     const target = addProtocol(req.body.target);
     const targetDomain = URL.parse(target).hostname;
+    const reuse_bool = getBoolean(req.body.reuse);
 
     const queries = await Promise.all([
       env.GOOGLE_SAFE_BROWSING_KEY && cooldownCheck(req.user),
       env.GOOGLE_SAFE_BROWSING_KEY && malwareCheck(req.user, req.body.target),
       req.user && urlCountsCheck(req.user),
       req.user &&
-        req.body.reuse &&
+        reuse_bool &&
         findLink({
           target,
           user_id: req.user.id
@@ -96,6 +104,7 @@ export const shortener: Handler = async (req, res) => {
     const link = await createShortLink(
       {
         ...req.body,
+        reuse_bool,
         address,
         target
       },

@@ -164,3 +164,10 @@ export const sanitize = {
     link: generateShortLink(link.address, link.domain)
   })
 };
+
+export const getBoolean = (input: any): boolean => {
+  switch(String(input).toLowerCase()) {
+  	case "false": case "no": case "0": case "": return false; 
+  	default: return true;
+  }
+};

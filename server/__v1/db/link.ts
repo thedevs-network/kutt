@@ -14,7 +14,7 @@ import { banHost } from "./host";
 import { banUser } from "./user";
 
 interface CreateLink extends Link {
-  reuse?: boolean;
+  reuse_bool: boolean;
   domainName?: string;
 }
 
@@ -42,7 +42,7 @@ export const createShortLink = async (data: CreateLink, user: UserJoined) => {
   return {
     ...link,
     password: !!data.password,
-    reuse: !!data.reuse,
+    reuse: !!data.reuse_bool,
     shortLink: generateShortLink(data.address, domain),
     shortUrl: generateShortLink(data.address, domain)
   };
@@ -138,7 +138,8 @@ export const findLink = async ({
     .first();
 
   if (link) {
-    redis.set(redisKey, JSON.stringify(link), "EX", 60 * 60 * 2);
+    const newRedisKey = getRedisKey.link(link.address, link.domain_id, link.user_id);
+    redis.set(newRedisKey, JSON.stringify(link), "EX", 60 * 60 * 2);
   }
 
   return link;

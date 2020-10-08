@@ -53,13 +53,14 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
   } = req.body;
   const domain_id = domain ? domain.id : null;
 
-  const targetDomain = URL.parse(target).hostname;
+  const targetDomain = URL.parse(target).hostname;  
+  const reuse_bool = utils.getBoolean(reuse);
 
   const queries = await Promise.all([
     validators.cooldown(req.user),
     validators.malware(req.user, target),
     validators.linksCount(req.user),
-    reuse &&
+    reuse_bool &&
       query.link.find({
         target,
         user_id: req.user.id,
