@@ -68,7 +68,6 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
     customurl &&
       query.link.find({
         address: customurl,
-        user_id: req.user.id,
         domain_id
       }),
     !customurl && utils.generateId(domain_id),
