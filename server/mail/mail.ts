@@ -10,10 +10,12 @@ const mailConfig = {
   host: env.MAIL_HOST,
   port: env.MAIL_PORT,
   secure: env.MAIL_SECURE,
-  auth: env.MAIL_USER ? {
-    user: env.MAIL_USER,
-    pass: env.MAIL_PASSWORD
-  } : undefined
+  auth: env.MAIL_USER
+    ? {
+        user: env.MAIL_USER,
+        pass: env.MAIL_PASSWORD
+      }
+    : undefined
 };
 
 const transporter = nodemailer.createTransport(mailConfig);
