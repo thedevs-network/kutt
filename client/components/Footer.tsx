@@ -18,12 +18,7 @@ const Footer: FC = () => {
   }, []);
 
   return (
-    <ColCenter
-      as="footer"
-      width={1}
-      backgroundColor="white"
-      p={isAuthenticated ? 2 : 24}
-    >
+    <ColCenter as="footer" width={1} p={isAuthenticated ? 2 : 24}>
       {!isAuthenticated && <ReCaptcha />}
       <Text fontSize={[12, 13]} py={2}>
         Made with love by{" "}

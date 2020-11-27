@@ -31,11 +31,18 @@ export const Button = styled(Flex)<Props>`
     purple: "linear-gradient(to right, #7e57c2, #6200ea)",
     gray: "linear-gradient(to right, #e0e0e0, #bdbdbd)"
   })};
+  // this is for the browsers that doesn't support css variables
   box-shadow: ${switchProp(prop("color", "blue"), {
     blue: "0 5px 6px rgba(66, 165, 245, 0.5)",
     red: "0 5px 6px rgba(168, 45, 45, 0.5)",
     purple: "0 5px 6px rgba(81, 45, 168, 0.5)",
     gray: "0 5px 6px rgba(160, 160, 160, 0.5)"
+  })};
+  box-shadow: ${switchProp(prop("color", "blue"), {
+    blue: "0 5px 6px var(--color-blue-btn-shadow)",
+    red: "0 5px 6px var(--color-red-btn-shadow)",
+    purple: "0 5px 6px var(--color-purple-btn-shadow)",
+    gray: "0 5px 6px var(--color-gray-btn-shadow)"
   })};
   border: none;
   border-radius: 100px;
@@ -51,6 +58,12 @@ export const Button = styled(Flex)<Props>`
       red: "0 6px 15px rgba(168, 45, 45, 0.5)",
       purple: "0 6px 15px rgba(81, 45, 168, 0.5)",
       gray: "0 6px 15px rgba(160, 160, 160, 0.5)"
+    })};
+    box-shadow: ${switchProp(prop("color", "blue"), {
+      blue: "0 6px 15px var(--color-blue-btn-shadow)",
+      red: "0 6px 15px var(--color-red-btn-shadow)",
+      purple: "0 6px 15px var(--color-purple-btn-shadow)",
+      gray: "0 6px 15px var(--color-gray-btn-shadow)"
     })};
     transform: translateY(-2px) scale(1.02, 1.02);
   }
@@ -82,6 +95,9 @@ export const NavButton = styled(Flex)<NavButtonProps>`
   border-radius: 4px;
   box-shadow: 0 0px 10px rgba(100, 100, 100, 0.1);
   background-color: white;
+  background-color: var(--color-default);
+  color: #fff;
+  color: var(--default-btn-text-color);
   cursor: pointer;
   transition: all 0.2s ease-out;
   box-sizing: border-box;
@@ -94,6 +110,7 @@ export const NavButton = styled(Flex)<NavButtonProps>`
     "disabled",
     css`
       background-color: #f6f6f6;
+      background-color: var(--color-btn-disabled);
       box-shadow: 0 0px 5px rgba(150, 150, 150, 0.1);
       cursor: default;
 

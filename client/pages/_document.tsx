@@ -3,8 +3,6 @@ import { ServerStyleSheet } from "styled-components";
 import getConfig from "next/config";
 import React from "react";
 
-import { Colors } from "../consts";
-
 const { publicRuntimeConfig } = getConfig();
 
 interface Props {
@@ -92,10 +90,8 @@ class AppDocument extends Document<Props> {
         <body
           style={{
             margin: 0,
-            backgroundColor: Colors.Bg,
             font: '16px/1.45 "Nunito", sans-serif',
-            overflowX: "hidden",
-            color: Colors.Text
+            overflowX: "hidden"
           }}
         >
           <Main />

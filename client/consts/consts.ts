@@ -54,6 +54,7 @@ export enum Colors {
   StatsTotalUnderline = "hsl(200, 35%, 65%)",
   StopIcon = "hsl(10, 100%, 40%)",
   StopIconBg = "hsl(10, 100%, 96%)",
+  TableBg = "hsl(0, 0%, 100%)",
   TableBorder = "hsl(200, 14%, 90%)",
   TableHeadBg = "hsl(200, 12%, 95%)",
   TableHeadBorder = "hsl(200, 14%, 94%)",
@@ -61,6 +62,7 @@ export enum Colors {
   TableRowBanned = "hsl(0, 100%, 98%)",
   TableRowBannedHower = "hsl(0, 100%, 96%)",
   TableShadow = "hsla(200, 20%, 70%, 0.3)",
+  TDAfterElBg = "linear-gradient(to left, white, rgba(255, 255, 255, 0.001));",
   Text = "hsl(200, 35%, 25%)",
   TrashIcon = "hsl(0, 100%, 69%)",
   TrashIconBg = "hsl(0, 100%, 96%)"

@@ -15,6 +15,8 @@ interface Props extends Omit<BoxProps, "as"> {
 }
 const Text: FC<Props> = styled(Box)<Props>`
   font-weight: 400;
+  color: ${Colors.Text};
+  color: var(--color-text);
   ${ifNotProp(
     "fontSize",
     css`
@@ -51,9 +53,7 @@ const Text: FC<Props> = styled(Box)<Props>`
   )}
 `;
 
-Text.defaultProps = {
-  color: Colors.Text
-};
+Text.defaultProps = {};
 
 export default Text;
 

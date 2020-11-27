@@ -40,7 +40,7 @@ const Modal: FC<Props> = ({ children, id, show, closeHandler, ...rest }) => {
         maxWidth="90%"
         py={[32, 32, 48]}
         px={[24, 24, 32]}
-        style={{ borderRadius: 8, backgroundColor: "white" }}
+        style={{ borderRadius: 8, backgroundColor: "var(--color-modal-bg)" }}
         flexDirection="column"
         {...rest}
       >

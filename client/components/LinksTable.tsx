@@ -47,13 +47,19 @@ const Td = styled(Flex)<{ withFade?: boolean }>`
         top: 0;
         height: 100%;
         width: 16px;
-        background: linear-gradient(to left, white, rgba(255, 255, 255, 0.001));
+        background: ${Colors.TDAfterElBg};
+        background: var(--color-td-after-bg);
       }
 
       tr:hover &:after {
         background: linear-gradient(
           to left,
           ${Colors.TableRowHover},
+          rgba(255, 255, 255, 0.001)
+        );
+        background: linear-gradient(
+          to left,
+          var(--color-table-row-hover),
           rgba(255, 255, 255, 0.001)
         );
       }
@@ -71,7 +77,9 @@ Td.defaultProps = {
 
 const EditContent = styled(Col)`
   border-bottom: 1px solid ${Colors.TableRowHover};
+  border-bottom: 1px solid var(--color-table-row-hover);
   background-color: #fafafa;
+  background-color: var(--color-table-bg);
 `;
 
 const Action = (props: React.ComponentProps<typeof Icon>) => (

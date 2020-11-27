@@ -7,13 +7,13 @@ import { ColCenterH } from "./Layout";
 import { Colors } from "../consts";
 import Text, { H3 } from "./Text";
 
+const Wrapper = styled(ColCenterH)`
+  background-color: ${Colors.FeaturesBg};
+  background-color: var(--color-features-bg);
+`;
+
 const Features = () => (
-  <ColCenterH
-    width={1}
-    flex="0 0 auto"
-    py={[64, 100]}
-    backgroundColor={Colors.FeaturesBg}
-  >
+  <Wrapper width={1} flex="0 0 auto" py={[64, 100]}>
     <H3 fontSize={[26, 28]} mb={72} light>
       Kutting edge features.
     </H3>
@@ -38,7 +38,7 @@ const Features = () => (
         Completely open source and free. You can host it on your own server.
       </FeaturesItem>
     </Flex>
-  </ColCenterH>
+  </Wrapper>
 );
 
 export default Features;

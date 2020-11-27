@@ -1,0 +1,95 @@
+:root {
+    /* light-theme colors*/
+    --color-default: hsl(0, 0%, 100%);
+    --default-btn-text-color: inherit;
+    --color-blue-btn-shadow: hsla(207, 90%, 61%, 0.5);
+    --color-red-btn-shadow: hsla(0, 58%, 42%, 0.5);
+    --color-purple-btn-shadow: hsla(258, 58%, 42%, 0.5);
+    --color-gray-btn-shadow: hsla(0, 0%, 63%, 0.5);
+    --color-btn-disabled: hsl(0, 0%, 96%);
+    --default-border-color: hsl(0, 0%, 96%);
+    --color-input-text: hsl(0, 0%, 27%);
+    --color-input-box-sd: hsla(200, 15%, 70%, 0.2);
+    --color-input-focus-box-sd: hsla(200, 15%, 70%, 0.4);
+    --color-input-placeholder: hsl(0, 0%, 53%);
+    --color-extensions-btn: hsl(0, 0%, 93%);
+    --color-extensions-btn-border: hsl(0, 0%, 67%);
+    --color-modal-bg: hsl(0, 0%, 100%);
+    --color-bg: hsl(206, 12%, 95%);
+    --color-check-icon: hsl(144, 50%, 60%);
+    --color-copy-icon: hsl(144, 40%, 57%);
+    --color-copy-icon-bg: hsl(144, 100%, 96%);
+    --color-divider: hsl(200, 20%, 92%);
+    --color-edit-icon: hsl(46, 90%, 50%);
+    --color-edit-icon-bg: hsl(46, 100%, 94%);
+    --color-extensions-bg: hsl(230, 15%, 20%);
+    --color-features-bg: hsl(230, 15%, 92%);
+    /* TODO: DARK THEME ICONS */
+    --color-icon: hsl(200, 35%, 45%);
+    --color-icon-shadow: hsla(200, 15%, 60%, 0.12);
+    --color-pie-icon: hsl(260, 100%, 69%);
+    --color-pie-icon-bg: hsl(260, 100%, 96%);
+    --color-qrcode-icon: hsl(0, 0%, 35%);
+    --color-qrcode-icon-bg: hsl(0, 0%, 94%);
+    --color-spinner: hsl(200, 15%, 70%);
+    --color-stop-icon: hsl(10, 100%, 40%);
+    --color-stop-icon-bg: hsl(10, 100%, 96%);
+    /* *** */
+    --color-table-bg: hsl(0, 0%, 100%);
+    --color-table-border: hsl(200, 14%, 90%);
+    --color-table-head-bg: hsl(200, 12%, 95%);
+    --color-table-head-border: hsl(200, 14%, 94%);
+    --color-table-row-hover: hsl(200, 14%, 98%);
+    --color-table-row-banned: hsl(0, 100%, 98%);
+    --color-table-row-banned-hover: hsl(0, 100%, 96%);
+    --color-table-shadow: hsla(200, 20%, 70%, 0.3);
+    --color-td-after-bg: linear-gradient(to left, white, rgba(255, 255, 255, 0.001));
+    --color-text: hsl(200, 35%, 25%);
+    --color-trash-icon: hsl(0, 100%, 69%);
+    --color-trash-icon-bg: hsl(0, 100%, 96%);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-default: hsl(0, 1%, 25%);
+        --default-border-color: hsl(0, 1%, 31%);
+        --default-btn-text-color: hsl(0, 0%, 100%);
+        --color-blue-btn-shadow: hsla(207, 90%, 31%, 0.5);
+        --color-red-btn-shadow: hsla(0, 58%, 32%, 0.5);
+        --color-purple-btn-shadow: hsla(258, 58%, 22%, 0.5);
+        --color-gray-btn-shadow: hsla(0, 0%, 33%, 0.5);
+        --color-btn-disabled: hsl(0, 0%, 16%);
+        --color-input-text: hsl(0, 0%, 77%);
+        --color-input-box-sd: hsla(200, 15%, 20%, 0.2);
+        --color-input-focus-box-sd: hsla(200, 15%, 20%, 0.4);
+        --color-input-placeholder: hsl(0, 0%, 73%);
+        --color-extensions-btn: hsl(0, 0%, 25%);
+        --color-extensions-btn-border: hsl(0, 0%, 35%);
+        --color-modal-bg: hsl(0, 0%, 30%);
+        --color-bg: hsl(240, 9%, 9%);
+        --color-divider: hsl(200, 20%, 32%);
+        --color-extensions-bg: hsl(230, 15%, 17%);
+        --color-features-bg: hsl(230, 9%, 15%);
+        --color-table-bg: hsl(240, 9%, 23%);
+        --color-table-border: hsl(240, 11%, 27%);
+        --color-table-head-bg: hsl(240, 9%, 18%);
+        --color-table-head-border: hsl(240, 11%, 27%);
+        --color-table-row-hover: hsl(240, 9%, 22%);
+        --color-table-shadow: hsla(203, 10%, 35%, 0.3);
+        --color-td-after-bg: linear-gradient(to left, hsl(240, 9%, 23%), hsla(240, 9%, 23%, 0.001));
+        --color-text: hsl(200, 45%, 45%);
+    }
+}
+
+
+body {
+    background-color: hsl(206, 12%, 95%); /*for the browsers that doesn't support css variables*/
+    background-color: var(--color-bg);
+    color: hsl(200, 35%, 25%);
+    color: var(--color-text);
+}
+
+footer { /* TODO: need to add this in Footer.tsx */
+    background-color: white !important;
+    background-color: var(--color-default) !important;
+}

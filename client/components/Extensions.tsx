@@ -14,7 +14,9 @@ const Button = styled.button`
   padding: 12px 28px;
   font-family: "Nunito", sans-serif;
   background-color: #eee;
+  background-color: var(--color-extensions-btn);
   border: 1px solid #aaa;
+  border: 1px solid var(--color-extensions-btn-border);
   font-size: 14px;
   font-weight: bold;
   text-decoration: none;
@@ -71,15 +73,19 @@ const Icon = styled(SVG)`
   }
 `;
 
+const Wrapper = styled(ColCenterH)`
+  background-color: ${Colors.ExtensionsBg};
+  background-color: var(--color-extensions-bg);
+`;
+
 const Extensions = () => (
-  <ColCenterH
+  <Wrapper
     width={1}
     flex="0 0 auto"
     flexWrap={["wrap", "wrap", "nowrap"]}
     py={[64, 96]}
-    backgroundColor={Colors.ExtensionsBg}
   >
-    <H3 fontSize={[26, 28]} mb={5} color="white" light>
+    <H3 fontSize={[26, 28]} mb={5} light style={{ color: "white" }}>
       Browser extensions.
     </H3>
     <Flex
@@ -110,7 +116,7 @@ const Extensions = () => (
         </FirefoxButton>
       </Link>
     </Flex>
-  </ColCenterH>
+  </Wrapper>
 );
 
 export default Extensions;

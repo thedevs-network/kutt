@@ -9,6 +9,7 @@ const Divider = styled(Flex).attrs({ as: "hr" })`
   outline: none;
   border: none;
   background-color: ${Colors.Divider};
+  background-color: var(--color-divider);
 `;
 
 export default Divider;

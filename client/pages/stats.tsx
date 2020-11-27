@@ -8,7 +8,7 @@ import axios from "axios";
 import Text, { H1, H2, H4, Span } from "../components/Text";
 import { getAxiosConfig, removeProtocol } from "../utils";
 import { Button, NavButton } from "../components/Button";
-import { Col, RowCenterV } from "../components/Layout";
+import { Col, RowCenter, RowCenterV } from "../components/Layout";
 import { Area, Bar, Pie, Map } from "../components/Charts";
 import PageLoading from "../components/PageLoading";
 import AppWrapper from "../components/AppWrapper";
@@ -17,10 +17,23 @@ import { APIv2, Colors } from "../consts";
 import { useStoreState } from "../store";
 import ALink from "../components/ALink";
 import Icon from "../components/Icon";
+import styled from "styled-components";
 
 interface Props {
   id?: string;
 }
+
+const StyledCol = styled(Col)`
+  background-color: white;
+  background-color: var(--color-default);
+  box-shadow: 0 6px 15px hsla(200, 20%, 70%, 0.3);
+  box-shadow: 0 6px 15px var(--color-table-shadow);
+`;
+
+const StyledRowCenter = styled(RowCenter)`
+  background-color: ${Colors.TableHeadBg};
+  background-color: var(--color-table-head-bg);
+`;
 
 const StatsPage: NextPage<Props> = ({ id }) => {
   const { isAuthenticated } = useStoreState(s => s.auth);
@@ -95,17 +108,14 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                   : data.target}
               </Text>
             </Flex>
-            <Col
-              backgroundColor="white"
+            <StyledCol
               style={{
                 borderRadius: 12,
-                boxShadow: "0 6px 15px hsla(200, 20%, 70%, 0.3)",
                 overflow: "hidden"
               }}
             >
-              <RowCenterV
+              <StyledRowCenter
                 flex="1 1 auto"
-                backgroundColor={Colors.TableHeadBg}
                 justifyContent="space-between"
                 py={[3, 3, 24]}
                 px={[3, 4]}
@@ -130,7 +140,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                     </NavButton>
                   ))}
                 </Flex>
-              </RowCenterV>
+              </StyledRowCenter>
               <Col p={[3, 4]}>
                 <H2 mb={2} light>
                   <Span
@@ -185,7 +195,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
                   </>
                 )}
               </Col>
-            </Col>
+            </StyledCol>
             <Box alignSelf="center" my={64}>
               <Link href="/">
                 <ALink href="/" title="Back to homepage" forButton>

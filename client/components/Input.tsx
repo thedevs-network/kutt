@@ -26,23 +26,29 @@ export const TextInput = styled(Flex).attrs({
   box-sizing: border-box;
   letter-spacing: 0.05em;
   color: #444;
-  background-color: white;
+  color: var(--color-input-text);
+  background-color: hsl(0, 0%, 100%);
+  background-color: var(--color-default);
   box-shadow: 0 10px 35px hsla(200, 15%, 70%, 0.2);
+  box-shadow: 0 10px 35px var(--color-input-box-sd);
   border: none;
   border-radius: ${prop("br", "100px")};
   border-bottom: 5px solid #f5f5f5;
+  border-bottom: 5px solid var(--default-border-color);
   border-bottom-width: ${prop("bbw", "5px")};
   transition: all 0.5s ease-out;
 
   :focus {
     outline: none;
     box-shadow: 0 20px 35px hsla(200, 15%, 70%, 0.4);
+    box-shadow: 0 20px 35px var(--color-input-focus-box-sd);
   }
 
   ::placeholder {
     font-size: ${withProp("placeholderSize", s => s[0] || 14)}px;
     letter-spacing: 0.05em;
     color: #888;
+    color: var(--color-input-placeholder);
   }
 
   @media screen and (min-width: 64em) {
@@ -103,11 +109,15 @@ const StyledSelect: FC<StyledSelectProps> = styled(Flex).attrs({
   box-sizing: border-box;
   letter-spacing: 0.05em;
   color: #444;
-  background-color: white;
+  color: var(--color-input-text);
+  background-color: hsl(0, 0%, 100%);
+  background-color: var(--color-default);
   box-shadow: 0 10px 35px hsla(200, 15%, 70%, 0.2);
+  box-shadow: 0 10px 35px var(--color-input-box-sd);
   border: none;
   border-radius: ${prop("br", "100px")};
   border-bottom: 5px solid #f5f5f5;
+  border-bottom: 5px solid var(--default-border-color);
   border-bottom-width: ${prop("bbw", "5px")};
   transition: all 0.5s ease-out;
   appearance: none;
@@ -119,6 +129,7 @@ const StyledSelect: FC<StyledSelectProps> = styled(Flex).attrs({
   :focus {
     outline: none;
     box-shadow: 0 20px 35px hsla(200, 15%, 70%, 0.4);
+    box-shadow: 0 10px 35px var(--color-input-focus-box-sd);
   }
 
   @media screen and (min-width: 52em) {
