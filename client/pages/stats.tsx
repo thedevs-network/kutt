@@ -25,7 +25,7 @@ interface Props {
 
 const StyledCol = styled(Col)`
   background-color: white;
-  background-color: var(--color-default);
+  background-color: var(--color-table-bg);
   box-shadow: 0 6px 15px hsla(200, 20%, 70%, 0.3);
   box-shadow: 0 6px 15px var(--color-table-shadow);
 `;

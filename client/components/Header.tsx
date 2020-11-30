@@ -17,6 +17,7 @@ const { publicRuntimeConfig } = getConfig();
 const Li = styled(Flex).attrs({ ml: [12, 24, 32] })`
   a {
     color: inherit;
+    color: var(--color-menu-link);
 
     :hover {
       color: #2196f3;

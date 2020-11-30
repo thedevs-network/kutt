@@ -28,7 +28,7 @@ export const TextInput = styled(Flex).attrs({
   color: #444;
   color: var(--color-input-text);
   background-color: hsl(0, 0%, 100%);
-  background-color: var(--color-default);
+  background-color: var(--color-input-bg);
   box-shadow: 0 10px 35px hsla(200, 15%, 70%, 0.2);
   box-shadow: 0 10px 35px var(--color-input-box-sd);
   border: none;
@@ -111,7 +111,7 @@ const StyledSelect: FC<StyledSelectProps> = styled(Flex).attrs({
   color: #444;
   color: var(--color-input-text);
   background-color: hsl(0, 0%, 100%);
-  background-color: var(--color-default);
+  background-color: var(--color-input-bg);
   box-shadow: 0 10px 35px hsla(200, 15%, 70%, 0.2);
   box-shadow: 0 10px 35px var(--color-input-box-sd);
   border: none;

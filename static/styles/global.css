@@ -1,5 +1,6 @@
 :root {
     /* light-theme colors*/
+    --color-menu-link: inherit;
     --color-default: hsl(0, 0%, 100%);
     --default-btn-text-color: inherit;
     --color-blue-btn-shadow: hsla(207, 90%, 61%, 0.5);
@@ -8,6 +9,7 @@
     --color-gray-btn-shadow: hsla(0, 0%, 63%, 0.5);
     --color-btn-disabled: hsl(0, 0%, 96%);
     --default-border-color: hsl(0, 0%, 96%);
+    --color-input-bg: hsl(0, 0%, 100%);
     --color-input-text: hsl(0, 0%, 27%);
     --color-input-box-sd: hsla(200, 15%, 70%, 0.2);
     --color-input-focus-box-sd: hsla(200, 15%, 70%, 0.4);
@@ -44,6 +46,7 @@
     --color-table-row-banned-hover: hsl(0, 100%, 96%);
     --color-table-shadow: hsla(200, 20%, 70%, 0.3);
     --color-td-after-bg: linear-gradient(to left, white, rgba(255, 255, 255, 0.001));
+    --color-table-link: hsl(207, 90%, 54%);
     --color-text: hsl(200, 35%, 25%);
     --color-trash-icon: hsl(0, 100%, 69%);
     --color-trash-icon-bg: hsl(0, 100%, 96%);
@@ -51,19 +54,21 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
+        --color-menu-link: hsl(207, 90%, 54%);
         --color-default: hsl(0, 1%, 25%);
-        --default-border-color: hsl(0, 1%, 31%);
+        --default-border-color: hsl(0, 1%, 10%);
         --default-btn-text-color: hsl(0, 0%, 100%);
         --color-blue-btn-shadow: hsla(207, 90%, 31%, 0.5);
         --color-red-btn-shadow: hsla(0, 58%, 32%, 0.5);
-        --color-purple-btn-shadow: hsla(258, 58%, 22%, 0.5);
+        --color-purple-btn-shadow: hsla(0, 0%, 0%, 0.5);
         --color-gray-btn-shadow: hsla(0, 0%, 33%, 0.5);
         --color-btn-disabled: hsl(0, 0%, 16%);
+        --color-input-bg: hsl(240, 85%, 1%);
         --color-input-text: hsl(0, 0%, 77%);
-        --color-input-box-sd: hsla(200, 15%, 20%, 0.2);
-        --color-input-focus-box-sd: hsla(200, 15%, 20%, 0.4);
+        --color-input-box-sd: hsla(0, 0%, 0%, 0.2);
+        --color-input-focus-box-sd: hsla(240, 9%, 0%, 0.4);
         --color-input-placeholder: hsl(0, 0%, 73%);
-        --color-extensions-btn: hsl(0, 0%, 25%);
+        --color-extensions-btn: hsl(240, 75%, 1%);
         --color-extensions-btn-border: hsl(0, 0%, 35%);
         --color-modal-bg: hsl(0, 0%, 30%);
         --color-bg: hsl(240, 9%, 9%);
@@ -75,9 +80,10 @@
         --color-table-head-bg: hsl(240, 9%, 18%);
         --color-table-head-border: hsl(240, 11%, 27%);
         --color-table-row-hover: hsl(240, 9%, 22%);
-        --color-table-shadow: hsla(203, 10%, 35%, 0.3);
+        --color-table-shadow: hsla(0, 0%, 0%, 0.3);
         --color-td-after-bg: linear-gradient(to left, hsl(240, 9%, 23%), hsla(240, 9%, 23%, 0.001));
-        --color-text: hsl(200, 45%, 45%);
+        --color-table-link: hsl(207, 90%, 54%);
+        --color-text: #f5f5f5;
     }
 }
 
