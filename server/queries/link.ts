@@ -81,7 +81,7 @@ export const get = async (match: Partial<Link>, params: GetParams) => {
 
   if (params.search) {
     query.andWhereRaw(
-      "concat_ws(' ', description, links.address, target) ILIKE '%' || ? || '%'",
+      "concat_ws(' ', description, links.address, target, domains.address) ILIKE '%' || ? || '%'",
       [params.search]
     );
   }
