@@ -94,6 +94,7 @@ export const NavButton = styled(Flex)<NavButtonProps>`
   border: none;
   border-radius: 4px;
   box-shadow: 0 0px 10px rgba(100, 100, 100, 0.1);
+  box-shadow: 0 0px 10px var(--color-nav-btn-shadow);
   background-color: white;
   background-color: var(--color-input-bg);
   color: #fff;

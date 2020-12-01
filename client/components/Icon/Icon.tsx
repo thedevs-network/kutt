@@ -130,6 +130,7 @@ const CustomIcon: FC<React.ComponentProps<typeof Flex>> = styled(Flex)`
       cursor: pointer;
       box-sizing: border-box;
       box-shadow: 0 2px 1px ${Colors.IconShadow};
+      box-shadow: 0 2px 1px var(--color-icon-shadow);
 
       :hover,
       :focus {

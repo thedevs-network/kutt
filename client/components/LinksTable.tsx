@@ -26,6 +26,15 @@ import Table from "./Table";
 import ALink from "./ALink";
 import Modal from "./Modal";
 import Icon from "./Icon";
+import {
+  Action,
+  CopyIconAction,
+  QrCodeIconAction,
+  EditIconAction,
+  StopIconAction,
+  TrashIconAction,
+  PieIconAction
+} from "./LinkTableActionBtns";
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -81,20 +90,6 @@ const EditContent = styled(Col)`
   background-color: #fafafa;
   background-color: var(--color-table-bg);
 `;
-
-const Action = (props: React.ComponentProps<typeof Icon>) => (
-  <Icon
-    as="button"
-    py={0}
-    px={0}
-    mr={2}
-    size={[23, 24]}
-    flexShrink={0}
-    p={["4px", "5px"]}
-    stroke="#666"
-    {...props}
-  />
-);
 
 const ogLinkFlex = { flexGrow: [1, 3, 7], flexShrink: [1, 3, 7] };
 const createdFlex = { flexGrow: [1, 1, 2.5], flexShrink: [1, 1, 2.5] };
@@ -241,12 +236,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
           ) : (
             <Animation minWidth={32} offset="-10px" duration="0.2s">
               <CopyToClipboard text={link.link} onCopy={onCopy}>
-                <Action
-                  name="copy"
-                  strokeWidth="2.5"
-                  stroke={Colors.CopyIcon}
-                  backgroundColor={Colors.CopyIconBg}
-                />
+                <CopyIconAction name="copy" strokeWidth="2.5" />
               </CopyToClipboard>
             </Animation>
           )}
@@ -287,31 +277,22 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
           {link.visit_count > 0 && (
             <Link href={`/stats?id=${link.id}`}>
               <ALink title="View stats" forButton>
-                <Action
-                  name="pieChart"
-                  stroke={Colors.PieIcon}
-                  strokeWidth="2.5"
-                  backgroundColor={Colors.PieIconBg}
-                />
+                <PieIconAction name="pieChart" strokeWidth="2.5" />
               </ALink>
             </Link>
           )}
-          <Action
+          <QrCodeIconAction
             name="qrcode"
             stroke="none"
-            fill={Colors.QrCodeIcon}
-            backgroundColor={Colors.QrCodeIconBg}
             onClick={() => setQRModal(true)}
           />
-          <Action
+          <EditIconAction
             name="editAlt"
             strokeWidth="2.5"
-            stroke={Colors.EditIcon}
-            backgroundColor={Colors.EditIconBg}
             onClick={toggleEdit}
           />
           {isAdmin && !link.banned && (
-            <Action
+            <StopIconAction
               name="stop"
               strokeWidth="2"
               stroke={Colors.StopIcon}
@@ -319,7 +300,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
               onClick={() => setBanModal(true)}
             />
           )}
-          <Action
+          <TrashIconAction
             mr={0}
             name="trash"
             strokeWidth="2"
