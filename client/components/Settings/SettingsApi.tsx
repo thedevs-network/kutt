@@ -13,6 +13,7 @@ import Text, { H2 } from "../Text";
 import { Col } from "../Layout";
 import ALink from "../ALink";
 import Icon from "../Icon";
+import { CopyIconAction } from "../LinkTableActionBtns";
 
 const ApiKey = styled(Text).attrs({
   mt: [0, "2px"],
@@ -74,18 +75,7 @@ const SettingsApi: FC = () => {
           ) : (
             <Animation offset="-10px" duration="0.2s">
               <CopyToClipboard text={apikey} onCopy={setCopied}>
-                <Icon
-                  as="button"
-                  py={0}
-                  px={0}
-                  mr={2}
-                  size={[23, 24]}
-                  p={["4px", "5px"]}
-                  name="copy"
-                  strokeWidth="2.5"
-                  stroke={Colors.CopyIcon}
-                  backgroundColor={Colors.CopyIconBg}
-                />
+                <CopyIconAction name="copy" strokeWidth="2.5" />
               </CopyToClipboard>
             </Animation>
           )}

@@ -2,7 +2,7 @@
     /* light-theme colors*/
     --color-menu-link: inherit;
     --color-default: hsl(0, 0%, 100%);
-    --default-btn-text-color: inherit;
+    --default-btn-text-color: white;
     --color-blue-btn-shadow: hsla(207, 90%, 61%, 0.5);
     --color-red-btn-shadow: hsla(0, 58%, 42%, 0.5);
     --color-purple-btn-shadow: hsla(258, 58%, 42%, 0.5);
@@ -18,6 +18,7 @@
     --color-extensions-btn: hsl(0, 0%, 93%);
     --color-extensions-btn-border: hsl(0, 0%, 67%);
     --color-modal-bg: hsl(0, 0%, 100%);
+    --color-modal-blur: rgba(50, 50, 50, 0.8);
     --color-bg: hsl(206, 12%, 95%);
     --color-check-icon: hsl(144, 50%, 60%);
     --color-divider: hsl(200, 20%, 92%);
@@ -56,25 +57,27 @@
         /* dark-theme colors*/
         --color-menu-link: hsl(207, 90%, 54%);
         --color-default: hsl(0, 1%, 25%);
-        --default-border-color: hsl(0, 0%, 4%);
-        --default-btn-text-color: hsl(0, 0%, 100%);
-        --color-blue-btn-shadow: hsla(207, 90%, 31%, 0.5);
+        --default-border-color: hsl(234, 13%, 13%);
+        --default-btn-text-color: hsl(0, 0%, 90%);
+        --color-blue-btn-shadow: hsla(208, 82%, 7%, 0.5);
         --color-red-btn-shadow: hsla(0, 58%, 32%, 0.5);
         --color-purple-btn-shadow: hsla(0, 0%, 0%, 0.5);
         --color-gray-btn-shadow: hsla(0, 0%, 33%, 0.5);
-        --color-btn-disabled: hsl(0, 0%, 12%);
-        --color-nav-btn-shadow: rgba(0, 0, 0, 0.5);
-        --color-input-bg: hsl(240, 85%, 1%);
-        --color-input-text: hsl(0, 0%, 77%);
-        --color-input-box-sd: hsla(0, 0%, 0%, 0.2);
-        --color-input-focus-box-sd: hsla(240, 9%, 0%, 0.4);
+        --color-btn-disabled: hsl(234, 13%, 18%);
+        --color-nav-btn-shadow: hsla(234, 13%, 5%, .2);
+        --color-input-bg: hsl(234, 13%, 15%);
+        --color-input-text: hsl(210, 17%, 82%);
+        --color-input-box-sd: hsla(234, 13%, 15%, .01);
+        --color-input-focus-box-sd: hsla(234, 13%, 15%, .02);
         --color-input-placeholder: hsl(0, 0%, 73%);
-        --color-extensions-btn: hsl(240, 75%, 1%);
-        --color-extensions-btn-border: hsl(0, 0%, 35%);
+        --color-extensions-btn: hsl(234, 13%, 15%);
+        --color-extensions-btn-border: hsl(234, 13%, 30%);
         --color-modal-bg: hsl(0, 0%, 30%);
+        --color-modal-blur: rgba(33, 33, 33, 0.2);
         --color-bg: hsl(240, 9%, 9%);
-        --color-divider: hsl(200, 20%, 32%);
-        --color-extensions-bg: hsl(230, 15%, 17%);
+        --color-divider: hsl(215, 15%, 15%);
+        --color-footer-divider: hsl(180, 1%, 55%);
+        --color-extensions-bg: #000;
         --color-features-bg: hsl(230, 9%, 15%);
         --color-icon-shadow: hsla(0, 0%, 0%, 0.2);
         --color-copy-icon: #f5f5f5;
@@ -97,7 +100,7 @@
         --color-table-shadow: hsla(0, 0%, 0%, 0.3);
         --color-td-after-bg: linear-gradient(to left, hsl(240, 9%, 23%), hsla(240, 9%, 23%, 0.001));
         --color-table-link: hsl(207, 90%, 54%);
-        --color-text: #f5f5f5;
+        --color-text: #c9d1d9; /* text color from github's darkmode */
     }
 }
 

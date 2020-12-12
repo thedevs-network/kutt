@@ -21,6 +21,7 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   background-color: rgba(50, 50, 50, 0.8);
+  background-color: var(--color-modal-blur);
   z-index: 1000;
 `;
 

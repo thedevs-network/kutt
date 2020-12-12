@@ -25,6 +25,12 @@ export const Button = styled(Flex)<Props>`
     purple: "white",
     gray: "#444"
   })};
+  color: ${switchProp(prop("color", "blue"), {
+    blue: "var(--default-btn-text-color)",
+    red: "var(--default-btn-text-color)",
+    purple: "var(--default-btn-text-color)",
+    gray: "#444"
+  })};
   background: ${switchProp(prop("color", "blue"), {
     blue: "linear-gradient(to right, #42a5f5, #2979ff)",
     red: "linear-gradient(to right, #ee3b3b, #e11c1c)",

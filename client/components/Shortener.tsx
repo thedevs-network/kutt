@@ -40,7 +40,6 @@ const SubmitIconWrapper = styled.div`
 `;
 
 const ShortenedLink = styled(H1)`
-  cursor: "pointer";
   border-bottom: 1px dotted ${Colors.StatsTotalUnderline};
   cursor: pointer;
 
@@ -48,7 +47,17 @@ const ShortenedLink = styled(H1)`
     opacity: 0.8;
   }
 `;
-
+export const Action = (props: React.ComponentProps<typeof Icon>) => (
+  <Icon
+    as="button"
+    py={0}
+    px={0}
+    mr={3}
+    size={[30, 35]}
+    p={["6px", "7px"]}
+    {...props}
+  />
+);
 interface Form {
   target: string;
   domain?: string;
@@ -161,17 +170,19 @@ const Shortener = () => {
       ) : (
         <Animation offset="-10px" duration="0.2s">
           <CopyToClipboard text={link.link} onCopy={setCopied}>
-            <Icon
-              as="button"
-              py={0}
-              px={0}
-              mr={3}
-              size={[30, 35]}
-              p={["6px", "7px"]}
+            {/* can't use Icon component with css prop here for some reason, svg disappeared if we do*/}
+            <Action
               name="copy"
               strokeWidth="2.5"
-              stroke={Colors.CopyIcon}
-              backgroundColor={Colors.CopyIconBg}
+              css={`
+                background-color: ${Colors.CopyIconBg};
+                background-color: var(--color-copy-icon-bg);
+
+                svg {
+                  stroke: ${Colors.CopyIcon};
+                  stroke: var(--color-copy-icon);
+                }
+              `}
             />
           </CopyToClipboard>
         </Animation>
@@ -224,7 +235,12 @@ const Shortener = () => {
         </SubmitIconWrapper>
       </Flex>
       {message.text && (
-        <Text color={message.color} mt={24} mb={1} textAlign="center">
+        <Text
+          style={{ color: message.color }}
+          mt={24}
+          mb={1}
+          textAlign="center"
+        >
           {message.text}
         </Text>
       )}

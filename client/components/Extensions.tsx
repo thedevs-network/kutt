@@ -16,7 +16,7 @@ const Button = styled.button`
   background-color: #eee;
   background-color: var(--color-extensions-btn);
   border: 1px solid #aaa;
-  border: 1px solid var(--default-border-color);
+  border: 1px solid var(--color-extensions-btn-border);
   font-size: 14px;
   font-weight: bold;
   text-decoration: none;

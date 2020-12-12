@@ -73,7 +73,8 @@ const ReportPage = () => {
             Send report
           </Button>
         </Flex>
-        <Text fontSize={14} mt={3} color={message.color}>
+        <Text fontSize={14} mt={3} style={{ color: message.color }}>
+          {/* to override the default styles */}
           {message.text}
         </Text>
       </Col>

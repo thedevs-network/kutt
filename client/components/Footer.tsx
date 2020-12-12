@@ -10,6 +10,17 @@ import Text from "./Text";
 
 const { publicRuntimeConfig } = getConfig();
 
+const Divider = () => (
+  <span
+    css={`
+      color: inherit;
+      color: var(--color-footer-divider);
+    `}
+  >
+    {" | "}
+  </span>
+);
+
 const Footer: FC = () => {
   const { isAuthenticated } = useStoreState(s => s.auth);
 
@@ -25,7 +36,7 @@ const Footer: FC = () => {
         <ALink href="//thedevs.network/" title="The Devs">
           The Devs
         </ALink>
-        .{" | "}
+        . <Divider />
         <ALink
           href="https://github.com/thedevs-network/kutt"
           title="GitHub"
@@ -33,17 +44,17 @@ const Footer: FC = () => {
         >
           GitHub
         </ALink>
-        {" | "}
+        <Divider />
         <ALink href="/terms" title="Terms of Service">
           Terms of Service
         </ALink>
-        {" | "}
+        <Divider />
         <ALink href="/report" title="Report abuse">
           Report Abuse
         </ALink>
         {publicRuntimeConfig.CONTACT_EMAIL && (
           <>
-            {" | "}
+            <Divider />
             <ALink
               href={`mailto:${publicRuntimeConfig.CONTACT_EMAIL}`}
               title="Contact us"

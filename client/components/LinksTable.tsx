@@ -434,7 +434,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
               {editLoading ? "Updating..." : "Update"}
             </Button>
             {editMessage.text && (
-              <Text mt={3} fontSize={15} color={editMessage.color}>
+              <Text mt={3} fontSize={15} style={{ color: editMessage.color }}>
                 {editMessage.text}
               </Text>
             )}
@@ -476,7 +476,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                 <Icon name="spinner" size={20} stroke={Colors.Spinner} />
               </>
             ) : banMessage.text ? (
-              <Text fontSize={15} color={banMessage.color}>
+              <Text fontSize={15} style={{ color: banMessage.color }}>
                 {banMessage.text}
               </Text>
             ) : (
@@ -689,7 +689,7 @@ const LinksTable: FC = () => {
                   <Icon name="spinner" size={20} stroke={Colors.Spinner} />
                 </>
               ) : deleteMessage.text ? (
-                <Text fontSize={15} color={deleteMessage.color}>
+                <Text fontSize={15} style={{ color: deleteMessage.color }}>
                   {deleteMessage.text}
                 </Text>
               ) : (
@@ -702,7 +702,16 @@ const LinksTable: FC = () => {
                     Cancel
                   </Button>
                   <Button color="red" ml={3} onClick={onDelete}>
-                    <Icon name="trash" stroke="white" mr={2} />
+                    <Icon
+                      name="trash"
+                      mr={2}
+                      css={`
+                        svg {
+                          stroke: white;
+                          stroke: var(--color-text);
+                        }
+                      `}
+                    />
                     Delete
                   </Button>
                 </>

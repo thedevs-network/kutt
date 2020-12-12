@@ -16,6 +16,7 @@ import { Col } from "../Layout";
 import Table from "../Table";
 import Modal from "../Modal";
 import Icon from "../Icon";
+import { TrashIconAction } from "../LinkTableActionBtns";
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -98,16 +99,9 @@ const SettingsDomain: FC = () => {
                   {d.homepage || publicRuntimeConfig.DEFAULT_DOMAIN}
                 </Td>
                 <Td width={1 / 5} justifyContent="center">
-                  <Icon
-                    as="button"
+                  <TrashIconAction
                     name="trash"
-                    stroke={Colors.TrashIcon}
                     strokeWidth="2.5"
-                    backgroundColor={Colors.TrashIconBg}
-                    py={0}
-                    px={0}
-                    size={[23, 24]}
-                    p={["4px", "5px"]}
                     onClick={() => {
                       setDomainToDelete(d);
                       setModal(true);
@@ -167,7 +161,7 @@ const SettingsDomain: FC = () => {
           {loading ? "Setting..." : "Set domain"}
         </Button>
       </Col>
-      <Text color={message.color}>{message.text}</Text>
+      <Text style={{ color: message.color }}>{message.text}</Text>
       <Modal id="delete-custom-domain" show={modal} closeHandler={closeModal}>
         <H2 mb={24} textAlign="center" bold>
           Delete domain?

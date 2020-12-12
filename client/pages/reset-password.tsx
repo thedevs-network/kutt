@@ -95,7 +95,7 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
             Reset password
           </Button>
         </Flex>
-        <Text fontSize={14} color={message.color} mt={2} normal>
+        <Text fontSize={14} style={{ color: message.color }} mt={2} normal>
           {message.text}
         </Text>
       </Col>
