@@ -53,7 +53,7 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
   } = req.body;
   const domain_id = domain ? domain.id : null;
 
-  const targetDomain = URL.parse(target).hostname;
+  const targetDomain = utils.removeWww(URL.parse(target).hostname);
 
   const queries = await Promise.all([
     validators.cooldown(req.user),
@@ -123,7 +123,7 @@ export const edit: Handler = async (req, res) => {
     throw new CustomError("Link was not found.");
   }
 
-  const targetDomain = URL.parse(target).hostname;
+  const targetDomain = utils.removeWww(URL.parse(target).hostname);
   const domain_id = link.domain_id || null;
 
   const queries = await Promise.all([
@@ -218,7 +218,7 @@ export const ban: Handler = async (req, res) => {
   // 2. Ban link
   tasks.push(query.link.update({ uuid: id }, update));
 
-  const domain = URL.parse(link.target).hostname;
+  const domain = utils.removeWww(URL.parse(link.target).hostname);
 
   // 3. Ban target's domain
   if (req.body.domain) {
@@ -266,7 +266,7 @@ export const redirect = (app: ReturnType<typeof next>): Handler => async (
   if (isPreservedUrl) return next();
 
   // 1. If custom domain, get domain info
-  const { host } = req.headers;
+  const host = utils.removeWww(req.headers.host);
   const domain =
     host !== env.DEFAULT_DOMAIN
       ? await query.domain.find({ address: host })
@@ -371,10 +371,8 @@ export const redirectProtected: Handler = async (req, res) => {
 };
 
 export const redirectCustomDomain: Handler = async (req, res, next) => {
-  const {
-    headers: { host },
-    path
-  } = req;
+  const { path } = req;
+  const host = utils.removeWww(req.headers.host);
 
   if (host === env.DEFAULT_DOMAIN) {
     return next();

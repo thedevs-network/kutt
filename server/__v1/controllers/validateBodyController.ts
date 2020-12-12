@@ -8,7 +8,7 @@ import axios from "axios";
 import dns from "dns";
 import URL from "url";
 
-import { addProtocol, CustomError } from "../../utils";
+import { addProtocol, CustomError, removeWww } from "../../utils";
 import { addCooldown, banUser } from "../db/user";
 import { getUserLinksCount } from "../db/link";
 import { getDomain } from "../db/domain";
@@ -83,7 +83,7 @@ export const validateUrl: RequestHandler = async (req, res, next) => {
     return res.status(400).json({ error: "URL is not valid." });
 
   // If target is the URL shortener itself
-  const { host } = URL.parse(addProtocol(req.body.target));
+  const host = removeWww(URL.parse(addProtocol(req.body.target)).host);
   if (host === env.DEFAULT_DOMAIN) {
     return res
       .status(400)

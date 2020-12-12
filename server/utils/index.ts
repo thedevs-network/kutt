@@ -164,3 +164,7 @@ export const sanitize = {
     link: generateShortLink(link.address, link.domain)
   })
 };
+
+export const removeWww = (host = "") => {
+  return host.replace("www.", "");
+};

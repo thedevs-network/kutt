@@ -21,7 +21,12 @@ import {
 } from "../db/link";
 import transporter from "../../mail/mail";
 import * as redis from "../../redis";
-import { addProtocol, generateShortLink, getStatsCacheTime } from "../../utils";
+import {
+  addProtocol,
+  generateShortLink,
+  getStatsCacheTime,
+  removeWww
+} from "../../utils";
 import {
   checkBannedDomain,
   checkBannedHost,
@@ -47,7 +52,7 @@ const generateId = async () => {
 export const shortener: Handler = async (req, res) => {
   try {
     const target = addProtocol(req.body.target);
-    const targetDomain = URL.parse(target).hostname;
+    const targetDomain = removeWww(URL.parse(target).hostname);
 
     const queries = await Promise.all([
       env.GOOGLE_SAFE_BROWSING_KEY && cooldownCheck(req.user),
@@ -112,7 +117,7 @@ export const shortener: Handler = async (req, res) => {
 };
 
 export const goToLink: Handler = async (req, res, next) => {
-  const { host } = req.headers;
+  const host = removeWww(req.headers.host);
   const reqestedId = req.params.id || req.body.id;
   const address = reqestedId.replace("+", "");
   const customDomain = host !== env.DEFAULT_DOMAIN && host;
@@ -202,7 +207,7 @@ export const getUserLinks: Handler = async (req, res) => {
 
 export const setCustomDomain: Handler = async (req, res) => {
   const parsed = URL.parse(req.body.customDomain);
-  const customDomain = parsed.hostname || parsed.href;
+  const customDomain = removeWww(parsed.hostname || parsed.href);
   if (!customDomain)
     return res.status(400).json({ error: "Domain is not valid." });
   if (customDomain.length > 40) {
@@ -258,15 +263,16 @@ export const deleteCustomDomain: Handler = async (req, res) => {
 };
 
 export const customDomainRedirection: Handler = async (req, res, next) => {
-  const { headers, path } = req;
+  const { path } = req;
+  const host = removeWww(req.headers.host);
   if (
-    headers.host !== env.DEFAULT_DOMAIN &&
+    host !== env.DEFAULT_DOMAIN &&
     (path === "/" ||
       preservedUrls
         .filter(l => l !== "url-password")
         .some(item => item === path.replace("/", "")))
   ) {
-    const domain = await getDomain({ address: headers.host });
+    const domain = await getDomain({ address: host });
     return res.redirect(
       301,
       (domain && domain.homepage) || `https://${env.DEFAULT_DOMAIN + path}`
@@ -300,7 +306,7 @@ export const getLinkStats: Handler = async (req, res) => {
     return res.status(400).json({ error: "No id has been provided." });
   }
 
-  const { hostname } = URL.parse(req.query.domain);
+  const hostname = removeWww(URL.parse(req.query.domain).hostname);
   const hasCustomDomain = req.query.domain && hostname !== env.DEFAULT_DOMAIN;
   const customDomain = hasCustomDomain
     ? (await getDomain({ address: req.query.domain })) || ({ id: -1 } as Domain)
@@ -338,7 +344,7 @@ export const reportLink: Handler = async (req, res) => {
     return res.status(400).json({ error: "No URL has been provided." });
   }
 
-  const { hostname } = URL.parse(req.body.link);
+  const hostname = removeWww(URL.parse(req.body.link).hostname);
   if (hostname !== env.DEFAULT_DOMAIN) {
     return res.status(400).json({
       error: `You can only report a ${env.DEFAULT_DOMAIN} link`
@@ -374,7 +380,7 @@ export const ban: Handler = async (req, res) => {
     return res.status(200).json({ message: "Link was banned already." });
   }
 
-  const domain = URL.parse(link.target).hostname;
+  const domain = removeWww(URL.parse(link.target).hostname);
 
   let host;
   if (req.body.host) {

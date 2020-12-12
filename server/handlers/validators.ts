@@ -8,7 +8,7 @@ import dns from "dns";
 import URL from "url";
 import ms from "ms";
 
-import { CustomError, addProtocol } from "../utils";
+import { CustomError, addProtocol, removeWww } from "../utils";
 import query from "../queries";
 import knex from "../knex";
 import env from "../env";
@@ -55,7 +55,7 @@ export const createLink = [
         /^(?!https?)(\w+):\/\//.test(value)
     )
     .withMessage("URL is not valid.")
-    .custom(value => URL.parse(value).host !== env.DEFAULT_DOMAIN)
+    .custom(value => removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
     .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
   body("password")
     .optional({ nullable: true, checkFalsy: true })
@@ -111,7 +111,7 @@ export const createLink = [
     .isString()
     .withMessage("Domain should be string.")
     .customSanitizer(value => value.toLowerCase())
-    .customSanitizer(value => URL.parse(value).hostname || value)
+    .customSanitizer(value => removeWww(URL.parse(value).hostname || value))
     .custom(async (address, { req }) => {
       if (address === env.DEFAULT_DOMAIN) {
         req.body.domain = null;
@@ -143,7 +143,7 @@ export const editLink = [
         /^(?!https?)(\w+):\/\//.test(value)
     )
     .withMessage("URL is not valid.")
-    .custom(value => URL.parse(value).host !== env.DEFAULT_DOMAIN)
+    .custom(value => removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
     .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
   body("address")
     .optional({ checkFalsy: true, nullable: true })
@@ -201,7 +201,7 @@ export const addDomain = [
     .trim()
     .customSanitizer(value => {
       const parsed = URL.parse(value);
-      return parsed.hostname || parsed.href;
+      return removeWww(parsed.hostname || parsed.href);
     })
     .custom(value => urlRegex({ exact: true, strict: false }).test(value))
     .custom(value => value !== env.DEFAULT_DOMAIN)
@@ -243,7 +243,9 @@ export const reportLink = [
       checkNull: true
     })
     .customSanitizer(addProtocol)
-    .custom(value => URL.parse(value).hostname === env.DEFAULT_DOMAIN)
+    .custom(
+      value => removeWww(URL.parse(value).hostname) === env.DEFAULT_DOMAIN
+    )
     .withMessage(`You can only report a ${env.DEFAULT_DOMAIN} link.`)
 ];
 
