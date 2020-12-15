@@ -28,6 +28,7 @@ const LoginForm = styled(Flex).attrs({
 const Email = styled.span`
   font-weight: normal;
   color: #512da8;
+  color: var(--color-login-page-verifying-email-highlight);
   border-bottom: 1px dotted #999;
 `;
 
@@ -174,7 +175,7 @@ const LoginPage = () => {
                 Forgot your password?
               </ALink>
             </Link>
-            <Text color="red" mt={1} normal>
+            <Text mt={1} normal style={{ color: "#e60000" }}>
               {error}
             </Text>
           </LoginForm>

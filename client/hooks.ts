@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-const initialMessage = { color: "#c61111", text: "" };
+const initialMessage = { color: "#e60000", text: "" };
 
 export const useMessage = (timeout?: number) => {
   const [message, set] = useState(initialMessage);
 
-  const setMessage = (text = "", color = "#c61111") => {
+  const setMessage = (text = "", color = "#e60000") => {
     set({ text, color });
 
     if (timeout) {

@@ -5,6 +5,7 @@ import React, { FC } from "react";
 import { Colors } from "../../consts";
 import Tooltip from "../Tooltip";
 import world from "./world.json";
+import { useMedia } from "use-media";
 
 const Svg = styled.svg`
   path {
@@ -44,12 +45,14 @@ interface Props {
 
 const Map: FC<Props> = ({ data }) => {
   const [mostVisits] = data.sort((a, b) => (b.value - a.value > 0 ? 1 : -1));
+  const isDarkTheme = useMedia("(prefers-color-scheme: dark)");
+
   return (
     <>
       {world.layers.map(layer => (
         <Tooltip
           key={layer.id}
-          type="light"
+          type={isDarkTheme ? "dark" : "light"}
           effect="float"
           id={`${layer.id}-tooltip-country`}
         >

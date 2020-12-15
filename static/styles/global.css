@@ -50,6 +50,7 @@
     --color-td-after-bg: linear-gradient(to left, white, rgba(255, 255, 255, 0.001));
     --color-table-link: hsl(207, 90%, 54%);
     --color-text: hsl(200, 35%, 25%);
+    --color-login-page-verifying-email-highlight: #512da8;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -101,6 +102,7 @@
         --color-td-after-bg: linear-gradient(to left, hsl(240, 9%, 23%), hsla(240, 9%, 23%, 0.001));
         --color-table-link: hsl(207, 90%, 54%);
         --color-text: #c9d1d9; /* text color from github's darkmode */
+        --color-login-page-verifying-email-highlight: hsl(258, 58%, 62%);
     }
 }
 

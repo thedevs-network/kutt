@@ -60,10 +60,20 @@ const ChartArea: FC<Props> = ({ data: rawData, period }) => {
             <stop offset="95%" stopColor="#B39DDB" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <XAxis dataKey="name" />
-        <YAxis />
+        {/* Todo
+          Need to come up with a better way to use css variables here.
+      */}
+        <XAxis dataKey="name" stroke="var(--color-text)" />
+        <YAxis stroke="var(--color-text)" />
         <CartesianGrid strokeDasharray="1 1" />
-        <Tooltip />
+        <Tooltip
+          itemStyle={{ color: "var(--color-text)" }}
+          contentStyle={{
+            borderRadius: "4px",
+            backgroundColor: "var(--color-modal-bg)",
+            borderColor: "var(--default-border-color)"
+          }}
+        />
         <Area
           type="monotone"
           dataKey="views"

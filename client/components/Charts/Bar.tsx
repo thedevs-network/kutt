@@ -28,10 +28,22 @@ const ChartBar: FC<Props> = ({ data }) => (
         bottom: 0
       }}
     >
-      <XAxis type="number" dataKey="value" />
-      <YAxis type="category" dataKey="name" />
+      {/* Todo
+          Need to come up with a better way to use css variables here.
+          A bit tricky since we can't use className or css props here
+      */}
+      <XAxis type="number" dataKey="value" stroke="var(--color-text)" />
+      <YAxis type="category" dataKey="name" stroke="var(--color-text)" />
       <CartesianGrid strokeDasharray="1 1" />
-      <Tooltip />
+      <Tooltip
+        itemStyle={{ color: "var(--color-text)" }}
+        contentStyle={{
+          borderRadius: "4px",
+          backgroundColor: "var(--color-modal-bg)",
+          borderColor: "var(--default-border-color)"
+        }}
+        cursor={{ fill: "rgba(190,189,189,0.4)" }}
+      />
       <Bar dataKey="value" fill="#B39DDB" />
     </BarChart>
   </ResponsiveContainer>

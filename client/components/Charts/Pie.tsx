@@ -25,7 +25,18 @@ const ChartPie: FC<Props> = ({ data }) => (
         fill="#B39DDB"
         label={({ name }) => name}
       />
-      <Tooltip />
+      {/* Todo
+          Need to come up with a better way to use css variables here.
+          A bit tricky since we can't use className or css props here
+      */}
+      <Tooltip
+        itemStyle={{ color: "var(--color-text)" }}
+        contentStyle={{
+          borderRadius: "4px",
+          backgroundColor: "var(--color-modal-bg)",
+          borderColor: "var(--default-border-color)"
+        }}
+      />
     </PieChart>
   </ResponsiveContainer>
 );

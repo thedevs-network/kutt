@@ -126,6 +126,7 @@
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
     "@types/react-tooltip": "^3.11.0",
+    "@types/recharts": "^1.8.18",
     "@types/redis": "^2.8.14",
     "@types/reflexbox": "^4.0.0",
     "@types/styled-components": "^4.1.8",
