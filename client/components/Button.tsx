@@ -104,7 +104,7 @@ export const NavButton = styled(Flex)<NavButtonProps>`
   background-color: white;
   background-color: var(--color-input-bg);
   color: #fff;
-  color: var(--default-btn-text-color);
+  color: var(--default-navbtn-text-color);
   cursor: pointer;
   transition: all 0.2s ease-out;
   box-sizing: border-box;

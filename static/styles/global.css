@@ -3,6 +3,7 @@
     --color-menu-link: inherit;
     --color-default: hsl(0, 0%, 100%);
     --default-btn-text-color: white;
+    --default-navbtn-text-color: inherit;
     --color-blue-btn-shadow: hsla(207, 90%, 61%, 0.5);
     --color-red-btn-shadow: hsla(0, 58%, 42%, 0.5);
     --color-purple-btn-shadow: hsla(258, 58%, 42%, 0.5);
@@ -60,6 +61,7 @@
         --color-default: hsl(0, 1%, 25%);
         --default-border-color: hsl(234, 13%, 13%);
         --default-btn-text-color: hsl(0, 0%, 90%);
+        --default-navbtn-text-color: hsl(0, 0%, 90%);
         --color-blue-btn-shadow: hsla(208, 82%, 7%, 0.5);
         --color-red-btn-shadow: hsla(0, 58%, 32%, 0.5);
         --color-purple-btn-shadow: hsla(0, 0%, 0%, 0.5);
