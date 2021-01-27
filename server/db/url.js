@@ -432,7 +432,7 @@ exports.urlCountFromDate = ({ date, email }) =>
     session
       .readTransaction(tx =>
         tx.run(
-          'MATCH (u:USER { email: $email })-[:CREATED]->(l) WHERE l.createdAt > $date ' +
+          'MATCH (u:USER { email: $email })-[:CREATED]->(l:URL) WHERE l.createdAt > $date ' +
             'WITH COUNT(l) as count RETURN count',
           {
             date,
