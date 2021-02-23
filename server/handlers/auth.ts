@@ -125,6 +125,17 @@ export const signup: Handler = async (req, res) => {
   return res.status(201).send({ message: "Verification email has been sent." });
 };
 
+export const createUser: Handler = async (req, res) => {
+  const salt = await bcrypt.genSalt(12);
+  const password = await bcrypt.hash(req.body.password, salt);
+
+  const user = await query.user.add({ email: req.body.email, password });
+
+  await mail.verification(user);
+
+  return res.status(201).send({ message: "Verification email has been sent." });
+};
+
 export const token: Handler = async (req, res) => {
   const token = utils.signToken(req.user);
   return res.status(200).send({ token });

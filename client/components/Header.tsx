@@ -50,7 +50,7 @@ const LogoImage = styled.div`
 `;
 
 const Header: FC = () => {
-  const { isAuthenticated } = useStoreState(s => s.auth);
+  const { isAuthenticated, isAdmin } = useStoreState(s => s.auth);
   const isMobile = useMedia({ maxWidth: 640 });
 
   const login = !isAuthenticated && (
@@ -82,6 +82,16 @@ const Header: FC = () => {
       <Link href="/settings">
         <ALink href="/settings" title="Settings" forButton>
           <Button height={[32, 40]}>Settings</Button>
+        </ALink>
+      </Link>
+    </Li>
+  );
+
+  const adminLink = isAuthenticated && isAdmin && (
+    <Li>
+      <Link href="/admin">
+        <ALink href="/admin" title="Admin" forButton>
+          <Button height={[32, 40]}>Admin</Button>
         </ALink>
       </Link>
     </Li>
@@ -164,6 +174,7 @@ const Header: FC = () => {
         {logout}
         {settings}
         {login}
+        {adminLink}
       </RowCenterV>
     </Flex>
   );

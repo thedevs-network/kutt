@@ -15,6 +15,15 @@ router.get(
   asyncHandler(user.get)
 );
 
+router.get(
+  "/admin/list",
+  asyncHandler(auth.apikey),
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin),
+  asyncHandler(helpers.verify),
+  asyncHandler(user.getUserList)
+);
+
 router.post(
   "/delete",
   asyncHandler(auth.apikey),
@@ -22,6 +31,24 @@ router.post(
   validators.deleteUser,
   asyncHandler(helpers.verify),
   asyncHandler(user.remove)
+);
+
+router.delete(
+  "/admin/:id",
+  asyncHandler(auth.apikey),
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin),
+  asyncHandler(helpers.verify),
+  asyncHandler(user.removeById)
+);
+
+router.post(
+  "/admin/:id/ban",
+  asyncHandler(auth.apikey),
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin),
+  asyncHandler(helpers.verify),
+  asyncHandler(user.ban)
 );
 
 export default router;

@@ -49,4 +49,13 @@ router.post(
 
 router.post("/reset-password", asyncHandler(auth.resetPasswordRequest));
 
+router.post(
+  "/admin/new-user",
+  asyncHandler(auth.apikey),
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin),
+  asyncHandler(helpers.verify),
+  asyncHandler(auth.createUser)
+);
+
 export default router;

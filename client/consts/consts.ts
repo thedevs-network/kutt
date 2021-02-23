@@ -23,7 +23,11 @@ export enum APIv2 {
   AuthGenerateApikey = "/api/v2/auth/apikey",
   Users = "/api/v2/users",
   Domains = "/api/v2/domains",
-  Links = "/api/v2/links"
+  Links = "/api/v2/links",
+  AdminCreateUser = "/api/v2/auth/admin/new-user",
+  AdminListUsers = "/api/v2/users/admin/list",
+  AdminDeleteUser = "/api/v2/users/admin",
+  AdminBanUser = "/api/v2/users/admin"
 }
 
 export enum Colors {

@@ -28,6 +28,25 @@ export const find = async (match: Partial<User>) => {
   return user;
 };
 
+interface GetParams {
+  limit: number;
+  search?: string;
+  skip: number;
+}
+
+export const findAll = async (params: GetParams): Promise<User[]> => {
+  const query = knex<User>("users")
+    .offset(params.skip)
+    .limit(params.limit);
+
+  const users = query.select();
+  return users;
+};
+
+export const total = async (): Promise<number> => {
+  return knex<User>("users").count();
+};
+
 interface Add {
   email: string;
   password: string;
@@ -82,4 +101,12 @@ export const remove = async (user: User) => {
   redis.remove.user(user);
 
   return !!deletedUser;
+};
+
+export const removeById = async (id: number) => {
+  const userToDelete = await knex<User>("users")
+    .where("id", id)
+    .first();
+
+  return remove(userToDelete);
 };
