@@ -5,14 +5,17 @@ import { Colors } from "../consts";
 import { useStoreActions, useStoreState } from "../store";
 import React, { FC, useEffect, useState } from "react";
 import Table from "./Table";
-import Text from "./Text";
-import LinksTable from "./LinksTable";
+import Text, { H2, Span } from "./Text";
 import Icon from "./Icon";
 import Tooltip from "./Tooltip";
-import { NavButton } from "./Button";
+import { Button, NavButton } from "./Button";
 import { useFormState } from "react-use-form-state";
 import { User } from "../store/users";
 import { useMessage } from "../hooks";
+import { errorMessage, removeProtocol } from "../utils";
+import Modal from "./Modal";
+import CreateNewUserButton from "./Admin/CreateNewUser";
+import { TextInput } from "./Input";
 
 const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
 const Th = styled(Flex)``;
@@ -68,9 +71,25 @@ const Action = (props: React.ComponentProps<typeof Icon>) => (
   />
 );
 
-const actionsFlex = { flexGrow: [1, 1, 3], flexShrink: [1, 1, 3] };
+const actionsFlex = {
+  flexGrow: [1, 1, 3],
+  flexShrink: [1, 1, 3],
+  justifyContent: "flex-end",
+  alignItems: "center"
+};
 
-const emailFlex = { flexGrow: [1, 3, 7], flexShrink: [1, 3, 7] };
+const emailFlex = {
+  flexGrow: [1, 3, 7],
+  flexShrink: [1, 3, 7],
+  alignItems: "center"
+};
+
+const verifiedFlex = {
+  flexGrow: [1, 1, 3],
+  flexShrink: [1, 1, 3],
+  alignItems: "center",
+  justifyContent: "center"
+};
 
 interface Form {
   all: boolean;
@@ -82,6 +101,7 @@ interface Form {
 const UsersTable = () => {
   const users = useStoreState(s => s.users);
   const { get } = useStoreActions(s => s.users);
+  const [tableMessage, setTableMessage] = useState("No users to show.");
   const [formState, { label, checkbox, text }] = useFormState<Form>(
     { skip: "0", limit: "10", all: false },
     { withIds: true }
@@ -89,8 +109,14 @@ const UsersTable = () => {
 
   const options = formState.values;
 
+  const load = () => {
+    get(options).catch(err =>
+      setTableMessage(err?.response?.data?.error || "An error occurred.")
+    );
+  };
+
   useEffect(() => {
-    get(options).catch(err => console.log("Error occured"));
+    load();
   }, [options.limit, options.skip, options.all]);
 
   const onNavChange = (nextPage: number) => () => {
@@ -136,7 +162,7 @@ const UsersTable = () => {
         <NavButton
           onClick={onNavChange(parseInt(options.limit))}
           disabled={
-            parseInt(options.skip) + parseInt(options.limit) > users.total
+            parseInt(options.skip) + parseInt(options.limit) >= users.total
           }
           ml={12}
           px={2}
@@ -150,28 +176,13 @@ const UsersTable = () => {
   return (
     <Table mt={4}>
       <thead>
-        <Tr justifyContent="space-between">
-          <Th flexGrow={1} flexShrink={1}>
-            <Flex as="form">
-              {/*<TextInput*/}
-              {/*    {...text("search")}*/}
-              {/*    placeholder="Search..."*/}
-              {/*    height={[30, 32]}*/}
-              {/*    placeholderSize={[13, 13, 13, 13]}*/}
-              {/*    fontSize={[14]}*/}
-              {/*    pl={12}*/}
-              {/*    pr={12}*/}
-              {/*    width={[1]}*/}
-              {/*    br="3px"*/}
-              {/*    bbw="2px"*/}
-              {/*/>*/}
-            </Flex>
-          </Th>
-          {Nav}
-        </Tr>
+        <Tr justifyContent="space-between">{Nav}</Tr>
         <Tr>
           <Th {...emailFlex}>Email</Th>
-          <Th {...actionsFlex}></Th>
+          <Th {...verifiedFlex}>Verified</Th>
+          <Th {...actionsFlex}>
+            <CreateNewUserButton reload={load} />
+          </Th>
         </Tr>
       </thead>
       <tbody style={{ opacity: users.loading ? 0.4 : 1 }}>
@@ -179,14 +190,14 @@ const UsersTable = () => {
           <Tr width={1} justifyContent="center">
             <Td flex="1 1 auto" justifyContent="center">
               <Text fontSize={18} light>
-                {users.loading ? "Loading links..." : null}
+                {users.loading ? "Loading links..." : tableMessage}
               </Text>
             </Td>
           </Tr>
         ) : (
           <>
             {users.users.map(user => (
-              <Row user={user} />
+              <Row user={user} reload={load} />
             ))}
           </>
         )}
@@ -200,10 +211,12 @@ const UsersTable = () => {
 
 interface RowProps {
   user: User;
+  reload: () => void;
 }
 
-const Row: FC<RowProps> = ({ user }) => {
+const Row: FC<RowProps> = ({ user, reload }) => {
   const { ban, remove } = useStoreActions(s => s.users);
+  const { email } = useStoreState(s => s.auth);
   const [banModal, setBanModal] = useState(false);
   const [banLoading, setBanLoading] = useState(false);
   const [banMessage, setBanMessage] = useMessage();
@@ -212,49 +225,191 @@ const Row: FC<RowProps> = ({ user }) => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteMessage, setDeleteMessage] = useMessage();
 
+  const isMe = user.email === email;
+
+  const onDelete = async () => {
+    setDeleteLoading(true);
+    try {
+      await remove(user.id);
+      setDeleteMessage("User deleted", "green");
+      setTimeout(() => {
+        setDeleteModal(false);
+        reload();
+      }, 2000);
+    } catch (err) {
+      setDeleteMessage(errorMessage(err));
+    }
+    setDeleteLoading(false);
+  };
+
+  const onBan = async () => {
+    setBanLoading(true);
+    try {
+      const res = await ban(user.id);
+      setBanMessage("User banned", "green");
+      setTimeout(() => {
+        setBanModal(false);
+        reload();
+      }, 2000);
+    } catch (err) {
+      setBanMessage(errorMessage(err));
+    }
+    setBanLoading(false);
+  };
+
   return (
-    <Tr key={user.id}>
-      <Td {...emailFlex} withFade>
-        {user.email}
-      </Td>
-      <Td {...actionsFlex} justifyContent="flex-end">
-        {user.banned && (
-          <>
-            <Tooltip id={`${user.id}-tooltip-banned`}>Banned</Tooltip>
+    <>
+      <Tr key={user.id}>
+        <Td {...emailFlex} withFade>
+          {user.email}
+        </Td>
+        <Td {...verifiedFlex}>
+          {user.verified ? (
             <Action
               as="span"
               data-tip
-              data-for={`${user.id}-tooltip-banned`}
-              name="stop"
+              data-for={`${user.id}-tooltip-verified`}
+              name="check"
+              stroke={Colors.CheckIcon}
+              strokeWidth="2.5"
+              backgroundColor="none"
+            />
+          ) : (
+            <Action
+              as="span"
+              data-tip
+              data-for={`${user.id}-tooltip-unverified`}
+              name="x"
               stroke="#bbb"
               strokeWidth="2.5"
               backgroundColor="none"
             />
+          )}
+        </Td>
+        <Td {...actionsFlex} justifyContent="flex-end">
+          {user.banned && (
+            <>
+              <Tooltip id={`${user.id}-tooltip-banned`}>Banned</Tooltip>
+              <Action
+                as="span"
+                data-tip
+                data-for={`${user.id}-tooltip-banned`}
+                name="stop"
+                stroke="#bbb"
+                strokeWidth="2.5"
+                backgroundColor="none"
+              />
+            </>
+          )}
+          {!isMe && !user.banned && (
+            <Action
+              name="stop"
+              strokeWidth="2"
+              stroke={Colors.StopIcon}
+              backgroundColor={Colors.StopIconBg}
+              onClick={() => setBanModal(true)}
+            />
+          )}
+          {!isMe && (
+            <Action
+              mr={0}
+              name="trash"
+              strokeWidth="2"
+              stroke={Colors.TrashIcon}
+              backgroundColor={Colors.TrashIconBg}
+              onClick={() => setDeleteModal(true)}
+            />
+          )}
+        </Td>
+      </Tr>
+      <Modal
+        id="delete-user"
+        show={deleteModal}
+        closeHandler={() => setDeleteModal(false)}
+      >
+        {user && (
+          <>
+            <H2 mb={24} textAlign="center" bold>
+              Delete User?
+            </H2>
+            <Text textAlign="center">
+              Are you sure do you want to delete the user{" "}
+              <Span bold>"{user.email}"</Span>?
+            </Text>
+            <Text textAlign="center">
+              All Links created by this User will also be deleted
+            </Text>
+            <Flex justifyContent="center" mt={44}>
+              {deleteLoading ? (
+                <>
+                  <Icon name="spinner" size={20} stroke={Colors.Spinner} />
+                </>
+              ) : deleteMessage.text ? (
+                <Text fontSize={15} color={deleteMessage.color}>
+                  {deleteMessage.text}
+                </Text>
+              ) : (
+                <>
+                  <Button
+                    color="gray"
+                    mr={3}
+                    onClick={() => setDeleteModal(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button color="red" ml={3} onClick={onDelete}>
+                    <Icon name="trash" stroke="white" mr={2} />
+                    Delete
+                  </Button>
+                </>
+              )}
+            </Flex>
           </>
         )}
-        {!user.banned && (
-          <Action
-            name="stop"
-            strokeWidth="2"
-            stroke={Colors.StopIcon}
-            backgroundColor={Colors.StopIconBg}
-            onClick={() => {
-              ban(user.id);
-            }}
-          />
+      </Modal>
+      <Modal
+        id="ban-user"
+        show={banModal}
+        closeHandler={() => setBanModal(false)}
+      >
+        {user && (
+          <>
+            <H2 mb={24} textAlign="center" bold>
+              Ban User?
+            </H2>
+            <Text textAlign="center">
+              Are you sure do you want to ban the user{" "}
+              <Span bold>"{user.email}"</Span>?
+            </Text>
+            <Flex justifyContent="center" mt={44}>
+              {banLoading ? (
+                <>
+                  <Icon name="spinner" size={20} stroke={Colors.Spinner} />
+                </>
+              ) : banMessage.text ? (
+                <Text fontSize={15} color={banMessage.color}>
+                  {banMessage.text}
+                </Text>
+              ) : (
+                <>
+                  <Button
+                    color="gray"
+                    mr={3}
+                    onClick={() => setBanModal(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button color="red" ml={3} onClick={onBan}>
+                    <Icon name="stop" stroke="white" mr={2} />
+                    Ban
+                  </Button>
+                </>
+              )}
+            </Flex>
+          </>
         )}
-        <Action
-          mr={0}
-          name="trash"
-          strokeWidth="2"
-          stroke={Colors.TrashIcon}
-          backgroundColor={Colors.TrashIconBg}
-          onClick={() => {
-            remove(user.id);
-          }}
-        />
-      </Td>
-    </Tr>
+      </Modal>
+    </>
   );
 };
 

@@ -44,7 +44,11 @@ export const findAll = async (params: GetParams): Promise<User[]> => {
 };
 
 export const total = async (): Promise<number> => {
-  return knex<User>("users").count();
+  const query = knex<User>("users");
+
+  const [{ count }] = await query.count("id");
+
+  return typeof count === "number" ? count : parseInt(count);
 };
 
 interface Add {

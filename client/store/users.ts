@@ -3,7 +3,7 @@ import axios from "axios";
 
 import { getAxiosConfig } from "../utils";
 import { APIv2 } from "../consts";
-import { Link, LinksQuery } from "./links";
+import query from "query-string";
 
 export interface User {
   id: number;
@@ -44,7 +44,10 @@ export const users: Users = {
   loading: true,
   get: thunk(async (actions, payload) => {
     actions.setLoading(true);
-    const res = await axios.get(`${APIv2.AdminListUsers}`, getAxiosConfig());
+    const res = await axios.get(
+      `${APIv2.AdminListUsers}?${query.stringify(payload)}`,
+      getAxiosConfig()
+    );
     actions.set(res.data);
     actions.setLoading(false);
     return res.data;
@@ -56,10 +59,7 @@ export const users: Users = {
       null,
       getAxiosConfig()
     );
-    actions.get({
-      limit: "20",
-      skip: "0"
-    });
+    return res.data;
   }),
   remove: thunk(async (actions, payload) => {
     actions.setLoading(true);
@@ -67,10 +67,6 @@ export const users: Users = {
       `${APIv2.AdminDeleteUser}/${payload}`,
       getAxiosConfig()
     );
-    actions.get({
-      limit: "20",
-      skip: "0"
-    });
   }),
   set: action((state, payload) => {
     state.users = payload.data;
