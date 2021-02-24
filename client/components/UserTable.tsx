@@ -174,7 +174,7 @@ const UsersTable = () => {
   );
 
   return (
-    <Table mt={4}>
+    <Table mt={4} flex="">
       <thead>
         <Tr justifyContent="space-between">{Nav}</Tr>
         <Tr>

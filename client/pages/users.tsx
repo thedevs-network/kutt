@@ -1,25 +1,11 @@
 import { NextPage } from "next";
-import React, { FC, useEffect, useState } from "react";
+import React from "react";
 import AppWrapper from "../components/AppWrapper";
-import Text, { H1, H2, Span } from "../components/Text";
+import { H1, H2, Span } from "../components/Text";
 import Divider from "../components/Divider";
-import { Col, ColCenterV } from "../components/Layout";
+import { Col } from "../components/Layout";
 import Footer from "../components/Footer";
 import { useStoreState } from "../store";
-import { useFormState } from "react-use-form-state";
-import { Flex } from "reflexbox/styled-components";
-import emailValidator from "email-validator";
-import styled from "styled-components";
-import Router from "next/router";
-import axios from "axios";
-
-import { APIv2 } from "../consts";
-import { TextInput } from "../components/Input";
-import { fadeIn } from "../helpers/animations";
-import { Button } from "../components/Button";
-import Icon from "../components/Icon";
-import { getAxiosConfig } from "../utils";
-import Modal from "../components/Modal";
 import UsersTable from "../components/UserTable";
 
 const AdminPage: NextPage = () => {
@@ -33,7 +19,7 @@ const AdminPage: NextPage = () => {
         alignItems="flex-start"
         pb={80}
         my={4}
-        height="100%"
+        flex={1}
       >
         <H1 alignItems="center" fontSize={[24, 28]} light>
           Welcome,{" "}
