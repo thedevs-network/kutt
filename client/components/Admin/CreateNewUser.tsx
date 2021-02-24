@@ -3,7 +3,6 @@ import { Flex } from "reflexbox/styled-components";
 import Text, { H2 } from "../Text";
 import { Button } from "../Button";
 import Modal from "../Modal";
-import UsersTable from "../UserTable";
 import styled from "styled-components";
 import { fadeIn } from "../../helpers/animations";
 import { useStoreState } from "../../store";
