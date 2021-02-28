@@ -84,6 +84,7 @@ app.prepare().then(async () => {
 
   server.listen(port, err => {
     if (err) throw err;
-    console.log(`> Ready on http://localhost:${port}`);
+    const envName = env.isDev ? "Dev" : "Prod";
+    console.log(`> [${envName}] Ready on http://localhost:${port}`);
   });
 });
