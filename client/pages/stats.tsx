@@ -26,7 +26,7 @@ const StatsPage: NextPage<Props> = ({ id }) => {
   const { isAuthenticated } = useStoreState(s => s.auth);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [data, setData] = useState();
+  const [data, setData] = useState<Record<string, any> | undefined>();
   const [period, setPeriod] = useState("lastDay");
 
   const stats = data && data[period];

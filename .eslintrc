@@ -1,7 +1,7 @@
 {
   "extends": [
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
     "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
@@ -14,6 +14,7 @@
     "no-useless-return": "warn",
     "no-var": "warn",
     "no-console": "warn",
+    "no-unused-vars": "off",
     "max-len": ["warn", { "comments": 80 }],
     "no-param-reassign": 0,
     "require-atomic-updates": 0,

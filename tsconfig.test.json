@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"target": "es2019",
+		"module": "commonjs",
+		"sourceMap": true,
+		"outDir": "production-server",
+		"noUnusedLocals": false,
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"noEmit": false,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"strict": false,
+    "jsx": "react",
+    "allowJs": true
+	}
+}
