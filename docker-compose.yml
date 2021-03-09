@@ -1,30 +1,17 @@
 version: "3"
 
 services:
-  kutt:
-    image: kutt/kutt
-    depends_on:
-      - postgres
-      - redis
-    command: ["./wait-for-it.sh", "postgres:5432", "--", "npm", "start"]
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    environment:
-      DB_HOST: postgres
-      DB_NAME: kutt
-      DB_USER: user
-      DB_PASSWORD: pass
-      REDIS_HOST: redis
-
   redis:
     image: redis:6.0-alpine
+    ports:
+      - "6379:6379"
     volumes:
       - redis_data:/data
 
   postgres:
     image: postgres:12-alpine
+    ports:
+      - "9432:5432"
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
