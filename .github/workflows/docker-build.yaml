@@ -1,9 +1,6 @@
 name: docker-build
 
-on:
-  push:
-    branches:
-      - 'master'
+on: push
 
 jobs:
   dockerhub-build-push:
