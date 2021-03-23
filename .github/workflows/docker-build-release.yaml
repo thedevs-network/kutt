@@ -2,7 +2,6 @@ name: docker-build-latest
 
 env:
   dockerhub_repository: "xescure/kutt"
-  dockerhub_tag: ${{ github.event.release.tag_name }}
 
 on:
   release:
@@ -34,4 +33,4 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
-          tags: ${{ env.dockerhub_repository }}:${{ env.dockerhub_tag }}
+          tags: ${{ env.dockerhub_repository }}:${{ github.event.release.tag_name }}, ${{ env.dockerhub_repository }}:latest

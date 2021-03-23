@@ -2,7 +2,7 @@ name: docker-build-latest
 
 env:
   dockerhub_repository: "xescure/kutt"
-  dockerhub_tag: "latest"
+  dockerhub_tag: "develop"
 
 on:
   push:
