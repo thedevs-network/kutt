@@ -6,6 +6,8 @@ env:
 
 on:
   push:
+    branches:
+      - develop
 
 jobs:
   dockerhub-build-push:
