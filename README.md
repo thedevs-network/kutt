@@ -122,6 +122,7 @@ Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app f
 | Java       | [kutt-desktop](https://github.com/cipher812/kutt-desktop)                         | A Cross platform Java desktop application for Kutt |
 | Go         | [kutt-go](https://github.com/raahii/kutt-go)                                      | Go client for Kutt.it url shortener                |
 | BASH       | [GitHub Gist](https://gist.github.com/hashworks/6d6e4eae8984a5018f7692a796d570b4) | Simple BASH function to access the API             |
+| BASH       | [url-shortener](https://gitlab.tim-peters.org/tim/url-shortener)                  | Simple BASH script with GUI                        |
 
 ## Donate
 
