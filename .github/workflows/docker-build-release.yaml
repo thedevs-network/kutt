@@ -1,6 +1,12 @@
-name: docker-build
+name: docker-build-latest
 
-on: push
+env:
+  dockerhub_repository: "xescure/kutt"
+  dockerhub_tag: ${{ github.event.release.tag_name }}
+
+on:
+  release:
+    types: [published]
 
 jobs:
   dockerhub-build-push:
@@ -28,20 +34,11 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
-          tags: ${{ secrets.DOCKERHUB_REPOSITORY }}:autobuild-dev
-
-  dockerhub-sync-readme:
-    needs: dockerhub-build-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Sync README
-        uses: docker://lsiodev/readme-sync:latest
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-          GIT_REPOSITORY: ${{ github.repository }}
-          DOCKER_REPOSITORY: ${{ secrets.DOCKERHUB_REPOSITORY }}
-          GIT_BRANCH: master
+          tags: ${{ env.dockerhub_repository }}:${{ env.dockerhub_tag }}
+      -
+        name: Update repo description
+        uses: peter-evans/dockerhub-description@v2
         with:
-          entrypoint: node
-          args: /opt/docker-readme-sync/sync
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: ${{ env.dockerhub_repository }}
