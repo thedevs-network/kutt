@@ -1,7 +1,7 @@
 name: docker-build-latest
 
 env:
-  dockerhub_repository: "xescure/kutt"
+  dockerhub_repository: "kutt/kutt"
 
 on:
   release:
