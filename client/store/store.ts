@@ -10,7 +10,7 @@ export interface StoreModel {
   links: Links;
   loading: Loading;
   settings: Settings;
-  reset: Action;
+  reset: Action<StoreModel>;
 }
 
 let initState: any = {};

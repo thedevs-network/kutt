@@ -204,6 +204,7 @@ const Shortener = () => {
           placeholder="Paste your long URL"
           placeholderSize={[16, 17, 18]}
           fontSize={[18, 20, 22]}
+          aria-label="target"
           width={1}
           height={[58, 64, 72]}
           px={0}
@@ -212,7 +213,7 @@ const Shortener = () => {
           autoFocus
           data-lpignore
         />
-        <SubmitIconWrapper onClick={onSubmit}>
+        <SubmitIconWrapper onClick={onSubmit} role="button" aria-label="submit">
           <Icon
             name={loading ? "spinner" : "send"}
             size={[22, 26, 28]}
