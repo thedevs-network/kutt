@@ -89,9 +89,9 @@ const Header: FC = () => {
 
   const adminLink = isAuthenticated && isAdmin && (
     <Li>
-      <Link href="/users">
-        <ALink href="/users" title="Users" forButton>
-          <Button height={[32, 40]}>Users</Button>
+      <Link href="/admin">
+        <ALink href="/admin" title="Admin" forButton>
+          <Button height={[32, 40]}>Admin</Button>
         </ALink>
       </Link>
     </Li>

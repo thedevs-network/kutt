@@ -35,7 +35,8 @@ export const preservedUrls = [
   "privacy",
   "protected",
   "report",
-  "pricing"
+  "pricing",
+  "admin"
 ];
 
 export const checkUser = (value, { req }) => !!req.user;

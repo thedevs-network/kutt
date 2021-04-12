@@ -48,6 +48,7 @@ const CreateNewUserButton: FC<CreateNewUserButtonProps> = ({ reload }) => {
         color="purple"
         onClick={() => setShowCreateUser(true)}
       >
+        <Icon name={"plus"} stroke="white" mr={2} />
         New User
       </Button>
       <Modal id="create-new-user" show={showCreateUser} closeHandler={onClose}>
