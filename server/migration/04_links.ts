@@ -179,7 +179,7 @@ const postgres = knex({
                     );
                   });
                 }
-                resolve();
+                resolve(null);
               },
               onError(error) {
                 session.close();
