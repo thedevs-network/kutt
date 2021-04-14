@@ -72,7 +72,7 @@ You need to have [Node.js](https://nodejs.org/), [PostgreSQL](https://www.postgr
 
 ### Docker
 
-Download the `docker-compose.yml` and the `.docker.env`-file from the repository and configure the `.docker.env` ([see below](#configuration)). 
+Download the [`docker-compose.yml`](docker-compose.yml) and the [`.docker.env`](.docker.env)-file from the repository and configure the `.docker.env` ([see below](#configuration)). 
 To execute Kutt you simply have to run `docker-compose up -d` command and then the app should be ready on port "3000".
 
 The `docker-compose.yml` uses the official kutt docker image available on [Docker Hub](https://hub.docker.com/r/kutt/kutt).
