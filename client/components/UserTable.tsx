@@ -197,7 +197,7 @@ const UsersTable = () => {
         ) : (
           <>
             {users.users.map(user => (
-              <Row user={user} reload={load} />
+              <Row key={user.id} user={user} reload={load} />
             ))}
           </>
         )}
