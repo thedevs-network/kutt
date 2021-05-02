@@ -86,7 +86,7 @@
     "react-tooltip": "^3.11.2",
     "react-use-form-state": "^0.12.1",
     "recharts": "^1.8.5",
-    "redis": "^2.8.0",
+    "redis": "^3.1.1",
     "reflexbox": "^4.0.6",
     "signale": "^1.4.0",
     "styled-components": "^5.0.0",
