@@ -14,6 +14,7 @@ import * as links from "./handlers/links";
 import * as auth from "./handlers/auth";
 import __v1Routes from "./__v1";
 import routes from "./routes";
+import { stream } from "./config/winston";
 
 import "./cron";
 import "./passport";
@@ -28,7 +29,7 @@ app.prepare().then(async () => {
   server.set("trust proxy", true);
 
   if (env.isDev) {
-    server.use(morgan("dev"));
+    server.use(morgan("combined", { stream }));
   } else if (env.SENTRY_PRIVATE_DSN) {
     Sentry.init({
       dsn: env.SENTRY_PRIVATE_DSN,

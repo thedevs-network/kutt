@@ -38,6 +38,7 @@
     "@sentry/apm": "^5.21.1",
     "@sentry/node": "^5.21.1",
     "@sentry/react": "^5.21.1",
+    "app-root-path": "^3.0.0",
     "axios": "^0.21.1",
     "babel-plugin-inline-react-svg": "^1.1.0",
     "bcryptjs": "^2.4.3",
@@ -95,7 +96,8 @@
     "url-regex": "^4.1.1",
     "use-media": "^1.4.0",
     "useragent": "^2.2.1",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.3",
