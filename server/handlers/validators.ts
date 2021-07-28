@@ -1,6 +1,5 @@
 import { body, param } from "express-validator";
 import { isAfter, subDays, subHours, addMilliseconds } from "date-fns";
-import urlRegex from "url-regex";
 import { promisify } from "util";
 import bcrypt from "bcryptjs";
 import axios from "axios";
@@ -51,7 +50,7 @@ export const createLink = [
     .customSanitizer(addProtocol)
     .custom(
       value =>
-        urlRegex({ exact: true, strict: false }).test(value) ||
+        /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/.test(value) ||
         /^(?!https?)(\w+):\/\//.test(value)
     )
     .withMessage("URL is not valid.")
@@ -139,7 +138,7 @@ export const editLink = [
     .customSanitizer(addProtocol)
     .custom(
       value =>
-        urlRegex({ exact: true, strict: false }).test(value) ||
+        /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/.test(value) ||
         /^(?!https?)(\w+):\/\//.test(value)
     )
     .withMessage("URL is not valid.")
@@ -203,7 +202,7 @@ export const addDomain = [
       const parsed = URL.parse(value);
       return removeWww(parsed.hostname || parsed.href);
     })
-    .custom(value => urlRegex({ exact: true, strict: false }).test(value))
+    .custom(value => /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/.test(value))
     .custom(value => value !== env.DEFAULT_DOMAIN)
     .withMessage("You can't use the default domain.")
     .custom(async value => {
@@ -214,7 +213,7 @@ export const addDomain = [
   body("homepage")
     .optional({ checkFalsy: true, nullable: true })
     .customSanitizer(addProtocol)
-    .custom(value => urlRegex({ exact: true, strict: false }).test(value))
+    .custom(value => /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/.test(value))
     .withMessage("Homepage is not valid.")
 ];
 
