@@ -2,7 +2,7 @@
 
 # Kutt.it
 
-**Kutt** is a modern URL shortener with support for custom domains. Shorten URLs, manage your links and view the click rate statistics.
+**Kutt** is a modern URL shortener with support for custom domains. Shorten URLs, manage your links and view the click rate statistics. and "i have made a change by writing this statemnt"
 
 _Contributions and bug reports are welcome._
 
