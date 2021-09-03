@@ -132,7 +132,6 @@ export const edit: Handler = async (req, res) => {
     address !== link.address &&
       query.link.find({
         address,
-        user_id: req.user.id,
         domain_id
       }),
     validators.bannedDomain(targetDomain),
