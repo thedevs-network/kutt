@@ -67,7 +67,7 @@
     "neo4j-driver": "^1.7.6",
     "next": "^9.4.4",
     "node-cron": "^2.0.3",
-    "nodemailer": "^6.4.2",
+    "nodemailer": "^6.4.16",
     "p-queue": "^6.2.1",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
