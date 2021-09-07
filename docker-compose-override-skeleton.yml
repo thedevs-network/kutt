@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+  kutt:
+    volumes:
+      - .:/usr/src/app
+    command: tail -f README.md
