@@ -153,3 +153,6 @@ Special thanks to [Thomas](https://github.com/trgwii) and [Muthu](https://github
 * Inside the container you first need to install the node packages by `npm install`.
 * Then you can run the application in development mode by `npm run dev`.
 * Now you can edit the source code in your favorite editor running on your host computer. Every time you save a file the development web server will automatically rebuild the application and refresh the web page.
+
+* Also in the docker container shell (possibly opened from another terminal) you can run the tests by `npm test`.
+* To get a test coverage report run `npm run coverage`. You will see a textual report in the terminal and you can also open this file `coverage/lcov-report/index.html` in your browser.
