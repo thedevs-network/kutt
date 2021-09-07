@@ -143,3 +143,13 @@ Open issues for feedback, requesting features, reporting bugs or discussing idea
 
 Special thanks to [Thomas](https://github.com/trgwii) and [Muthu](https://github.com/MKRhere). Logo design by [Muthu](https://github.com/MKRhere).
 
+## Development environment in Docker
+
+* Clone the repository `git clone 
+* Copy `.docker.env` to `.env`
+* Copy `docker-compose-override-skeleton.yml` to be `docker-compose.override.yml`.
+* Run `docker-compose up`
+* From another terminal connect to the kutt container with this command: `docker exec -it kutt_kutt_1 bash` (This will work only if the name of directory in which you have the source code is `kutt`.)
+* Inside the container you first need to install the node packages by `npm install`.
+* Then you can run the application in development mode by `npm run dev`.
+* Now you can edit the source code in your favorite editor running on your host computer. Every time you save a file the development web server will automatically rebuild the application and refresh the web page.
