@@ -20,6 +20,7 @@ import "./cron";
 import "./passport";
 
 const port = env.PORT;
+const domain = env.DOMAIN;
 const app = nextApp({ dir: "./client", dev: env.isDev });
 const handle = app.getRequestHandler();
 
@@ -85,6 +86,6 @@ app.prepare().then(async () => {
 
   server.listen(port, err => {
     if (err) throw err;
-    console.log(`> Ready on http://localhost:${port}`);
+    console.log(`> Ready on http://${domain}:${port}`);
   });
 });
