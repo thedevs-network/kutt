@@ -116,6 +116,7 @@ interface EditForm {
   address: string;
   description?: string;
   expire_in?: string;
+  password?: string;
 }
 
 const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
@@ -123,7 +124,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
   const ban = useStoreActions(s => s.links.ban);
   const edit = useStoreActions(s => s.links.edit);
   const [banFormState, { checkbox }] = useFormState<BanForm>();
-  const [editFormState, { text, label }] = useFormState<EditForm>(
+  const [editFormState, { text, label, password }] = useFormState<EditForm>(
     {
       target: link.target,
       address: link.address,
@@ -132,7 +133,8 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
         ? ms(differenceInMilliseconds(new Date(link.expire_in), new Date()), {
             long: true
           })
-        : ""
+        : "",
+      password: ""
     },
     { withIds: true }
   );
@@ -175,6 +177,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
     } catch (err) {
       setEditMessage(errorMessage(err));
     }
+    editFormState.setField("password", "");
     setEditLoading(false);
   };
 
@@ -355,7 +358,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                   />
                 </Flex>
               </Col>
-              <Col alignItems="flex-start">
+              <Col alignItems="flex-start" mr={3}>
                 <Text
                   {...label("address")}
                   as="label"
@@ -376,6 +379,33 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                     pl={[3, 24]}
                     pr={[3, 24]}
                     required
+                  />
+                </Flex>
+              </Col>
+              <Col alignItems="flex-start">
+                <Text
+                  {...label("password")}
+                  as="label"
+                  mb={2}
+                  fontSize={[14, 15]}
+                  bold
+                >
+                  Password
+                </Text>
+                <Flex as="form">
+                  <TextInput
+                    {...password({
+                      name: "password"
+                    })}
+                    placeholder={link.password ? "●●●●●●●" : "Password..."}
+                    autocomplete="off"
+                    data-lpignore
+                    pl={[3, 24]}
+                    pr={[3, 24]}
+                    placeholderSize={[13, 14]}
+                    fontSize={[14, 15]}
+                    height={[40, 44]}
+                    width={[1, 210, 240]}
                   />
                 </Flex>
               </Col>
@@ -613,7 +643,7 @@ const LinksTable: FC = () => {
       <H2 mb={3} light>
         Recent shortened links.
       </H2>
-      <Table scrollWidth="800px">
+      <Table scrollWidth="1000px">
         <thead>
           <Tr justifyContent="space-between">
             <Th flexGrow={1} flexShrink={1}>

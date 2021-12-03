@@ -145,6 +145,13 @@ export const editLink = [
     .withMessage("URL is not valid.")
     .custom(value => removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
     .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
+  body("password")
+    .optional({ nullable: true, checkFalsy: true })
+    .custom(checkUser)
+    .withMessage("Only users can use this field.")
+    .isString()
+    .isLength({ min: 3, max: 64 })
+    .withMessage("Password length must be between 3 and 64."),
   body("address")
     .optional({ checkFalsy: true, nullable: true })
     .isString()
