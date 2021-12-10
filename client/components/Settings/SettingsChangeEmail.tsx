@@ -5,6 +5,7 @@ import axios from "axios";
 
 import { getAxiosConfig } from "../../utils";
 import { useMessage } from "../../hooks";
+import { Colors } from "../../consts";
 import { APIv2 } from "../../consts";
 import { TextInput } from "../Input";
 import Text, { H2 } from "../Text";
