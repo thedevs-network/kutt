@@ -93,8 +93,14 @@ export const get = async (match: Partial<Link>, params: GetParams) => {
   return links;
 };
 
-export const find = async (match: Partial<Link>): Promise<Link> => {
-  if (match.address && match.domain_id) {
+export const find = async (
+  match: Partial<Link>,
+  isDefaultDomain: boolean = false
+): Promise<Link> => {
+  if (
+    (match.address && match.domain_id) ||
+    (match.address && isDefaultDomain)
+  ) {
     const key = redis.key.link(match.address, match.domain_id);
     const cachedLink = await redis.get(key);
     if (cachedLink) return JSON.parse(cachedLink);

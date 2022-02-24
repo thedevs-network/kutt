@@ -3,7 +3,7 @@ import geoip from "geoip-lite";
 import URL from "url";
 
 import query from "../queries";
-import { getStatsLimit, removeWww } from "../utils";
+import { getStatsLimit, WebUtils } from "../utils";
 
 const browsersList = ["IE", "Firefox", "Chrome", "Opera", "Safari", "Edge"];
 const osList = ["Windows", "Mac OS", "Linux", "Android", "iOS"];
@@ -22,7 +22,7 @@ export default function({ data }) {
     const [browser = "Other"] = browsersList.filter(filterInBrowser(agent));
     const [os = "Other"] = osList.filter(filterInOs(agent));
     const referrer =
-      data.referrer && removeWww(URL.parse(data.referrer).hostname);
+      data.referrer && WebUtils.removeWww(URL.parse(data.referrer).hostname);
     const location = geoip.lookup(data.realIP);
     const country = location && location.country;
     tasks.push(

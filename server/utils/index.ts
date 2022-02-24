@@ -22,6 +22,28 @@ export class CustomError extends Error {
   }
 }
 
+export class WebUtils {
+  /** Removes the leading www on a host url
+   * @name removeWww
+   * @param host
+   * @returns string
+   */
+  static removeWww = (host = "") => {
+    return host.replace("www.", "");
+  };
+
+  /**
+   * Determines if the given domain is the default domain from the env
+   * @name isDefaultDomain
+   * @param hostUrl
+   * @returns boolean
+   */
+  static isDefaultDomain = (hostUrl: string = ""): boolean => {
+    hostUrl = WebUtils.removeWww(hostUrl);
+    return !!(hostUrl === env.DEFAULT_DOMAIN);
+  };
+}
+
 export const isAdmin = (email: string): boolean =>
   env.ADMIN_EMAILS.split(",")
     .map(e => e.trim())
@@ -40,12 +62,15 @@ export const signToken = (user: UserJoined) =>
     env.JWT_SECRET
   );
 
-export const generateId = async (domain_id: number = null) => {
+export const generateId = async (
+  domain_id: number = null,
+  isDefaultDomain: boolean = false
+) => {
   const address = generate(
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
     env.LINK_LENGTH
   );
-  const link = await query.link.find({ address, domain_id });
+  const link = await query.link.find({ address, domain_id }, isDefaultDomain);
   if (!link) return address;
   return generateId(domain_id);
 };
@@ -163,8 +188,4 @@ export const sanitize = {
     password: !!link.password,
     link: generateShortLink(link.address, link.domain)
   })
-};
-
-export const removeWww = (host = "") => {
-  return host.replace("www.", "");
 };

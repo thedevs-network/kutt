@@ -11,20 +11,28 @@ export async function up(knex: Knex): Promise<any> {
 
   await Promise.all([
     knex.raw(`
-      ALTER TABLE domains
-      DROP CONSTRAINT domains_user_id_foreign,
+        ALTER TABLE domains
+        DROP CONSTRAINT domains_user_id_foreign,
       ADD CONSTRAINT domains_user_id_foreign
         FOREIGN KEY (user_id) 
         REFERENCES users (id)
         ON DELETE SET NULL;
     `),
     knex.raw(`
-      ALTER TABLE links
-      DROP CONSTRAINT links_user_id_foreign,
+        ALTER TABLE links
+        DROP CONSTRAINT links_user_id_foreign,
       ADD CONSTRAINT links_user_id_foreign
         FOREIGN KEY (user_id)
         REFERENCES users (id)
         ON DELETE CASCADE;
+    `),
+    knex.raw(`
+        CREATE INDEX links_address_index
+            ON links (address);
+        CREATE INDEX links_domain_id_index
+            ON links (domain_id);
+        CREATE INDEX links_user_id_index
+            ON links (user_id);
     `),
     knex.raw(`
       ALTER TABLE visits

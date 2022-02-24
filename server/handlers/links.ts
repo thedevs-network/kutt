@@ -9,7 +9,7 @@ import dns from "dns";
 
 import * as validators from "./validators";
 import { CreateLinkReq } from "./types";
-import { CustomError } from "../utils";
+import { CustomError, WebUtils } from "../utils";
 import transporter from "../mail/mail";
 import * as utils from "../utils";
 import query from "../queries";
@@ -53,24 +53,28 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
   } = req.body;
   const domain_id = domain ? domain.id : null;
 
-  const targetDomain = utils.removeWww(URL.parse(target).hostname);
+  const targetDomain = WebUtils.removeWww(URL.parse(target).hostname);
 
   const queries = await Promise.all([
     validators.cooldown(req.user),
     validators.malware(req.user, target),
     validators.linksCount(req.user),
     reuse &&
-      query.link.find({
+    query.link.find(
+      {
         target,
         user_id: req.user.id,
         domain_id
-      }),
+      },
+      WebUtils.isDefaultDomain(req.headers.host)
+    ),
     customurl &&
-      query.link.find({
-        address: customurl,
-        domain_id
-      }),
-    !customurl && utils.generateId(domain_id),
+    query.link.find({
+      address: customurl,
+      domain_id
+    }),
+    !customurl &&
+    utils.generateId(domain_id, WebUtils.isDefaultDomain(req.headers.host)),
     validators.bannedDomain(targetDomain),
     validators.bannedHost(targetDomain)
   ]);
@@ -123,17 +127,17 @@ export const edit: Handler = async (req, res) => {
     throw new CustomError("Link was not found.");
   }
 
-  const targetDomain = utils.removeWww(URL.parse(target).hostname);
+  const targetDomain = WebUtils.removeWww(URL.parse(target).hostname);
   const domain_id = link.domain_id || null;
 
   const queries = await Promise.all([
     validators.cooldown(req.user),
     validators.malware(req.user, target),
     address !== link.address &&
-      query.link.find({
-        address,
-        domain_id
-      }),
+    query.link.find({
+      address,
+      domain_id
+    }),
     validators.bannedDomain(targetDomain),
     validators.bannedHost(targetDomain)
   ]);
@@ -217,7 +221,7 @@ export const ban: Handler = async (req, res) => {
   // 2. Ban link
   tasks.push(query.link.update({ uuid: id }, update));
 
-  const domain = utils.removeWww(URL.parse(link.target).hostname);
+  const domain = WebUtils.removeWww(URL.parse(link.target).hostname);
 
   // 3. Ban target's domain
   if (req.body.domain) {
@@ -265,7 +269,7 @@ export const redirect = (app: ReturnType<typeof next>): Handler => async (
   if (isPreservedUrl) return next();
 
   // 1. If custom domain, get domain info
-  const host = utils.removeWww(req.headers.host);
+  const host = WebUtils.removeWww(req.headers.host);
   const domain =
     host !== env.DEFAULT_DOMAIN
       ? await query.domain.find({ address: host })
@@ -273,10 +277,13 @@ export const redirect = (app: ReturnType<typeof next>): Handler => async (
 
   // 2. Get link
   const address = req.params.id.replace("+", "");
-  const link = await query.link.find({
-    address,
-    domain_id: domain ? domain.id : null
-  });
+  const link = await query.link.find(
+    {
+      address,
+      domain_id: domain ? domain.id : null
+    },
+    WebUtils.isDefaultDomain(host)
+  );
 
   // 3. When no link, if has domain redirect to domain's homepage
   // otherwise rediredt to 404
@@ -371,7 +378,7 @@ export const redirectProtected: Handler = async (req, res) => {
 
 export const redirectCustomDomain: Handler = async (req, res, next) => {
   const { path } = req;
-  const host = utils.removeWww(req.headers.host);
+  const host = WebUtils.removeWww(req.headers.host);
 
   if (host === env.DEFAULT_DOMAIN) {
     return next();
