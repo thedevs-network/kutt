@@ -4,6 +4,7 @@ import { Flex } from "reflexbox/styled-components";
 import React, { useState } from "react";
 import styled from "styled-components";
 import getConfig from "next/config";
+import DatePick from "./DatePick";
 
 import { useStoreActions, useStoreState } from "../store";
 import { Checkbox, Select, TextInput } from "./Input";
@@ -69,6 +70,7 @@ const Shortener = () => {
   const [message, setMessage] = useMessage(3000);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useCopy();
+  var [startDate, setStartDate] = useState(null);
   const [formState, { raw, password, text, select, label }] = useFormState<
     Form
   >(
@@ -79,6 +81,7 @@ const Shortener = () => {
         if (stateValues.showAdvanced && !nextStateValues.showAdvanced) {
           formState.clear();
           formState.setField("target", stateValues.target);
+          setStartDate(null);
         }
       }
     }
@@ -94,6 +97,7 @@ const Shortener = () => {
         err?.response?.data?.error || "Couldn't create the short link."
       );
     }
+    setStartDate(null);
     setLoading(false);
   };
 
@@ -333,11 +337,9 @@ const Shortener = () => {
                 mb={2}
                 bold
               >
-                Expire in:
+                Expire on:
               </Text>
-              <TextInput
-                {...text("expire_in")}
-                placeholder="2 minutes/hours/days"
+              <DatePick
                 data-lpignore
                 pl={[3, 24]}
                 pr={[3, 24]}
@@ -346,6 +348,10 @@ const Shortener = () => {
                 height={[40, 44]}
                 width={[1, 210, 240]}
                 maxWidth="100%"
+                minDate={new Date()}
+                selected={startDate}
+                onChange={date => {setStartDate(date); formState.setField("expire_in", date);}}
+                isClearable
               />
             </Col>
             <Col width={[1, 2 / 3]} ml={[0, 26]}>

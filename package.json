@@ -80,6 +80,7 @@
     "query-string": "^6.10.1",
     "react": "^16.12.0",
     "react-copy-to-clipboard": "^5.0.2",
+    "react-datepicker": "^4.7.0",
     "react-dom": "^16.12.0",
     "react-ga": "^2.7.0",
     "react-inlinesvg": "^1.2.0",

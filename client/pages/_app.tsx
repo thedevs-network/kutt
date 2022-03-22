@@ -11,6 +11,8 @@ import { initGA, logPageView , initSentry } from "../helpers/analytics";
 import { initializeStore } from "../store";
 import { TokenPayload } from "../types";
 
+import "react-datepicker/dist/react-datepicker.css";
+
 const isProd = process.env.NODE_ENV === "production";
 const { publicRuntimeConfig } = getConfig();
 

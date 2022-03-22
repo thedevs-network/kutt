@@ -1,12 +1,11 @@
 import { body, param } from "express-validator";
-import { isAfter, subDays, subHours, addMilliseconds } from "date-fns";
+import { isAfter, subDays, subHours } from "date-fns";
 import urlRegex from "url-regex";
 import { promisify } from "util";
 import bcrypt from "bcryptjs";
 import axios from "axios";
 import dns from "dns";
 import URL from "url";
-import ms from "ms";
 
 import { CustomError, addProtocol, removeWww } from "../utils";
 import query from "../queries";
@@ -91,19 +90,7 @@ export const createLink = [
   body("expire_in")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
-    .trim()
-    .custom(value => {
-      try {
-        return !!ms(value);
-      } catch {
-        return false;
-      }
-    })
-    .withMessage("Expire format is invalid. Valid examples: 1m, 8h, 42 days.")
-    .customSanitizer(ms)
-    .custom(value => value >= ms("1m"))
-    .withMessage("Minimum expire time should be '1 minute'.")
-    .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
+    .trim(),
   body("domain")
     .optional({ nullable: true, checkFalsy: true })
     .custom(checkUser)
@@ -158,19 +145,7 @@ export const editLink = [
   body("expire_in")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
-    .trim()
-    .custom(value => {
-      try {
-        return !!ms(value);
-      } catch {
-        return false;
-      }
-    })
-    .withMessage("Expire format is invalid. Valid examples: 1m, 8h, 42 days.")
-    .customSanitizer(ms)
-    .custom(value => value >= ms("1m"))
-    .withMessage("Minimum expire time should be '1 minute'.")
-    .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
+    .trim(),
   body("description")
     .optional({ nullable: true, checkFalsy: true })
     .isString()

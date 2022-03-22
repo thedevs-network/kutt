@@ -10,6 +10,7 @@ import QRCode from "qrcode.react";
 import Link from "next/link";
 import differenceInMilliseconds from "date-fns/differenceInMilliseconds";
 import ms from "ms";
+import DatePick from "./DatePick";
 
 import { removeProtocol, withComma, errorMessage } from "../utils";
 import { useStoreActions, useStoreState } from "../store";
@@ -115,7 +116,7 @@ interface EditForm {
   target: string;
   address: string;
   description?: string;
-  expire_in?: string;
+  expire_in;
 }
 
 const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
@@ -123,16 +124,15 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
   const ban = useStoreActions(s => s.links.ban);
   const edit = useStoreActions(s => s.links.edit);
   const [banFormState, { checkbox }] = useFormState<BanForm>();
+  const [startDate, setStartDate] = useState(new Date());
   const [editFormState, { text, label }] = useFormState<EditForm>(
     {
       target: link.target,
       address: link.address,
       description: link.description,
       expire_in: link.expire_in
-        ? ms(differenceInMilliseconds(new Date(link.expire_in), new Date()), {
-            long: true
-          })
-        : ""
+        ? new Date(link.expire_in)
+        : null
     },
     { withIds: true }
   );
@@ -413,19 +413,19 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                   fontSize={[14, 15]}
                   bold
                 >
-                  Expire in:
+                  Expire on:
                 </Text>
                 <Flex as="form">
-                  <TextInput
-                    {...text("expire_in")}
-                    placeholder="2 minutes/hours/days"
-                    placeholderSize={[13, 14]}
+                  <DatePick
                     fontSize={[14, 15]}
                     height={[40, 44]}
                     width={[1, 210, 240]}
                     pl={[3, 24]}
                     pr={[3, 24]}
-                    required
+                    minDate={new Date()}
+                    selected={editFormState.values.expire_in}
+                    onChange={date => {setStartDate(date); editFormState.setField("expire_in", date);}}
+                    isClearable
                   />
                 </Flex>
               </Col>
