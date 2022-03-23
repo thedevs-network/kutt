@@ -14,6 +14,7 @@ import Spinner from "./Spinner";
 import Shuffle from "./Shuffle";
 import EditAlt from "./EditAlt";
 import QRCode from "./QRCode";
+import QRCode2 from "./QRCode2";
 import Signup from "./Signup";
 import Trash from "./Trash";
 import Check from "./Check";
@@ -45,6 +46,7 @@ const icons = {
   pieChart: PieChart,
   plus: Plus,
   qrcode: QRCode,
+  qrcode2: QRCode2,
   refresh: Refresh,
   send: Send,
   shuffle: Shuffle,
