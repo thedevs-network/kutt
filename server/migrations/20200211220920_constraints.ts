@@ -27,6 +27,14 @@ export async function up(knex: Knex): Promise<any> {
         ON DELETE CASCADE;
     `),
     knex.raw(`
+        CREATE INDEX links_address_index
+            ON links (address);
+        CREATE INDEX links_domain_id_index
+            ON links (domain_id);
+        CREATE INDEX links_user_id_index
+            ON links (user_id);
+    `),
+    knex.raw(`
       ALTER TABLE visits
       DROP CONSTRAINT visits_link_id_foreign,
       ADD CONSTRAINT visits_link_id_foreign

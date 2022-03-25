@@ -66,11 +66,15 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
         domain_id
       }),
     customurl &&
-      query.link.find({
-        address: customurl,
-        domain_id
-      }),
-    !customurl && utils.generateId(domain_id),
+      query.link.find(
+        {
+          address: customurl,
+          domain_id
+        },
+        utils.isDefaultDomain(req.headers.host)
+      ),
+    !customurl &&
+      utils.generateId(domain_id, utils.isDefaultDomain(req.headers.host)),
     validators.bannedDomain(targetDomain),
     validators.bannedHost(targetDomain)
   ]);
@@ -273,10 +277,13 @@ export const redirect = (app: ReturnType<typeof next>): Handler => async (
 
   // 2. Get link
   const address = req.params.id.replace("+", "");
-  const link = await query.link.find({
-    address,
-    domain_id: domain ? domain.id : null
-  });
+  const link = await query.link.find(
+    {
+      address,
+      domain_id: domain ? domain.id : null
+    },
+    utils.isDefaultDomain(host)
+  );
 
   // 3. When no link, if has domain redirect to domain's homepage
   // otherwise rediredt to 404

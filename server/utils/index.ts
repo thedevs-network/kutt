@@ -40,12 +40,15 @@ export const signToken = (user: UserJoined) =>
     env.JWT_SECRET
   );
 
-export const generateId = async (domain_id: number = null) => {
+export const generateId = async (
+  domain_id: number = null,
+  isDefaultDomain: boolean = false
+) => {
   const address = generate(
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
     env.LINK_LENGTH
   );
-  const link = await query.link.find({ address, domain_id });
+  const link = await query.link.find({ address, domain_id }, isDefaultDomain);
   if (!link) return address;
   return generateId(domain_id);
 };
@@ -167,4 +170,9 @@ export const sanitize = {
 
 export const removeWww = (host = "") => {
   return host.replace("www.", "");
+};
+
+export const isDefaultDomain = (hostUrl: string = ""): boolean => {
+  hostUrl = hostUrl.replace("www.", "");
+  return !!(hostUrl === env.DEFAULT_DOMAIN);
 };
