@@ -166,8 +166,6 @@ export const editByShortLink: Handler = async (req, res) => {
     throw new CustomError("Should at least update one field.");
   }
 
-  console.log("EEE", req.query.shortLink);
-
   const link = await query.link.find({
     address: req.query.shortLink,
     ...(!req.user.admin && { user_id: req.user.id })
