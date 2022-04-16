@@ -159,6 +159,61 @@ export const edit: Handler = async (req, res) => {
   return res.status(200).send(utils.sanitize.link({ ...link, ...updatedLink }));
 };
 
+export const editByShortLink: Handler = async (req, res) => {
+  const { address, target, description, expire_in } = req.body;
+
+  if (!address && !target) {
+    throw new CustomError("Should at least update one field.");
+  }
+
+  console.log("EEE", req.query.shortLink);
+
+  const link = await query.link.find({
+    address: req.query.shortLink,
+    ...(!req.user.admin && { user_id: req.user.id })
+  });
+
+  if (!link) {
+    throw new CustomError("Link was not found.");
+  }
+
+  const targetDomain = utils.removeWww(URL.parse(target).hostname);
+  const domain_id = link.domain_id || null;
+
+  const queries = await Promise.all([
+    validators.cooldown(req.user),
+    validators.malware(req.user, target),
+    address &&
+      address !== link.address &&
+      query.link.find({
+        address,
+        domain_id
+      }),
+    validators.bannedDomain(targetDomain),
+    validators.bannedHost(targetDomain)
+  ]);
+
+  // Check if custom link already exists
+  if (queries[2]) {
+    throw new CustomError("Custom URL is already in use.");
+  }
+
+  // Update link
+  const [updatedLink] = await query.link.update(
+    {
+      id: link.id
+    },
+    {
+      ...(address && { address }),
+      ...(description && { description }),
+      ...(target && { target }),
+      ...(expire_in && { expire_in })
+    }
+  );
+
+  return res.status(200).send(utils.sanitize.link({ ...link, ...updatedLink }));
+};
+
 export const remove: Handler = async (req, res) => {
   const link = await query.link.remove({
     uuid: req.params.id,
