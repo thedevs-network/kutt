@@ -34,9 +34,9 @@ router.patch(
   "/edit",
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
-  validators.editByShortLink,
+  validators.editByAddress,
   asyncHandler(helpers.verify),
-  asyncHandler(link.editByShortLink)
+  asyncHandler(link.editByAddress)
 );
 
 router.patch(

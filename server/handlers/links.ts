@@ -159,7 +159,7 @@ export const edit: Handler = async (req, res) => {
   return res.status(200).send(utils.sanitize.link({ ...link, ...updatedLink }));
 };
 
-export const editByShortLink: Handler = async (req, res) => {
+export const editByAddress: Handler = async (req, res) => {
   const { address, target, description, expire_in } = req.body;
 
   if (!address && !target) {
@@ -167,7 +167,7 @@ export const editByShortLink: Handler = async (req, res) => {
   }
 
   const link = await query.link.find({
-    address: req.query.shortLink,
+    address: req.query.address,
     ...(!req.user.admin && { user_id: req.user.id })
   });
 

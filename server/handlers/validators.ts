@@ -182,7 +182,7 @@ export const editLink = [
     .isLength({ min: 36, max: 36 })
 ];
 
-export const editByShortLink = [
+export const editByAddress = [
   body("target")
     .optional({ checkFalsy: true, nullable: true })
     .isString()
@@ -230,7 +230,7 @@ export const editByShortLink = [
     .trim()
     .isLength({ min: 0, max: 2040 })
     .withMessage("Description length must be between 0 and 2040."),
-  validatorQuery("shortLink", "ShortLink is invalid.").exists({
+  validatorQuery("address", "Address is invalid.").exists({
     checkFalsy: true,
     checkNull: true
   })
