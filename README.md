@@ -70,13 +70,6 @@ You need to have [Node.js](https://nodejs.org/), [PostgreSQL](https://www.postgr
 4. Run for development: `npm run dev`.
 5. Run for production: `npm run build` then `npm start`.
 
-
-Postgres local
-
-```
-docker run -d --name dev-postgres -e POSTGRES_PASSWORD=Pass2020! -v ~/postgres-data/:/var/lib/postgresql/data -p 5432:5432 postgres
-```
-
 ### Docker
 
 Download the [`docker-compose.yml`](docker-compose.yml) and the [`.docker.env`](.docker.env)-file from the repository and configure the `.docker.env` ([see below](#configuration)). 
