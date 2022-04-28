@@ -75,6 +75,7 @@
     "passport-localapikey-update": "^0.6.0",
     "pg": "^8.2.1",
     "pg-query-stream": "^2.1.2",
+    "prom-client": "^14.0.1",
     "prop-types": "^15.7.2",
     "qrcode.react": "^0.8.0",
     "query-string": "^6.10.1",

@@ -8,6 +8,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import nextApp from "next";
 import * as Sentry from "@sentry/node";
+import client from "prom-client";
 
 import * as helpers from "./handlers/helpers";
 import * as links from "./handlers/links";
@@ -22,6 +23,10 @@ import "./passport";
 const port = env.PORT;
 const app = nextApp({ dir: "./client", dev: env.isDev });
 const handle = app.getRequestHandler();
+const registry = new client.Registry();
+client.collectDefaultMetrics({
+  register: registry
+});
 
 app.prepare().then(async () => {
   const server = express();
@@ -74,6 +79,11 @@ app.prepare().then(async () => {
     asyncHandler(auth.verify),
     (req, res) => app.render(req, res, "/verify", { token: req.token })
   );
+
+  server.get("/metrics", async (_, res) => {
+    res.setHeader("Content-Type", registry.contentType);
+    res.send(await registry.metrics());
+  });
 
   server.get("/:id", asyncHandler(links.redirect(app)));
 
