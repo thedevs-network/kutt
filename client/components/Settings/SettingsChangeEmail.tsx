@@ -78,7 +78,7 @@ const SettingsChangeEmail: FC = () => {
             </Text>
             <TextInput
               {...email("changeemailaddress")}
-              placeholder="john@examaple.com"
+              placeholder="john@example.com"
               flex="1 1 auto"
               maxWidth="240px"
             />
