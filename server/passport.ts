@@ -1,6 +1,6 @@
 import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey-update";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import { Strategy as LocalStratergy } from "passport-local";
+import { Strategy as LocalStrategy } from "passport-local";
 import passport from "passport";
 import bcrypt from "bcryptjs";
 
@@ -29,7 +29,7 @@ const localOptions = {
 };
 
 passport.use(
-  new LocalStratergy(localOptions, async (email, password, done) => {
+  new LocalStrategy(localOptions, async (email, password, done) => {
     try {
       const user = await query.user.find({ email });
       if (!user) {
