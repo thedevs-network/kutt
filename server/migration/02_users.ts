@@ -1,10 +1,10 @@
 import env from "../env";
 
 import { v1 as NEO4J } from "neo4j-driver";
-import PQuque from "p-queue";
+import PQueue from "p-queue";
 import knex from "knex";
 
-const queue = new PQuque({ concurrency: 10 });
+const queue = new PQueue({ concurrency: 10 });
 
 // 1. Connect to Neo4j database
 const neo4j = NEO4J.driver(
