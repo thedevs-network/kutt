@@ -3,7 +3,7 @@ import path from "path";
 
 import env from "../env";
 
-const redis = {
+const redis = env.REDIS_URL || {
   port: env.REDIS_PORT,
   host: env.REDIS_HOST,
   ...(env.REDIS_PASSWORD && { password: env.REDIS_PASSWORD })

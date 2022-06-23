@@ -2,7 +2,7 @@ import knex from "knex";
 
 import env from "./env";
 
-const db = knex({
+const db = knex(env.DATABASE_URL || {
   client: "postgres",
   connection: {
     host: env.DB_HOST,

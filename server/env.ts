@@ -1,10 +1,12 @@
-import { cleanEnv, num, str, bool } from "envalid";
+import { cleanEnv, num, str, bool, url, EnvMissingError } from "envalid";
+import reporter from "envalid/src/reporter";
 
 const env = cleanEnv(process.env, {
   PORT: num({ default: 3000 }),
   SITE_NAME: str({ example: "Kutt" }),
   DEFAULT_DOMAIN: str({ example: "kutt.it" }),
   LINK_LENGTH: num({ default: 6 }),
+  DATABASE_URL: url(),
   DB_HOST: str({ default: "localhost" }),
   DB_PORT: num({ default: 5432 }),
   DB_NAME: str({ default: "postgres" }),
@@ -16,6 +18,7 @@ const env = cleanEnv(process.env, {
   NEO4J_DB_URI: str({ default: "" }),
   NEO4J_DB_USERNAME: str({ default: "" }),
   NEO4J_DB_PASSWORD: str({ default: "" }),
+  REDIS_URL: url(),
   REDIS_HOST: str({ default: "127.0.0.1" }),
   REDIS_PORT: num({ default: 6379 }),
   REDIS_PASSWORD: str({ default: "" }),
@@ -42,6 +45,20 @@ const env = cleanEnv(process.env, {
   CONTACT_EMAIL: str({ default: "" }),
   SENTRY_PRIVATE_DSN: str({ default: "" }),
   SENTRY_PUBLIC_DSN: str({ default: "" })
+}, {
+  reporter: ({errors, env}: {errors: { [key: string]: Error }, env: any}) => {
+    if (env.DATABASE_URL !== undefined) {
+      delete errors['DB_USER'];
+      delete errors['DB_PASSWORD'];
+    }
+    if (env.DB_USER !== undefined && env.DB_PASSWORD !== undefined) {
+      delete errors['DATABASE_URL'];
+    }
+    if (errors['REDIS_URL'] instanceof EnvMissingError) {
+      delete errors['REDIS_URL'];
+    }
+    reporter({errors, env});
+  }
 });
 
 export default env;

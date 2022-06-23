@@ -17,7 +17,7 @@ const neo4j = NEO4J.driver(
 );
 
 // 2. Connect to Postgres database
-const postgres = knex({
+const postgres = knex(env.DATABASE_URL || {
   client: "postgres",
   connection: {
     host: env.DB_HOST,

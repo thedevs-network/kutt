@@ -4,6 +4,7 @@ import redis from "redis";
 import env from "./env";
 
 const client = redis.createClient({
+  url: env.REDIS_URL,
   host: env.REDIS_HOST,
   port: env.REDIS_PORT,
   ...(env.REDIS_PASSWORD && { password: env.REDIS_PASSWORD })

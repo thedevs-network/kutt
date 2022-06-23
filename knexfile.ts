@@ -3,7 +3,7 @@ import env from "./server/env";
 module.exports = {
   production: {
     client: "postgresql",
-    connection: {
+    connection: env.DATABASE_URL || {
       host: env.DB_HOST,
       database: env.DB_NAME,
       user: env.DB_USER,
