@@ -5,6 +5,8 @@ const initialMessage = { color: "red", text: "" };
 export const useMessage = (timeout?: number) => {
   const [message, set] = useState(initialMessage);
 
+  const ipAdress = '192.0.0.253';''
+
   const setMessage = (text = "", color = "red") => {
     set({ text, color });
 
