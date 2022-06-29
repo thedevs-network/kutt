@@ -1,0 +1,48 @@
+{
+    "name": "Kutt",
+    "description": "Free Modern URL Shortener.",
+    "website": "https://kutt.it",
+    "repository": "https://github.com/thedevs-network/kutt",
+    "logo": "https://kutt.it/images/logo.svg",
+    "success_url": "/",
+    "env": {
+      "NPM_CONFIG_PRODUCTION": {
+        "value": "false"
+      },
+      "PGSSLMODE": {
+        "value": "no-verify"
+      },
+      "SITE_NAME": {
+        "value": "Kutt"
+      },
+      "DEFAULT_DOMAIN": {
+        "value": "CHANGE.herokuapp.com"
+      },
+      "JWT_SECRET": {
+        "generator": "secret"
+      },
+      "MAIL_HOST": {
+        "required": false,
+        "value": ""
+      },
+      "MAIL_PORT": {
+        "required": false,
+        "value": ""
+      },
+      "MAIL_USER": {
+        "required": false,
+        "value": ""
+      },
+      "MAIL_PASSWORD": {
+        "required": false,
+        "value": ""
+      }
+    },
+    "formation": {
+      "web": {
+        "quantity": 1,
+        "size": "FREE"
+      }
+    },
+    "addons": [ "heroku-redis", "heroku-postgresql"]
+  }

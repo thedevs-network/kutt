@@ -77,6 +77,10 @@ To execute Kutt you simply have to run `docker-compose up -d` command and then t
 
 The `docker-compose.yml` uses the official kutt docker image available on [Docker Hub](https://hub.docker.com/r/kutt/kutt).
 
+### Heroku
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 ### Configuration
 
 For the minimal configuration the following settings have to be changed in the `.env`-file:
