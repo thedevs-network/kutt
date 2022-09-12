@@ -35,6 +35,7 @@ const env = cleanEnv(process.env, {
   MAIL_HOST: str(),
   MAIL_PORT: num(),
   MAIL_SECURE: bool({ default: false }),
+  MAIL_IGNORE_TLS: bool({ default: false }),
   MAIL_USER: str(),
   MAIL_FROM: str({ default: "", example: "Kutt <support@kutt.it>" }),
   MAIL_PASSWORD: str(),

@@ -48,7 +48,7 @@
     "cross-env": "^7.0.3",
     "date-fns": "^2.9.0",
     "dotenv": "^8.2.0",
-    "easy-peasy": "^5.0.3",
+    "easy-peasy": "^5.0.4",
     "email-validator": "^1.2.3",
     "envalid": "^6.0.0",
     "express": "^4.17.1",
@@ -160,13 +160,13 @@
     "jest": "^26.6.3",
     "mocha": "^5.2.0",
     "nock": "^9.3.3",
-    "nodemon": "^1.19.4",
+    "nodemon": "^2.0.19",
     "prettier": "^1.19.1",
     "redoc": "^2.0.0-rc.20",
     "rimraf": "^3.0.0",
     "sinon": "^6.0.0",
     "ts-jest": "^26.5.1",
-    "ts-node": "^9.1.1",
-    "typescript": "^4.2.2"
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.3"
   }
 }

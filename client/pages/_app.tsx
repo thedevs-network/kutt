@@ -7,7 +7,7 @@ import cookie from "js-cookie";
 import Head from "next/head";
 import React from "react";
 
-import { initGA, logPageView , initSentry } from "../helpers/analytics";
+import { initGA, logPageView, initSentry } from "../helpers/analytics";
 import { initializeStore } from "../store";
 import { TokenPayload } from "../types";
 
@@ -16,7 +16,7 @@ const { publicRuntimeConfig } = getConfig();
 
 if (isProd) {
   initSentry();
-};
+}
 
 // TODO: types
 class MyApp extends App<any> {

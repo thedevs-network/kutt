@@ -6,19 +6,16 @@ import { resetMailText, verifyMailText, changeEmailText } from "./text";
 import { CustomError } from "../utils";
 import env from "../env";
 
-const mailConfig = {
+const transporter = nodemailer.createTransport({
   host: env.MAIL_HOST,
   port: env.MAIL_PORT,
   secure: env.MAIL_SECURE,
-  auth: env.MAIL_USER
-    ? {
-        user: env.MAIL_USER,
-        pass: env.MAIL_PASSWORD
-      }
-    : undefined
-};
-
-const transporter = nodemailer.createTransport(mailConfig);
+  ignoreTLS: env.MAIL_IGNORE_TLS,
+  auth: {
+    user: env.MAIL_USER,
+    pass: env.MAIL_PASSWORD
+  }
+});
 
 export default transporter;
 

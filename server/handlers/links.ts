@@ -19,7 +19,7 @@ import env from "../env";
 const dnsLookup = promisify(dns.lookup);
 
 export const get: Handler = async (req, res) => {
-  const { limit, skip, search, all } = req.query;
+  const { limit, skip, search, all } = req.query as any;
   const userId = req.user.id;
 
   const match = {

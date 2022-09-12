@@ -306,10 +306,11 @@ export const getLinkStats: Handler = async (req, res) => {
     return res.status(400).json({ error: "No id has been provided." });
   }
 
-  const hostname = removeWww(URL.parse(req.query.domain).hostname);
-  const hasCustomDomain = req.query.domain && hostname !== env.DEFAULT_DOMAIN;
+  const domain = req.query.domain as string;
+  const hostname = removeWww(URL.parse(domain).hostname);
+  const hasCustomDomain = domain && hostname !== env.DEFAULT_DOMAIN;
   const customDomain = hasCustomDomain
-    ? (await getDomain({ address: req.query.domain })) || ({ id: -1 } as Domain)
+    ? (await getDomain({ address: domain })) || ({ id: -1 } as Domain)
     : ({} as Domain);
 
   const redisKey = req.query.id + (customDomain.address || "") + req.user.email;
@@ -317,7 +318,7 @@ export const getLinkStats: Handler = async (req, res) => {
   if (cached) return res.status(200).json(JSON.parse(cached));
 
   const link = await findLink({
-    address: req.query.id,
+    address: req.query.id as string,
     domain_id: hasCustomDomain ? customDomain.id : null,
     user_id: req.user && req.user.id
   });
