@@ -41,14 +41,14 @@ export const query: Handler = (req, res, next) => {
   const { limit, skip, all } = req.query;
   const { admin } = req.user || {};
 
-  req.query.limit = parseInt(limit) || 10;
-  req.query.skip = parseInt(skip) || 0;
+  req.query.limit = (parseInt(limit as string) || 10).toString();
+  req.query.skip = (parseInt(skip as string) || 0).toString();
 
-  if (req.query.limit > 50) {
-    req.query.limit = 50;
+  if (parseInt(req.query.limit) > 50) {
+    req.query.limit = "50";
   }
 
-  req.query.all = admin ? all === "true" : false;
+  req.query.all = (admin ? all === "true" : false).toString();
 
   next();
 };
