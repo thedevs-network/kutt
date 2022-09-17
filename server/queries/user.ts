@@ -4,6 +4,10 @@ import { addMinutes } from "date-fns";
 import * as redis from "../redis";
 import knex from "../knex";
 
+import * as models from "../models";
+
+const { TableName } = models;
+
 export const find = async (match: Partial<User>) => {
   if (match.email || match.apikey) {
     const key = redis.key.user(match.email || match.apikey);
@@ -11,7 +15,7 @@ export const find = async (match: Partial<User>) => {
     if (cachedUser) return JSON.parse(cachedUser) as User;
   }
 
-  const user = await knex<User>("users")
+  const user = await knex<User>(TableName.user)
     .where(match)
     .first();
 
@@ -42,11 +46,11 @@ export const add = async (params: Add, user?: User) => {
   };
 
   if (user) {
-    await knex<User>("users")
+    await knex<User>(TableName.user)
       .where("id", user.id)
       .update({ ...data, updated_at: new Date().toISOString() });
   } else {
-    await knex<User>("users").insert(data);
+    await knex<User>(TableName.user).insert(data);
   }
 
   redis.remove.user(user);
@@ -58,7 +62,7 @@ export const add = async (params: Add, user?: User) => {
 };
 
 export const update = async (match: Match<User>, update: Partial<User>) => {
-  const query = knex<User>("users");
+  const query = knex<User>(TableName.user);
 
   Object.entries(match).forEach(([key, value]) => {
     query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
@@ -75,7 +79,7 @@ export const update = async (match: Match<User>, update: Partial<User>) => {
 };
 
 export const remove = async (user: User) => {
-  const deletedUser = await knex<User>("users")
+  const deletedUser = await knex<User>(TableName.user)
     .where("id", user.id)
     .delete();
 

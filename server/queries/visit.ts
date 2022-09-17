@@ -4,6 +4,10 @@ import * as utils from "../utils";
 import * as redis from "../redis";
 import knex from "../knex";
 
+import * as models from "../models";
+
+const { TableName } = models;
+
 interface Add {
   browser: string;
   country: string;
@@ -20,7 +24,7 @@ export const add = async (params: Add) => {
     referrer: params.referrer.toLowerCase()
   };
 
-  const visit = await knex<Visit>("visits")
+  const visit = await knex<Visit>(TableName.visit)
     .where({ link_id: params.id })
     .andWhere(
       knex.raw("date_trunc('hour', created_at) = date_trunc('hour', ?)", [
@@ -30,7 +34,7 @@ export const add = async (params: Add) => {
     .first();
 
   if (visit) {
-    await knex("visits")
+    await knex(TableName.visit)
       .where({ id: visit.id })
       .increment(`br_${data.browser}`, 1)
       .increment(`os_${data.os}`, 1)
@@ -47,7 +51,7 @@ export const add = async (params: Add) => {
         )
       });
   } else {
-    await knex<Visit>("visits").insert({
+    await knex<Visit>(TableName.visit).insert({
       [`br_${data.browser}`]: 1,
       countries: { [data.country]: 1 },
       referrers: { [data.referrer]: 1 },
@@ -104,7 +108,7 @@ export const find = async (match: Partial<Visit>, total: number) => {
     }
   };
 
-  const visitsStream: any = knex<Visit>("visits")
+  const visitsStream: any = knex<Visit>(TableName.visit)
     .where(match)
     .stream();
   const nowUTC = utils.getUTCDate();

@@ -2,6 +2,7 @@ import * as Knex from "knex";
 import * as models from "../models";
 
 export async function up(knex: Knex): Promise<any> {
+  models.TableName.setPrefix("");
   await models.createUserTable(knex);
   await models.createIPTable(knex);
   await models.createDomainTable(knex);

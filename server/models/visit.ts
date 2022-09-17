@@ -1,9 +1,10 @@
 import * as Knex from "knex";
+import { TableName } from ".";
 
 export async function createVisitTable(knex: Knex) {
-  const hasTable = await knex.schema.hasTable("visits");
+  const hasTable = await knex.schema.hasTable(TableName.visit);
   if (!hasTable) {
-    await knex.schema.createTable("visits", table => {
+    await knex.schema.createTable(TableName.visit, table => {
       table.increments("id").primary();
       table.jsonb("countries").defaultTo("{}");
       table
@@ -14,7 +15,7 @@ export async function createVisitTable(knex: Knex) {
       table
         .integer("link_id")
         .references("id")
-        .inTable("links")
+        .inTable(TableName.link)
         .notNullable()
         .onDelete("CASCADE");
       table.jsonb("referrers").defaultTo("{}");
@@ -77,9 +78,12 @@ export async function createVisitTable(knex: Knex) {
     });
   }
 
-  const hasUpdatedAt = await knex.schema.hasColumn("visits", "updated_at");
+  const hasUpdatedAt = await knex.schema.hasColumn(
+    TableName.visit,
+    "updated_at"
+  );
   if (!hasUpdatedAt) {
-    await knex.schema.alterTable("visits", table => {
+    await knex.schema.alterTable(TableName.visit, table => {
       table.dateTime("updated_at").defaultTo(knex.fn.now());
     });
   }
