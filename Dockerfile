@@ -13,12 +13,15 @@ RUN npm install
 COPY . .
 
 # Give permission to run script
-RUN chmod +x ./wait-for-it.sh
+RUN chmod +x ./wait-for-it.sh ./entrypoint.sh
 
 # Build files
 RUN npm run build
 
 EXPOSE 3000
+
+# entrypoint
+ENTRYPOINT [ "./entrypoint.sh" ]
 
 # Running the app
 CMD [ "npm", "start" ]
