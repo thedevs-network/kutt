@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Flex } from "reflexbox/styled-components";
+import { DISALLOW_CUSTOMDOMAINS } from "../consts";
 
 import FeaturesItem from "./FeaturesItem";
 import { ColCenterH } from "./Layout";
@@ -28,9 +29,13 @@ const Features = () => (
         Create, protect and delete your links and monitor them with detailed
         statistics.
       </FeaturesItem>
-      <FeaturesItem title="Custom domain" icon="shuffle">
-        Use custom domains for your links. Add or remove them for free.
-      </FeaturesItem>
+      {DISALLOW_CUSTOMDOMAINS  && (
+        <>
+          <FeaturesItem title="Custom domain" icon="shuffle">
+            Use custom domains for your links. Add or remove them for free.
+          </FeaturesItem>
+        </>
+      )}
       <FeaturesItem title="API" icon="zap">
         Use the provided API to create, delete, and get URLs from anywhere.
       </FeaturesItem>

@@ -12,6 +12,7 @@ import Divider from "../components/Divider";
 import { Col } from "../components/Layout";
 import Footer from "../components/Footer";
 import { useStoreState } from "../store";
+import { DISALLOW_REGISTRATION } from "../consts";
 
 const SettingsPage: NextPage = () => {
   const email = useStoreState(s => s.auth.email);
@@ -26,8 +27,12 @@ const SettingsPage: NextPage = () => {
           </Span>
           .
         </H1>
-        <Divider mt={4} mb={48} />
-        <SettingsDomain />
+        {DISALLOW_REGISTRATION  && (
+         <>
+          <Divider mt={4} mb={48} />
+          <SettingsDomain />
+         </>
+        )}
         <Divider mt={4} mb={48} />
         <SettingsApi />
         <Divider mt={4} mb={48} />

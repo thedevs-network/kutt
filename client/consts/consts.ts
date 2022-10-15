@@ -7,6 +7,10 @@ export const DISALLOW_ANONYMOUS_LINKS =
 
 export const DISALLOW_REGISTRATION =
   publicRuntimeConfig.DISALLOW_REGISTRATION === "true";
+  
+export const DISALLOW_CUSTOMDOMAINS =
+  publicRuntimeConfig.DISALLOW_CUSTOMDOMAINS === "true";
+
 
 export enum API {
   BAN_LINK = "/api/url/admin/ban",
