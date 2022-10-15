@@ -291,16 +291,21 @@ export const redirect = (app: ReturnType<typeof next>): Handler => async (
 
   // 5. Append query string when provided
   if (req.query) {
-    const linkTargetParams = new URLSearchParams(link.target);
+    const url = URL.parse(link.target, true);
+    const linkTargetParams = new URLSearchParams(url.search);
 
+    let added = 0;
     Object.entries(req.query).forEach(([key, value]) => {
       if (typeof value === "string") {
+        added++;
         linkTargetParams.append(key, value);
       }
     });
 
-    // toString() encodes original url, decode it back
-    link.target = decodeURIComponent(linkTargetParams.toString());
+    if (added) {
+      url.search = linkTargetParams.toString();
+      link.target = URL.format(url);
+    }
   }
 
   // 6. If wants to see link info, then redirect
