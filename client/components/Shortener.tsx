@@ -16,6 +16,10 @@ import Animation from "./Animation";
 import { Colors } from "../consts";
 import Icon from "./Icon";
 
+import NLink from "next/link";
+import { Button } from "./Button";
+import ALink from "./ALink";
+
 const { publicRuntimeConfig } = getConfig();
 
 const SubmitIconWrapper = styled.div`
@@ -372,6 +376,23 @@ const Shortener = () => {
               />
             </Col>
           </Flex>
+          <Flex mt={[0, 25]}  flexDirection={["column", "row"]}>
+            <Col mb={[3, 0]} mt={[10, 10]}>
+            <Button 
+                flex="1 1 auto"
+                height={[32, 40]}
+                onClick={onSubmit}
+              >
+                <Icon
+                  name="send"
+                  stroke="white"
+                  mr={2}
+                />
+                Kutt
+              </Button>
+            </Col>
+          </Flex>
+
         </div>
       )}
     </Col>
