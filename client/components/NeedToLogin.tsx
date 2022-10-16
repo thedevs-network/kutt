@@ -6,6 +6,7 @@ import { Flex } from "reflexbox/styled-components";
 import { Button } from "./Button";
 import { fadeIn } from "../helpers/animations";
 import { Col } from "./Layout";
+import { DISALLOW_DOMAIN } from "../consts";
 
 const Wrapper = styled(Flex).attrs({
   width: 1200,
@@ -63,7 +64,7 @@ const NeedToLogin = () => (
       mb={[32, 32, 0]}
     >
       <Title>
-        Manage links, set custom <b>domains</b> and view <b>stats</b>.
+        Manage links{DISALLOW_DOMAIN && (<>, set custom <b>domains</b></>)} and view <b>stats</b>.
       </Title>
       <Link href="/login">
         <a href="/login" title="login / signup">
