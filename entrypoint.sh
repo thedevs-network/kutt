@@ -12,7 +12,7 @@ for param in \
     DISALLOW_ANONYMOUS_LINKS \
     DISALLOW_REGISTRATION \
     SENTRY_PUBLIC_DSN \
-    DISALLOW_CUSTOMDOMAINS \
+    DISALLOW_DOMAIN \
     ; do
     if [ -n "${!param}" ] ; then
         echo "$param=\"${!param}\"" >>.env
