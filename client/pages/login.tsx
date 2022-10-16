@@ -144,7 +144,7 @@ const LoginPage = () => {
                   stroke="white"
                   mr={2}
                 />
-                Log in
+                Login
               </Button>
               {!DISALLOW_REGISTRATION && (
                 <Button
