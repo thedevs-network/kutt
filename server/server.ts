@@ -20,6 +20,8 @@ import "./cron";
 import "./passport";
 
 const port = env.PORT;
+const basePath = env.BASE_PATH;
+
 const app = nextApp({ dir: "./client", dev: env.isDev });
 const handle = app.getRequestHandler();
 
@@ -49,33 +51,33 @@ app.prepare().then(async () => {
   server.use(express.json());
   server.use(express.urlencoded({ extended: true }));
   server.use(passport.initialize());
-  server.use(express.static("static"));
+  server.use(`${basePath}/resources`, express.static("static"));
   server.use(helpers.ip);
 
   server.use(asyncHandler(links.redirectCustomDomain));
 
-  server.use("/api/v2", routes);
-  server.use("/api", __v1Routes);
+  server.use(`${basePath}/api/v2`, routes);
+  server.use(`${basePath}/api`, __v1Routes);
 
   server.get(
-    "/reset-password/:resetPasswordToken?",
+    `${basePath}/reset-password/:resetPasswordToken?`,
     asyncHandler(auth.resetPassword),
     (req, res) => app.render(req, res, "/reset-password", { token: req.token })
   );
 
   server.get(
-    "/verify-email/:changeEmailToken",
+    `${basePath}/verify-email/:changeEmailToken`,
     asyncHandler(auth.changeEmail),
     (req, res) => app.render(req, res, "/verify-email", { token: req.token })
   );
 
   server.get(
-    "/verify/:verificationToken?",
+    `${basePath}/verify/:verificationToken?`,
     asyncHandler(auth.verify),
     (req, res) => app.render(req, res, "/verify", { token: req.token })
   );
 
-  server.get("/:id", asyncHandler(links.redirect(app)));
+  server.get(`${basePath}/:id`, asyncHandler(links.redirect(app)));
 
   // Error handler
   server.use(helpers.error);
@@ -85,6 +87,6 @@ app.prepare().then(async () => {
 
   server.listen(port, err => {
     if (err) throw err;
-    console.log(`> Ready on http://localhost:${port}`);
+    console.log(`> Ready on http://localhost:${port}${basePath}`);
   });
 });

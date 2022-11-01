@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Flex } from "reflexbox/styled-components";
 import SVG from "react-inlinesvg"; // TODO: another solution
-import { Colors } from "../consts";
+import { Colors, resources } from "../consts";
 import { ColCenterH } from "./Layout";
 import { H3 } from "./Text";
 
@@ -95,7 +95,7 @@ const Extensions = () => (
         rel="noopener noreferrer"
       >
         <ChromeButton>
-          <Icon src="/images/googlechrome.svg" color="#4285f4" />
+          <Icon src={resources.svg.chrome} color="#4285f4" />
           <span>Download for Chrome</span>
         </ChromeButton>
       </Link>
@@ -105,7 +105,7 @@ const Extensions = () => (
         rel="noopener noreferrer"
       >
         <FirefoxButton>
-          <Icon src="/images/mozillafirefox.svg" color="#e0890f" />
+          <Icon src={resources.svg.firefox} color="#e0890f" />
           <span>Download for Firefox</span>
         </FirefoxButton>
       </Link>

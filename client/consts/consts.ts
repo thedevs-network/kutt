@@ -8,23 +8,25 @@ export const DISALLOW_ANONYMOUS_LINKS =
 export const DISALLOW_REGISTRATION =
   publicRuntimeConfig.DISALLOW_REGISTRATION === "true";
 
-export enum API {
-  BAN_LINK = "/api/url/admin/ban",
-  STATS = "/api/url/stats"
-}
+const prefix = publicRuntimeConfig.BASE_PATH;
 
-export enum APIv2 {
-  AuthLogin = "/api/v2/auth/login",
-  AuthSignup = "/api/v2/auth/signup",
-  AuthRenew = "/api/v2/auth/renew",
-  AuthResetPassword = "/api/v2/auth/reset-password",
-  AuthChangePassword = "/api/v2/auth/change-password",
-  AuthChangeEmail = "/api/v2/auth/change-email",
-  AuthGenerateApikey = "/api/v2/auth/apikey",
-  Users = "/api/v2/users",
-  Domains = "/api/v2/domains",
-  Links = "/api/v2/links"
-}
+export const API = {
+  BAN_LINK: `${prefix}/api/url/admin/ban`,
+  STATS: `${prefix}/api/url/stats`
+};
+
+export const APIv2 = {
+  AuthLogin: `${prefix}/api/v2/auth/login`,
+  AuthSignup: `${prefix}/api/v2/auth/signup`,
+  AuthRenew: `${prefix}/api/v2/auth/renew`,
+  AuthResetPassword: `${prefix}/api/v2/auth/reset-password`,
+  AuthChangePassword: `${prefix}/api/v2/auth/change-password`,
+  AuthChangeEmail: `${prefix}/api/v2/auth/change-email`,
+  AuthGenerateApikey: `${prefix}/api/v2/auth/apikey`,
+  Users: `${prefix}/api/v2/users`,
+  Domains: `${prefix}/api/v2/domains`,
+  Links: `${prefix}/api/v2/links`
+};
 
 export enum Colors {
   Bg = "hsl(206, 12%, 95%)",
@@ -65,3 +67,14 @@ export enum Colors {
   TrashIcon = "hsl(0, 100%, 69%)",
   TrashIconBg = "hsl(0, 100%, 96%)"
 }
+
+export const resources = {
+  svg: {
+    logo: `${prefix}/resources/images/logo.svg`,
+    chrome: `${prefix}/resources/images/googlechrome.svg`,
+    firefox: `${prefix}/resources/images/mozillafirefox.svg`
+  },
+  png: {
+    callout: `${prefix}/resources/images/callout.png`
+  }
+};

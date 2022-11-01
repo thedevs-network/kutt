@@ -6,6 +6,7 @@ import { Flex } from "reflexbox/styled-components";
 import { Button } from "./Button";
 import { fadeIn } from "../helpers/animations";
 import { Col } from "./Layout";
+import { resources } from "../consts";
 
 const Wrapper = styled(Flex).attrs({
   width: 1200,
@@ -71,7 +72,7 @@ const NeedToLogin = () => (
         </a>
       </Link>
     </Col>
-    <Image src="/images/callout.png" />
+    <Image src={resources.png.callout} />
   </Wrapper>
 );
 

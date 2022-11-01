@@ -5,7 +5,7 @@ import Router from "next/router";
 import useMedia from "use-media";
 import Link from "next/link";
 
-import { DISALLOW_REGISTRATION } from "../consts";
+import { DISALLOW_REGISTRATION, resources } from "../consts";
 import { useStoreState } from "../store";
 import styled from "styled-components";
 import { RowCenterV } from "./Layout";
@@ -110,7 +110,7 @@ const Header: FC = () => {
               if (window.location.pathname !== "/") Router.push("/");
             }}
           >
-            <img src="/images/logo.svg" alt="" />
+            <img src={resources.svg.logo} alt="" />
             {publicRuntimeConfig.SITE_NAME}
           </a>
         </LogoImage>
