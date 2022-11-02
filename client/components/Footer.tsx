@@ -7,6 +7,7 @@ import { ColCenter } from "./Layout";
 import ReCaptcha from "./ReCaptcha";
 import ALink from "./ALink";
 import Text from "./Text";
+import Link from "next/link";
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -39,13 +40,17 @@ const Footer: FC = () => {
           GitHub
         </ALink>
         {" | "}
-        <ALink href="/terms" title="Terms of Service">
-          Terms of Service
-        </ALink>
+        <Link href="/terms">
+          <ALink href="/terms" title="Terms of Service">
+            Terms of Service
+          </ALink>
+        </Link>
         {" | "}
-        <ALink href="/report" title="Report abuse">
-          Report Abuse
-        </ALink>
+        <Link href="/report">
+          <ALink href="/report" title="Report abuse">
+            Report Abuse
+          </ALink>
+        </Link>
         {publicRuntimeConfig.CONTACT_EMAIL && (
           <>
             {" | "}
