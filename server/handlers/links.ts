@@ -258,9 +258,15 @@ export const redirect = (app: ReturnType<typeof next>): Handler => async (
   next
 ) => {
   const isBot = isbot(req.headers["user-agent"]);
-  const isPreservedUrl = validators.preservedUrls.some(
-    item => item === req.path.replace("/", "")
-  );
+  const basePath = env.BASE_PATH;
+
+  const isPreservedUrl = validators.preservedUrls.some(item => {
+    if (!basePath || basePath === "") {
+      return item === req.path.replace("/", "");
+    } else {
+      return `${basePath}/${item}` === req.path;
+    }
+  });
 
   if (isPreservedUrl) return next();
 
