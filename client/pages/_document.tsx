@@ -37,28 +37,31 @@ class AppDocument extends Document<Props> {
           <link
             rel="icon"
             sizes="196x196"
-            href="/resources/images/favicon-196x196.png"
+            href={`${publicRuntimeConfig.BASE_PATH}/resources/images/favicon-196x196.png`}
           />
           <link
             rel="icon"
             sizes="32x32"
-            href="/resources/images/favicon-32x32.png"
+            href={`${publicRuntimeConfig.BASE_PATH}/resources/images/favicon-32x32.png`}
           />
           <link
             rel="icon"
             sizes="16x16"
-            href="/resources/images/favicon-16x16.png"
+            href={`${publicRuntimeConfig.BASE_PATH}/resources/images/favicon-16x16.png`}
           />
           <link
             rel="apple-touch-icon"
-            href="/resources/images/favicon-196x196.png"
+            href={`${publicRuntimeConfig.BASE_PATH}/resources/images/favicon-196x196.png`}
           />
           <link
             rel="mask-icon"
-            href="/resources/images/icon.svg"
+            href={`${publicRuntimeConfig.BASE_PATH}/resources/images/icon.svg`}
             color="blue"
           />
-          <link rel="manifest" href="/resources/manifest.webmanifest" />
+          <link
+            rel="manifest"
+            href={`${publicRuntimeConfig.BASE_PATH}/resources/manifest.webmanifest`}
+          />
           <meta name="theme-color" content="#f3f3f3" />
 
           <meta property="fb:app_id" content="123456789" />
