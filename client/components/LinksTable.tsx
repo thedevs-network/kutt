@@ -397,7 +397,7 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
                     {...password({
                       name: "password"
                     })}
-                    placeholder={link.password ? "●●●●●●●" : "Password..."}
+                    placeholder={link.password ? "••••••••" : "Password..."}
                     autocomplete="off"
                     data-lpignore
                     pl={[3, 24]}
