@@ -180,6 +180,11 @@ export const batchRemove = async (match: Match<Link>) => {
 };
 
 export const update = async (match: Partial<Link>, update: Partial<Link>) => {
+  if (update.password) {
+    const salt = await bcrypt.genSalt(12);
+    update.password = await bcrypt.hash(update.password, salt);
+  }
+
   const links = await knex<Link>("links")
     .where(match)
     .update({ ...update, updated_at: new Date().toISOString() }, "*");
