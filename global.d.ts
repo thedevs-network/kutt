@@ -1,4 +1,4 @@
-type Raw = import("knex").Raw;
+type Raw = import("knex").Knex.Raw;
 
 type Match<T> = {
   [K in keyof T]?: T[K] | [">" | ">=" | "<=" | "<", T[K]];

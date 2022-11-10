@@ -1,4 +1,4 @@
-import * as Knex from "knex";
+import { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<any> {
   const hasExpireIn = await knex.schema.hasColumn("links", "expire_in");

@@ -1,4 +1,4 @@
-import * as Knex from "knex";
+import { Knex } from "knex";
 
 export async function createUserTable(knex: Knex) {
   const hasTable = await knex.schema.hasTable("users");
