@@ -147,8 +147,6 @@ export const editLink = [
     .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
   body("password")
     .optional({ nullable: true, checkFalsy: true })
-    .custom(checkUser)
-    .withMessage("Only users can use this field.")
     .isString()
     .isLength({ min: 3, max: 64 })
     .withMessage("Password length must be between 3 and 64."),
