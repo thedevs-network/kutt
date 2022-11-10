@@ -19,6 +19,7 @@ const env = cleanEnv(process.env, {
   REDIS_HOST: str({ default: "127.0.0.1" }),
   REDIS_PORT: num({ default: 6379 }),
   REDIS_PASSWORD: str({ default: "" }),
+  REDIS_DB: num({ default: 0 }),
   USER_LIMIT_PER_DAY: num({ default: 50 }),
   NON_USER_COOLDOWN: num({ default: 10 }),
   DEFAULT_MAX_STATS_PER_LINK: num({ default: 5000 }),
