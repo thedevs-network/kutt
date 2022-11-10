@@ -7,7 +7,6 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import nextApp from "next";
-import * as Sentry from "@sentry/node";
 
 import * as helpers from "./handlers/helpers";
 import * as links from "./handlers/links";
@@ -30,18 +29,6 @@ app.prepare().then(async () => {
 
   if (env.isDev) {
     server.use(morgan("combined", { stream }));
-  } else if (env.SENTRY_PRIVATE_DSN) {
-    Sentry.init({
-      dsn: env.SENTRY_PRIVATE_DSN,
-      environment: process.env.NODE_ENV
-    });
-
-    server.use(
-      Sentry.Handlers.requestHandler({
-        ip: true,
-        user: ["id", "email"]
-      })
-    );
   }
 
   server.use(helmet());

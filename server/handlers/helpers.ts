@@ -1,6 +1,5 @@
 import { Handler, ErrorRequestHandler } from "express";
 import { validationResult } from "express-validator";
-import * as Sentry from "@sentry/node";
 import signale from "signale";
 
 import { CustomError } from "../utils";
@@ -22,10 +21,6 @@ export const error: ErrorRequestHandler = (error, req, res, next) => {
 
   if (error instanceof CustomError) {
     return res.status(error.statusCode || 500).json({ error: error.message });
-  }
-
-  if (env.SENTRY_PRIVATE_DSN) {
-    Sentry.captureException(error);
   }
 
   return res.status(500).json({ error: "An error occurred." });

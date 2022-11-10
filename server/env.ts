@@ -40,9 +40,7 @@ const env = cleanEnv(process.env, {
   MAIL_FROM: str({ default: "", example: "Kutt <support@kutt.it>" }),
   MAIL_PASSWORD: str(),
   REPORT_EMAIL: str({ default: "" }),
-  CONTACT_EMAIL: str({ default: "" }),
-  SENTRY_PRIVATE_DSN: str({ default: "" }),
-  SENTRY_PUBLIC_DSN: str({ default: "" })
+  CONTACT_EMAIL: str({ default: "" })
 });
 
 export default env;
