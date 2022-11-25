@@ -281,7 +281,7 @@ export const redirect = (app: ReturnType<typeof next>): Handler => async (
   // 3. When no link, if has domain redirect to domain's homepage
   // otherwise redirect to 404
   if (!link) {
-    return res.redirect(301, domain ? domain.homepage : "/404");
+    return res.redirect(302, domain ? domain.homepage : "/404");
   }
 
   // 4. If link is banned, redirect to banned page.
@@ -388,7 +388,7 @@ export const redirectCustomDomain: Handler = async (req, res, next) => {
       ? domain.homepage
       : `https://${env.DEFAULT_DOMAIN + path}`;
 
-    return res.redirect(301, redirectURL);
+    return res.redirect(302, redirectURL);
   }
 
   return next();
