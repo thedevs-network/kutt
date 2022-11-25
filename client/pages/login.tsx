@@ -1,10 +1,9 @@
 import { useFormState } from "react-use-form-state";
 import React, { useEffect, useState } from "react";
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 import emailValidator from "email-validator";
 import styled from "styled-components";
 import Router from "next/router";
-import Link from "next/link";
 import axios from "axios";
 
 import { useStoreState, useStoreActions } from "../store";
@@ -32,8 +31,8 @@ const Email = styled.span`
 `;
 
 const LoginPage = () => {
-  const { isAuthenticated } = useStoreState(s => s.auth);
-  const login = useStoreActions(s => s.auth.login);
+  const { isAuthenticated } = useStoreState((s) => s.auth);
+  const login = useStoreActions((s) => s.auth.login);
   const [error, setError] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [loading, setLoading] = useState({ login: false, signup: false });
@@ -47,7 +46,7 @@ const LoginPage = () => {
   }, [isAuthenticated]);
 
   function onSubmit(type: "login" | "signup") {
-    return async e => {
+    return async (e) => {
       e.preventDefault();
       const { email, password } = formState.values;
 
@@ -68,7 +67,7 @@ const LoginPage = () => {
       setError("");
 
       if (type === "login") {
-        setLoading(s => ({ ...s, login: true }));
+        setLoading((s) => ({ ...s, login: true }));
         try {
           await login(formState.values);
           Router.push("/");
@@ -78,7 +77,7 @@ const LoginPage = () => {
       }
 
       if (type === "signup" && !DISALLOW_REGISTRATION) {
-        setLoading(s => ({ ...s, signup: true }));
+        setLoading((s) => ({ ...s, signup: true }));
         try {
           await axios.post(APIv2.AuthSignup, { email, password });
           setVerifying(true);
@@ -163,17 +162,16 @@ const LoginPage = () => {
                 </Button>
               )}
             </Flex>
-            <Link href="/reset-password">
-              <ALink
-                href="/reset-password"
-                title="Forget password"
-                fontSize={14}
-                alignSelf="flex-start"
-                my={16}
-              >
-                Forgot your password?
-              </ALink>
-            </Link>
+            <ALink
+              href="/reset-password"
+              title="Forget password"
+              fontSize={14}
+              alignSelf="flex-start"
+              my={16}
+              isNextLink
+            >
+              Forgot your password?
+            </ALink>
             <Text color="red" mt={1} normal>
               {error}
             </Text>

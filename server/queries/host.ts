@@ -1,4 +1,4 @@
-import * as redis from "../redis";
+import redisClient, * as redis from "../redis";
 import knex from "../knex";
 
 interface Add extends Partial<Host> {
@@ -7,7 +7,7 @@ interface Add extends Partial<Host> {
 
 export const find = async (match: Partial<Host>): Promise<Host> => {
   if (match.address) {
-    const cachedHost = await redis.get(redis.key.host(match.address));
+    const cachedHost = await redisClient.get(redis.key.host(match.address));
     if (cachedHost) return JSON.parse(cachedHost);
   }
 
@@ -16,7 +16,7 @@ export const find = async (match: Partial<Host>): Promise<Host> => {
     .first();
 
   if (host) {
-    redis.set(
+    redisClient.set(
       redis.key.host(host.address),
       JSON.stringify(host),
       "EX",

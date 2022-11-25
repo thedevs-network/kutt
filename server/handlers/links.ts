@@ -1,4 +1,3 @@
-import ua from "universal-analytics";
 import { Handler } from "express";
 import { promisify } from "util";
 import bcrypt from "bcryptjs";
@@ -19,7 +18,8 @@ import env from "../env";
 const dnsLookup = promisify(dns.lookup);
 
 export const get: Handler = async (req, res) => {
-  const { limit, skip, search, all } = req.query;
+  const { limit, skip, all } = req.context;
+  const search = req.query.search as string;
   const userId = req.user.id;
 
   const match = {
@@ -310,19 +310,7 @@ export const redirect = (app: ReturnType<typeof next>): Handler => async (
     });
   }
 
-  // 8. Create Google Analytics visit
-  if (env.GOOGLE_ANALYTICS_UNIVERSAL && !isBot) {
-    ua(env.GOOGLE_ANALYTICS_UNIVERSAL)
-      .pageview({
-        dp: `/${address}`,
-        ua: req.headers["user-agent"],
-        uip: req.realIP,
-        aip: 1
-      })
-      .send();
-  }
-
-  // 10. Redirect to target
+  // 8. Redirect to target
   return res.redirect(link.target);
 };
 
@@ -353,19 +341,7 @@ export const redirectProtected: Handler = async (req, res) => {
     });
   }
 
-  // 5. Create Google Analytics visit
-  if (env.GOOGLE_ANALYTICS_UNIVERSAL) {
-    ua(env.GOOGLE_ANALYTICS_UNIVERSAL)
-      .pageview({
-        dp: `/${link.address}`,
-        ua: req.headers["user-agent"],
-        uip: req.realIP,
-        aip: 1
-      })
-      .send();
-  }
-
-  // 6. Send target
+  // 5. Send target
   return res.status(200).send({ target: link.target });
 };
 

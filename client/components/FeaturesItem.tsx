@@ -1,6 +1,6 @@
-import React, { FC } from "react";
+import React, { FC, ReactNode } from "react";
 import styled from "styled-components";
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 
 import { fadeIn } from "../helpers/animations";
 import Icon from "./Icon";
@@ -9,6 +9,7 @@ import { Icons } from "./Icon/Icon";
 interface Props {
   title: string;
   icon: Icons;
+  children?: ReactNode;
 }
 
 const Block = styled(Flex).attrs({

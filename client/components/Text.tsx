@@ -1,6 +1,6 @@
 import React from "react";
 import { switchProp, ifNotProp, ifProp } from "styled-tools";
-import { Box, BoxProps } from "reflexbox/styled-components";
+import { Box, BoxProps } from "rebass/styled-components";
 import styled, { css } from "styled-components";
 
 import { FC, CSSProperties } from "react";
@@ -58,10 +58,10 @@ Text.defaultProps = {
 
 export default Text;
 
-export const H1: FC<Props> = props => <Text as="h1" {...props} />;
-export const H2: FC<Props> = props => <Text as="h2" {...props} />;
-export const H3: FC<Props> = props => <Text as="h3" {...props} />;
-export const H4: FC<Props> = props => <Text as="h4" {...props} />;
-export const H5: FC<Props> = props => <Text as="h5" {...props} />;
-export const H6: FC<Props> = props => <Text as="h6" {...props} />;
-export const Span: FC<Props> = props => <Text as="span" {...props} />;
+export const H1: FC<Props> = (props) => <Text as="h1" {...props} />;
+export const H2: FC<Props> = (props) => <Text as="h2" {...props} />;
+export const H3: FC<Props> = (props) => <Text as="h3" {...props} />;
+export const H4: FC<Props> = (props) => <Text as="h4" {...props} />;
+export const H5: FC<Props> = (props) => <Text as="h5" {...props} />;
+export const H6: FC<Props> = (props) => <Text as="h6" {...props} />;
+export const Span: FC<Props> = (props) => <Text as="span" {...props} />;

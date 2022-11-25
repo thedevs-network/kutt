@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 import decode from "jwt-decode";
 import { NextPage } from "next";
 import cookie from "js-cookie";
@@ -17,7 +17,7 @@ interface Props {
 }
 
 const VerifyEmail: NextPage<Props> = ({ token }) => {
-  const addAuth = useStoreActions(s => s.auth.add);
+  const addAuth = useStoreActions((s) => s.auth.add);
 
   useEffect(() => {
     if (token) {
@@ -25,7 +25,7 @@ const VerifyEmail: NextPage<Props> = ({ token }) => {
       const decoded: TokenPayload = decode(token);
       addAuth(decoded);
     }
-  }, []);
+  }, [addAuth, token]);
 
   return (
     <AppWrapper>
@@ -48,7 +48,7 @@ const VerifyEmail: NextPage<Props> = ({ token }) => {
   );
 };
 
-VerifyEmail.getInitialProps = async ctx => {
+VerifyEmail.getInitialProps = async (ctx) => {
   return { token: (ctx?.req as any)?.token };
 };
 

@@ -1,19 +1,16 @@
 {
-	"compilerOptions": {
-		"target": "es2018",
-		"module": "commonjs",
-		"sourceMap": true,
-		"outDir": "production-server",
-		"noUnusedLocals": true,
-		"resolveJsonModule": true,
-		"esModuleInterop": true,
-		"noEmit": false,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"strict": false
-	},
-	"include": [
-		"global.d.ts",
-		"server"
-	]
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "sourceMap": true,
+    "outDir": "production-server",
+    "noUnusedLocals": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "noEmit": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strict": false
+  },
+  "include": ["global.d.ts", "server"]
 }

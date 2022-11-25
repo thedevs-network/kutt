@@ -12,13 +12,14 @@ interface Props {
 }
 
 class AppDocument extends Document<Props> {
-  static getInitialProps({ renderPage }) {
+  static async getInitialProps(ctx) {
+    const initialProps = await Document.getInitialProps(ctx);
     const sheet = new ServerStyleSheet();
-    const page = renderPage(App => props =>
-      sheet.collectStyles(<App {...props} />)
+    const page = ctx.renderPage(
+      (App) => (props) => sheet.collectStyles(<App {...props} />)
     );
     const styleTags = sheet.getStyleElement();
-    return { ...page, styleTags };
+    return { ...initialProps, ...page, styleTags };
   }
 
   render() {
@@ -35,7 +36,7 @@ class AppDocument extends Document<Props> {
             content={`${publicRuntimeConfig.SITE_NAME} is a free and open source URL shortener with custom domains and stats.`}
           />
           <link
-            href="https://fonts.googleapis.com/css?family=Nunito:300,400,700"
+            href="https://fonts.googleapis.com/css?family=Nunito:300,400,700&display=optional"
             rel="stylesheet"
           />
           <link rel="icon" sizes="196x196" href="/images/favicon-196x196.png" />

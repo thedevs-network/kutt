@@ -1,5 +1,5 @@
 import ms from "ms";
-import generate from "nanoid/generate";
+import nanoid from "nanoid";
 import JWT from "jsonwebtoken";
 import {
   differenceInDays,
@@ -24,7 +24,7 @@ export class CustomError extends Error {
 
 export const isAdmin = (email: string): boolean =>
   env.ADMIN_EMAILS.split(",")
-    .map(e => e.trim())
+    .map((e) => e.trim())
     .includes(email);
 
 export const signToken = (user: UserJoined) =>
@@ -41,7 +41,7 @@ export const signToken = (user: UserJoined) =>
   );
 
 export const generateId = async (domain_id: number = null) => {
-  const address = generate(
+  const address = nanoid(
     "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789",
     env.LINK_LENGTH
   );
@@ -79,9 +79,9 @@ export const getStatsCacheTime = (total?: number): number => {
 };
 
 export const statsObjectToArray = (obj: Stats) => {
-  const objToArr = key =>
+  const objToArr = (key) =>
     Array.from(Object.keys(obj[key]))
-      .map(name => ({
+      .map((name) => ({
         name,
         value: obj[key][name]
       }))
@@ -97,7 +97,7 @@ export const statsObjectToArray = (obj: Stats) => {
 
 export const getDifferenceFunction = (
   type: "lastDay" | "lastWeek" | "lastMonth" | "allTime"
-): Function => {
+) => {
   if (type === "lastDay") return differenceInHours;
   if (type === "lastWeek") return differenceInDays;
   if (type === "lastMonth") return differenceInDays;

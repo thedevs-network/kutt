@@ -1,5 +1,5 @@
 import { useFormState } from "react-use-form-state";
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 import React, { useState } from "react";
 import axios from "axios";
 
@@ -21,7 +21,7 @@ const ReportPage = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useMessage(5000);
 
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage();

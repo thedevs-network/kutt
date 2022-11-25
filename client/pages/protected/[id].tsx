@@ -1,5 +1,5 @@
 import { useFormState } from "react-use-form-state";
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 import React, { useState } from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -23,7 +23,7 @@ const ProtectedPage: NextPage<Props> = () => {
   const [formState, { password }] = useFormState<{ password: string }>();
   const [error, setError] = useState<string>();
 
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     const { password } = formState.values;
 

@@ -12,7 +12,7 @@ export const ip: Handler = (req, res, next) => {
   return next();
 };
 
-export const error: ErrorRequestHandler = (error, req, res, next) => {
+export const error: ErrorRequestHandler = (error, _req, res, _next) => {
   logger.error(error);
 
   if (env.isDev) {
@@ -36,17 +36,37 @@ export const verify = (req, res, next) => {
 };
 
 export const query: Handler = (req, res, next) => {
-  const { limit, skip, all } = req.query;
   const { admin } = req.user || {};
 
-  req.query.limit = parseInt(limit) || 10;
-  req.query.skip = parseInt(skip) || 0;
-
-  if (req.query.limit > 50) {
-    req.query.limit = 50;
+  if (
+    typeof req.query.limit !== "undefined" &&
+    typeof req.query.limit !== "string"
+  ) {
+    return res.status(400).json({ error: "limit query is not valid." });
   }
 
-  req.query.all = admin ? all === "true" : false;
+  if (
+    typeof req.query.skip !== "undefined" &&
+    typeof req.query.skip !== "string"
+  ) {
+    return res.status(400).json({ error: "skip query is not valid." });
+  }
+
+  if (
+    typeof req.query.search !== "undefined" &&
+    typeof req.query.search !== "string"
+  ) {
+    return res.status(400).json({ error: "search query is not valid." });
+  }
+
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = parseInt(req.query.skip) || 0;
+
+  req.context = {
+    limit: limit > 50 ? 50 : limit,
+    skip,
+    all: admin ? req.query.all === "true" : false
+  };
 
   next();
 };

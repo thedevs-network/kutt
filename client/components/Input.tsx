@@ -1,5 +1,5 @@
-import React from 'react';
-import { Flex, BoxProps } from "reflexbox/styled-components";
+import React from "react";
+import { Flex, BoxProps } from "rebass/styled-components";
 import styled, { css, keyframes } from "styled-components";
 import { withProp, prop, ifProp } from "styled-tools";
 import { FC } from "react";
@@ -41,7 +41,7 @@ export const TextInput = styled(Flex).attrs({
   }
 
   ::placeholder {
-    font-size: ${withProp("placeholderSize", s => s[0] || 14)}px;
+    font-size: ${withProp("placeholderSize", (s) => s[0] || 14)}px;
     letter-spacing: 0.05em;
     color: #888;
   }
@@ -50,7 +50,7 @@ export const TextInput = styled(Flex).attrs({
     ::placeholder {
       font-size: ${withProp(
         "placeholderSize",
-        s => s[3] || s[2] || s[1] || s[0] || 16
+        (s) => s[3] || s[2] || s[1] || s[0] || 16
       )}px;
     }
   }
@@ -61,14 +61,14 @@ export const TextInput = styled(Flex).attrs({
     ::placeholder {
       font-size: ${withProp(
         "placeholderSize",
-        s => s[2] || s[1] || s[0] || 15
+        (s) => s[2] || s[1] || s[0] || 15
       )}px;
     }
   }
 
   @media screen and (min-width: 40em) {
     ::placeholder {
-      font-size: ${withProp("placeholderSize", s => s[1] || s[0] || 15)}px;
+      font-size: ${withProp("placeholderSize", (s) => s[1] || s[0] || 15)}px;
     }
   }
 `;
@@ -211,8 +211,11 @@ const CheckboxBox = styled(Flex).attrs({
   )}
 `;
 
-interface CheckboxProps extends ChecknoxInputProps, BoxProps {
+interface CheckboxProps
+  extends ChecknoxInputProps,
+    Omit<BoxProps, "name" | "checked" | "onChange" | "value"> {
   label: string;
+  value?: boolean | string;
 }
 
 export const Checkbox: FC<CheckboxProps> = ({

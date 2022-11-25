@@ -1,5 +1,5 @@
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 import React, { FC, useState } from "react";
 import styled from "styled-components";
 
@@ -32,13 +32,13 @@ const SettingsApi: FC = () => {
   const [copied, setCopied] = useCopy();
   const [message, setMessage] = useMessage(1500);
   const [loading, setLoading] = useState(false);
-  const apikey = useStoreState(s => s.settings.apikey);
-  const generateApiKey = useStoreActions(s => s.settings.generateApiKey);
+  const apikey = useStoreState((s) => s.settings.apikey);
+  const generateApiKey = useStoreActions((s) => s.settings.generateApiKey);
 
   const onSubmit = async () => {
     if (loading) return;
     setLoading(true);
-    await generateApiKey().catch(err => setMessage(errorMessage(err)));
+    await generateApiKey().catch((err) => setMessage(errorMessage(err)));
     setLoading(false);
   };
 

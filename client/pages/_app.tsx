@@ -7,11 +7,9 @@ import cookie from "js-cookie";
 import Head from "next/head";
 import React from "react";
 
-import { initGA, logPageView } from "../helpers/analytics";
 import { initializeStore } from "../store";
 import { TokenPayload } from "../types";
 
-const isProd = process.env.NODE_ENV === "production";
 const { publicRuntimeConfig } = getConfig();
 
 // TODO: types
@@ -55,18 +53,9 @@ class MyApp extends App<any> {
       });
     }
 
-    if (isProd) {
-      initGA();
-      logPageView();
-    }
-
     Router.events.on("routeChangeStart", () => loading.show());
     Router.events.on("routeChangeComplete", () => {
       loading.hide();
-
-      if (isProd) {
-        logPageView();
-      }
     });
     Router.events.on("routeChangeError", () => loading.hide());
   }

@@ -1,9 +1,8 @@
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import decode from "jwt-decode";
 import cookie from "js-cookie";
-import Link from "next/link";
 
 import AppWrapper from "../components/AppWrapper";
 import { Button } from "../components/Button";
@@ -35,7 +34,7 @@ const Message = styled.p`
 `;
 
 const Verify: NextPage<Props> = ({ token }) => {
-  const addAuth = useStoreActions(s => s.auth.add);
+  const addAuth = useStoreActions((s) => s.auth.add);
 
   useEffect(() => {
     if (token) {
@@ -43,7 +42,7 @@ const Verify: NextPage<Props> = ({ token }) => {
       const payload: TokenPayload = decode(token);
       addAuth(payload);
     }
-  }, []);
+  }, [token, addAuth]);
 
   return (
     <AppWrapper>
@@ -53,14 +52,12 @@ const Verify: NextPage<Props> = ({ token }) => {
             <Icon name="check" size={32} mr={3} stroke={Colors.CheckIcon} />
             <Message>Your account has been verified successfully!</Message>
           </MessageWrapper>
-          <Link href="/">
-            <ALink href="/" forButton>
-              <Button>
-                <Icon name="arrowLeft" stroke="white" mr={2} />
-                Back to homepage
-              </Button>
-            </ALink>
-          </Link>
+          <ALink href="/" forButton isNextLink>
+            <Button>
+              <Icon name="arrowLeft" stroke="white" mr={2} />
+              Back to homepage
+            </Button>
+          </ALink>
         </Col>
       ) : (
         <Col alignItems="center">
@@ -68,14 +65,12 @@ const Verify: NextPage<Props> = ({ token }) => {
             <Icon name="x" size={32} mr={3} stroke={Colors.TrashIcon} />
             <Message>Invalid verification.</Message>
           </MessageWrapper>
-          <Link href="/login">
-            <ALink href="/login" forButton>
-              <Button color="purple">
-                <Icon name="arrowLeft" stroke="white" mr={2} />
-                Back to signup
-              </Button>
-            </ALink>
-          </Link>
+          <ALink href="/login" forButton isNextLink>
+            <Button color="purple">
+              <Icon name="arrowLeft" stroke="white" mr={2} />
+              Back to signup
+            </Button>
+          </ALink>
         </Col>
       )}
     </AppWrapper>

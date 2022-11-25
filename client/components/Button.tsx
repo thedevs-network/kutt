@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { switchProp, prop, ifProp } from "styled-tools";
-import { Flex, BoxProps } from "reflexbox/styled-components";
+import { Flex, BoxProps } from "rebass/styled-components";
 
 interface Props extends BoxProps {
   color?: "purple" | "gray" | "blue" | "red";

@@ -1,6 +1,6 @@
 import { useFormState } from "react-use-form-state";
 import React, { useEffect, useState } from "react";
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 import Router from "next/router";
 import decode from "jwt-decode";
 import { NextPage } from "next";
@@ -16,15 +16,15 @@ import { Col } from "../components/Layout";
 import { TokenPayload } from "../types";
 import { useMessage } from "../hooks";
 import Icon from "../components/Icon";
-import { API, APIv2 } from "../consts";
+import { APIv2 } from "../consts";
 
 interface Props {
   token?: string;
 }
 
 const ResetPassword: NextPage<Props> = ({ token }) => {
-  const auth = useStoreState(s => s.auth);
-  const addAuth = useStoreActions(s => s.auth.add);
+  const auth = useStoreState((s) => s.auth);
+  const addAuth = useStoreActions((s) => s.auth.add);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useMessage();
   const [formState, { email, label }] = useFormState<{ email: string }>(null, {
@@ -42,9 +42,9 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
       addAuth(decoded);
       Router.push("/settings");
     }
-  }, []);
+  }, [auth, token, addAuth]);
 
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (!formState.validity.email) return;
 
@@ -103,7 +103,7 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
   );
 };
 
-ResetPassword.getInitialProps = async ctx => {
+ResetPassword.getInitialProps = async (ctx) => {
   return { token: ctx.req && (ctx.req as any).token };
 };
 

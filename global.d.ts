@@ -151,5 +151,10 @@ declare namespace Express {
     protectedLink?: string;
     token?: string;
     user: UserJoined;
+    context?: {
+      limit: number;
+      skip: number;
+      all: boolean;
+    };
   }
 }
