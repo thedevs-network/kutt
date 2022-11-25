@@ -194,7 +194,7 @@ export const update = async (match: Partial<Link>, update: Partial<Link>) => {
   return links;
 };
 
-export const increamentVisit = async (match: Partial<Link>) => {
+export const incrementVisit = async (match: Partial<Link>) => {
   return knex<Link>("links")
     .where(match)
     .increment("visit_count", 1);

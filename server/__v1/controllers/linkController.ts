@@ -118,8 +118,8 @@ export const shortener: Handler = async (req, res) => {
 
 export const goToLink: Handler = async (req, res, next) => {
   const host = removeWww(req.headers.host);
-  const reqestedId = req.params.id || req.body.id;
-  const address = reqestedId.replace("+", "");
+  const requestedId = req.params.id || req.body.id;
+  const address = requestedId.replace("+", "");
   const customDomain = host !== env.DEFAULT_DOMAIN && host;
   const isBot = isbot(req.headers["user-agent"]);
 
@@ -142,7 +142,7 @@ export const goToLink: Handler = async (req, res, next) => {
     return res.redirect("/banned");
   }
 
-  const doesRequestInfo = /.*\+$/gi.test(reqestedId);
+  const doesRequestInfo = /.*\+$/gi.test(requestedId);
   if (doesRequestInfo && !link.password) {
     req.linkTarget = link.target;
     req.pageType = "info";

@@ -279,7 +279,7 @@ export const redirect = (app: ReturnType<typeof next>): Handler => async (
   });
 
   // 3. When no link, if has domain redirect to domain's homepage
-  // otherwise rediredt to 404
+  // otherwise redirect to 404
   if (!link) {
     return res.redirect(301, domain ? domain.homepage : "/404");
   }

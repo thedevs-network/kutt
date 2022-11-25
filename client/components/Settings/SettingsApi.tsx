@@ -49,7 +49,7 @@ const SettingsApi: FC = () => {
       </H2>
       <Text mb={4}>
         In additional to this website, you can use the API to create, delete and
-        get shortend URLs. If
+        get shortened URLs. If
         {" you're"} not familiar with API, {"don't"} generate the key. DO NOT
         share this key on the client side of your website.{" "}
         <ALink href="https://docs.kutt.it" title="API Docs" target="_blank">
