@@ -1,5 +1,6 @@
 import appRoot from "app-root-path";
 import winston from "winston";
+import DailyRotateFile from "winston-daily-rotate-file";
 
 const { combine, colorize, printf, timestamp } = winston.format;
 
@@ -15,21 +16,23 @@ const rawFormat = printf(info => {
 const options = {
   file: {
     level: "info",
-    filename: `${appRoot}/logs/app.log`,
+    filename: `${appRoot}/logs/%DATE%_app.log`,
+    datePattern: "YYYY-MM-DD",
     handleExceptions: true,
     json: true,
     maxsize: 5242880, // 5MB
-    maxFiles: 5,
+    maxFiles: "30d", // monthly rotation
     colorize: false
   },
   errorFile: {
     level: "error",
     name: "file.error",
-    filename: `${appRoot}/logs/error.log`,
+    filename: `${appRoot}/logs/%DATE%_error.log`,
+    datePattern: "YYYY-MM-DD",
     handleExceptions: true,
     json: true,
     maxsize: 5242880, // 5MB
-    maxFiles: 100,
+    maxFiles: "30d", // monthly rotation
     colorize: true
   },
   console: {
@@ -44,7 +47,8 @@ const options = {
 export const logger = winston.createLogger({
   format: combine(timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), logFormat),
   transports: [
-    new winston.transports.File(options.file),
+    new DailyRotateFile(options.file),
+    new DailyRotateFile(options.errorFile),
     new winston.transports.Console(options.console)
   ],
   exitOnError: false // do not exit on handled exceptions

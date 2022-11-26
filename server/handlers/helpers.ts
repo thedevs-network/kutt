@@ -5,6 +5,7 @@ import signale from "signale";
 
 import { CustomError } from "../utils";
 import env from "../env";
+import { logger } from "../config/winston";
 
 export const ip: Handler = (req, res, next) => {
   req.realIP =
@@ -13,6 +14,8 @@ export const ip: Handler = (req, res, next) => {
 };
 
 export const error: ErrorRequestHandler = (error, req, res, next) => {
+  logger.error(error);
+
   if (env.isDev) {
     signale.fatal(error);
   }
