@@ -97,7 +97,8 @@
     "use-media": "^1.4.0",
     "useragent": "^2.2.1",
     "uuid": "^3.4.0",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.3",
