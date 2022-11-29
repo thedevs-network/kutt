@@ -18,6 +18,6 @@ export const getAxiosConfig = (
 });
 
 export const errorMessage = (err: AxiosError, defaultMessage?: string) => {
-  const data = err?.response?.data;
+  const data = err?.response?.data as Record<string, any>;
   return data?.message || data?.error || defaultMessage || "";
 };

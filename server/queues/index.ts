@@ -1,5 +1,7 @@
 import { visit } from "./queues";
 
-export default {
+const queues = {
   visit
 };
+
+export default queues;

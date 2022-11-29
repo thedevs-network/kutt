@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import styled from "styled-components";
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 
 import { Button } from "./Button";
 import { fadeIn } from "../helpers/animations";
@@ -65,13 +65,11 @@ const NeedToLogin = () => (
       <Title>
         Manage links, set custom <b>domains</b> and view <b>stats</b>.
       </Title>
-      <Link href="/login">
-        <a href="/login" title="login / signup">
-          <Button>Login / Signup</Button>
-        </a>
+      <Link href="/login" title="login / signup">
+        <Button>Login / Signup</Button>
       </Link>
     </Col>
-    <Image src="/images/callout.png" />
+    <Image src="/images/callout.png" alt="callout image" />
   </Wrapper>
 );
 

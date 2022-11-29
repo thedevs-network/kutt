@@ -1,6 +1,6 @@
 import { useFormState } from "react-use-form-state";
 import React, { FC, useState } from "react";
-import { Flex } from "reflexbox";
+import { Flex } from "rebass";
 import axios from "axios";
 
 import { getAxiosConfig } from "../../utils";
@@ -22,7 +22,7 @@ const SettingsChangeEmail: FC = () => {
     withIds: true
   });
 
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (loading) return;
     setLoading(true);

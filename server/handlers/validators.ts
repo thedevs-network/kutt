@@ -1,6 +1,6 @@
 import { body, param } from "express-validator";
 import { isAfter, subDays, subHours, addMilliseconds } from "date-fns";
-import urlRegex from "url-regex";
+import urlRegex from "url-regex-safe";
 import { promisify } from "util";
 import bcrypt from "bcryptjs";
 import axios from "axios";

@@ -1,4 +1,4 @@
-type Raw = import("knex").Raw;
+type Raw = import("knex").Knex.Raw;
 
 type Match<T> = {
   [K in keyof T]?: T[K] | [">" | ">=" | "<=" | "<", T[K]];
@@ -151,5 +151,10 @@ declare namespace Express {
     protectedLink?: string;
     token?: string;
     user: UserJoined;
+    context?: {
+      limit: number;
+      skip: number;
+      all: boolean;
+    };
   }
 }

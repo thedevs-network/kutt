@@ -1,4 +1,7 @@
+import * as dotenv from "dotenv";
 import { cleanEnv, num, str, bool } from "envalid";
+
+dotenv.config();
 
 const env = cleanEnv(process.env, {
   PORT: num({ default: 3000 }),
@@ -13,9 +16,6 @@ const env = cleanEnv(process.env, {
   DB_SSL: bool({ default: false }),
   DB_POOL_MIN: num({ default: 2 }),
   DB_POOL_MAX: num({ default: 10 }),
-  NEO4J_DB_URI: str({ default: "" }),
-  NEO4J_DB_USERNAME: str({ default: "" }),
-  NEO4J_DB_PASSWORD: str({ default: "" }),
   REDIS_HOST: str({ default: "127.0.0.1" }),
   REDIS_PORT: num({ default: 6379 }),
   REDIS_PASSWORD: str({ default: "" }),
@@ -31,8 +31,6 @@ const env = cleanEnv(process.env, {
   RECAPTCHA_SITE_KEY: str({ default: "" }),
   RECAPTCHA_SECRET_KEY: str({ default: "" }),
   GOOGLE_SAFE_BROWSING_KEY: str({ default: "" }),
-  GOOGLE_ANALYTICS: str({ default: "" }),
-  GOOGLE_ANALYTICS_UNIVERSAL: str({ default: "" }),
   MAIL_HOST: str(),
   MAIL_PORT: num(),
   MAIL_SECURE: bool({ default: false }),
@@ -40,9 +38,7 @@ const env = cleanEnv(process.env, {
   MAIL_FROM: str({ default: "", example: "Kutt <support@kutt.it>" }),
   MAIL_PASSWORD: str(),
   REPORT_EMAIL: str({ default: "" }),
-  CONTACT_EMAIL: str({ default: "" }),
-  SENTRY_PRIVATE_DSN: str({ default: "" }),
-  SENTRY_PUBLIC_DSN: str({ default: "" })
+  CONTACT_EMAIL: str({ default: "" })
 });
 
 export default env;

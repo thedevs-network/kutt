@@ -1,5 +1,4 @@
 import getConfig from "next/config";
-import Link from "next/link";
 import React from "react";
 
 import AppWrapper from "../components/AppWrapper";
@@ -24,9 +23,9 @@ const BannedPage = () => {
         <H4 textAlign="center" normal>
           If you noticed a malware/scam link shortened by{" "}
           {publicRuntimeConfig.SITE_NAME},{" "}
-          <Link href="/report">
-            <ALink title="Send report">send us a report</ALink>
-          </Link>
+          <ALink href="/report" title="Send report" isNextLink>
+            send us a report
+          </ALink>
           .
         </H4>
       </Col>

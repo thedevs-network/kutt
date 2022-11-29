@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 import SVG from "react-inlinesvg"; // TODO: another solution
 import { Colors } from "../consts";
 import { ColCenterH } from "./Layout";
@@ -62,7 +62,7 @@ const Icon = styled(SVG)`
   width: 18px;
   height: 18px;
   margin-right: 16px;
-  fill: ${props => props.color || "#333"};
+  fill: ${(props) => props.color || "#333"};
 
   @media only screen and (max-width: 768px) {
     width: 13px;

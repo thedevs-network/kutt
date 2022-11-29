@@ -3,7 +3,7 @@ import axios from "axios";
 import query from "query-string";
 
 import { getAxiosConfig } from "../utils";
-import { API, APIv2 } from "../consts";
+import { APIv2 } from "../consts";
 
 export interface Link {
   id: string;

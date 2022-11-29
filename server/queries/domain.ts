@@ -1,9 +1,9 @@
-import * as redis from "../redis";
+import redisClient, * as redis from "../redis";
 import knex from "../knex";
 
 export const find = async (match: Partial<Domain>): Promise<Domain> => {
   if (match.address) {
-    const cachedDomain = await redis.get(redis.key.domain(match.address));
+    const cachedDomain = await redisClient.get(redis.key.domain(match.address));
     if (cachedDomain) return JSON.parse(cachedDomain);
   }
 
@@ -12,7 +12,7 @@ export const find = async (match: Partial<Domain>): Promise<Domain> => {
     .first();
 
   if (domain) {
-    redis.set(
+    redisClient.set(
       redis.key.domain(domain.address),
       JSON.stringify(domain),
       "EX",

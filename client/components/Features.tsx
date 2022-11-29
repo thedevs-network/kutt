@@ -1,11 +1,10 @@
 import React from "react";
-import styled from "styled-components";
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 
 import FeaturesItem from "./FeaturesItem";
 import { ColCenterH } from "./Layout";
 import { Colors } from "../consts";
-import Text, { H3 } from "./Text";
+import { H3 } from "./Text";
 
 const Features = () => (
   <ColCenterH

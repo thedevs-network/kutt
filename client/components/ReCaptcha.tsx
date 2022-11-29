@@ -1,4 +1,4 @@
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 import getConfig from "next/config";
 import React from "react";
 

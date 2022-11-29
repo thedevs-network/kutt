@@ -1,4 +1,4 @@
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 import styled from "styled-components";
 import React, { FC } from "react";
 import ReactDOM from "react-dom";
@@ -27,7 +27,7 @@ const Wrapper = styled.div`
 const Modal: FC<Props> = ({ children, id, show, closeHandler, ...rest }) => {
   if (!show) return null;
 
-  const onClickOutside = e => {
+  const onClickOutside = (e) => {
     if (e.target.id === id) closeHandler();
   };
 

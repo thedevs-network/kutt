@@ -1,4 +1,4 @@
-import * as Knex from "knex";
+import { Knex } from "knex";
 import * as models from "../models";
 
 export async function up(knex: Knex): Promise<any> {
@@ -37,6 +37,6 @@ export async function up(knex: Knex): Promise<any> {
   ]);
 }
 
-export async function down(knex: Knex): Promise<any> {
+export async function down(): Promise<any> {
   // do nothing
 }

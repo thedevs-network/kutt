@@ -1,40 +1,22 @@
 {
   "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:prettier/recommended"
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
   ],
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
     "project": ["./tsconfig.json", "./client/tsconfig.json"]
   },
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
-    "eqeqeq": ["warn", "always", { "null": "ignore" }],
-    "no-useless-return": "warn",
-    "no-var": "warn",
-    "no-console": "warn",
-    "no-unused-vars": "off",
-    "max-len": ["warn", { "comments": 80 }],
-    "no-param-reassign": 0,
-    "require-atomic-updates": 0,
-    "@typescript-eslint/interface-name-prefix": "off",
-    "@typescript-eslint/no-unused-vars": "off", // "warn" for production
-    "@typescript-eslint/no-explicit-any": "off", // "warn" for production
-    "@typescript-eslint/no-var-requires": "off",
-    "@typescript-eslint/camelcase": "off",
-    "@typescript-eslint/no-object-literal-type-assertion": "off",
-    "@typescript-eslint/no-parameter-properties": "off",
-    "@typescript-eslint/explicit-function-return-type": "off"
+    "@typescript-eslint/no-explicit-any": ["off"]
   },
   "env": {
     "es6": true,
     "browser": true,
-    "node": true,
-    "mocha": true
-  },
-  "globals": {
-    "assert": true
+    "node": true
   },
   "settings": {
     "react": {

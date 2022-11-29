@@ -1,4 +1,4 @@
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 import styled from "styled-components";
 
 import { Colors } from "../consts";

@@ -1,6 +1,8 @@
-import { Box, BoxProps } from "reflexbox/styled-components";
+import { FC } from "react";
+import { Box, BoxProps } from "rebass/styled-components";
 import styled, { css } from "styled-components";
 import { ifProp } from "styled-tools";
+import Link from "next/link";
 
 interface Props extends BoxProps {
   href?: string;
@@ -8,10 +10,9 @@ interface Props extends BoxProps {
   target?: string;
   rel?: string;
   forButton?: boolean;
+  isNextLink?: boolean;
 }
-const ALink = styled(Box).attrs({
-  as: "a"
-})<Props>`
+const StyledBox = styled(Box)<Props>`
   cursor: pointer;
   color: #2196f3;
   border-bottom: 1px dotted transparent;
@@ -27,6 +28,20 @@ const ALink = styled(Box).attrs({
     `
   )}
 `;
+
+export const ALink: FC<Props> = (props) => {
+  if (props.isNextLink) {
+    const { href, target, title, rel, ...rest } = props;
+    return (
+      <Link href={href} target={target} title={title} rel={rel} passHref>
+        <StyledBox as="a" {...rest} />
+      </Link>
+    );
+  }
+  return <StyledBox as="a" {...props} />;
+};
+
+ALink.displayName = "ALink";
 
 ALink.defaultProps = {
   pb: "1px",

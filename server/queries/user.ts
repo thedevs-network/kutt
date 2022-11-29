@@ -1,27 +1,25 @@
-import uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 import { addMinutes } from "date-fns";
 
-import * as redis from "../redis";
+import redisCLient, * as redis from "../redis";
 import knex from "../knex";
 
 export const find = async (match: Partial<User>) => {
   if (match.email || match.apikey) {
     const key = redis.key.user(match.email || match.apikey);
-    const cachedUser = await redis.get(key);
+    const cachedUser = await redisCLient.get(key);
     if (cachedUser) return JSON.parse(cachedUser) as User;
   }
 
-  const user = await knex<User>("users")
-    .where(match)
-    .first();
+  const user = await knex<User>("users").where(match).first();
 
   if (user) {
     const emailKey = redis.key.user(user.email);
-    redis.set(emailKey, JSON.stringify(user), "EX", 60 * 60 * 1);
+    redisCLient.set(emailKey, JSON.stringify(user), "EX", 60 * 60 * 1);
 
     if (user.apikey) {
       const apikeyKey = redis.key.user(user.apikey);
-      redis.set(apikeyKey, JSON.stringify(user), "EX", 60 * 60 * 1);
+      redisCLient.set(apikeyKey, JSON.stringify(user), "EX", 60 * 60 * 1);
     }
   }
 
@@ -75,9 +73,7 @@ export const update = async (match: Match<User>, update: Partial<User>) => {
 };
 
 export const remove = async (user: User) => {
-  const deletedUser = await knex<User>("users")
-    .where("id", user.id)
-    .delete();
+  const deletedUser = await knex<User>("users").where("id", user.id).delete();
 
   redis.remove.user(user);
 

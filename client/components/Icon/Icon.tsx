@@ -1,4 +1,4 @@
-import { Flex } from "reflexbox/styled-components";
+import { Flex } from "rebass/styled-components";
 import styled, { css } from "styled-components";
 import { prop, ifProp } from "styled-tools";
 import React, { FC } from "react";

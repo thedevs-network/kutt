@@ -5,7 +5,7 @@ import * as user from "./user";
 import * as host from "./host";
 import * as ip from "./ip";
 
-export default {
+const queries = {
   domain,
   host,
   ip,
@@ -13,3 +13,5 @@ export default {
   user,
   visit
 };
+
+export default queries;

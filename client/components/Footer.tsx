@@ -11,7 +11,7 @@ import Text from "./Text";
 const { publicRuntimeConfig } = getConfig();
 
 const Footer: FC = () => {
-  const { isAuthenticated } = useStoreState(s => s.auth);
+  const { isAuthenticated } = useStoreState((s) => s.auth);
 
   useEffect(() => {
     showRecaptcha();
@@ -27,7 +27,7 @@ const Footer: FC = () => {
       {!isAuthenticated && <ReCaptcha />}
       <Text fontSize={[12, 13]} py={2}>
         Made with love by{" "}
-        <ALink href="//thedevs.network/" title="The Devs">
+        <ALink href="//thedevs.network/" title="The Devs" target="_blank">
           The Devs
         </ALink>
         .{" | "}
@@ -39,11 +39,11 @@ const Footer: FC = () => {
           GitHub
         </ALink>
         {" | "}
-        <ALink href="/terms" title="Terms of Service">
+        <ALink href="/terms" title="Terms of Service" isNextLink>
           Terms of Service
         </ALink>
         {" | "}
-        <ALink href="/report" title="Report abuse">
+        <ALink href="/report" title="Report abuse" isNextLink>
           Report Abuse
         </ALink>
         {publicRuntimeConfig.CONTACT_EMAIL && (

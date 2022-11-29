@@ -1,4 +1,4 @@
-import * as Knex from "knex";
+import { Knex } from "knex";
 
 export async function createIPTable(knex: Knex) {
   const hasTable = await knex.schema.hasTable("ips");

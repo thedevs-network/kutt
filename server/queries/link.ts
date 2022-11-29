@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 
 import { CustomError } from "../utils";
-import * as redis from "../redis";
+import redisClient, * as redis from "../redis";
 import knex from "../knex";
 
 const selectable = [
@@ -96,7 +96,7 @@ export const get = async (match: Partial<Link>, params: GetParams) => {
 export const find = async (match: Partial<Link>): Promise<Link> => {
   if (match.address && match.domain_id) {
     const key = redis.key.link(match.address, match.domain_id);
-    const cachedLink = await redis.get(key);
+    const cachedLink = await redisClient.get(key);
     if (cachedLink) return JSON.parse(cachedLink);
   }
 
@@ -108,7 +108,7 @@ export const find = async (match: Partial<Link>): Promise<Link> => {
 
   if (link) {
     const key = redis.key.link(link.address, link.domain_id);
-    redis.set(key, JSON.stringify(link), "EX", 60 * 60 * 2);
+    redisClient.set(key, JSON.stringify(link), "EX", 60 * 60 * 2);
   }
 
   return link;

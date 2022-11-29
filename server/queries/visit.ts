@@ -1,7 +1,7 @@
 import { isAfter, subDays, set } from "date-fns";
 
 import * as utils from "../utils";
-import * as redis from "../redis";
+import redisClient, * as redis from "../redis";
 import knex from "../knex";
 
 interface Add {
@@ -81,7 +81,7 @@ interface IGetStatsResponse {
 export const find = async (match: Partial<Visit>, total: number) => {
   if (match.link_id) {
     const key = redis.key.stats(match.link_id);
-    const cached = await redis.get(key);
+    const cached = await redisClient.get(key);
     if (cached) return JSON.parse(cached);
   }
 
@@ -104,9 +104,7 @@ export const find = async (match: Partial<Visit>, total: number) => {
     }
   };
 
-  const visitsStream: any = knex<Visit>("visits")
-    .where(match)
-    .stream();
+  const visitsStream: any = knex<Visit>("visits").where(match).stream();
   const nowUTC = utils.getUTCDate();
   const now = new Date();
 
@@ -118,7 +116,7 @@ export const find = async (match: Partial<Visit>, total: number) => {
       );
       if (isIncluded) {
         const diffFunction = utils.getDifferenceFunction(type);
-        const diff = diffFunction(now, visit.created_at);
+        const diff = diffFunction(now, new Date(visit.created_at));
         const index = stats[type].views.length - diff - 1;
         const view = stats[type].views[index];
         const period = stats[type].stats;
@@ -238,7 +236,7 @@ export const find = async (match: Partial<Visit>, total: number) => {
   if (match.link_id) {
     const cacheTime = utils.getStatsCacheTime(total);
     const key = redis.key.stats(match.link_id);
-    redis.set(key, JSON.stringify(response), "EX", cacheTime);
+    redisClient.set(key, JSON.stringify(response), "EX", cacheTime);
   }
 
   return response;
