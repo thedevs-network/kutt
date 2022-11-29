@@ -11,7 +11,6 @@ import nextApp from "next";
 import * as helpers from "./handlers/helpers";
 import * as links from "./handlers/links";
 import * as auth from "./handlers/auth";
-import __v1Routes from "./__v1";
 import routes from "./routes";
 import { stream } from "./config/winston";
 
@@ -42,7 +41,6 @@ app.prepare().then(async () => {
   server.use(asyncHandler(links.redirectCustomDomain));
 
   server.use("/api/v2", routes);
-  server.use("/api", __v1Routes);
 
   server.get(
     "/reset-password/:resetPasswordToken?",
