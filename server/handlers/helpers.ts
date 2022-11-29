@@ -12,6 +12,7 @@ export const ip: Handler = (req, res, next) => {
   return next();
 };
 
+// eslint-disable-next-line
 export const error: ErrorRequestHandler = (error, _req, res, _next) => {
   logger.error(error);
 
