@@ -1,5 +1,5 @@
 import ms from "ms";
-import nanoid from "nanoid";
+import nanoid from "nanoid/generate";
 import JWT from "jsonwebtoken";
 import {
   differenceInDays,
