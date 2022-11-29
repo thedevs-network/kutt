@@ -8,11 +8,6 @@ export const DISALLOW_ANONYMOUS_LINKS =
 export const DISALLOW_REGISTRATION =
   publicRuntimeConfig.DISALLOW_REGISTRATION === "true";
 
-export enum API {
-  BAN_LINK = "/api/url/admin/ban",
-  STATS = "/api/url/stats"
-}
-
 export enum APIv2 {
   AuthLogin = "/api/v2/auth/login",
   AuthSignup = "/api/v2/auth/signup",
