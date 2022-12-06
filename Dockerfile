@@ -1,4 +1,4 @@
-FROM node:12-alpine
+FROM node:lts-alpine
 
 RUN apk add --update bash
 
@@ -11,6 +11,9 @@ RUN npm install
 
 # Copying source files
 COPY . .
+
+# Remove Env variables from container before building
+RUN rm -rf .env
 
 # Give permission to run script
 RUN chmod +x ./wait-for-it.sh
