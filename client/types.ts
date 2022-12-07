@@ -1,3 +1,5 @@
+export type { PublicRuntimeConfig } from "../server/env";
+
 export interface TokenPayload {
   iss: "ApiAuth";
   sub: string;
