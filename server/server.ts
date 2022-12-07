@@ -1,4 +1,4 @@
-import env from "./env";
+import env, { publicRuntimeConfig } from "./env";
 
 import asyncHandler from "express-async-handler";
 import cookieParser from "cookie-parser";
@@ -18,7 +18,11 @@ import "./cron";
 import "./passport";
 
 const port = env.PORT;
-const app = nextApp({ dir: "./client", dev: env.isDev });
+const app = nextApp({
+  dir: "./client",
+  dev: env.isDev,
+  conf: { publicRuntimeConfig }
+});
 const handle = app.getRequestHandler();
 
 app.prepare().then(async () => {
