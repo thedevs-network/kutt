@@ -1,13 +1,14 @@
-const { parsed: localEnv } = require("dotenv").config();
+require("dotenv").config();
+const env = process.env || {};
 
 module.exports = {
   publicRuntimeConfig: {
-    CONTACT_EMAIL: localEnv && localEnv.CONTACT_EMAIL,
-    SITE_NAME: localEnv && localEnv.SITE_NAME,
-    DEFAULT_DOMAIN: localEnv && localEnv.DEFAULT_DOMAIN,
-    RECAPTCHA_SITE_KEY: localEnv && localEnv.RECAPTCHA_SITE_KEY,
-    REPORT_EMAIL: localEnv && localEnv.REPORT_EMAIL,
-    DISALLOW_ANONYMOUS_LINKS: localEnv && localEnv.DISALLOW_ANONYMOUS_LINKS,
-    DISALLOW_REGISTRATION: localEnv && localEnv.DISALLOW_REGISTRATION
+    CONTACT_EMAIL: env.CONTACT_EMAIL,
+    SITE_NAME: env.SITE_NAME,
+    DEFAULT_DOMAIN: env.DEFAULT_DOMAIN,
+    RECAPTCHA_SITE_KEY: env.RECAPTCHA_SITE_KEY,
+    REPORT_EMAIL: env.REPORT_EMAIL,
+    DISALLOW_ANONYMOUS_LINKS: env.DISALLOW_ANONYMOUS_LINKS === "true",
+    DISALLOW_REGISTRATION: env.DISALLOW_REGISTRATION === "true"
   }
 };
