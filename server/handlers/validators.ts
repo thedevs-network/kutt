@@ -46,8 +46,8 @@ export const createLink = [
     .withMessage("Target is missing.")
     .isString()
     .trim()
-    .isLength({ min: 1, max: 2040 })
-    .withMessage("Maximum URL length is 2040.")
+    .isLength({ min: 1, max: env.TARGET_LENGTH })
+    .withMessage(`Maximum URL length is ${env.TARGET_LENGTH}.`)
     .customSanitizer(addProtocol)
     .custom(
       value =>
