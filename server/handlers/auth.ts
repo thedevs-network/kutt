@@ -31,7 +31,7 @@ const authenticate = (
       if (user && isStrict && !user.verified) {
         throw new CustomError(
           "Your email address is not verified. " +
-            "Click on signup to get the verification link again.",
+          "Click on signup to get the verification link again.",
           400
         );
       }
@@ -111,7 +111,7 @@ export const admin: Handler = async (req, res, next) => {
   throw new CustomError("Unauthorized", 401);
 };
 
-export const signup: Handler = async (req, res) => {
+export const signup: Handler = async (req, res, next) => {
   const salt = await bcrypt.genSalt(12);
   const password = await bcrypt.hash(req.body.password, salt);
 
@@ -119,10 +119,29 @@ export const signup: Handler = async (req, res) => {
     { email: req.body.email, password },
     req.user
   );
+  if (!env.MAIL_HOST) {
+    const [user_verified] = await query.user.update(
+      {
+        verification_token: user.verification_token,
+        verification_expires: [">", new Date().toISOString()]
+      },
+      {
+        verified: true,
+        verification_token: null,
+        verification_expires: null
+      }
+    );
 
-  await mail.verification(user);
-
-  return res.status(201).send({ message: "Verification email has been sent." });
+    if (user_verified) {
+      const token = utils.signToken(user);
+      req.token = token;
+    }
+    return next();
+  }
+  else {
+    await mail.verification(user);
+    return res.status(201).send({ message: "User created" });
+  }
 };
 
 export const token: Handler = async (req, res) => {
