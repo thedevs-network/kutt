@@ -1,5 +1,11 @@
+dependencies {
+  paths = [
+    "../tf-mod-eks/"
+  ]
+}
+
 terraform {
-  source = "../../../../../terraform/tf-mod-vpc/"
+  source = "../../../../../terraform/tf-mod-redis/"
 
   extra_arguments "custom_vars" {
     commands = get_terraform_commands_that_need_vars()
