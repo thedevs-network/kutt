@@ -1,0 +1,11 @@
+aws-load-balancer-controller:
+  replicaCount: 2
+
+  region: eu-central-1
+
+  enableCertManager: false
+
+  serviceAccount:
+    create: true
+    name: load-balancer
+    

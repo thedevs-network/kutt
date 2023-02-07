@@ -1,0 +1,12 @@
+external-dns:
+  aws:
+    region: eu-central-1
+    replicaCount: 2
+
+  sources:
+    - ingress
+    
+  serviceAccount:
+    name: external-dns
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::365703723957:role/external-dns

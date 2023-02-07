@@ -1,0 +1,7 @@
+aws-load-balancer-controller:
+  clusterName: test-cluster
+  vpcId: vpc-0970aa6f40cd94bb1
+  
+  serviceAccount:
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::365703723957:role/load-balancer

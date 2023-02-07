@@ -1,0 +1,8 @@
+sealed-secrets:
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 20m
+      memory: 32Mi
