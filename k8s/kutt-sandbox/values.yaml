@@ -1,0 +1,51 @@
+base-chart:
+  fullnameOverride: kutt-sandbox
+
+  existingConfigMap:
+  - aws-redis-replication-group
+  - aws-aurora-postgresql-kutt-cluster
+
+  existingSecretMap:
+  - aws-aurora-postgresql-kutt-cluster  
+
+  environmentVariables:
+    plain:
+      DEFAULT_DOMAIN: kutt-sandbox.com
+      MAIL_HOST: smtp.gmail.com
+      MAIL_PORT: "587"
+      SITE_NAME: kutt-sandbox
+
+  containerPort:
+    number: 3000
+  
+  service:
+    type: NodePort
+
+  replicaCount: 2
+
+  livenessProbeOverride:
+    tcpSocket:
+      port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 10
+
+  readinessProbeOverride:
+    tcpSocket:
+      port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 10
+
+  resources:
+    limits:
+      cpu: 1
+      memory: 1G
+    requests:
+      cpu: 500m
+      memory: 1G
+  
+  ingress:
+    host: kutt-sandbox.com
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip

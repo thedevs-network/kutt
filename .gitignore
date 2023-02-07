@@ -13,8 +13,6 @@ dump.rdb
 docs/api/*.js
 docs/api/static
 
-
-162 bytes
 # Local .terraform directories
 **/.terraform/*
 **/.terragrunt-cache/*
@@ -22,3 +20,6 @@ docs/api/static
 # .tfstate files
 *.tfstate
 *.tfstate.*
+
+
+Chart.lock

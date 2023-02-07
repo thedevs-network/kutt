@@ -1,0 +1,10 @@
+apiVersion: v2
+name: kutt-sandbox
+description: A Helm chart for Kubernetes
+type: application
+version: 0.1.0
+appVersion: 1.0.0
+dependencies:
+  - name: base-chart
+    version: 1.0.0
+    repository: file://../../helm/

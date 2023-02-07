@@ -1,0 +1,69 @@
+---
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "common.names.fullname" . }}
+  labels:
+    {{- include "base.labels.standard" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    {{- include "base-chart.deploymentStrategy" . }}
+  minReadySeconds: {{ .Values.deployment.minReadySeconds }}
+  revisionHistoryLimit: {{ .Values.deployment.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      {{- include "base.labels.matchLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.pod.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "base.labels.matchLabels" . | nindent 8 }}
+        {{- with .Values.pod.labels }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "base-chart.serviceAccountName" . }}
+      {{- if .Values.securityContext }}
+      securityContext:
+      {{- include "common.tplvalues.render" (dict "value" .Values.securityContext "context" $) | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Release.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.command }}
+          command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            {{- if .Values.containerPort.enabled }}
+            - name: {{ .Values.containerPort.name }}
+              containerPort: {{ .Values.containerPort.number }}
+              protocol: TCP
+            {{- end }}
+            {{- with .Values.additionalPorts }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- include "base-chart.deploymentLivinessProbe" . | indent 10 }}
+          {{- include "base-chart.deploymentReadinessProbe" . | indent 10 }}
+          {{- include "base-chart.deploymentStartupProbe" . | indent 10 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env: {{- include "base-chart.environmentVariables" . | indent 12 }}
+          envFrom: {{- include "base-chart.environmentVariablesFrom" . | indent 12 }}          
+          volumeMounts:
+            {{- include "base-chart.deploymentVolumeMounts" . | indent 12 }}
+      volumes:
+        {{- include "base-chart.deploymentVolumes" . | indent 8 }}
+      terminationGracePeriodSeconds: {{ .Values.deployment.terminationGracePeriodSeconds }}
+      {{- include "base-chart.topologySpreadConstraints" . | indent 6 }}
+      

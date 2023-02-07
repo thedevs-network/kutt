@@ -1,0 +1,23 @@
+{{- if and .Values.containerPort.enabled .Values.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "common.names.fullname" . }}
+  labels:
+    {{- include "base.labels.standard" . | nindent 4 }}
+    {{- with .Values.service.labels }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ include "common.tplvalues.render" (dict "value" .Values.service.port "context" $) }}
+      targetPort: {{ include "common.tplvalues.render" (dict "value" .Values.service.targetPortNumber "context" $) }}
+      protocol: TCP
+      name: {{ include "common.tplvalues.render" (dict "value" .Values.service.portName "context" $) }}
+      {{- if eq .Values.service.type "NodePort" }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
+  selector:
+    {{- include "base.labels.matchLabels" . | nindent 4 }}
+{{- end }}

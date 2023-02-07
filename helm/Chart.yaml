@@ -1,0 +1,9 @@
+apiVersion: v2
+name: base-chart
+type: application
+version: 1.0.0
+description: A Helm chart for Kubernetes
+dependencies:
+  - name: common
+    version: 1.16.0
+    repository: https://charts.bitnami.com/bitnami

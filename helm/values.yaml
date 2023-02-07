@@ -1,0 +1,149 @@
+# -- To fully override common.names.fullname
+fullnameOverride: ""
+
+# -- Number of replicas to deploy
+replicaCount: 1
+
+# -- Customize deployment resource
+deployment:
+  # -- Change default deployment strategy. Details: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # -- cannot be 0 if .deployment.strategy.rollingUpdate.maxSurge is 0.
+      maxUnavailable: 25%
+      # -- cannot be 0 if .deployment.strategy.rollingUpdate.maxUnavailable is 0.
+      maxSurge: 25%
+  # -- Number of seconds for which a newly created pod should be ready for it to be considered available
+  minReadySeconds: 0
+  # -- The number of old ReplicaSets to retain to allow rollback. This is a pointer to distinguish between explicit zero and not specified. Defaults to 10.
+  revisionHistoryLimit: 10
+  # -- Optional duration in seconds the pod needs to terminate gracefully. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). Defaults to 30 seconds.
+  terminationGracePeriodSeconds: 30
+
+# -- To serve traffic
+containerPort:
+  # -- Disable if pod doesn't need to be exposed (will also disable service & ingress as well as liviness/readiness probes)
+  enabled: true
+  # -- Container port
+  number: 80
+  # -- Port name
+  name: http
+
+image:
+  repository: nginx
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag: "1.23.2"
+
+# -- Command to execute in the main container. If not specified image default will be used
+command: []
+# -- Args to add to the main container command. If not specified image default will be used
+args: []
+
+# -- Add the security context for the pod
+securityContext: {}
+# -- Example
+  # runAsUser: 1000
+  # runAsGroup: 3000
+  # fsGroup: 2000
+
+# -- Metadata for pod
+pod:
+  # -- Annotations for pods
+  annotations: {}
+  # -- Labels for pods - e.g. adding ` elastic-index: YOUR_INDEX` for shipping logs to Elastic
+  labels: {}
+
+# -- Data for pvc
+pvc:
+  labels: {}
+  storageClassName: standard
+  accessModes:
+    - ReadWriteMany
+  requests:
+    storage: 10Mi
+
+resources:
+  limits: {}
+    # cpu: 250m
+    # memory: 256Mi
+  requests: {}
+    # cpu: 250m
+    # memory: 256Mi
+
+# -- Override default liveness probe
+livenessProbeOverride: {}
+# -- Override default readiness probe
+readinessProbeOverride: {}
+# -- Startup probe
+startupProbe: {}
+
+environmentVariables:
+  # -- Option to add plain environment variables for container
+  plain:
+    # myEnvVar: "example"
+  # -- Option to provide variables from existing configMaps as envVar
+
+# -- Optionally specify extra list of additional volumes for pods
+volumes: []
+
+# -- Optionally specify extra list of additional volumeMounts for container(s)
+volumeMounts: []
+
+podAntiaffinity:
+  # -- Enable/disable podAntiaffinity
+  enabled: true
+  # -- Defines whether pods are required to be scheduled on different nodes ("hard") or only preferred ("soft")
+  preset: "hard"
+
+topologySpreadConstraints:
+  # -- Enable/disable attempt to spread pods across multiple AZ's
+  enabled: true
+
+# -- Service account parameters
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use. If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# -- Service parameters
+service:
+  # -- Disable if it doesn't need to create a service
+  enabled: true
+  # -- Service type
+  type: ClusterIP
+  # -- Service HTTP port
+  port: "{{ .Values.containerPort.number }}"
+  # -- Service Target port
+  targetPortNumber: "{{ .Values.containerPort.number }}"
+  # -- Service port name
+  portName: "{{ .Values.containerPort.name }}"
+  # -- Expose nodePort if service.type is set to "NodePort"
+  nodePort: 30000
+  # -- Labels for the service
+  labels: {}
+
+# -- Option to mount an existing ConfigMap entirely(all the keys)
+existingConfigMap: []
+
+# -- Option to mount an existing Secrets entirely(all the keys)
+existingSecretMap: []
+
+ingress:
+  host: ""
+  annotations: {}
+
+sealedSecrets:
+  # -- Annotations to add to the sealedsecret
+  annotations: {}
+  # -- The secret data in key-value pairs. With the key being the environment variable name that it should be mounted as
+  data: {}
+  # -- scope of the sealed-secret, one of [strict, namespace-wide, cluster-wide], see https://github.com/bitnami-labs/sealed-secrets#scopes
+  scope: namespace-wide
+  # -- If set to true, the sealed secrets key-value pairs will mounted as environment variables on the deployment
+  autoMountAsEnv: true
