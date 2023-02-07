@@ -42,13 +42,13 @@ variable "one_nat_gateway_per_az" {
 }
 
 variable "region" {
-  description   = "Target region"
-  type          = string
-  default       = "eu-central-1"
+  description = "Target region"
+  type        = string
+  default     = "eu-central-1"
 }
 
 variable "current_account" {
-  description   = "ID of the target account"
-  type          = string
-  default       = "365703723957"
+  description = "ID of the target account"
+  type        = string
+  default     = "365703723957"
 }

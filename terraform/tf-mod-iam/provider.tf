@@ -3,7 +3,14 @@ terraform {
   }
 
   required_providers {
-    aws = ">= 4.0"
+    aws = {
+      version = ">= 4.0"
+      source  = "hashicorp/aws"
+    }
+    kubernetes = {
+      version = "~> 2.7"
+      source  = "hashicorp/kubernetes"
+    }
   }
 
   required_version = ">= 1.0"

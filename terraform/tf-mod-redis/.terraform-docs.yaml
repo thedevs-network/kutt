@@ -1,0 +1,36 @@
+formatter: markdown table
+
+sections:
+  hide: []
+  show: ["inputs", "outputs"]
+
+content: ""
+
+output:
+  file: "README.md"
+  mode: inject
+  template: |-
+    <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+    {{ .Content }}
+    <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+output-values:
+  enabled: false
+  from: ""
+
+sort:
+  enabled: true
+  by: required
+
+settings:
+  anchor: true
+  color: true
+  default: true
+  description: true
+  escape: true
+  html: true
+  indent: 2
+  lockfile: false
+  required: true
+  sensitive: true
+  type: true
