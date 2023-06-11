@@ -51,7 +51,7 @@ export const generateId = async (domain_id: number = null) => {
 };
 
 export const addProtocol = (url: string): string => {
-  const hasProtocol = /^\w+:\/\//.test(url);
+  const hasProtocol = /^\w[\w-]+:\/\//.test(url);
   return hasProtocol ? url : `http://${url}`;
 };
 
