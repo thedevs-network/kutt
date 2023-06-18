@@ -76,7 +76,7 @@ The `docker-compose.yml` uses the official kutt docker image available on [Docke
 
 For the minimal configuration the following settings have to be changed in the `.env`-file:
 
-- **DEFAULT_DOMAIN**: The domain of your kutt instance
+- **DEFAULT_DOMAIN**: The domain of your kutt instance written in **FQDN** notation. Example, "host.example.com". This is also important for front-end Reverse Proxies.
 - **DB_**: The DB credentials (when you use docker-compose you can skip these)
 - **ADMIN_EMAILS**: A comma-separated list of the administrator-accounts
 - **RECAPTCHA_**: Enter your credentials to use reCaptchas or delete this setting if you don't want to use it
