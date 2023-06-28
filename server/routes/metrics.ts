@@ -4,7 +4,7 @@ import { Router } from "express";
 
 const router = Router();
 
-const register = new client.Registry();
+export const register = new client.Registry();
 
 client.collectDefaultMetrics({
   register,

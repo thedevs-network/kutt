@@ -4,7 +4,7 @@ import passport from "passport";
 import bcrypt from "bcryptjs";
 import nanoid from "nanoid";
 import axios from "axios";
-import { randomUUID, randomUUID } from "crypto";
+import { randomUUID } from "crypto";
 
 import { CustomError } from "../utils";
 import * as utils from "../utils";
