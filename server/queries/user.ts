@@ -1,8 +1,8 @@
-import { v4 as uuid } from "uuid";
 import { addMinutes } from "date-fns";
 
 import redisCLient, * as redis from "../redis";
 import knex from "../knex";
+import { randomUUID } from "crypto";
 
 export const find = async (match: Partial<User>) => {
   if (match.email || match.apikey) {
@@ -35,7 +35,7 @@ export const add = async (params: Add, user?: User) => {
   const data = {
     email: params.email,
     password: params.password,
-    verification_token: uuid(),
+    verification_token: randomUUID(),
     verification_expires: addMinutes(new Date(), 60).toISOString()
   };
 
