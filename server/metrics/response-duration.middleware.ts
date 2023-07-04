@@ -1,5 +1,5 @@
 import { Handler, Request, Response } from "express";
-import { Histogram } from "prom-client";
+import { Histogram, } from "prom-client";
 import { register } from "../routes/metrics";
 
 const responseDurationHistogram: Histogram = new Histogram({

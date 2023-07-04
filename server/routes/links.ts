@@ -7,6 +7,7 @@ import * as helpers from "../handlers/helpers";
 import * as link from "../handlers/links";
 import * as auth from "../handlers/auth";
 import env from "../env";
+import { linkCounterMiddleware } from "../metrics/link-counter.middleware";
 
 const router = Router();
 
@@ -27,6 +28,7 @@ router.post(
   asyncHandler(auth.cooldown),
   validators.createLink,
   asyncHandler(helpers.verify),
+  asyncHandler(linkCounterMiddleware),
   asyncHandler(link.create)
 );
 
