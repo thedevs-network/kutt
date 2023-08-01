@@ -34,7 +34,7 @@ const LoginPage = () => {
   const { isAuthenticated } = useStoreState((s) => s.auth);
   const login = useStoreActions((s) => s.auth.login);
   const [error, setError] = useState("");
-  const [verifying, setVerifying] = useState(false);
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState({ login: false, signup: false });
   const [formState, { email, password, label }] = useFormState<{
     email: string;
@@ -79,8 +79,8 @@ const LoginPage = () => {
       if (type === "signup" && !DISALLOW_REGISTRATION) {
         setLoading((s) => ({ ...s, signup: true }));
         try {
-          await axios.post(APIv2.AuthSignup, { email, password });
-          setVerifying(true);
+          const res = await axios.post(APIv2.AuthSignup, { email, password });
+          setMessage(res.data.message);
         } catch (error) {
           setError(error.response.data.error);
         }
@@ -97,10 +97,9 @@ const LoginPage = () => {
   return (
     <AppWrapper>
       <ColCenterV maxWidth="100%" px={3} flex="0 0 auto" mt={4}>
-        {verifying ? (
+        {message ? (
           <H2 textAlign="center" light>
-            A verification email has been sent to{" "}
-            <Email>{formState.values.email}</Email>.
+            {message}
           </H2>
         ) : (
           <LoginForm id="login-form" onSubmit={onSubmit("login")}>
