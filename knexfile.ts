@@ -9,7 +9,7 @@ module.exports = {
       user: env.DB_USER,
       port: env.DB_PORT,
       password: env.DB_PASSWORD,
-      ...(env.PG_SSL === 'true' ? {
+      ...(env.DB_SSL === 'true' ? {
         ssl: {
           rejectUnauthorized: false
         }
