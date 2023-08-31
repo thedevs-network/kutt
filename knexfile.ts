@@ -9,7 +9,11 @@ module.exports = {
       user: env.DB_USER,
       port: env.DB_PORT,
       password: env.DB_PASSWORD,
-      ssl: env.DB_SSL,
+      ...(env.PG_SSL === 'true' ? {
+        ssl: {
+          rejectUnauthorized: false
+        }
+      } : {}),
     },
     migrations: {
       tableName: "knex_migrations",

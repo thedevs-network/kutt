@@ -10,7 +10,11 @@ const db = knex({
     database: env.DB_NAME,
     user: env.DB_USER,
     password: env.DB_PASSWORD,
-    ssl: env.DB_SSL,
+    ...(env.PG_SSL === 'true' ? {
+      ssl: {
+        rejectUnauthorized: false
+      }
+    } : {}),
     pool: {
       min: env.DB_POOL_MIN,
       max: env.DB_POOL_MAX
