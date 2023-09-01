@@ -330,7 +330,7 @@ export const redirectProtected: Handler = async (req, res) => {
   if (!matches) {
     throw new CustomError("Password is not correct.", 401);
   }
-
+  console.log(req.headers)
   // 4. Create visit
   if (link.user_id) {
     queue.visit.add({
