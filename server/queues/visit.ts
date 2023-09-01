@@ -23,6 +23,7 @@ export default function visit({ data }) {
     const [os = "Other"] = osList.filter(filterInOs(agent));
     const referrer =
       data.referrer && removeWww(URL.parse(data.referrer).hostname);
+    console.log(data.realIP)
     const location = geoip.lookup(data.realIP);
     const country = location && location.country;
     tasks.push(
