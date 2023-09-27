@@ -1,5 +1,7 @@
-import React from "react";
-import Router from "next/router";
+"use client"
+
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import { DISALLOW_ANONYMOUS_LINKS } from "../consts";
 import NeedToLogin from "../components/NeedToLogin";
@@ -9,17 +11,33 @@ import AppWrapper from "../components/AppWrapper";
 import Shortener from "../components/Shortener";
 import Features from "../components/Features";
 import Footer from "../components/Footer";
-import { useStoreState } from "../store";
+import { useStoreActions, useStoreState } from "../store";
+import cookie from "js-cookie";
 
-const Homepage = () => {
+export default function Home() {
   const isAuthenticated = useStoreState(s => s.auth.isAuthenticated);
+  const { renew, logout } = useStoreActions(s => s.auth);
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = cookie.get("token");
+    const isVerifyEmailPage =
+      typeof window !== "undefined" &&
+      window.location.pathname.includes("verify-email");
+
+    if (token && !isVerifyEmailPage) {
+      renew().catch(() => {
+        logout();
+      });
+    }
+  }, [logout, renew]);
 
   if (
     !isAuthenticated &&
     DISALLOW_ANONYMOUS_LINKS &&
     typeof window !== "undefined"
   ) {
-    Router.push("/login");
+    router.push("/login");
     return null;
   }
 
@@ -33,6 +51,4 @@ const Homepage = () => {
       <Footer />
     </AppWrapper>
   );
-};
-
-export default Homepage;
+}
