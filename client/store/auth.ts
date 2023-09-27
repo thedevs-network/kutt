@@ -8,8 +8,8 @@ import { APIv2 } from "../consts";
 import { getAxiosConfig } from "../utils";
 
 export interface Auth {
-  domain?: string;
-  email: string;
+  domain?: string | null;
+  email: string | null;
   isAdmin: boolean;
   isAuthenticated: Computed<Auth, boolean>;
   add: Action<Auth, TokenPayload>;

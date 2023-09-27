@@ -25,7 +25,7 @@ class MyApp extends App<any> {
 
     const token =
       ctx.req && (ctx.req as any).cookies && (ctx.req as any).cookies.token;
-    const tokenPayload: TokenPayload = token ? decode(token) : null;
+    const tokenPayload: TokenPayload | null = token ? decode(token) : null;
 
     if (tokenPayload) {
       store.dispatch.auth.add(tokenPayload);

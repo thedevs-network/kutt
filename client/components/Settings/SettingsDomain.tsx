@@ -28,7 +28,7 @@ const Td = styled(Flex).attrs({ as: "td", py: 12, px: 3 })`
 
 const SettingsDomain: FC = () => {
   const { saveDomain, deleteDomain } = useStoreActions((s) => s.settings);
-  const [domainToDelete, setDomainToDelete] = useState<Domain>(null);
+  const [domainToDelete, setDomainToDelete] = useState<Domain | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const domains = useStoreState((s) => s.settings.domains);
   const [message, setMessage] = useMessage(2000);
@@ -59,10 +59,12 @@ const SettingsDomain: FC = () => {
 
   const onDelete = async () => {
     setDeleteLoading(true);
-    await deleteDomain(domainToDelete.id).catch((err) =>
-      setMessage(errorMessage(err, "Couldn't delete the domain."))
-    );
-    setMessage("Domain has been deleted successfully.", "green");
+    if (domainToDelete) {
+      await deleteDomain(domainToDelete.id).catch((err) => 
+        setMessage(errorMessage(err, "Couldn't delete the domain."))
+      );
+      setMessage("Domain has been deleted successfully.", "green");
+    }
     closeModal();
     setDeleteLoading(false);
   };

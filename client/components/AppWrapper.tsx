@@ -33,7 +33,7 @@ const AppWrapper = ({ children }: { children: any }) => {
 
   useEffect(() => {
     if (isAuthenticated && !fetched && !isVerifyEmailPage) {
-      getSettings().catch(() => logout());
+      getSettings(null).catch(() => logout());
     }
   }, [isAuthenticated, fetched, isVerifyEmailPage, getSettings, logout]);
 

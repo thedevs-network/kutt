@@ -27,8 +27,8 @@ export interface SettingsResp {
 
 export interface Settings {
   domains: Array<Domain>;
-  apikey: string;
-  email: string;
+  apikey: string | null;
+  email: string | null;
   fetched: boolean;
   setSettings: Action<Settings, SettingsResp>;
   getSettings: Thunk<Settings, null, null, StoreModel>;

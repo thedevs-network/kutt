@@ -5,7 +5,7 @@ import { ifProp } from "styled-tools";
 import Link from "next/link";
 
 interface Props extends BoxProps {
-  href?: string;
+  href: string;
   title?: string;
   target?: string;
   rel?: string;

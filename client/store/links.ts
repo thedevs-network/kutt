@@ -63,7 +63,7 @@ export interface LinksListRes {
 }
 
 export interface Links {
-  link?: Link;
+  link?: Link | null;
   items: Link[];
   total: number;
   loading: boolean;
