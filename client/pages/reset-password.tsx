@@ -1,3 +1,5 @@
+"use client"
+
 import { useFormState } from "react-use-form-state";
 import React, { useEffect, useState } from "react";
 import { Flex } from "rebass/styled-components";

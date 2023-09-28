@@ -1,3 +1,5 @@
+"use client"
+
 import { Flex } from "rebass/styled-components";
 import React, { useEffect } from "react";
 import styled from "styled-components";

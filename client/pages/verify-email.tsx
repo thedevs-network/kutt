@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useEffect } from "react";
 import { Flex } from "rebass/styled-components";
 import decode from "jwt-decode";

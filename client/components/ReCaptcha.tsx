@@ -1,8 +1,7 @@
 import { Flex } from "rebass/styled-components";
-import getConfig from "next/config";
 import React from "react";
 
-const { publicRuntimeConfig } = getConfig();
+import { publicRuntimeConfig } from '../../next.config';
 
 const ReCaptcha = () => {
   if (process.env.NODE_ENV !== "production") return null;

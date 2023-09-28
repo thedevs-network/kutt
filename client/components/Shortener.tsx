@@ -1,9 +1,10 @@
+"use client"
+
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useFormState } from "react-use-form-state";
 import { Flex } from "rebass/styled-components";
 import React, { useState } from "react";
 import styled from "styled-components";
-import getConfig from "next/config";
 
 import { useStoreActions, useStoreState } from "../store";
 import { Checkbox, Select, TextInput } from "./Input";
@@ -16,7 +17,7 @@ import Animation from "./Animation";
 import { Colors } from "../consts";
 import Icon from "./Icon";
 
-const { publicRuntimeConfig } = getConfig();
+import { publicRuntimeConfig } from '../../next.config';
 
 const SubmitIconWrapper = styled.div`
   content: "";

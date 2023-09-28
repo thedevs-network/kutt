@@ -2,7 +2,6 @@ import { useFormState } from "react-use-form-state";
 import { Flex } from "rebass/styled-components";
 import React, { FC, useState } from "react";
 import styled from "styled-components";
-import getConfig from "next/config";
 
 import { useStoreState, useStoreActions } from "../../store";
 import { Domain } from "../../store/settings";
@@ -17,7 +16,7 @@ import Table from "../Table";
 import Modal from "../Modal";
 import Icon from "../Icon";
 
-const { publicRuntimeConfig } = getConfig();
+import { publicRuntimeConfig } from '../../../next.config';
 
 const Th = styled(Flex).attrs({ as: "th", py: 3, px: 3 })`
   font-size: 15px;

@@ -1,3 +1,5 @@
+"use client"
+
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import React, { FC, useState, useEffect } from "react";
@@ -5,7 +7,6 @@ import { useFormState } from "react-use-form-state";
 import { Flex } from "rebass/styled-components";
 import styled, { css } from "styled-components";
 import { ifProp } from "styled-tools";
-import getConfig from "next/config";
 import QRCode from "qrcode.react";
 import differenceInMilliseconds from "date-fns/differenceInMilliseconds";
 import ms from "ms";
@@ -26,7 +27,7 @@ import ALink from "./ALink";
 import Modal from "./Modal";
 import Icon from "./Icon";
 
-const { publicRuntimeConfig } = getConfig();
+import { publicRuntimeConfig } from '../../next.config';
 
 const Tr = styled(Flex).attrs({ as: "tr", px: [12, 12, 2] })``;
 const Th = styled(Flex)``;

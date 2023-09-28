@@ -1,3 +1,5 @@
+"use client"
+
 import { Box, Flex } from "rebass/styled-components";
 import React, { useState, useEffect } from "react";
 import formatDate from "date-fns/format";

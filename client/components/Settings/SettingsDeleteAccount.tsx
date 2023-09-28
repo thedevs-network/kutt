@@ -1,6 +1,5 @@
 import { useFormState } from "react-use-form-state";
 import React, { FC, useState } from "react";
-import getConfig from "next/config";
 import Router from "next/router";
 import axios from "axios";
 
@@ -14,7 +13,7 @@ import { Button } from "../Button";
 import Icon from "../Icon";
 import Modal from "../Modal";
 
-const { publicRuntimeConfig } = getConfig();
+import { publicRuntimeConfig } from '../../../next.config';
 
 const SettingsDeleteAccount: FC = () => {
   const [message, setMessage] = useMessage(1500);
