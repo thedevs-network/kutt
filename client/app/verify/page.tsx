@@ -1,24 +1,19 @@
 "use client"
 
 import { Flex } from "rebass/styled-components";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import decode from "jwt-decode";
 import cookie from "js-cookie";
 
-import AppWrapper from "../components/AppWrapper";
-import { Button } from "../components/Button";
-import { useStoreActions } from "../store";
-import { Col } from "../components/Layout";
-import { TokenPayload } from "../types";
-import Icon from "../components/Icon";
-import { NextPage } from "next";
-import { Colors } from "../consts";
-import ALink from "../components/ALink";
-
-interface Props {
-  token?: string;
-}
+import AppWrapper from "../../components/AppWrapper";
+import { Button } from "../../components/Button";
+import { useStoreActions } from "../../store";
+import { Col } from "../../components/Layout";
+import { TokenPayload } from "../../types";
+import Icon from "../../components/Icon";
+import { Colors } from "../../consts";
+import ALink from "../../components/ALink";
 
 const MessageWrapper = styled(Flex).attrs({
   justifyContent: "center",
@@ -35,20 +30,24 @@ const Message = styled.p`
   }
 `;
 
-const Verify: NextPage<Props> = ({ token }) => {
+const Verify = () => {
   const addAuth = useStoreActions((s) => s.auth.add);
-
+  const [hasToken, setHasToken] = useState(false);
+  
   useEffect(() => {
+    const token = cookie.get("token");
+    
     if (token) {
       cookie.set("token", token, { expires: 7 });
       const payload: TokenPayload = decode(token);
+      setHasToken(true);
       addAuth(payload);
     }
-  }, [token, addAuth]);
+  }, [addAuth]);
 
   return (
     <AppWrapper>
-      {token ? (
+      {hasToken ? (
         <Col alignItems="center">
           <MessageWrapper>
             <Icon name="check" size={32} mr={3} stroke={Colors.CheckIcon} />
@@ -77,10 +76,6 @@ const Verify: NextPage<Props> = ({ token }) => {
       )}
     </AppWrapper>
   );
-};
-
-Verify.getInitialProps = async ({ req }) => {
-  return { token: req && (req as any).token }; // TODO: types bro
 };
 
 export default Verify;
