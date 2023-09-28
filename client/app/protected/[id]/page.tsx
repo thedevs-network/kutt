@@ -3,24 +3,17 @@
 import { useFormState } from "react-use-form-state";
 import { Flex } from "rebass/styled-components";
 import React, { useState } from "react";
-import { NextPage } from "next";
-import { useRouter } from "next/router";
 import axios from "axios";
 
-import AppWrapper from "../../components/AppWrapper";
-import { TextInput } from "../../components/Input";
-import { Button } from "../../components/Button";
-import Text, { H2 } from "../../components/Text";
-import { Col } from "../../components/Layout";
-import Icon from "../../components/Icon";
-import { APIv2 } from "../../consts";
+import AppWrapper from "../../../components/AppWrapper";
+import { TextInput } from "../../../components/Input";
+import { Button } from "../../../components/Button";
+import Text, { H2 } from "../../../components/Text";
+import { Col } from "../../../components/Layout";
+import Icon from "../../../components/Icon";
+import { APIv2 } from "../../../consts";
 
-interface Props {
-  protectedLink?: string;
-}
-
-const ProtectedPage: NextPage<Props> = () => {
-  const router = useRouter();
+const ProtectedPage = ({ params }: { params: { id: string } }) => {
   const [loading, setLoading] = useState(false);
   const [formState, { password }] = useFormState<{ password: string }>();
   const [error, setError] = useState<string>();
@@ -37,7 +30,7 @@ const ProtectedPage: NextPage<Props> = () => {
     setLoading(true);
     try {
       const { data } = await axios.post(
-        `${APIv2.Links}/${router.query.id}/protected`,
+        `${APIv2.Links}/${params.id}/protected`,
         {
           password
         }
@@ -51,7 +44,7 @@ const ProtectedPage: NextPage<Props> = () => {
 
   return (
     <AppWrapper>
-      {!router.query.id ? (
+      {!params.id ? (
         <H2 my={4} light>
           404 | Link could not be found.
         </H2>
@@ -89,12 +82,6 @@ const ProtectedPage: NextPage<Props> = () => {
       )}
     </AppWrapper>
   );
-};
-
-ProtectedPage.getInitialProps = async ({ req }) => {
-  return {
-    protectedLink: req && (req as any).protectedLink
-  };
 };
 
 export default ProtectedPage;
