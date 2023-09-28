@@ -5,26 +5,21 @@ import React, { useEffect, useState } from "react";
 import { Flex } from "rebass/styled-components";
 import Router from "next/router";
 import decode from "jwt-decode";
-import { NextPage } from "next";
 import cookie from "js-cookie";
 import axios from "axios";
 
-import { useStoreState, useStoreActions } from "../store";
-import AppWrapper from "../components/AppWrapper";
-import { TextInput } from "../components/Input";
-import { Button } from "../components/Button";
-import Text, { H2 } from "../components/Text";
-import { Col } from "../components/Layout";
-import { TokenPayload } from "../types";
-import { useMessage } from "../hooks";
-import Icon from "../components/Icon";
-import { APIv2 } from "../consts";
+import { useStoreState, useStoreActions } from "../../store";
+import AppWrapper from "../../components/AppWrapper";
+import { TextInput } from "../../components/Input";
+import { Button } from "../../components/Button";
+import Text, { H2 } from "../../components/Text";
+import { Col } from "../../components/Layout";
+import { TokenPayload } from "../../types";
+import { useMessage } from "../../hooks";
+import Icon from "../../components/Icon";
+import { APIv2 } from "../../consts";
 
-interface Props {
-  token?: string;
-}
-
-const ResetPassword: NextPage<Props> = ({ token }) => {
+const ResetPassword = () => {
   const auth = useStoreState((s) => s.auth);
   const addAuth = useStoreActions((s) => s.auth.add);
   const [loading, setLoading] = useState(false);
@@ -38,13 +33,15 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
       Router.push("/settings");
     }
 
+    const token = cookie.get("token");
+
     if (token) {
       cookie.set("token", token, { expires: 7 });
       const decoded: TokenPayload = decode(token);
       addAuth(decoded);
       Router.push("/settings");
     }
-  }, [auth, token, addAuth]);
+  }, [auth, addAuth]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -103,10 +100,6 @@ const ResetPassword: NextPage<Props> = ({ token }) => {
       </Col>
     </AppWrapper>
   );
-};
-
-ResetPassword.getInitialProps = async (ctx) => {
-  return { token: ctx.req && (ctx.req as any).token };
 };
 
 export default ResetPassword;
