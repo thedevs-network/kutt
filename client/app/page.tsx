@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { DISALLOW_ANONYMOUS_LINKS } from "../consts";
@@ -13,7 +13,6 @@ import Features from "../components/Features";
 import Footer from "../components/Footer";
 import { useStoreActions, useStoreState } from "../store";
 import cookie from "js-cookie";
-import PageLoading from '../components/PageLoading';
 
 export default function Home() {
   const isAuthenticated = useStoreState(s => s.auth.isAuthenticated);
@@ -32,21 +31,6 @@ export default function Home() {
       });
     }
   }, [logout, renew]);
-
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setLoading(false);
-    }
-  }, [])
-
-
-  if(loading) return (
-    <AppWrapper>
-      <PageLoading />
-    </AppWrapper>
-  )
 
   if (
     !isAuthenticated &&
