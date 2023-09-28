@@ -3,25 +3,22 @@
 import React, { useEffect } from "react";
 import { Flex } from "rebass/styled-components";
 import decode from "jwt-decode";
-import { NextPage } from "next";
 import cookie from "js-cookie";
 
-import { useStoreActions } from "../store";
-import AppWrapper from "../components/AppWrapper";
-import { H2 } from "../components/Text";
-import { TokenPayload } from "../types";
-import Icon from "../components/Icon";
-import { Colors } from "../consts";
-import Footer from "../components/Footer";
+import { useStoreActions } from "../../store";
+import AppWrapper from "../../components/AppWrapper";
+import { H2 } from "../../components/Text";
+import { TokenPayload } from "../../types";
+import Icon from "../../components/Icon";
+import { Colors } from "../../consts";
+import Footer from "../../components/Footer";
 
-interface Props {
-  token?: string;
-}
-
-const VerifyEmail: NextPage<Props> = ({ token }) => {
+const VerifyEmail = () => {
   const addAuth = useStoreActions((s) => s.auth.add);
+  const token = cookie.get("token");
 
   useEffect(() => {
+
     if (token) {
       cookie.set("token", token, { expires: 7 });
       const decoded: TokenPayload = decode(token);
@@ -48,10 +45,6 @@ const VerifyEmail: NextPage<Props> = ({ token }) => {
       <Footer />
     </AppWrapper>
   );
-};
-
-VerifyEmail.getInitialProps = async (ctx) => {
-  return { token: (ctx?.req as any)?.token };
 };
 
 export default VerifyEmail;
