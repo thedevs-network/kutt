@@ -108,6 +108,7 @@ const Header: FC = () => {
             }}
             forButton
             isNextLink
+            style={{ display: 'flex', alignItems: 'center', gap: '11px', fontSize: '22px', fontWeight: 'bold', color: 'inherit' }}
           >
             <Image
               src="/images/logo.svg"
@@ -121,7 +122,7 @@ const Header: FC = () => {
 
         {!isMobile && (
           <Flex
-            style={{ listStyle: "none" }}
+            style={{ listStyle: "none", alignItems: 'center' }}
             display={["none", "flex"]}
             alignItems="flex-end"
             as="ul"
