@@ -2,7 +2,9 @@ version: "3"
 
 services:
   kutt:
-    image: kutt/kutt
+    build:
+      context: .
+      dockerfile: Dockerfile
     depends_on:
       - postgres
       - redis
