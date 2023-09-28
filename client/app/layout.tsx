@@ -1,40 +1,36 @@
-"use client"
-
-import React, { useEffect, useState } from "react";
-import { StoreProvider } from "easy-peasy";
-import { initializeStore } from '../store';
+import React from "react";
 import { publicRuntimeConfig } from '../../next.config';
+import type { Metadata } from 'next';
+import { Providers } from "../store/provider";
+import Head from "next/head";
 import { Colors } from "../consts";
-import PageLoading from '../components/PageLoading';
 interface Props {
   children: React.ReactNode;
 }
 
-export default function RootLayout({ children }: Props) {
-  const store = initializeStore();
-  const [loading, setLoading] = useState(true);
+export const metadata: Metadata = {
+  title: `${publicRuntimeConfig.SITE_NAME} | Modern Open Source URL shortener.`,
+  description: `${publicRuntimeConfig.SITE_NAME} is a free and open source URL shortener with custom domains and stats.`,
+  openGraph: {
+    type: 'website',
+    url: `https://${publicRuntimeConfig.DEFAULT_DOMAIN}`,
+    title: `${publicRuntimeConfig.SITE_NAME} | Modern Open Source URL shortener.`,
+    description: `${publicRuntimeConfig.SITE_NAME} is a free and open source URL shortener with custom domains and stats.`,
+    images: [
+      {
+        url: `https://${publicRuntimeConfig.DEFAULT_DOMAIN}/images/card.png`,
+        width: 1200,
+        height: 630,
+        alt: `${publicRuntimeConfig.SITE_NAME} | Modern Open Source URL shortener.`,
+      },
+    ],
+  },
+}
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setLoading(false);
-    }
-  }, [])
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <title>
-          {publicRuntimeConfig.SITE_NAME} | Modern Open Source URL shortener.
-        </title>
-        <meta charSet="utf-8" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, viewport-fit=cover"
-        />
-        <meta
-          name="description"
-          content={`${publicRuntimeConfig.SITE_NAME} is a free and open source URL shortener with custom domains and stats.`}
-        />
         <link
           href="https://fonts.googleapis.com/css?family=Nunito:300,400,700&display=optional"
           rel="stylesheet"
@@ -45,36 +41,6 @@ export default function RootLayout({ children }: Props) {
         <link rel="apple-touch-icon" href="/images/favicon-196x196.png" />
         <link rel="mask-icon" href="/images/icon.svg" color="blue" />
         <link rel="manifest" href="manifest.webmanifest" />
-        <meta name="theme-color" content="#f3f3f3" />
-
-        <meta property="fb:app_id" content="123456789" />
-        <meta
-          property="og:url"
-          content={`https://${publicRuntimeConfig.DEFAULT_DOMAIN}`}
-        />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content={publicRuntimeConfig.SITE_NAME} />
-        <meta
-          property="og:image"
-          content={`https://${publicRuntimeConfig.DEFAULT_DOMAIN}/images/card.png`}
-        />
-        <meta
-          property="og:description"
-          content="Free & Open Source Modern URL Shortener"
-        />
-        <meta
-          name="twitter:url"
-          content={`https://${publicRuntimeConfig.DEFAULT_DOMAIN}`}
-        />
-        <meta name="twitter:title" content={publicRuntimeConfig.SITE_NAME} />
-        <meta
-          name="twitter:description"
-          content="Free & Open Source Modern URL Shortener"
-        />
-        <meta
-          name="twitter:image"
-          content={`https://${publicRuntimeConfig.DEFAULT_DOMAIN}/images/card.png`}
-        />
 
         <script
           dangerouslySetInnerHTML={{
@@ -97,9 +63,9 @@ export default function RootLayout({ children }: Props) {
           color: Colors.Text
         }}
       >
-        <StoreProvider store={store}>
-          { loading ? <PageLoading /> : children }
-        </StoreProvider>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
