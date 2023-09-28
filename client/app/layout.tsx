@@ -1,21 +1,28 @@
 "use client"
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StoreProvider } from "easy-peasy";
-import Head from "next/head";
 import { initializeStore } from '../store';
 import { publicRuntimeConfig } from '../../next.config';
 import { Colors } from "../consts";
+import PageLoading from '../components/PageLoading';
 interface Props {
   children: React.ReactNode;
 }
 
 export default function RootLayout({ children }: Props) {
   const store = initializeStore();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setLoading(false);
+    }
+  }, [])
 
   return (
     <html lang="en">
-      <Head>
+      <head>
         <title>
           {publicRuntimeConfig.SITE_NAME} | Modern Open Source URL shortener.
         </title>
@@ -80,7 +87,7 @@ export default function RootLayout({ children }: Props) {
           async
           defer
         />
-      </Head>
+      </head>
       <body
         style={{
           margin: 0,
@@ -91,7 +98,7 @@ export default function RootLayout({ children }: Props) {
         }}
       >
         <StoreProvider store={store}>
-          {children}
+          { loading ? <PageLoading /> : children }
         </StoreProvider>
       </body>
     </html>
