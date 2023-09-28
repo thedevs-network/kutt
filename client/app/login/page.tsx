@@ -1,21 +1,23 @@
+"use client"
+
 import { useFormState } from "react-use-form-state";
 import React, { useEffect, useState } from "react";
 import { Flex } from "rebass/styled-components";
 import emailValidator from "email-validator";
 import styled from "styled-components";
-import Router from "next/router";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
-import { useStoreState, useStoreActions } from "../store";
-import { APIv2, DISALLOW_REGISTRATION } from "../consts";
-import { ColCenterV } from "../components/Layout";
-import AppWrapper from "../components/AppWrapper";
-import { TextInput } from "../components/Input";
-import { fadeIn } from "../helpers/animations";
-import { Button } from "../components/Button";
-import Text, { H2 } from "../components/Text";
-import ALink from "../components/ALink";
-import Icon from "../components/Icon";
+import { useStoreState, useStoreActions } from "../../store";
+import { APIv2, DISALLOW_REGISTRATION } from "../../consts";
+import { ColCenterV } from "../../components/Layout";
+import AppWrapper from "../../components/AppWrapper";
+import { TextInput } from "../../components/Input";
+import { fadeIn } from "../../helpers/animations";
+import { Button } from "../../components/Button";
+import Text, { H2 } from "../../components/Text";
+import ALink from "../../components/ALink";
+import Icon from "../../components/Icon";
 
 const LoginForm = styled(Flex).attrs({
   as: "form",
@@ -30,7 +32,7 @@ const Email = styled.span`
   border-bottom: 1px dotted #999;
 `;
 
-const LoginPage = () => {
+export default function Login() {
   const { isAuthenticated } = useStoreState((s) => s.auth);
   const login = useStoreActions((s) => s.auth.login);
   const [error, setError] = useState("");
@@ -40,10 +42,11 @@ const LoginPage = () => {
     email: string;
     password: string;
   }>(null, { withIds: true });
+  const router = useRouter();
 
   useEffect(() => {
-    if (isAuthenticated) Router.push("/");
-  }, [isAuthenticated]);
+    if (isAuthenticated) router.push("/");
+  }, [isAuthenticated, router]);
 
   function onSubmit(type: "login" | "signup") {
     return async (e) => {
@@ -70,7 +73,7 @@ const LoginPage = () => {
         setLoading((s) => ({ ...s, login: true }));
         try {
           await login(formState.values);
-          Router.push("/");
+          router.push("/");
         } catch (error) {
           setError(error.response.data.error);
         }
@@ -181,5 +184,3 @@ const LoginPage = () => {
     </AppWrapper>
   );
 };
-
-export default LoginPage;

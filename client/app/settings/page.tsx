@@ -1,17 +1,19 @@
+"use client"
+
 import { NextPage } from "next";
 import React from "react";
 
-import SettingsDeleteAccount from "../components/Settings/SettingsDeleteAccount";
-import SettingsChangeEmail from "../components/Settings/SettingsChangeEmail";
-import SettingsPassword from "../components/Settings/SettingsPassword";
-import SettingsDomain from "../components/Settings/SettingsDomain";
-import SettingsApi from "../components/Settings/SettingsApi";
-import AppWrapper from "../components/AppWrapper";
-import { H1, Span } from "../components/Text";
-import Divider from "../components/Divider";
-import { Col } from "../components/Layout";
-import Footer from "../components/Footer";
-import { useStoreState } from "../store";
+import SettingsDeleteAccount from "../../components/Settings/SettingsDeleteAccount";
+import SettingsChangeEmail from "../../components/Settings/SettingsChangeEmail";
+import SettingsPassword from "../../components/Settings/SettingsPassword";
+import SettingsDomain from "../../components/Settings/SettingsDomain";
+import SettingsApi from "../../components/Settings/SettingsApi";
+import AppWrapper from "../../components/AppWrapper";
+import { H1, Span } from "../../components/Text";
+import Divider from "../../components/Divider";
+import { Col } from "../../components/Layout";
+import Footer from "../../components/Footer";
+import { useStoreState } from "../../store";
 
 const SettingsPage: NextPage = () => {
   const email = useStoreState(s => s.auth.email);

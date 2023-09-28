@@ -1,15 +1,16 @@
-import getConfig from "next/config";
+"use client"
+
 import React from "react";
 
-import AppWrapper from "../components/AppWrapper";
-import { H2, H4, Span } from "../components/Text";
-import Footer from "../components/Footer";
-import ALink from "../components/ALink";
-import { Col } from "../components/Layout";
+import AppWrapper from "../../components/AppWrapper";
+import { H2, H4, Span } from "../../components/Text";
+import Footer from "../../components/Footer";
+import ALink from "../../components/ALink";
+import { Col } from "../../components/Layout";
 
-const { publicRuntimeConfig } = getConfig();
+import { publicRuntimeConfig } from '../../../next.config';
 
-const BannedPage = () => {
+export default function BannedPage() {
   return (
     <AppWrapper>
       <Col flex="1 1 100%" alignItems="center">
@@ -33,5 +34,3 @@ const BannedPage = () => {
     </AppWrapper>
   );
 };
-
-export default BannedPage;
