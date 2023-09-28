@@ -3,32 +3,31 @@
 import { Box, Flex } from "rebass/styled-components";
 import React, { useState, useEffect } from "react";
 import formatDate from "date-fns/format";
-import { NextPage } from "next";
 import axios from "axios";
 
-import Text, { H1, H2, H4, Span } from "../components/Text";
-import { getAxiosConfig, removeProtocol } from "../utils";
-import { Button, NavButton } from "../components/Button";
-import { Col, RowCenterV } from "../components/Layout";
-import { Area, Bar, Pie, Map } from "../components/Charts";
-import PageLoading from "../components/PageLoading";
-import AppWrapper from "../components/AppWrapper";
-import Divider from "../components/Divider";
-import { APIv2, Colors } from "../consts";
-import { useStoreState } from "../store";
-import ALink from "../components/ALink";
-import Icon from "../components/Icon";
+import Text, { H1, H2, H4, Span } from "../../components/Text";
+import { getAxiosConfig, removeProtocol } from "../../utils";
+import { Button, NavButton } from "../../components/Button";
+import { Col, RowCenterV } from "../../components/Layout";
+import { Area, Bar, Pie, Map } from "../../components/Charts";
+import PageLoading from "../../components/PageLoading";
+import AppWrapper from "../../components/AppWrapper";
+import Divider from "../../components/Divider";
+import { APIv2, Colors } from "../../consts";
+import { useStoreState } from "../../store";
+import ALink from "../../components/ALink";
+import Icon from "../../components/Icon";
+import { useSearchParams } from 'next/navigation';
 
-interface Props {
-  id?: string;
-}
-
-const StatsPage: NextPage<Props> = ({ id }) => {
+const StatsPage = () => {
   const { isAuthenticated } = useStoreState((s) => s.auth);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [data, setData] = useState<Record<string, any> | undefined>();
   const [period, setPeriod] = useState("lastDay");
+
+  const params = useSearchParams();
+  const id = params?.get('id') || '';
 
   const stats = data && data[period];
 
@@ -196,14 +195,6 @@ const StatsPage: NextPage<Props> = ({ id }) => {
         ))}
     </AppWrapper>
   );
-};
-
-StatsPage.getInitialProps = ({ query }) => {
-  return Promise.resolve(query);
-};
-
-StatsPage.defaultProps = {
-  id: ""
 };
 
 export default StatsPage;
