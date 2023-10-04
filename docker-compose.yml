@@ -2,7 +2,9 @@ version: "3"
 
 services:
   kutt:
-    image: kutt/kutt
+    build:
+      context: .
+      dockerfile: Dockerfile
     depends_on:
       - postgres
       - redis
@@ -19,12 +21,12 @@ services:
       REDIS_HOST: redis
 
   redis:
-    image: redis:6.0-alpine
+    image: redis:7.2.1-alpine
     volumes:
       - redis_data:/data
 
   postgres:
-    image: postgres:12-alpine
+    image: postgres:16.0-alpine
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
