@@ -7,7 +7,8 @@ const client = new Redis({
   port: env.REDIS_PORT,
   db: env.REDIS_DB,
   ...(env.REDIS_PASSWORD && { password: env.REDIS_PASSWORD }),
-  ...(env.REDIS_SSL && { tls: {} })
+  ...(env.REDIS_SSL && { tls: {} }),
+  ...(env.REDIS_KEYPREFIX && { keyPrefix: env.REDIS_KEYPREFIX })
 });
 
 export default client;

@@ -21,6 +21,7 @@ const env = cleanEnv(process.env, {
   REDIS_PASSWORD: str({ default: "" }),
   REDIS_DB: num({ default: 0 }),
   REDIS_SSL: bool({ default: false }),
+  REDIS_KEYPREFIX: str({ default: "" }),
   USER_LIMIT_PER_DAY: num({ default: 50 }),
   NON_USER_COOLDOWN: num({ default: 10 }),
   DEFAULT_MAX_STATS_PER_LINK: num({ default: 5000 }),
