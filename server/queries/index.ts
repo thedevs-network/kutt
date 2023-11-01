@@ -4,6 +4,7 @@ import * as link from "./link";
 import * as user from "./user";
 import * as host from "./host";
 import * as ip from "./ip";
+import * as dailyVisit from "./daily-visit";
 
 const queries = {
   domain,
@@ -11,7 +12,8 @@ const queries = {
   ip,
   link,
   user,
-  visit
+  visit,
+  dailyVisit
 };
 
 export default queries;

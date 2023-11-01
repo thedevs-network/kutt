@@ -8,6 +8,8 @@ export async function up(knex: Knex): Promise<any> {
   await models.createHostTable(knex);
   await models.createLinkTable(knex);
   await models.createVisitTable(knex);
+  await models.createDailyVisitTable(knex);
+
 
   await Promise.all([
     knex.raw(`
