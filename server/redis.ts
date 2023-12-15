@@ -10,6 +10,7 @@ const client = new Redis({
 });
 
 export default client;
+export const redisHealthStatus = [ "connect", "ready" ];
 
 export const key = {
   link: (address: string, domain_id?: number, user_id?: number) =>
