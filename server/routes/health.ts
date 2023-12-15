@@ -1,11 +1,10 @@
 import { Router } from "express";
-import client from "../redis";
+import client, { redisHealthStatus } from "../redis";
 
 const router = Router();
-
 router.get("/", (_, res) => {
     const redisStatus = client.status;
-    const status = redisStatus !== "connect" ? 500 : 200;
+    const status = redisHealthStatus.includes(redisStatus) ? 200 : 500;
     res
     .status(status)
     .json({
