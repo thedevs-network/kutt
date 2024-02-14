@@ -23,6 +23,7 @@ _Contributions and bug reports are welcome._
 - [Integrations](#integrations)
 - [3rd Party Packages](#3rd-party-packages)
 - [Donate](#donate)
+- [International](#international)
 - [Contributing](#contributing)
 
 ## Key Features
@@ -122,13 +123,19 @@ Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app f
 
 ## Donate
 
-<img src="./btc.png" alt="Kutt.it" width="32px" height="32px">
+<img src="./btc.png" alt="bitcoin" width="32px" height="32px">
 
 Kutt is free of charge and free of ads. Help us keep our servers running and motivate us to work on this project by donating to our Bitcoin wallet:
 
 ```
 1P89WxNTinKxxDQ4FmC4jis3KUdfA9fLJB
 ```
+## International
+
+Kutt.it is used by people from all around the globe, and we strive to make our documentation and platform accessible to everyone, regardless of their language. While the primary documentation and interface are currently in English, we aim to support internationalization and localization to cater to our diverse user base.
+
+### Supporting Multiple Languages
+We welcome contributions that help translate our documentation, website, and platform into various languages. This effort not only makes Kutt.it more accessible but also helps in reaching a wider audience.
 
 ## Contributing
 
