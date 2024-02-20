@@ -12,7 +12,7 @@ import Footer from "../components/Footer";
 import { useStoreState } from "../store";
 
 const Homepage = () => {
-  const isAuthenticated = useStoreState(s => s.auth.isAuthenticated);
+  const isAuthenticated = useStoreState((s) => s.auth.isAuthenticated);
 
   if (
     !isAuthenticated &&
