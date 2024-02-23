@@ -8,7 +8,7 @@ services:
       - redis
     command: ["./wait-for-it.sh", "postgres:5432", "--", "npm", "start"]
     ports:
-      - "3000:3000"
+      - "3010:3010"
     env_file:
       - .env
     environment:

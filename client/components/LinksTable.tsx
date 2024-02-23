@@ -87,6 +87,11 @@ const Action = (props: React.ComponentProps<typeof Icon>) => (
   />
 );
 
+const ckActionFlex = {
+  flexGrow: [0.5, 0.5, 0.2],
+  flexShrink: [0.5, 0.5, 0.2],
+  justifyContent: "flex-start"
+};
 const ogLinkFlex = { flexGrow: [1, 3, 7], flexShrink: [1, 3, 7] };
 const createdFlex = { flexGrow: [1, 1, 2.5], flexShrink: [1, 1, 2.5] };
 const shortLinkFlex = { flexGrow: [1, 1, 3], flexShrink: [1, 1, 3] };
@@ -101,6 +106,8 @@ interface RowProps {
   index: number;
   link: LinkType;
   setDeleteModal: (number) => void;
+  isSelected: boolean;
+  setIsSelected: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface BanForm {
@@ -118,7 +125,13 @@ interface EditForm {
   password?: string;
 }
 
-const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
+const Row: FC<RowProps> = ({
+  index,
+  link,
+  setDeleteModal,
+  isSelected,
+  setIsSelected
+}) => {
   const isAdmin = useStoreState((s) => s.auth.isAdmin);
   const ban = useStoreActions((s) => s.links.ban);
   const edit = useStoreActions((s) => s.links.edit);
@@ -189,6 +202,14 @@ const Row: FC<RowProps> = ({ index, link, setDeleteModal }) => {
   return (
     <>
       <Tr key={link.id}>
+        <Td {...ckActionFlex} alignItems="flex-start">
+          <Checkbox
+            label={""}
+            name={""}
+            checked={isSelected}
+            onChange={() => setIsSelected(!isSelected)}
+          />
+        </Td>
         <Td {...ogLinkFlex} withFade>
           <Col alignItems="flex-start">
             <ALink href={link.target}>{link.target}</ALink>
@@ -586,9 +607,80 @@ const LinksTable: FC = () => {
     setDeleteLoading(false);
   };
 
+  const onDeleteSelected = async () => {
+    try {
+      setDeleteLoading(true);
+
+      for (let i = 0; i < linksToDelete.length; i++) {
+        await remove(linksToDelete[i].id);
+      }
+
+      await get(options);
+
+      setLinksToDelete([]);
+      setShowSelectedDeleteModal(false);
+    } catch (err) {
+      setDeleteMessage(errorMessage(err));
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   const onNavChange = (nextPage: number) => () => {
     formState.setField("skip", (parseInt(options.skip) + nextPage).toString());
   };
+
+  const [selectedLinks, setSelectedLinks] = useState<LinkType[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const [linksToDelete, setLinksToDelete] = useState<LinkType[]>([]);
+
+  const toggleSelectAllLinks = () => {
+    setSelectAll(!selectAll);
+
+    const updateSelectedLinks = links.items.map((link) => {
+      return {
+        ...link,
+        isSelected: !selectAll
+      };
+    });
+
+    setSelectedLinks(updateSelectedLinks);
+  };
+
+  const handleRowSelectionChange = (index: number, isSelected: boolean) => {
+    const updatedSelectedLinks = [...selectedLinks];
+
+    if (index >= 0 && index < updatedSelectedLinks.length) {
+      updatedSelectedLinks[index] = {
+        ...updatedSelectedLinks[index],
+        isSelected
+      };
+
+      const allRowsSelected = updatedSelectedLinks.every(
+        (link) => link.isSelected
+      );
+
+      setSelectAll(allRowsSelected);
+    }
+
+    setSelectedLinks(updatedSelectedLinks);
+    setLinksToDelete(updatedSelectedLinks.filter((v) => v.isSelected));
+  };
+
+  const [showSelectedDeleteModal, setShowSelectedDeleteModal] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    const updatedSelectedLinks = links.items.map((link) => {
+      return {
+        ...link,
+        isSelected: selectAll
+      };
+    });
+
+    setSelectedLinks(updatedSelectedLinks);
+    setLinksToDelete(updatedSelectedLinks.filter((v) => v.isSelected));
+  }, [links.items, selectAll]);
 
   const Nav = (
     <Th
@@ -675,10 +767,30 @@ const LinksTable: FC = () => {
                   />
                 )}
               </Flex>
+
+              <Flex mx={[4]}>
+                {selectedLinks.filter((v) => v.isSelected).length > 0 && (
+                  <NavButton
+                    height={33}
+                    onClick={() => setShowSelectedDeleteModal(true)}
+                  >
+                    Delete Selected (
+                    {selectedLinks.filter((v) => v.isSelected).length})
+                  </NavButton>
+                )}
+              </Flex>
             </Th>
             {Nav}
           </Tr>
           <Tr>
+            <Th {...ckActionFlex}>
+              <Checkbox
+                name={"Select All"}
+                label={""}
+                checked={selectAll}
+                onChange={toggleSelectAllLinks}
+              />
+            </Th>
             <Th {...ogLinkFlex}>Original URL</Th>
             <Th {...createdFlex}>Created</Th>
             <Th {...shortLinkFlex}>Short URL</Th>
@@ -703,6 +815,10 @@ const LinksTable: FC = () => {
                   index={index}
                   link={link}
                   key={link.id}
+                  isSelected={selectedLinks[index]?.isSelected || false}
+                  setIsSelected={(isSelected: boolean) =>
+                    handleRowSelectionChange(index, isSelected)
+                  }
                 />
               ))}
             </>
@@ -745,6 +861,51 @@ const LinksTable: FC = () => {
                     Cancel
                   </Button>
                   <Button color="red" ml={3} onClick={onDelete}>
+                    <Icon name="trash" stroke="white" mr={2} />
+                    Delete
+                  </Button>
+                </>
+              )}
+            </Flex>
+          </>
+        )}
+      </Modal>
+      <Modal
+        id="delete-selected-domain"
+        show={showSelectedDeleteModal}
+        closeHandler={() => {
+          if (!deleteLoading) {
+            setShowSelectedDeleteModal(false);
+          }
+        }}
+      >
+        {linksToDelete.length > 0 && (
+          <>
+            <H2 mb={24} textAlign="center" bold>
+              Delete all selected links?
+            </H2>
+            <Text textAlign="center">
+              Are you sure you want to delete the selected links?
+            </Text>
+            <Flex justifyContent="center" mt={44}>
+              {deleteLoading ? (
+                <>
+                  <Icon name="spinner" size={20} stroke={Colors.Spinner} />
+                </>
+              ) : deleteMessage.text ? (
+                <Text fontSize={15} color={deleteMessage.color}>
+                  {deleteMessage.text}
+                </Text>
+              ) : (
+                <>
+                  <Button
+                    color="gray"
+                    mr={3}
+                    onClick={() => setShowSelectedDeleteModal(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button color="red" ml={3} onClick={onDeleteSelected}>
                     <Icon name="trash" stroke="white" mr={2} />
                     Delete
                   </Button>
