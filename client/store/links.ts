@@ -21,6 +21,7 @@ export interface Link {
   updated_at: string;
   user_id?: number;
   visit_count: number;
+  isSelected?: boolean;
 }
 
 export interface NewLink {
@@ -132,7 +133,7 @@ export const links: Links = {
     state.total = payload.total;
   }),
   update: action((state, payload) => {
-    state.items = state.items.map(item =>
+    state.items = state.items.map((item) =>
       item.id === payload.id ? { ...item, ...payload } : item
     );
   }),
