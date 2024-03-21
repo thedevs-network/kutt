@@ -57,7 +57,7 @@ export const addProtocol = (url: string): string => {
 
 export const generateShortLink = (id: string, domain?: string): string => {
   const protocol =
-    env.CUSTOM_DOMAIN_USE_HTTPS || !domain ? "https://" : "http://";
+    env.CUSTOM_DOMAIN_USE_HTTPS || env.DEFAULT_DOMAIN_HTTPS ? "https://" : "http://";
   return `${protocol}${domain || env.DEFAULT_DOMAIN}/${id}`;
 };
 
