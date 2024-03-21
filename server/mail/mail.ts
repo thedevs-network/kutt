@@ -29,16 +29,26 @@ const changeEmailTemplatePath = path.join(
   __dirname,
   "template-change-email.html"
 );
+const protocol =
+  env.CUSTOM_DOMAIN_USE_HTTPS || env.DEFAULT_DOMAIN_HTTPS
+    ? "https://"
+    : "http://";
 const resetEmailTemplate = fs
   .readFileSync(resetEmailTemplatePath, { encoding: "utf-8" })
+  .replace(/{{protocol}}/gm, protocol)
+  .replace(/{{protocol}}/gm, protocol)
   .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
   .replace(/{{site_name}}/gm, env.SITE_NAME);
 const verifyEmailTemplate = fs
   .readFileSync(verifyEmailTemplatePath, { encoding: "utf-8" })
+  .replace(/{{protocol}}/gm, protocol)
+  .replace(/{{protocol}}/gm, protocol)
   .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
   .replace(/{{site_name}}/gm, env.SITE_NAME);
 const changeEmailTemplate = fs
   .readFileSync(changeEmailTemplatePath, { encoding: "utf-8" })
+  .replace(/{{protocol}}/gm, protocol)
+  .replace(/{{protocol}}/gm, protocol)
   .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
   .replace(/{{site_name}}/gm, env.SITE_NAME);
 
@@ -49,10 +59,12 @@ export const verification = async (user: User) => {
     subject: "Verify your account",
     text: verifyMailText
       .replace(/{{verification}}/gim, user.verification_token)
+      .replace(/{{protocol}}/gm, protocol)
       .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
       .replace(/{{site_name}}/gm, env.SITE_NAME),
     html: verifyEmailTemplate
       .replace(/{{verification}}/gim, user.verification_token)
+      .replace(/{{protocol}}/gm, protocol)
       .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
       .replace(/{{site_name}}/gm, env.SITE_NAME)
   });
@@ -69,10 +81,12 @@ export const changeEmail = async (user: User) => {
     subject: "Verify your new email address",
     text: changeEmailText
       .replace(/{{verification}}/gim, user.change_email_token)
+      .replace(/{{protocol}}/gm, protocol)
       .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
       .replace(/{{site_name}}/gm, env.SITE_NAME),
     html: changeEmailTemplate
       .replace(/{{verification}}/gim, user.change_email_token)
+      .replace(/{{protocol}}/gm, protocol)
       .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
       .replace(/{{site_name}}/gm, env.SITE_NAME)
   });
@@ -89,9 +103,11 @@ export const resetPasswordToken = async (user: User) => {
     subject: "Reset your password",
     text: resetMailText
       .replace(/{{resetpassword}}/gm, user.reset_password_token)
+      .replace(/{{protocol}}/gm, protocol)
       .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN),
     html: resetEmailTemplate
       .replace(/{{resetpassword}}/gm, user.reset_password_token)
+      .replace(/{{protocol}}/gm, protocol)
       .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
   });
 
