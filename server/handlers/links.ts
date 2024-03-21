@@ -360,9 +360,10 @@ export const redirectCustomDomain: Handler = async (req, res, next) => {
       .some(item => item === path.replace("/", ""))
   ) {
     const domain = await query.domain.find({ address: host });
+    const protocol = env.DEFAULT_DOMAIN_HTTPS ? 'https' : 'http';
     const redirectURL = domain
       ? domain.homepage
-      : `https://${env.DEFAULT_DOMAIN + path}`;
+      : `${protocol}://${env.DEFAULT_DOMAIN + path}`;
 
     return res.redirect(302, redirectURL);
   }

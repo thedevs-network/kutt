@@ -7,6 +7,7 @@ const env = cleanEnv(process.env, {
   PORT: num({ default: 3000 }),
   SITE_NAME: str({ example: "Kutt" }),
   DEFAULT_DOMAIN: str({ example: "kutt.it" }),
+  DEFAULT_DOMAIN_HTTPS: bool({ default: false }),
   LINK_LENGTH: num({ default: 6 }),
   DB_HOST: str({ default: "localhost" }),
   DB_PORT: num({ default: 5432 }),
