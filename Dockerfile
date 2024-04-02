@@ -1,13 +1,14 @@
-FROM node:12-alpine
+FROM node:18-alpine
 
-RUN apk add --update bash
+RUN apk update && apk upgrade
+RUN apk add --update --no-cache bash make python3 build-base linux-headers
 
-# Setting working directory. 
+# Setting working directory.
 WORKDIR /usr/src/app
 
 # Installing dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copying source files
 COPY . .
