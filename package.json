@@ -52,7 +52,7 @@
     "ioredis": "^5.2.4",
     "isbot": "^3.6.3",
     "js-cookie": "^3.0.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "jwt-decode": "^3.1.2",
     "knex": "^2.3.0",
     "morgan": "^1.10.0",
