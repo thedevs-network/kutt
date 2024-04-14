@@ -10,6 +10,8 @@ import React from "react";
 import { initializeStore } from "../store";
 import { TokenPayload } from "../types";
 
+import MetaTags from "./_meta";
+
 const { publicRuntimeConfig } = getConfig();
 
 // TODO: types
@@ -66,9 +68,7 @@ class MyApp extends App<any> {
     return (
       <>
         <Head>
-          <title>
-            {publicRuntimeConfig.SITE_NAME} | Modern Open Source URL shortener.
-          </title>
+          <MetaTags />
         </Head>
         <StoreProvider store={this.store}>
           <Component {...pageProps} />
