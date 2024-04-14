@@ -1,5 +1,6 @@
 .env
 .vscode/
+data
 logs
 client/.next/
 node_modules/

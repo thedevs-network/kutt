@@ -3,12 +3,13 @@ version: "3"
 services:
   kutt:
     image: kutt/kutt
+    container_name: ${KUTT_CNTR_NAME:-kutt}
     depends_on:
       - postgres
       - redis
     command: ["./wait-for-it.sh", "postgres:5432", "--", "npm", "start"]
     ports:
-      - "3000:3000"
+      - "${HOST_APP_PORT:-3000}:3000"
     env_file:
       - .env
     environment:
@@ -20,18 +21,20 @@ services:
 
   redis:
     image: redis:6.0-alpine
+    container_name: ${REDIS_CNTR_NAME:-kutt-redis}
     volumes:
-      - redis_data:/data
+      - ${REDIS_DATA_DIR:-./data/redis}:/data
+    ports:
+      - 6397:6379
 
   postgres:
     image: postgres:12-alpine
+    container_name: ${PG_CNTR_NAME:-kutt-postgres}
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: kutt
+    ports:
+      - 5423:5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  redis_data:
-  postgres_data:
+      - ${PG_DATA_DIR:-./data/postgres}:/var/lib/postgresql/data
