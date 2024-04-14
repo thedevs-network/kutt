@@ -10,6 +10,9 @@ const mailConfig = {
   host: env.MAIL_HOST,
   port: env.MAIL_PORT,
   secure: env.MAIL_SECURE,
+  debug: env.MAIL_DEBUG,
+  logger: env.MAIL_LOG,
+  from: env.MAIL_FROM,
   auth: env.MAIL_USER
     ? {
         user: env.MAIL_USER,
