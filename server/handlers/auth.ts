@@ -120,9 +120,16 @@ export const signup: Handler = async (req, res) => {
     req.user
   );
 
+  if (!process.env.MAIL_HOST) {
+    return res
+      .status(201)
+      .send({ message: "Your account has been created successfully." });
+  }
   await mail.verification(user);
 
-  return res.status(201).send({ message: "Verification email has been sent." });
+  return res
+    .status(201)
+    .send({ message: `Verification email has been sent to ${user.email}.` });
 };
 
 export const token: Handler = async (req, res) => {

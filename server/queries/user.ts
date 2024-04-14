@@ -36,7 +36,8 @@ export const add = async (params: Add, user?: User) => {
     email: params.email,
     password: params.password,
     verification_token: uuid(),
-    verification_expires: addMinutes(new Date(), 60).toISOString()
+    verification_expires: addMinutes(new Date(), 60).toISOString(),
+    verified: process.env.MAIL_HOST ? false : true
   };
 
   if (user) {
