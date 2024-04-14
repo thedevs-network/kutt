@@ -1,13 +1,13 @@
-FROM node:12-alpine
+FROM node:18-alpine
 
-RUN apk add --update bash
+RUN apk add --update bash python3 make g++ && rm -rf /var/cache/apk/*
 
 # Setting working directory. 
 WORKDIR /usr/src/app
 
 # Installing dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copying source files
 COPY . .
