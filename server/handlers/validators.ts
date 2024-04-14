@@ -46,16 +46,16 @@ export const createLink = [
     .withMessage("Target is missing.")
     .isString()
     .trim()
-    .isLength({ min: 1, max: 2040 })
-    .withMessage("Maximum URL length is 2040.")
+    .isLength({ min: 1, max: env.MAX_URL_LENGTH })
+    .withMessage(`Maximum URL length is ${env.MAX_URL_LENGTH}.`)
     .customSanitizer(addProtocol)
     .custom(
-      value =>
+      (value) =>
         urlRegex({ exact: true, strict: false }).test(value) ||
         /^(?!https?)(\w+):\/\//.test(value)
     )
     .withMessage("URL is not valid.")
-    .custom(value => removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
+    .custom((value) => removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
     .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
   body("password")
     .optional({ nullable: true, checkFalsy: true })
@@ -72,9 +72,11 @@ export const createLink = [
     .trim()
     .isLength({ min: 1, max: 64 })
     .withMessage("Custom URL length must be between 1 and 64.")
-    .custom(value => /^[a-zA-Z0-9-_]+$/g.test(value))
+    .custom((value) => /^[a-zA-Z0-9-_]+$/g.test(value))
     .withMessage("Custom URL is not valid")
-    .custom(value => !preservedUrls.some(url => url.toLowerCase() === value))
+    .custom(
+      (value) => !preservedUrls.some((url) => url.toLowerCase() === value)
+    )
     .withMessage("You can't use this custom URL."),
   body("reuse")
     .optional({ nullable: true })
@@ -92,7 +94,7 @@ export const createLink = [
     .optional({ nullable: true, checkFalsy: true })
     .isString()
     .trim()
-    .custom(value => {
+    .custom((value) => {
       try {
         return !!ms(value);
       } catch {
@@ -101,17 +103,19 @@ export const createLink = [
     })
     .withMessage("Expire format is invalid. Valid examples: 1m, 8h, 42 days.")
     .customSanitizer(ms)
-    .custom(value => value >= ms("1m"))
+    .custom((value) => value >= ms("1m"))
     .withMessage("Minimum expire time should be '1 minute'.")
-    .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
+    .customSanitizer((value) =>
+      addMilliseconds(new Date(), value).toISOString()
+    ),
   body("domain")
     .optional({ nullable: true, checkFalsy: true })
     .custom(checkUser)
     .withMessage("Only users can use this field.")
     .isString()
     .withMessage("Domain should be string.")
-    .customSanitizer(value => value.toLowerCase())
-    .customSanitizer(value => removeWww(URL.parse(value).hostname || value))
+    .customSanitizer((value) => value.toLowerCase())
+    .customSanitizer((value) => removeWww(URL.parse(value).hostname || value))
     .custom(async (address, { req }) => {
       if (address === env.DEFAULT_DOMAIN) {
         req.body.domain = null;
@@ -134,16 +138,16 @@ export const editLink = [
     .optional({ checkFalsy: true, nullable: true })
     .isString()
     .trim()
-    .isLength({ min: 1, max: 2040 })
-    .withMessage("Maximum URL length is 2040.")
+    .isLength({ min: 1, max: env.MAX_URL_LENGTH })
+    .withMessage(`Maximum URL length is ${env.MAX_URL_LENGTH}.`)
     .customSanitizer(addProtocol)
     .custom(
-      value =>
+      (value) =>
         urlRegex({ exact: true, strict: false }).test(value) ||
         /^(?!https?)(\w+):\/\//.test(value)
     )
     .withMessage("URL is not valid.")
-    .custom(value => removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
+    .custom((value) => removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
     .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
   body("password")
     .optional({ nullable: true, checkFalsy: true })
@@ -156,15 +160,17 @@ export const editLink = [
     .trim()
     .isLength({ min: 1, max: 64 })
     .withMessage("Custom URL length must be between 1 and 64.")
-    .custom(value => /^[a-zA-Z0-9-_]+$/g.test(value))
+    .custom((value) => /^[a-zA-Z0-9-_]+$/g.test(value))
     .withMessage("Custom URL is not valid")
-    .custom(value => !preservedUrls.some(url => url.toLowerCase() === value))
+    .custom(
+      (value) => !preservedUrls.some((url) => url.toLowerCase() === value)
+    )
     .withMessage("You can't use this custom URL."),
   body("expire_in")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
     .trim()
-    .custom(value => {
+    .custom((value) => {
       try {
         return !!ms(value);
       } catch {
@@ -173,9 +179,11 @@ export const editLink = [
     })
     .withMessage("Expire format is invalid. Valid examples: 1m, 8h, 42 days.")
     .customSanitizer(ms)
-    .custom(value => value >= ms("1m"))
+    .custom((value) => value >= ms("1m"))
     .withMessage("Minimum expire time should be '1 minute'.")
-    .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
+    .customSanitizer((value) =>
+      addMilliseconds(new Date(), value).toISOString()
+    ),
   body("description")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
@@ -204,14 +212,14 @@ export const addDomain = [
     .isLength({ min: 3, max: 64 })
     .withMessage("Domain length must be between 3 and 64.")
     .trim()
-    .customSanitizer(value => {
+    .customSanitizer((value) => {
       const parsed = URL.parse(value);
       return removeWww(parsed.hostname || parsed.href);
     })
-    .custom(value => urlRegex({ exact: true, strict: false }).test(value))
-    .custom(value => value !== env.DEFAULT_DOMAIN)
+    .custom((value) => urlRegex({ exact: true, strict: false }).test(value))
+    .custom((value) => value !== env.DEFAULT_DOMAIN)
     .withMessage("You can't use the default domain.")
-    .custom(async value => {
+    .custom(async (value) => {
       const domain = await query.domain.find({ address: value });
       if (domain?.user_id || domain?.banned) return Promise.reject();
     })
@@ -219,7 +227,7 @@ export const addDomain = [
   body("homepage")
     .optional({ checkFalsy: true, nullable: true })
     .customSanitizer(addProtocol)
-    .custom(value => urlRegex({ exact: true, strict: false }).test(value))
+    .custom((value) => urlRegex({ exact: true, strict: false }).test(value))
     .withMessage("Homepage is not valid.")
 ];
 
@@ -249,7 +257,7 @@ export const reportLink = [
     })
     .customSanitizer(addProtocol)
     .custom(
-      value => removeWww(URL.parse(value).hostname) === env.DEFAULT_DOMAIN
+      (value) => removeWww(URL.parse(value).hostname) === env.DEFAULT_DOMAIN
     )
     .withMessage(`You can only report a ${env.DEFAULT_DOMAIN} link.`)
 ];
@@ -371,7 +379,7 @@ export const cooldown = (user: User) => {
   if (!env.GOOGLE_SAFE_BROWSING_KEY || !user || !user.cooldowns) return;
 
   // If has active cooldown then throw error
-  const hasCooldownNow = user.cooldowns.some(cooldown =>
+  const hasCooldownNow = user.cooldowns.some((cooldown) =>
     isAfter(subHours(new Date(), 12), new Date(cooldown))
   );
 

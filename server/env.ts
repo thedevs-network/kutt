@@ -9,6 +9,7 @@ const env = cleanEnv(process.env, {
   DEFAULT_DOMAIN: str({ example: "kutt.it" }),
   DEFAULT_DOMAIN_HTTPS: bool({ default: false }),
   LINK_LENGTH: num({ default: 6 }),
+  MAX_URL_LENGTH: num({ default: 2040 }),
   DB_HOST: str({ default: "localhost" }),
   DB_PORT: num({ default: 5432 }),
   DB_NAME: str({ default: "postgres" }),
