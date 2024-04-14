@@ -1,4 +1,9 @@
 .env
 .git
+.vscode
+.idea
+data
+logs
 node_modules
 production-server
+client/.next/

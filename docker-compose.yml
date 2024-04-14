@@ -2,8 +2,11 @@ version: "3"
 
 services:
   kutt:
-    image: kutt/kutt
+    image: ${KUTT_IMAGE_NAME:-kutt/kutt}
     container_name: ${KUTT_CNTR_NAME:-kutt}
+    build:
+      context: .
+      dockerfile: ${KUTT_DOCKERFILE:-Dockerfile}
     depends_on:
       - postgres
       - redis
@@ -12,29 +15,23 @@ services:
       - "${HOST_APP_PORT:-3000}:3000"
     env_file:
       - .env
-    environment:
-      DB_HOST: postgres
-      DB_NAME: kutt
-      DB_USER: user
-      DB_PASSWORD: pass
-      REDIS_HOST: redis
 
   redis:
-    image: redis:6.0-alpine
+    image: ${REDIS_IMAGE_NAME:-redis:alpine}
     container_name: ${REDIS_CNTR_NAME:-kutt-redis}
     volumes:
       - ${REDIS_DATA_DIR:-./data/redis}:/data
     ports:
-      - 6397:6379
+      - ${REDIS_PORT:-6397}:6379
 
   postgres:
-    image: postgres:12-alpine
+    image: ${POSTGRES_IMAGE_NAME:-postgres:alpine}
     container_name: ${PG_CNTR_NAME:-kutt-postgres}
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: kutt
+      POSTGRES_USER: ${DB_USER:-user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-pass}
+      POSTGRES_DB: ${DB_NAME:-kutt}
     ports:
-      - 5423:5432
+      - ${DB_PORT:-5423}:5432
     volumes:
       - ${PG_DATA_DIR:-./data/postgres}:/var/lib/postgresql/data
