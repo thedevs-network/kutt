@@ -16,7 +16,9 @@ export default function visit({ data }) {
   const tasks = [];
 
   tasks.push(query.link.incrementVisit({ id: data.link.id }));
+  tasks.push(query.dailyVisit.insertDailyVisit({ id: data.link.id }));
 
+  
   if (data.link.visit_count < getStatsLimit()) {
     const agent = useragent.parse(data.headers["user-agent"]);
     const [browser = "Other"] = browsersList.filter(filterInBrowser(agent));
