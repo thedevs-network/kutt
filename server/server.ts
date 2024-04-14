@@ -16,6 +16,7 @@ import { stream } from "./config/winston";
 
 import "./cron";
 import "./passport";
+import { responseDurationMiddleware } from "./metrics/response-duration.middleware";
 
 const port = env.PORT;
 const app = nextApp({ dir: "./client", dev: env.isDev });
@@ -37,6 +38,7 @@ app.prepare().then(async () => {
   server.use(passport.initialize());
   server.use(express.static("static"));
   server.use(helpers.ip);
+  server.use(responseDurationMiddleware)
 
   server.use(asyncHandler(links.redirectCustomDomain));
 
