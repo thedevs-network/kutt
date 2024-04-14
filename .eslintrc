@@ -11,7 +11,8 @@
   },
   "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
-    "@typescript-eslint/no-explicit-any": ["off"]
+    "@typescript-eslint/no-explicit-any": ["off"],
+    "@next/next/no-html-link-for-pages": ["error", "client/pages"]
   },
   "env": {
     "es6": true,
