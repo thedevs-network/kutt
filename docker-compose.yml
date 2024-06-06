@@ -2,10 +2,11 @@ version: "3"
 
 services:
   kutt:
-    image: kutt/kutt
+    build: .
     depends_on:
       - postgres
       - redis
+      - mailpit
     command: ["./wait-for-it.sh", "postgres:5432", "--", "npm", "start"]
     ports:
       - "3010:3010"
@@ -17,11 +18,27 @@ services:
       DB_USER: user
       DB_PASSWORD: pass
       REDIS_HOST: redis
+    
+    volumes:
+      - ./.env:/usr/src/app/.env
 
   redis:
     image: redis:6.0-alpine
     volumes:
       - redis_data:/data
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    volumes:
+      - mailpit_data:/data
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
   postgres:
     image: postgres:12-alpine
@@ -35,3 +52,4 @@ services:
 volumes:
   redis_data:
   postgres_data:
+  mailpit_data:
