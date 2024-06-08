@@ -7,7 +7,7 @@ services:
       - postgres
       - redis
       - mailpit
-    command: ["./wait-for-it.sh", "postgres:5432", "--", "npm", "start"]
+    command: ["./wait-for-it.sh", "postgres:5432", "--", "npm", "run", "dev"]
     ports:
       - "3010:3010"
     env_file:
@@ -18,9 +18,12 @@ services:
       DB_USER: user
       DB_PASSWORD: pass
       REDIS_HOST: redis
-    
+
     volumes:
       - ./.env:/usr/src/app/.env
+      - ./client:/usr/src/app/client
+      - ./server/seeds:/usr/src/app/seeds
+      - ./server:/usr/src/app/server
 
   redis:
     image: redis:6.0-alpine

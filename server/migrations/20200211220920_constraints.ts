@@ -8,6 +8,8 @@ export async function up(knex: Knex): Promise<any> {
   await models.createHostTable(knex);
   await models.createLinkTable(knex);
   await models.createVisitTable(knex);
+  await models.createLinkLogTable(knex);
+  await models.createLinkLogTrigger(knex);
 
   await Promise.all([
     knex.raw(`
@@ -32,6 +34,14 @@ export async function up(knex: Knex): Promise<any> {
       ADD CONSTRAINT visits_link_id_foreign
         FOREIGN KEY (link_Id)
         REFERENCES links (id)
+        ON DELETE CASCADE;
+    `),
+    knex.raw(`
+      ALTER TABLE link_logs
+      DROP CONSTRAINT link_logs_user_id_foreign,
+      ADD CONSTRAINT links_logs_user_id_foreign
+        FOREIGN KEY (user_id)
+        REFERENCES users (id)
         ON DELETE CASCADE;
     `)
   ]);

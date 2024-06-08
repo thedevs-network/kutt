@@ -12,7 +12,7 @@ import ms from "ms";
 
 import { removeProtocol, withComma, errorMessage } from "../utils";
 import { useStoreActions, useStoreState } from "../store";
-import { Link as LinkType } from "../store/links";
+import { LinkLog, Link as LinkType } from "../store/links";
 import { Checkbox, TextInput } from "./Input";
 import { NavButton, Button } from "./Button";
 import { Col, RowCenter } from "./Layout";
@@ -25,6 +25,7 @@ import Table from "./Table";
 import ALink from "./ALink";
 import Modal from "./Modal";
 import Icon from "./Icon";
+import LogsTable from "./LogTable";
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -108,6 +109,7 @@ interface RowProps {
   setDeleteModal: (number) => void;
   isSelected: boolean;
   setIsSelected: React.Dispatch<React.SetStateAction<boolean>>;
+  reload: () => void;
 }
 
 interface BanForm {
@@ -130,7 +132,8 @@ const Row: FC<RowProps> = ({
   link,
   setDeleteModal,
   isSelected,
-  setIsSelected
+  setIsSelected,
+  reload
 }) => {
   const isAdmin = useStoreState((s) => s.auth.isAdmin);
   const ban = useStoreActions((s) => s.links.ban);
@@ -158,6 +161,7 @@ const Row: FC<RowProps> = ({
   const [banMessage, setBanMessage] = useMessage();
   const [editLoading, setEditLoading] = useState(false);
   const [editMessage, setEditMessage] = useMessage();
+  const [logsModal, setLogsModal] = useState(false);
 
   const onCopy = () => {
     setCopied(true);
@@ -186,6 +190,7 @@ const Row: FC<RowProps> = ({
     try {
       await edit({ id: link.id, ...editFormState.values });
       setShowEdit(false);
+      reload();
     } catch (err) {
       setEditMessage(errorMessage(err));
     }
@@ -320,6 +325,13 @@ const Row: FC<RowProps> = ({
             fill={Colors.QrCodeIcon}
             backgroundColor={Colors.QrCodeIconBg}
             onClick={() => setQRModal(true)}
+          />
+          <Action
+            name="viewLogs"
+            stroke="none"
+            fill={Colors.LogIcon}
+            backgroundColor={Colors.LogIconBg}
+            onClick={() => setLogsModal(true)}
           />
           <Action
             name="editAlt"
@@ -505,6 +517,13 @@ const Row: FC<RowProps> = ({
           </Col>
         </EditContent>
       )}
+      <Modal
+        id="table-logs-modal"
+        show={logsModal}
+        closeHandler={() => setLogsModal(false)}
+      >
+        <LogsTable link={link} reload={async () => reload()} />
+      </Modal>
       <Modal
         id="table-qrcode-modal"
         minWidth="max-content"
@@ -819,6 +838,7 @@ const LinksTable: FC = () => {
                   setIsSelected={(isSelected: boolean) =>
                     handleRowSelectionChange(index, isSelected)
                   }
+                  reload={() => get(options)}
                 />
               ))}
             </>

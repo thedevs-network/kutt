@@ -28,6 +28,7 @@ import Send from "./Send";
 import Key from "./Key";
 import Zap from "./Zap";
 import X from "./X";
+import ViewLogs from "./ViewLogs";
 
 const icons = {
   arrowLeft: ArrowLeft,
@@ -53,7 +54,8 @@ const icons = {
   stop: Stop,
   trash: Trash,
   x: X,
-  zap: Zap
+  zap: Zap,
+  viewLogs: ViewLogs
 };
 
 export type Icons = keyof typeof icons;

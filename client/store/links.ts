@@ -5,6 +5,27 @@ import query from "query-string";
 import { getAxiosConfig } from "../utils";
 import { APIv2 } from "../consts";
 
+export interface LinkLog {
+  id: string;
+  link_id: string;
+  action: string;
+  address: string;
+  banned: boolean;
+  banned_by_id?: number;
+  created_at: string;
+  link: string;
+  domain?: string;
+  domain_id?: number;
+  password?: string;
+  description?: string;
+  expire_in?: string;
+  target: string;
+  updated_at: string;
+  user_id?: number;
+  user_email?: string;
+  visit_count: number;
+}
+
 export interface Link {
   id: string;
   address: string;
@@ -21,6 +42,7 @@ export interface Link {
   updated_at: string;
   user_id?: number;
   visit_count: number;
+  logs?: LinkLog[];
   isSelected?: boolean;
 }
 

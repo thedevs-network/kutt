@@ -71,6 +71,12 @@ interface GetParams {
   skip: number;
 }
 
+type LinkLog = Link & {
+  link_id: number;
+  user_email: string;
+  action: string;
+};
+
 export const get = async (match: Partial<Link>, params: GetParams) => {
   const query = knex<LinkJoinedDomain>("links")
     .select(...selectable)
@@ -90,7 +96,34 @@ export const get = async (match: Partial<Link>, params: GetParams) => {
 
   const links: LinkJoinedDomain[] = await query;
 
-  return links;
+  // fetch logs
+  const linkIds = links.map(({ id }) => id);
+  const logs = await knex<LinkLog>("link_logs")
+    .select("link_logs.*", "users.email as user_email")
+    .whereIn("link_id", linkIds)
+    .leftJoin("users", "link_logs.user_id", "users.id")
+    .orderBy("link_logs.created_at", "desc");
+
+  // group logs by link_id
+  const logsByLinkId = logs.reduce((acc, log) => {
+    if (!acc[log.link_id]) {
+      acc[log.link_id] = [];
+    }
+
+    acc[log.link_id].push(log);
+
+    return acc;
+  }, {} as Record<number, LinkLog[]>);
+
+  // assign logs to links
+  const linksWithLogs = links.map((link) => {
+    return {
+      ...link,
+      logs: logsByLinkId[link.id] || []
+    };
+  });
+
+  return linksWithLogs;
 };
 
 export const find = async (match: Partial<Link>): Promise<Link> => {
@@ -146,17 +179,13 @@ export const create = async (params: Create) => {
 };
 
 export const remove = async (match: Partial<Link>) => {
-  const link = await knex<Link>("links")
-    .where(match)
-    .first();
+  const link = await knex<Link>("links").where(match).first();
 
   if (!link) {
     throw new CustomError("Link was not found.");
   }
 
-  const deletedLink = await knex<Link>("links")
-    .where("id", link.id)
-    .delete();
+  const deletedLink = await knex<Link>("links").where("id", link.id).delete();
 
   redis.remove.link(link);
 
@@ -195,7 +224,5 @@ export const update = async (match: Partial<Link>, update: Partial<Link>) => {
 };
 
 export const incrementVisit = async (match: Partial<Link>) => {
-  return knex<Link>("links")
-    .where(match)
-    .increment("visit_count", 1);
+  return knex<Link>("links").where(match).increment("visit_count", 1);
 };
