@@ -13,7 +13,7 @@ router.post(
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   validators.addDomain,
-  asyncHandler(helpers.verify),
+  asyncHandler(helpers.verify()),
   asyncHandler(domains.add)
 );
 
@@ -22,7 +22,7 @@ router.delete(
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   validators.removeDomain,
-  asyncHandler(helpers.verify),
+  asyncHandler(helpers.verify()),
   asyncHandler(domains.remove)
 );
 

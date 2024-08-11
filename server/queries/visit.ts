@@ -1,6 +1,6 @@
 import { isAfter, subDays, set } from "date-fns";
 
-import * as utils from "../utils";
+import * as utils from "../utils/utils";
 import redisClient, * as redis from "../redis";
 import knex from "../knex";
 

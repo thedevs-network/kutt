@@ -1,7 +1,7 @@
 import { Handler } from "express";
 import query from "../queries";
 import * as redis from "../redis";
-import { CustomError, sanitize } from "../utils";
+import { CustomError, sanitize } from "../utils/utils";
 
 export const add: Handler = async (req, res) => {
   const { address, homepage } = req.body;

@@ -3,7 +3,7 @@ import geoip from "geoip-lite";
 import URL from "url";
 
 import query from "../queries";
-import { getStatsLimit, removeWww } from "../utils";
+import { getStatsLimit, removeWww } from "../utils/utils";
 
 const browsersList = ["IE", "Firefox", "Chrome", "Opera", "Safari", "Edge"];
 const osList = ["Windows", "Mac OS", "Linux", "Android", "iOS"];

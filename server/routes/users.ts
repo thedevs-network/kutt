@@ -20,7 +20,7 @@ router.post(
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   validators.deleteUser,
-  asyncHandler(helpers.verify),
+  asyncHandler(helpers.verif()),
   asyncHandler(user.remove)
 );
 
