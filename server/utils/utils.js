@@ -2,7 +2,7 @@ const ms = require("ms");
 const path = require("path");
 const nanoid = require("nanoid/generate");
 const JWT = require("jsonwebtoken");
-const { differenceInDays, differenceInHours, differenceInMonths, addDays } = require("date-fns");
+const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays } = require("date-fns");
 const hbs = require("hbs");
 
 const env = require("../env");
@@ -30,7 +30,6 @@ function signToken(user) {
         iss: "ApiAuth",
         sub: user.email,
         domain: user.domain || "",
-        admin: isAdmin(user.email),
         iat: parseInt((new Date().getTime() / 1000).toFixed(0)),
         exp: parseInt((addDays(new Date(), 7).getTime() / 1000).toFixed(0))
       },
@@ -53,9 +52,9 @@ function addProtocol(url) {
   return hasProtocol ? url : `http://${url}`;
 }
 
-function getShortURL(id, domain) {
+function getShortURL(address, domain) {
   const protocol = env.CUSTOM_DOMAIN_USE_HTTPS || !domain ? "https://" : "http://";
-  const link = `${domain || env.DEFAULT_DOMAIN}/${id}`;
+  const link = `${domain || env.DEFAULT_DOMAIN}/${address}`;
   const url = `${protocol}${link}`;
   return { link, url };
 }
@@ -164,6 +163,42 @@ function getInitStats() {
   });
 }
 
+// format date to relative date
+const MINUTE = 60,
+      HOUR = MINUTE * 60,
+      DAY = HOUR * 24,
+      WEEK = DAY * 7,
+      MONTH = DAY * 30,
+      YEAR = DAY * 365;
+function getTimeAgo(date) {
+  const secondsAgo = Math.round((Date.now() - Number(date)) / 1000);
+
+  if (secondsAgo < MINUTE) {
+    return `${secondsAgo} second${secondsAgo !== 1 ? "s" : ""} ago`;
+  }
+
+  let divisor;
+  let unit = "";
+
+  if (secondsAgo < HOUR) {
+    [divisor, unit] = [MINUTE, "minute"];
+  } else if (secondsAgo < DAY) {
+    [divisor, unit] = [HOUR, "hour"];
+  } else if (secondsAgo < WEEK) {
+    [divisor, unit] = [DAY, "day"];
+  } else if (secondsAgo < MONTH) {
+    [divisor, unit] = [WEEK, "week"];
+  } else if (secondsAgo < YEAR) {
+    [divisor, unit] = [MONTH, "month"];
+  } else {
+    [divisor, unit] = [YEAR, "year"];
+  }
+
+  const count = Math.floor(secondsAgo / divisor);
+  return `${count} ${unit}${count > 1 ? "s" : ""} ago`;
+}
+
+
 const sanitize = {
   domain: domain => ({
     ...domain,
@@ -179,6 +214,8 @@ const sanitize = {
     user_id: undefined,
     uuid: undefined,
     id: link.uuid,
+    relative_created_at: getTimeAgo(link.created_at),
+    relative_expire_in: link.expire_in && ms(differenceInMilliseconds(new Date(link.expire_in), new Date()), { long: true }),
     password: !!link.password,
     link: getShortURL(link.address, link.domain)
   })
@@ -192,8 +229,13 @@ function removeWww(host) {
   return host.replace("www.", "");
 };
 
-function extendHbs() {
+function registerHandlebarsHelpers() {
+  hbs.registerHelper("ifEquals", function(arg1, arg2, options) {
+    return (arg1 === arg2) ? options.fn(this) : options.inverse(this);
+  });
+  
   const blocks = {};
+
   hbs.registerHelper("extend", function(name, context) {
       let block = blocks[name];
       if (!block) {
@@ -214,16 +256,16 @@ module.exports = {
   addProtocol,
   CustomError,
   generateId,
-  getShortURL,
   getDifferenceFunction,
   getInitStats,
   getRedisKey,
+  getShortURL,
   getStatsCacheTime,
   getStatsLimit,
   getUTCDate,
-  extendHbs,
   isAdmin,
   preservedURLs,
+  registerHandlebarsHelpers,
   removeWww,
   sanitize,
   signToken,

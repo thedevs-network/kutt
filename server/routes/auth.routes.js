@@ -1,25 +1,27 @@
 const asyncHandler = require("express-async-handler");
 const { Router } = require("express");
 
-const validators = require("../handlers/validators");
-const helpers = require("../handlers/helpers");
-const auth = require("../handlers/auth");
+const validators = require("../handlers/validators.handler");
+const helpers = require("../handlers/helpers.handler");
+const auth = require("../handlers/auth.handler");
 
 const router = Router();
 
 router.post(
   "/login",
+  helpers.viewTemplate("partials/auth/form"),
   validators.login,
-  asyncHandler(helpers.verify("partials/login_signup")),
+  asyncHandler(helpers.verify),
   asyncHandler(auth.local),
   asyncHandler(auth.login)
 );
 
 router.post(
   "/signup",
+  helpers.viewTemplate("partials/auth/form"),
   auth.signupAccess,
   validators.signup,
-  asyncHandler(helpers.verify("partials/login_signup")),
+  asyncHandler(helpers.verify),
   asyncHandler(auth.signup)
 );
 

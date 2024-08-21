@@ -1,16 +1,18 @@
 const { Router } = require("express");
 
-// import domains from "./domains";
-// import health from "./health";
-const links = require("./links");
-// import user from "./users";
-const auth = require("./auth");
+const helpers = require("./../handlers/helpers.handler");
+// import domains from "./domain.routes";
+// import health from "./health.routes";
+const link = require("./link.routes");
+// import user from "./users.routes";
+const auth = require("./auth.routes");
 
 const router = Router();
 
+router.use(helpers.noRenderLayout);
 // router.use("/domains", domains);
 // router.use("/health", health);
-router.use("/links", links);
+router.use("/links", link);
 // router.use("/users", user);
 router.use("/auth", auth);
 

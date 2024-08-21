@@ -17,6 +17,9 @@ const dnsLookup = promisify(dns.lookup);
 
 const checkUser = (value, { req }) => !!req.user;
 
+let body1;
+let body2;
+
 const createLink = [
   body("target")
     .exists({ checkNull: true, checkFalsy: true })
@@ -50,7 +53,7 @@ const createLink = [
     .isLength({ min: 1, max: 64 })
     .withMessage("Custom URL length must be between 1 and 64.")
     .custom(value => /^[a-zA-Z0-9-_]+$/g.test(value))
-    .withMessage("Custom URL is not valid")
+    .withMessage("Custom URL is not valid.")
     .custom(value => !preservedURLs.some(url => url.toLowerCase() === value))
     .withMessage("You can't use this custom URL."),
   body("reuse")
@@ -63,8 +66,8 @@ const createLink = [
     .optional({ nullable: true, checkFalsy: true })
     .isString()
     .trim()
-    .isLength({ min: 0, max: 2040 })
-    .withMessage("Description length must be between 0 and 2040."),
+    .isLength({ min: 1, max: 2040 })
+    .withMessage("Description length must be between 1 and 2040."),
   body("expire_in")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
@@ -79,7 +82,7 @@ const createLink = [
     .withMessage("Expire format is invalid. Valid examples: 1m, 8h, 42 days.")
     .customSanitizer(ms)
     .custom(value => value >= ms("1m"))
-    .withMessage("Minimum expire time should be '1 minute'.")
+    .withMessage("Expire time should be more than 1 minute.")
     .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
   body("domain")
     .optional({ nullable: true, checkFalsy: true })
@@ -88,7 +91,6 @@ const createLink = [
     .isString()
     .withMessage("Domain should be string.")
     .customSanitizer(value => value.toLowerCase())
-    .customSanitizer(value => removeWww(URL.parse(value).hostname || value))
     .custom(async (address, { req }) => {
       if (address === env.DEFAULT_DOMAIN) {
         req.body.domain = null;
@@ -99,70 +101,70 @@ const createLink = [
         address,
         user_id: req.user.id
       });
-      req.body.domain = domain || null;
+      req.body.fetched_domain = domain || null;
 
       if (!domain) return Promise.reject();
     })
     .withMessage("You can't use this domain.")
 ];
 
-// export const editLink = [
-//   body("target")
-//     .optional({ checkFalsy: true, nullable: true })
-//     .isString()
-//     .trim()
-//     .isLength({ min: 1, max: 2040 })
-//     .withMessage("Maximum URL length is 2040.")
-//     .customSanitizer(addProtocol)
-//     .custom(
-//       value =>
-//         urlRegex({ exact: true, strict: false }).test(value) ||
-//         /^(?!https?)(\w+):\/\//.test(value)
-//     )
-//     .withMessage("URL is not valid.")
-//     .custom(value => removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
-//     .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
-//   body("password")
-//     .optional({ nullable: true, checkFalsy: true })
-//     .isString()
-//     .isLength({ min: 3, max: 64 })
-//     .withMessage("Password length must be between 3 and 64."),
-//   body("address")
-//     .optional({ checkFalsy: true, nullable: true })
-//     .isString()
-//     .trim()
-//     .isLength({ min: 1, max: 64 })
-//     .withMessage("Custom URL length must be between 1 and 64.")
-//     .custom(value => /^[a-zA-Z0-9-_]+$/g.test(value))
-//     .withMessage("Custom URL is not valid")
-//     .custom(value => !preservedURLs.some(url => url.toLowerCase() === value))
-//     .withMessage("You can't use this custom URL."),
-//   body("expire_in")
-//     .optional({ nullable: true, checkFalsy: true })
-//     .isString()
-//     .trim()
-//     .custom(value => {
-//       try {
-//         return !!ms(value);
-//       } catch {
-//         return false;
-//       }
-//     })
-//     .withMessage("Expire format is invalid. Valid examples: 1m, 8h, 42 days.")
-//     .customSanitizer(ms)
-//     .custom(value => value >= ms("1m"))
-//     .withMessage("Minimum expire time should be '1 minute'.")
-//     .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
-//   body("description")
-//     .optional({ nullable: true, checkFalsy: true })
-//     .isString()
-//     .trim()
-//     .isLength({ min: 0, max: 2040 })
-//     .withMessage("Description length must be between 0 and 2040."),
-//   param("id", "ID is invalid.")
-//     .exists({ checkFalsy: true, checkNull: true })
-//     .isLength({ min: 36, max: 36 })
-// ];
+const editLink = [
+  body("target")
+    .optional({ checkFalsy: true, nullable: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 2040 })
+    .withMessage("Maximum URL length is 2040.")
+    .customSanitizer(addProtocol)
+    .custom(
+      value =>
+        urlRegex({ exact: true, strict: false }).test(value) ||
+        /^(?!https?)(\w+):\/\//.test(value)
+    )
+    .withMessage("URL is not valid.")
+    .custom(value => removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
+    .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
+  body("password")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .isLength({ min: 3, max: 64 })
+    .withMessage("Password length must be between 3 and 64."),
+  body("address")
+    .optional({ checkFalsy: true, nullable: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 64 })
+    .withMessage("Custom URL length must be between 1 and 64.")
+    .custom(value => /^[a-zA-Z0-9-_]+$/g.test(value))
+    .withMessage("Custom URL is not valid")
+    .custom(value => !preservedURLs.some(url => url.toLowerCase() === value))
+    .withMessage("You can't use this custom URL."),
+  body("expire_in")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .custom(value => {
+      try {
+        return !!ms(value);
+      } catch {
+        return false;
+      }
+    })
+    .withMessage("Expire format is invalid. Valid examples: 1m, 8h, 42 days.")
+    .customSanitizer(ms)
+    .custom(value => value >= ms("1m"))
+    .withMessage("Expire time should be more than 1 minute.")
+    .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
+  body("description")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .isLength({ min: 0, max: 2040 })
+    .withMessage("Description length must be between 0 and 2040."),
+  param("id", "ID is invalid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 36, max: 36 })
+];
 
 // export const redirectProtected = [
 //   body("password", "Password is invalid.")
@@ -209,14 +211,14 @@ const createLink = [
 //     .isLength({ min: 36, max: 36 })
 // ];
 
-// export const deleteLink = [
-//   param("id", "ID is invalid.")
-//     .exists({
-//       checkFalsy: true,
-//       checkNull: true
-//     })
-//     .isLength({ min: 36, max: 36 })
-// ];
+const deleteLink = [
+  param("id", "ID is invalid.")
+    .exists({
+      checkFalsy: true,
+      checkNull: true
+    })
+    .isLength({ min: 36, max: 36 })
+];
 
 // export const reportLink = [
 //   body("link", "No link has been provided.")
@@ -416,7 +418,7 @@ async function linksCount(user) {
 
   const count = await query.link.total({
     user_id: user.id,
-    created_at: [">", subDays(new Date(), 1).toISOString()]
+    "links.created_at": [">", subDays(new Date(), 1).toISOString()]
   });
 
   if (count > env.USER_LIMIT_PER_DAY) {
@@ -464,6 +466,8 @@ module.exports = {
   checkUser,
   cooldown,
   createLink,
+  deleteLink,
+  editLink,
   linksCount,
   login, 
   malware,

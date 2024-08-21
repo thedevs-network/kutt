@@ -1,0 +1,22 @@
+<thead>
+  <tr class="links-controls">
+    <th class="search">
+      <input id="search" name="search" type="text" placeholder="Search..." hx-on:keyup="resetLinkNav()" />
+      <input id="total" name="total" type="hidden" value="{{total}}" />
+      <input id="limit" name="limit" type="hidden" value="10" />
+      <input id="skip" name="skip" type="hidden" value="0" />
+      <label id="all" class="checkbox">
+        <input name="all" type="checkbox" />
+        All links
+      </label>
+    </th>
+    {{> links/nav}}
+  </tr>
+  <tr>
+    <th class="original-url">Original URL</th>
+    <th class="created-at">Created at</th>
+    <th class="short-link">Short link</th>
+    <th class="views">Views</th>
+    <th class="actions"></th>
+  </tr>
+</thead>

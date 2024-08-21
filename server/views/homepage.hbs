@@ -1,81 +1,11 @@
 {{> header}}
-<main>
-  <div id="shorturl">
-    <h1>Kutt your links <span>shorter</span>.</h1>
-  </div>
-  <form hx-post="/api/links" hx-trigger="submit queue:none" hx-target="#shorturl">
-    <div class="target-wrapper">
-      <input
-        id="target"
-        name="target"
-        type="text"
-        placeholder="Paste your long URL"
-        aria-label="target"
-        autofocus="true"
-        data-lpignore="true"
-      />
-      <button class="submit">
-        <svg class="send" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="m2 21 21-9L2 3v7l15 2-15 2z"/></svg>
-        <svg class="spinner" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M5 5l2.8 2.8m8.4 8.4 2.9 2.9M2 12h4m12 0h4M5 19l2.8-2.8m8.4-8.4 2.9-2.9"/></svg>
-      </button>
-    </div>
-    <label id="advanced" class="checkbox">
-      <input type="checkbox" />
-      Show advanced options
-    </label>
-  </form>
-</main>
-<section class="introduction">
-  <div class="text-wrapper">
-    <h2>Manage links, set custom <b>domains</b> and view <b>stats</b>.</h2>
-    <a class="button primary">Log in / Sign up</a>
-  </div>
-  <img src="/images/callout.png" alt="callout image" />
-</section>
-<section class="features">
-  <h3>Kutting edge features.</h3>
-  <ul>
-    <li>
-      <div class="icon">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#000" viewBox="0 0 24 24"><path d="M20 14.7V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.3"/><path d="m18 2 4 4-10 10H8v-4z"/></svg>
-      </div>
-      <h4>Managing links</h4>
-      <p>Create, protect and delete your links and monitor them with detailed statistics.</p>
-    </li>
-    <li>
-      <div class="icon">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#000" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20 20.2 3.8M21 16v5h-5m-1-6 5.1 5.1M4 4l5 5"/></svg>
-      </div>
-      <h4>Custom domain</h4>
-      <p>Use custom domains for your links. Add or remove them for free.</p>
-    </li>
-    <li>
-      <div class="icon">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>
-      </div>
-      <h4>API</h4>
-      <p>Use the provided API to create, delete, and get URLs from anywhere.</p>
-    </li>
-    <li>
-      <div class="icon">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#000" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.7 0l-1.1 1-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1 7.8 7.8 7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>
-      </div>
-      <h4>Free & open source</h4>
-      <p>Completely open source and free. You can host it on your own server.</p>
-    </li>
-  </ul>
-</section>
-<section class="extensions">
-  <h3>Browser extentions.</h3>
-  <div class="extenstions-wrapper">
-    <a class="extension-button chrome" href="https://chrome.google.com/webstore/detail/kutt/pklakpjfiegjacoppcodencchehlfnpd" target="_blank" rel="noopener noreferrer" title="Chrome extension">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.2 8.7 23 7a12 12 0 0 1 1.1 5 12 12 0 0 1-13 12l5-8.4.8-1.3a6 6 0 0 0 0-4.7zM13 17.3l-2.1 6.6A12 12 0 0 1 2 5.3l5 8.4c.2.5 1 2.5 3 3.3q1.5.6 3 .3m-1-9.7c-2 0-3.9 1.6-4.3 3.5a5 5 0 0 0 1.2 4 5 5 0 0 0 4.8 1c1.4-.6 2.4-2 2.7-3.4.2-1.9-.8-3.9-2.5-4.7a4 4 0 0 0-2-.4M7 10 2.3 5A12 12 0 0 1 12 0a12 12 0 0 1 10.8 6.7H12.6Q9.8 6.6 8.3 8A5 5 0 0 0 7 10"/></svg>
-      Download for Chrome
-    </a>
-    <a class="extension-button firefox" href="https://addons.mozilla.org/en-US/firefox/addon/kutt/" target="_blank" rel="noopener noreferrer" title="Firefox extension">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23.4 11v-.4l-.3.3-.3-1.5a10 10 0 0 0-1.3-2.9l-.2-.3-1.5-2q-.6-1-.8-2l-.3 1.3-1.4-1.2C15.8.9 16 0 16 0s-2.8 3.2-1.6 6.4q.6 1.6 2 2.8c1.3 1 2.5 1.7 3.2 3.7q-.9-1.6-2.4-2.5.5 1 .5 2.2a5.3 5.3 0 0 1-6.5 5.2l-1.3-.5q-1-.5-1.6-1.4h.1l.7.2q1.4.2 2.6-.3 1.3-.8 1.8-.7.7 0 .4-.7-.8-1-2-.8c-1 .1-1.7.7-2.8.1H9h.2l-.7-.5h.1l-.7-.7q-.3-.6 0-1.1 0-.3.4-.4h.2l.5.3.3.2v-.1q0-.3-.3-.4l.4.2v-1h.1V10l.2-.2 1-.6.9-.4q.4-.3.5-.8v-.2c0-.2-.3-.3-1.8-.5q-1-.1-1.1-1v.2-.2q.5-1.1 1.5-1.8h-.1l.3-.2-.6-.2-.5.2.2-.2-1.1.5v-.1q-.4.1-.7.5l-.4.3Q6.5 4.7 5.1 5l-.4-.5-.2-.3-.2-.3Q4 3.5 4 2.8q-.5.3-.6.7l-.1.2v-.2q0 .2-.2.3V4v-.1H3a7 7 0 0 0-.6 2.3v.4l-.6.8Q1 8.8.6 10.6l.7-1.2a11 11 0 0 0-.8 4l.3-1.2q0 2.6 1 4.8 1.4 3.3 4.4 5 1.2.9 2.6 1.3l.3.1q1.5.5 3.3.5c4 0 5.3-1.6 5.4-1.7l.5-.7h.2l.2-.1 1.7-1q1.1-1 1.5-2.4.3-.5 0-1l.2-.3q1.2-2 1.4-4.6z"/></svg>
-      Download for Firefox
-    </a>
-  </div>
-</section>
+{{> shortener}}
+{{#if user}}
+  {{> links/table}}
+{{/if}}
+{{#unless user}}
+  {{> introduction}}
+  {{> features}}
+  {{> browser_extensions}}
+{{/unless}}
 {{> footer}}

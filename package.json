@@ -7,7 +7,7 @@
     "test": "jest --passWithNoTests",
     "docker:build": "docker build -t kutt .",
     "docker:run": "docker run -p 3000:3000 --env-file .env -d kutt:latest",
-    "dev": "node --watch server/server.js",
+    "dev": "node --watch-path=./server server/server.js",
     "dev:backup": "npm run migrate && cross-env NODE_ENV=development nodemon server/server.ts",
     "build": "rimraf production-server && tsc --project tsconfig.json && copyfiles -f \"server/mail/*.html\" production-server/mail && next build client/ ",
     "start": "npm run migrate && cross-env NODE_ENV=production node production-server/server.js",

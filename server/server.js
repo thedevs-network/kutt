@@ -9,7 +9,7 @@ const morgan = require("morgan");
 const path = require("path");
 const hbs = require("hbs");
 
-const helpers = require("./handlers/helpers");
+const helpers = require("./handlers/helpers.handler");
 // import * as links from "./handlers/links";
 // import * as auth from "./handlers/auth";
 const routes = require("./routes");
@@ -37,11 +37,12 @@ app.use(express.static("static"));
 
 // app.use(passport.initialize());
 // app.use(helpers.ip);
+app.use(helpers.isHTML);
 
 // template engine / serve html
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
-utils.extendHbs();
+utils.registerHandlebarsHelpers();
 
 app.use("/", renders);
 

@@ -1,9 +1,9 @@
-// const visit = require("./visit");
-const domain = require("./domain");
-const link = require("./link");
-const user = require("./user");
-// const host = require("./host");
-const ip = require("./ip");
+// const visit = require("./visit.queries");
+const domain = require("./domain.queries");
+const link = require("./link.queries");
+const user = require("./user.queries");
+// const host = require("./host.queries");
+const ip = require("./ip.queries");
 
 module.exports = {
   domain,

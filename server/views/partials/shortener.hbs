@@ -1,0 +1,137 @@
+<main>
+  <div id="shorturl">
+    {{#if link}}
+      <div class="clipboard">
+        <button 
+          aria-label="Copy" 
+          hx-on:click="handleShortURLCopyLink(this);" 
+          data-url="{{url}}"
+        >
+          <svg class="copy" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="13" height="13" x="9" y="9" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+        <svg class="check" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#000" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <h1 
+        class="link" 
+        hx-on:click="handleShortURLCopyLink(this);" 
+        data-url="{{url}}"
+      >
+        {{link}}
+      </h1>
+    {{/if}}
+    {{#unless link}}
+        <h1>Kutt your links <span>shorter</span>.</h1>
+    {{/unless}}
+  </div>
+  <form 
+    id="shortener-form" 
+    hx-post="/api/links" 
+    hx-trigger="submit queue:none" 
+    hx-target="closest main" 
+    hx-swap="outerHTML" 
+    autocomplete="off"
+  >
+    <div class="target-wrapper {{#if errors.target}}error{{/if}}">
+      <input
+        id="target"
+        name="target"
+        type="text"
+        placeholder="Paste your long URL"
+        aria-label="target"
+        autofocus="true"
+        data-lpignore="true"
+        hx-preserve="true"
+      />
+      <button class="submit">
+        <svg class="send" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="m2 21 21-9L2 3v7l15 2-15 2z"/></svg>
+        <svg class="spinner" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M5 5l2.8 2.8m8.4 8.4 2.9 2.9M2 12h4m12 0h4M5 19l2.8-2.8m8.4-8.4 2.9-2.9"/></svg>
+      </button>
+      {{#if errors.target}}<p class="error">{{errors.target}}</p>{{/if}}
+      {{#unless errors}}
+        {{#if error}}
+          <p class="error">{{error}}</p>
+        {{/if}}
+      {{/unless}}
+    </div>
+    <label id="advanced" class="checkbox">
+      <input 
+        name="show_advanced" 
+        type="checkbox" 
+        hx-on:change="htmx.toggleClass('#advanced-options', 'hidden')"
+        {{#if show_advanced}}checked="true"{{/if}}
+      />
+      Show advanced options
+    </label>
+    <section id="advanced-options" class="{{#unless show_advanced}}hidden{{/unless}}">
+      <div class="advanced-input-wrapper">
+        <label class="{{#if errors.domain}}error{{/if}}">
+          Domain:
+          <select 
+            id="domain" 
+            name="domain" 
+            hx-preserve="true" 
+            hx-on:change="
+              const elm = document.querySelector('#customurl-label span');
+              if (!elm) return;
+              elm.textContent = event.target.value + '/';
+            "
+          >
+            <option value={{default_domain}}>{{default_domain}}</option>
+            {{#each domains}}
+              <option value={{address}}>{{address}}</option>
+            {{/each}}
+          </select>
+          {{#if errors.domain}}<p class="error">{{errors.domain}}</p>{{/if}}
+        </label>
+        <label id="customurl-label" class="{{#if errors.customurl}}error{{/if}}">
+          <span id="customurl-label-value" hx-preserve="true">{{default_domain}}/</span>
+          <input
+            type="text" 
+            id="customurl" 
+            name="customurl" 
+            placeholder="Custom address..." 
+            hx-preserve="true"
+            autocomplete="off" 
+          />
+          {{#if errors.customurl}}<p class="error">{{errors.customurl}}</p>{{/if}}
+        </label>
+        <label class="{{#if errors.password}}error{{/if}}">
+          Password:
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="Password..." 
+            hx-preserve="true" 
+            autocomplete="off" 
+          />
+          {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
+        </label>
+      </div>
+      <div class="advanced-input-wrapper">
+        <label class="expire-in {{#if errors.expire_in}}error{{/if}}">
+          Expire in:
+          <input 
+            type="text" 
+            id="expire_in" 
+            name="expire_in" 
+            placeholder="2 minutes/hours/days" 
+            hx-preserve="true" 
+          />
+          {{#if errors.expire_in}}<p class="error">{{errors.expire_in}}</p>{{/if}}
+        </label>
+        <label class="description {{#if errors.description}}error{{/if}}">
+          Description:
+          <input 
+            type="text" 
+            id="description" 
+            name="description" 
+            placeholder="Description..." 
+            hx-preserve="true" 
+          />
+          {{#if errors.description}}<p class="error">{{errors.description}}</p>{{/if}}
+        </label>
+      </div>
+    </section>
+  </form>
+</main>

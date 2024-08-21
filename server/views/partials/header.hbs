@@ -1,4 +1,4 @@
-<header hx-boost="true">
+<header>
   <div class="logo-wrapper">
     <a class="logo nav" href="/" title="Kutt">
       <img src="/images/logo.svg" alt="kutt" width="18" height="24" />
@@ -20,21 +20,25 @@
   </div>
   <nav>
     <ul>
-      <li>
-        <a class="button primary" href="/login" title="Log in or sign up">
-          Log in / Sign up
-        </a>
-      </li>
-      {{!-- <li>
-        <a class="button primary" href="/settings" title="Settings">
-          Settings
-        </a>
-      </li>
-      <li>
-        <a class="nav" href="/logout" title="Log out">
-          Log out
-        </a>
-      </li> --}}
+      {{#unless user}}
+        <li>
+          <a class="button primary" href="/login" title="Log in or sign up">
+            Log in / Sign up
+          </a>
+        </li>
+      {{/unless}}
+      {{#if user}}
+        <li>
+          <a class="button primary" href="/settings" title="Settings">
+            Settings
+          </a>
+        </li>
+        <li>
+          <a class="nav" href="/logout" title="Log out">
+            Log out
+          </a>
+        </li>
+      {{/if}}
     </ul>
   </nav>
 </header>

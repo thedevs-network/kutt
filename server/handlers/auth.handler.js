@@ -15,47 +15,25 @@ const env = require("../env");
 function authenticate(type, error, isStrict) {
   return function auth(req, res, next) {
     if (req.user) return next();
-
+    
     passport.authenticate(type, (err, user) => {
       if (err) return next(err);
       const accepts = req.accepts(["json", "html"]);
 
       if (!user && isStrict) {
-        if (accepts === "html") {
-          return utils.sleep(2000).then(() => {
-            return res.render("partials/login_signup", {
-              layout: null,
-              error
-            });
-          });
-        } else {
-          throw new CustomError(error, 401);
-        }
+        req.viewTemplate = "partials/auth/form";
+        throw new CustomError(error, 401);
       }
 
       if (user && isStrict && !user.verified) {
-        const errorMessage = "Your email address is not verified. " +
-          "Sign up to get the verification link again."
-        if (accepts === "html") {
-          return res.render("partials/login_signup", {
-            layout: null,
-            error: errorMessage
-          });
-        } else {
-          throw new CustomError(errorMessage, 400);
-        }
+        req.viewTemplate = "partials/auth/form";
+        throw new CustomError("Your email address is not verified. " +
+          "Sign up to get the verification link again.", 400);
       }
 
       if (user && user.banned) {
-        const errorMessage = "You're banned from using this website.";
-        if (accepts === "html") {
-          return res.render("partials/login_signup", {
-            layout: null,
-            error: errorMessage
-          });
-        } else {
-          throw new CustomError(errorMessage, 403);
-        }
+        req.viewTemplate = "partials/auth/form";
+        throw new CustomError("You're banned from using this website.", 403);
       }
 
       if (user) {
@@ -114,8 +92,6 @@ function admin(req, res, next) {
 async function signup(req, res) {
   const salt = await bcrypt.genSalt(12);
   const password = await bcrypt.hash(req.body.password, salt);
-
-  const accepts = req.accepts(["json", "html"]);
   
   const user = await query.user.add(
     { email: req.body.email, password },
@@ -124,8 +100,9 @@ async function signup(req, res) {
   
   await mail.verification(user);
 
-  if (accepts === "html") {
-    return res.render("partials/signup_verify_email", { layout: null });
+  if (req.isHTML) {
+    res.render("partials/auth/verify");
+    return;
   }
   
   return res.status(201).send({ message: "A verification email has been sent." });
@@ -137,15 +114,14 @@ async function signup(req, res) {
 function login(req, res) {
   const token = utils.signToken(req.user);
 
-  const accepts = req.accepts(["json", "html"]);
-
-  if (accepts === "html") {
+  if (req.isHTML) {
     res.cookie("token", token, {
-      maxAge: 1000 * 60 * 15, // expire after seven days
+      maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
       httpOnly: true,
       secure: env.isProd
     });
-    return res.render("partials/login_welcome", { layout: false });
+    res.render("partials/auth/welcome");
+    return;
   }
   
   return res.status(200).send({ token });

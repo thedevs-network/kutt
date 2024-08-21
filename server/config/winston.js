@@ -36,7 +36,7 @@ const options = {
     colorize: true
   },
   console: {
-    level: "debug",
+    level: "error",
     handleExceptions: true,
     json: false,
     format: combine(colorize(), rawFormat)

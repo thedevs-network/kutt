@@ -1,0 +1,27 @@
+<section id="links-table-wrapper">
+  <h2>Recent shortened links.</h2>
+  <table 
+    hx-get="/api/links"
+    hx-target="tbody"
+    hx-swap="outerHTML" 
+    hx-select="tbody"
+    hx-disinherit="*"
+    hx-include=".links-controls"
+    hx-params="not total"
+    hx-sync="this:replace"
+    hx-select-oob="#total" 
+    hx-trigger="
+      load once, 
+      reloadLinks from:body, 
+      change from:[name='all'], 
+      click delay:100ms from:button.table-nav, 
+      input changed delay:500ms from:[name='search'],
+    "
+    hx-on:htmx:after-on-load="updateLinksNav()"
+  >
+    {{> links/thead}}
+    {{> links/tbody}}
+    {{> links/tfoot}}
+  </table>
+  {{> links/dialog}}
+</section>

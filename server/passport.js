@@ -8,7 +8,7 @@ const query = require("./queries");
 const env = require("./env");
 
 const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromHeader("authorization"),
+  jwtFromRequest: req => req.cookies?.token,
   secretOrKey: env.JWT_SECRET
 };
 

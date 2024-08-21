@@ -1,0 +1,16 @@
+<th class="nav" >
+  <div class="limit">
+    <button class="table-nav" onclick="setLinksLimit(event)" disabled="true">10</button>
+    <button class="table-nav" onclick="setLinksLimit(event)">20</button>
+    <button class="table-nav" onclick="setLinksLimit(event)">50</button>
+  </div>
+  <div class="table-nav-divider"></div>
+  <div id="pagination" class="pagination">
+    <button class="table-nav prev" onclick="setLinksSkip(event, 'prev')" disabled="true">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button class="table-nav next" onclick="setLinksSkip(event, 'next')">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+  </div>
+</th>

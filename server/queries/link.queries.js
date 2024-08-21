@@ -44,20 +44,20 @@ function normalizeMatch(match) {
 };
 
 async function total(match, params) {
-  const query = knex("links");
-  Object.entries(match).forEach(([key, value]) => {
-    query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
-  });
+  const query = knex("links")
+    .where(normalizeMatch(match));
   
   if (params?.search) {
     query.andWhereRaw(
-      "links.description || ' '  || links.address || ' ' || target ILIKE '%' || ? || '%'",
+      "concat_ws(' ', description, links.address, target, domains.address) ILIKE '%' || ? || '%'",
       [params.search]
     );
   }
+  query.leftJoin("domains", "links.domain_id", "domains.id");
+  query.count("links.id");
   
-  const [{ count }] = await query.count("id");
-  
+  const [{ count }] = await query;
+
   return typeof count === "number" ? count : parseInt(count);
 }
 
@@ -134,13 +134,13 @@ async function remove(match) {
   const link = await knex("links").where(match).first();
   
   if (!link) {
-    throw new CustomError("Link was not found.");
-  }
-  
+    return { isRemoved: false, error: "Could not find the link.", link: null }
+  };
+
   const deletedLink = await knex("links").where("id", link.id).delete();
   redis.remove.link(link);
   
-  return !!deletedLink;
+  return { isRemoved: !!deletedLink, link };
 }
 
 async function batchRemove(match) {

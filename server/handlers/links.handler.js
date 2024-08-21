@@ -4,46 +4,62 @@ const isbot = require("isbot");
 const URL = require("url");
 const dns = require("dns");
 
-const validators = require("./validators");
+const validators = require("./validators.handler");
 // const transporter = require("../mail");
 const query = require("../queries");
 // const queue = require("../queues");
 const utils = require("../utils");
 const env = require("../env");
+const { differenceInSeconds } = require("date-fns");
 
 const CustomError = utils.CustomError;
 const dnsLookup = promisify(dns.lookup);
 
-// export const get: Handler = async (req, res) => {
-//   const { limit, skip, all } = req.context;
-//   const search = req.query.search as string;
-//   const userId = req.user.id;
+/**
+ * @type {import("express").Handler}
+ */
+async function get(req, res) {
+  const { limit, skip, all } = req.context;
+  const search = req.query.search;
+  const userId = req.user.id;
 
-//   const match = {
-//     ...(!all && { user_id: userId })
-//   };
+  const match = {
+    ...(!all && { user_id: userId })
+  };
 
-//   const [links, total] = await Promise.all([
-//     query.link.get(match, { limit, search, skip }),
-//     query.link.total(match, { search })
-//   ]);
+  const [data, total] = await Promise.all([
+    query.link.get(match, { limit, search, skip }),
+    query.link.total(match, { search })
+  ]);
 
-//   const data = links.map(utils.sanitize.link);
+  const links = data.map(utils.sanitize.link);
 
-//   return res.send({
-//     total,
-//     limit,
-//     skip,
-//     data
-//   });
-// };
+  await utils.sleep(1000);
+    
+  if (req.isHTML) {
+    res.render("partials/links/table", {
+      total,
+      limit,
+      skip,
+      links,
+    })
+    return;
+  }
+
+  return res.send({
+    total,
+    limit,
+    skip,
+    data: links,
+  });
+};
 
 /**
  * @type {import("express").Handler}
  */
 async function create(req, res) {
-  const { reuse, password, customurl, description, target, domain, expire_in } = req.body;
-  const domain_id = domain ? domain.id : null;
+  const { reuse, password, customurl, description, target, fetched_domain, expire_in } = req.body;
+  const domain_id = fetched_domain ? fetched_domain.id : null;
   
   const targetDomain = utils.removeWww(URL.parse(target).hostname);
   
@@ -75,10 +91,10 @@ async function create(req, res) {
   
   // Check if custom link already exists
   if (queries[4]) {
-    throw new CustomError("Custom URL is already in use.");
+    const error = "Custom URL is already in use.";
+    res.locals.errors = { customurl: error };
+    throw new CustomError(error);
   }
-
-  const accepts = req.accepts(["json", "html"]);
 
   // Create new link
   const address = customurl || queries[5];
@@ -96,10 +112,13 @@ async function create(req, res) {
     query.ip.add(req.realIP);
   }
 
-  if (accepts === "html") {
+  link.domain = fetched_domain?.address;
+  
+  if (req.isHTML) {
+    res.setHeader("HX-Trigger", "reloadLinks");
+    res.setHeader("HX-Trigger-After-Swap", "resetForm");
     const shortURL = utils.getShortURL(link.address, link.domain);
-    return res.render("partials/shorturl", {
-      layout: null,
+    return res.render("partials/shortener", {
       link: shortURL.link, 
       url: shortURL.url,
     });
@@ -107,75 +126,125 @@ async function create(req, res) {
   
   return res
     .status(201)
-    .send(utils.sanitize.link({ ...link, domain: domain?.address }));
+    .send(utils.sanitize.link({ ...link }));
 }
 
-// export const edit: Handler = async (req, res) => {
-//   const { address, target, description, expire_in, password } = req.body;
-//   if (!address && !target) {
-//     throw new CustomError("Should at least update one field.");
-//   }
+async function edit(req, res) {
+  const { address, target, description, expire_in, password } = req.body;
+  const link = await query.link.find({
+    uuid: req.params.id,
+    ...(!req.user.admin && { user_id: req.user.id })
+  });
 
-//   const link = await query.link.find({
-//     uuid: req.params.id,
-//     ...(!req.user.admin && { user_id: req.user.id })
-//   });
+  if (!link) {
+    throw new CustomError("Link was not found.");
+  }
 
-//   if (!link) {
-//     throw new CustomError("Link was not found.");
-//   }
+  let isChanged = false;
+  [
+    [address, "address"], 
+    [target, "target"], 
+    [description, "description"], 
+    [expire_in, "expire_in"], 
+    [password, "password"]
+  ].forEach(([value, name]) => {
+    if (!value) {
+      delete req.body[name];
+      return;
+    }
+    if (value === link[name]) {
+      delete req.body[name];
+      return;
+    }
+    if (name === "expire_in")
+      if (differenceInSeconds(new Date(value), new Date(link.expire_in)) <= 60) 
+          return;
+    isChanged = true;
+  });
 
-//   const targetDomain = utils.removeWww(URL.parse(target).hostname);
-//   const domain_id = link.domain_id || null;
+  await utils.sleep(1000);
+  
+  if (!isChanged) {
+    throw new CustomError("Should at least update one field.");
+  }
 
-//   const queries = await Promise.all([
-//     validators.cooldown(req.user),
-//     validators.malware(req.user, target),
-//     address !== link.address &&
-//       query.link.find({
-//         address,
-//         domain_id
-//       }),
-//     validators.bannedDomain(targetDomain),
-//     validators.bannedHost(targetDomain)
-//   ]);
+  const targetDomain = utils.removeWww(URL.parse(target).hostname);
+  const domain_id = link.domain_id || null;
 
-//   // Check if custom link already exists
-//   if (queries[2]) {
-//     throw new CustomError("Custom URL is already in use.");
-//   }
+  const queries = await Promise.all([
+    validators.cooldown(req.user),
+    target && validators.malware(req.user, target),
+    address && address !== link.address &&
+      query.link.find({
+        address,
+        domain_id
+      }),
+    validators.bannedDomain(targetDomain),
+    validators.bannedHost(targetDomain)
+  ]);
 
-//   // Update link
-//   const [updatedLink] = await query.link.update(
-//     {
-//       id: link.id
-//     },
-//     {
-//       ...(address && { address }),
-//       ...(description && { description }),
-//       ...(target && { target }),
-//       ...(expire_in && { expire_in }),
-//       ...(password && { password })
-//     }
-//   );
+  // Check if custom link already exists
+  if (queries[2]) {
+    const error = "Custom URL is already in use.";
+    res.locals.errors = { address: error };
+    throw new CustomError("Custom URL is already in use.");
+  }
 
-//   return res.status(200).send(utils.sanitize.link({ ...link, ...updatedLink }));
-// };
+  // Update link
+  const [updatedLink] = await query.link.update(
+    {
+      id: link.id
+    },
+    {
+      ...(address && { address }),
+      ...(description && { description }),
+      ...(target && { target }),
+      ...(expire_in && { expire_in }),
+      ...(password && { password })
+    }
+  );
 
-// export const remove: Handler = async (req, res) => {
-//   const link = await query.link.remove({
-//     uuid: req.params.id,
-//     ...(!req.user.admin && { user_id: req.user.id })
-//   });
+  if (req.isHTML) {
+    res.render("partials/links/edit", {
+      swap_oob: true,
+      success: "Link has been updated.",
+      ...utils.sanitize.link({ ...link, ...updatedLink }),
+    });
+    return;
+  }
 
-//   if (!link) {
-//     throw new CustomError("Could not delete the link");
-//   }
+  return res.status(200).send(utils.sanitize.link({ ...link, ...updatedLink }));
+};
 
-//   return res
-//     .status(200)
-//     .send({ message: "Link has been deleted successfully." });
-// };
+/**
+ * @type {import("express").Handler}
+ */
+async function remove(req, res) {
+  const { error, isRemoved, link } = await query.link.remove({
+    uuid: req.params.id,
+    ...(!req.user.admin && { user_id: req.user.id })
+  });
+
+  if (!isRemoved) {
+    const messsage = error || "Could not delete the link.";
+    throw new CustomError(messsage);
+  }
+
+  await utils.sleep(1000);
+
+  if (req.isHTML) {
+    res.setHeader("HX-Reswap", "outerHTML");
+    res.setHeader("HX-Trigger", "reloadLinks");
+    res.render("partials/links/dialog_delete_success", {
+      link: utils.getShortURL(link.address, link.domain).link,
+    });
+    return;
+  }
+
+  return res
+    .status(200)
+    .send({ message: "Link has been deleted successfully." });
+};
 
 // export const report: Handler = async (req, res) => {
 //   const { link } = req.body;
@@ -400,4 +469,7 @@ async function create(req, res) {
 
 module.exports = {
   create,
+  edit,
+  get,
+  remove,
 }

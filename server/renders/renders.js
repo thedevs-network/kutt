@@ -1,18 +1,17 @@
+const asyncHandler = require("express-async-handler");
 const { Router } = require("express");
+
+const auth = require("../handlers/auth.handler");
+const renders = require("./renders.handler");
 
 const router = Router();
 
-router.get("/", function homepage(req, res) {
-  console.log(req.cookies);
-  res.render("homepage", {
-    title: "Modern open source URL shortener"
-  });
-});
+router.use(asyncHandler(auth.jwtLoose));
 
-router.get("/login", function login(req, res) {
-  res.render("login", {
-    title: "Log in or sign up"
-  });
-});
+router.get("/", renders.homepage);
+router.get("/login", renders.login);
+router.get("/logout", renders.logout);
+router.get("/confirm-link-delete", renders.confirmLinkDelete);
+router.get("/link/edit/:id", renders.linkEdit);
 
 module.exports = router;

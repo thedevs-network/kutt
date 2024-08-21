@@ -1,10 +1,10 @@
 import { Router } from "express";
 import asyncHandler from "express-async-handler";
 
-import * as validators from "../handlers/validators";
-import * as helpers from "../handlers/helpers";
-import * as user from "../handlers/users";
-import * as auth from "../handlers/auth";
+import * as validators from "../handlers/validators.handler";
+import * as helpers from "../handlers/helpers.handler";
+import * as user from "../handlers/users.handler";
+import * as auth from "../handlers/auth.handler";
 
 const router = Router();
 
@@ -20,7 +20,7 @@ router.post(
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   validators.deleteUser,
-  asyncHandler(helpers.verif()),
+  asyncHandler(helpers.verify),
   asyncHandler(user.remove)
 );
 
