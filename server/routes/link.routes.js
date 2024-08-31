@@ -17,7 +17,7 @@ router.get(
   helpers.viewTemplate("partials/links/table"),
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
-  helpers.query,
+  helpers.parseQuery,
   asyncHandler(link.get)
 );
 
@@ -47,12 +47,23 @@ router.patch(
 
 router.delete(
   "/:id",
-  helpers.viewTemplate("partials/links/dialog_delete"),
+  helpers.viewTemplate("partials/links/dialog/delete"),
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   validators.deleteLink,
   asyncHandler(helpers.verify),
   asyncHandler(link.remove)
+);
+
+router.post(
+  "/admin/ban/:id",
+  helpers.viewTemplate("partials/links/dialog/ban"),
+  asyncHandler(auth.apikey),
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin),
+  validators.banLink,
+  asyncHandler(helpers.verify),
+  asyncHandler(link.ban)
 );
 
 // router.get(
@@ -77,14 +88,5 @@ router.delete(
 //   asyncHandler(link.report)
 // );
 
-// router.post(
-//   "/admin/ban/:id",
-//   asyncHandler(auth.apikey),
-//   asyncHandler(auth.jwt),
-//   asyncHandler(auth.admin),
-//   validators.banLink,
-//   asyncHandler(helpers.verify),
-//   asyncHandler(link.ban)
-// );
 
 module.exports = router;

@@ -1,0 +1,30 @@
+<h2>
+  Custom domain
+</h2>
+<p>
+  You can set a custom domain for your short URLs, so instead of
+  <b>{{default_domain}}/shorturl</b> you can have
+  <b>yoursite.com/shorturl.</b>
+</p>
+<p>
+  Point your domain's A record to <b>192.64.116.170</b> then add the domain
+  via the form below:
+</p>
+{{> settings/domain/table}}
+<div class="add-domain-wrapper">
+  <button
+    class="secondary show-domain-form"
+    hx-indicator=".add-domain-wrapper"
+    hx-get="/add-domain-form"
+    hx-target="#domain-form-wrapper"
+    hx-swap="innerHTML"
+    hx-on::after-request="event.srcElement.classList.add('hidden')"
+  >
+    <span>{{> icons/plus}}</span>
+    Add domain
+  </button>
+  {{> icons/spinner}}
+  <div id="domain-form-wrapper">
+  </div>
+</div>
+{{> settings/domain/dialog}}

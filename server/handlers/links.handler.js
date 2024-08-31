@@ -116,7 +116,6 @@ async function create(req, res) {
   
   if (req.isHTML) {
     res.setHeader("HX-Trigger", "reloadLinks");
-    res.setHeader("HX-Trigger-After-Swap", "resetForm");
     const shortURL = utils.getShortURL(link.address, link.domain);
     return res.render("partials/shortener", {
       link: shortURL.link, 
@@ -235,7 +234,7 @@ async function remove(req, res) {
   if (req.isHTML) {
     res.setHeader("HX-Reswap", "outerHTML");
     res.setHeader("HX-Trigger", "reloadLinks");
-    res.render("partials/links/dialog_delete_success", {
+    res.render("partials/links/dialog/delete_success", {
       link: utils.getShortURL(link.address, link.domain).link,
     });
     return;
@@ -265,64 +264,75 @@ async function remove(req, res) {
 //     .send({ message: "Thanks for the report, we'll take actions shortly." });
 // };
 
-// export const ban: Handler = async (req, res) => {
-//   const { id } = req.params;
+async function ban(req, res) {
+  const { id } = req.params;
 
-//   const update = {
-//     banned_by_id: req.user.id,
-//     banned: true
-//   };
+  const update = {
+    banned_by_id: req.user.id,
+    banned: true
+  };
 
-//   // 1. Check if link exists
-//   const link = await query.link.find({ uuid: id });
+  // 1. Check if link exists
+  const link = await query.link.find({ uuid: id });
 
-//   if (!link) {
-//     throw new CustomError("No link has been found.", 400);
-//   }
+  if (!link) {
+    throw new CustomError("No link has been found.", 400);
+  }
 
-//   if (link.banned) {
-//     return res.status(200).send({ message: "Link has been banned already." });
-//   }
+  if (link.banned) {
+    throw new CustomError("Link has been banned already.", 400);
+  }
 
-//   const tasks = [];
+  const tasks = [];
 
-//   // 2. Ban link
-//   tasks.push(query.link.update({ uuid: id }, update));
+  // 2. Ban link
+  tasks.push(query.link.update({ uuid: id }, update));
 
-//   const domain = utils.removeWww(URL.parse(link.target).hostname);
+  const domain = utils.removeWww(URL.parse(link.target).hostname);
 
-//   // 3. Ban target's domain
-//   if (req.body.domain) {
-//     tasks.push(query.domain.add({ ...update, address: domain }));
-//   }
+  // 3. Ban target's domain
+  if (req.body.domain) {
+    tasks.push(query.domain.add({ ...update, address: domain }));
+  }
 
-//   // 4. Ban target's host
-//   if (req.body.host) {
-//     const dnsRes = await dnsLookup(domain).catch(() => {
-//       throw new CustomError("Couldn't fetch DNS info.");
-//     });
-//     const host = dnsRes?.address;
-//     tasks.push(query.host.add({ ...update, address: host }));
-//   }
+  // 4. Ban target's host
+  if (req.body.host) {
+    const dnsRes = await dnsLookup(domain).catch(() => {
+      throw new CustomError("Couldn't fetch DNS info.");
+    });
+    const host = dnsRes?.address;
+    tasks.push(query.host.add({ ...update, address: host }));
+  }
 
-//   // 5. Ban link owner
-//   if (req.body.user && link.user_id) {
-//     tasks.push(query.user.update({ id: link.user_id }, update));
-//   }
+  // 5. Ban link owner
+  if (req.body.user && link.user_id) {
+    tasks.push(query.user.update({ id: link.user_id }, update));
+  }
 
-//   // 6. Ban all of owner's links
-//   if (req.body.userLinks && link.user_id) {
-//     tasks.push(query.link.update({ user_id: link.user_id }, update));
-//   }
+  // 6. Ban all of owner's links
+  if (req.body.userLinks && link.user_id) {
+    tasks.push(query.link.update({ user_id: link.user_id }, update));
+  }
 
-//   // 7. Wait for all tasks to finish
-//   await Promise.all(tasks).catch(() => {
-//     throw new CustomError("Couldn't ban entries.");
-//   });
+  // 7. Wait for all tasks to finish
+  await Promise.all(tasks).catch((err) => {
+    throw new CustomError("Couldn't ban entries.");
+  });
 
-//   // 8. Send response
-//   return res.status(200).send({ message: "Banned link successfully." });
-// };
+  // 8. Send response
+  await utils.sleep(1000);
+  
+  if (req.isHTML) {
+    res.setHeader("HX-Reswap", "outerHTML");
+    res.setHeader("HX-Trigger", "reloadLinks");
+    res.render("partials/links/dialog/ban_success", {
+      link: utils.getShortURL(link.address, link.domain).link,
+    });
+    return;
+  }
+
+  return res.status(200).send({ message: "Banned link successfully." });
+};
 
 // export const redirect = (app) => async (
 //   req,
@@ -468,6 +478,7 @@ async function remove(req, res) {
 // };
 
 module.exports = {
+  ban,
   create,
   edit,
   get,

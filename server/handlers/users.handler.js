@@ -1,7 +1,8 @@
-import query from "../queries";
-import * as utils from "../utils/utils";
+const query = require("../queries");
+const utils = require("../utils");
+const env = require("../env");
 
-export const get = async (req, res) => {
+async function get(req, res) {
   const domains = await query.domain.get({ user_id: req.user.id });
 
   const data = {
@@ -13,7 +14,24 @@ export const get = async (req, res) => {
   return res.status(200).send(data);
 };
 
-export const remove = async (req, res) => {
+async function remove(req, res) {
   await query.user.remove(req.user);
+
+  await utils.sleep(1000);
+
+  if (req.isHTML) {
+    res.clearCookie("token", { httpOnly: true, secure: env.isProd });
+    res.setHeader("HX-Trigger-After-Swap", "redirectToHomepage");
+    res.render("partials/settings/delete_account", {
+      success: "Account has been deleted. Logging out..."
+    });
+    return;
+  }
+  
   return res.status(200).send("OK");
 };
+
+module.exports = {
+  get,
+  remove,
+}

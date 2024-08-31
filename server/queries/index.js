@@ -2,12 +2,12 @@
 const domain = require("./domain.queries");
 const link = require("./link.queries");
 const user = require("./user.queries");
-// const host = require("./host.queries");
+const host = require("./host.queries");
 const ip = require("./ip.queries");
 
 module.exports = {
   domain,
-  // host,
+  host,
   ip,
   link,
   user,

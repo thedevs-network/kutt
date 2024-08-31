@@ -1,0 +1,46 @@
+<section id="apikey-wrapper">
+  <h2>API</h2>
+  <p>
+    In additional to this website, you can use the API to create, delete and
+    get shortened URLs. If you're not familiar with API, don't generate the key. 
+    DO NOT share this key on the client side of your website. 
+    <a href="https://docs.kutt.it" title="API Docs" target="_blank">
+      Read API docs.
+    </a>
+  </p>
+  <div id="apikey">
+    {{#if user.apikey}}
+      <div class="clipboard small">
+        <button 
+          aria-label="Copy" 
+          hx-on:click="handleShortURLCopyLink(this);" 
+          data-url="{{user.apikey}}"
+        >
+        {{> icons/copy}}
+        </button>
+        {{> icons/check}}
+      </div>
+      <p 
+        hx-on:click="handleShortURLCopyLink(this);" 
+        data-url="{{user.apikey}}"
+      >
+        {{user.apikey}}
+      </p>
+    {{/if}}
+    {{#if error}}
+      <p class="error">{{error}}</p>
+    {{/if}}
+  </div>
+  <form 
+    hx-post="/api/auth/apikey"
+    id="generate-apikey" 
+    hx-target="#apikey-wrapper" 
+    hx-swap="outerHTML"
+  >
+    <button class="secondary">
+      <span>{{> icons/zap}}</span>
+      <span>{{> icons/spinner}}</span>
+      {{#if user.apikey}}Reg{{else}}G{{/if}}enerate key
+    </button>
+  </form>
+</section>

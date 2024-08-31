@@ -37,6 +37,7 @@ function authenticate(type, error, isStrict) {
       }
 
       if (user) {
+        res.locals.isAdmin = utils.isAdmin(user.email);
         req.user = {
           ...user,
           admin: utils.isAdmin(user.email)
@@ -157,13 +158,30 @@ async function verify(req, res, next) {
  * @type {import("express").Handler}
  */
 async function changePassword(req, res) {
+  const isMatch = await bcrypt.compare(req.body.currentpassword, req.user.password);
+  if (!isMatch) {
+    const message = "Current password is not correct.";
+    res.locals.errors = { currentpassword: message };
+    throw new CustomError(message, 401);
+  }
+
   const salt = await bcrypt.genSalt(12);
-  const password = await bcrypt.hash(req.body.password, salt);
+  const newpassword = await bcrypt.hash(req.body.newpassword, salt);
   
-  const [user] = await query.user.update({ id: req.user.id }, { password });
+  const [user] = await query.user.update({ id: req.user.id }, { password: newpassword });
   
   if (!user) {
     throw new CustomError("Couldn't change the password. Try again later.");
+  }
+
+  await utils.sleep(1000);
+
+  if (req.isHTML) {
+    res.setHeader("HX-Trigger-After-Swap", "resetChangePasswordForm");
+    res.render("partials/settings/change_password", {
+      success: "Password has been changed."
+    });
+    return;
   }
   
   return res
@@ -183,6 +201,15 @@ async function generateApiKey(req, res) {
   
   if (!user) {
     throw new CustomError("Couldn't generate API key. Please try again later.");
+  }
+
+  await utils.sleep(1000);
+
+  if (req.isHTML) {
+    res.render("partials/settings/apikey", {
+      user: { apikey },
+    });
+    return;
   }
   
   return res.status(201).send({ apikey });
@@ -249,13 +276,17 @@ async function changeEmailRequest(req, res) {
   const isMatch = await bcrypt.compare(password, req.user.password);
   
   if (!isMatch) {
-    throw new CustomError("Password is wrong.", 400);
+    const error = "Password is not correct.";
+    res.locals.errors = { password: error };
+    throw new CustomError(error, 401);
   }
   
   const currentUser = await query.user.find({ email });
   
   if (currentUser) {
-    throw new CustomError("Can't use this email address.", 400);
+    const error = "Can't use this email address.";
+    res.locals.errors = { email: error };
+    throw new CustomError(error, 400);
   }
   
   const [updatedUser] = await query.user.update(
@@ -272,12 +303,18 @@ async function changeEmailRequest(req, res) {
   if (updatedUser) {
     await mail.changeEmail({ ...updatedUser, email });
   }
+
+  const message = "A verification link has been sent to the requested email address."
   
-  return res.status(200).send({
-    message:
-      "If email address exists, an email " +
-      "with a verification link has been sent."
-  });
+  if (req.isHTML) {
+    res.setHeader("HX-Trigger-After-Swap", "resetChangeEmailForm");
+    res.render("partials/settings/change_email", {
+      success: message
+    });
+    return;
+  }
+  
+  return res.status(200).send({ message });
 }
 
 /**

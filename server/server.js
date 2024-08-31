@@ -38,6 +38,7 @@ app.use(express.static("static"));
 // app.use(passport.initialize());
 // app.use(helpers.ip);
 app.use(helpers.isHTML);
+app.use(helpers.addConfigLocals);
 
 // template engine / serve html
 app.set("view engine", "hbs");

@@ -2,7 +2,8 @@ const { validationResult } = require("express-validator");
 const signale = require("signale");
 
 const { logger } = require("../config/winston");
-const { CustomError } = require("../utils");
+const { CustomError, sanitize } = require("../utils");
+const query = require("../queries")
 const env = require("../env");
 
 // export const ip: Handler = (req, res, next) => {
@@ -20,10 +21,10 @@ function isHTML(req, res, next) {
   next();
 }
 
+function addNoLayoutLocals(req, res, next) {
 /**
  * @type {import("express").Handler}
  */
-function noRenderLayout(req, res, next) {
   res.locals.layout = null;
   next();
 }
@@ -33,6 +34,24 @@ function viewTemplate(template) {
     req.viewTemplate = template;
     next();
   }
+}
+
+/**
+ * @type {import("express").Handler}
+ */
+function addConfigLocals(req, res, next) {
+  res.locals.default_domain = env.DEFAULT_DOMAIN;
+  next();
+}
+
+/**
+ * @type {import("express").Handler}
+ */
+async function addUserLocals(req, res, next) {
+  const user = req.user;
+  res.locals.user = user;
+  res.locals.domains = user && (await query.domain.get({ user_id: user.id })).map(sanitize.domain);
+  next();
 }
 
 /**
@@ -51,7 +70,7 @@ function error(error, req, res, _next) {
     return;
   }
 
-  return res.status(500).json({ error: message });
+  return res.status(statusCode).json({ error: message });
 };
 
 
@@ -75,7 +94,7 @@ function verify(req, res, next) {
   throw new CustomError(error, 400);
 }
 
-function query(req, res, next) {
+function parseQuery(req, res, next) {
   const { admin } = req.user || {};
 
   if (
@@ -112,10 +131,12 @@ function query(req, res, next) {
 };
 
 module.exports = {
+  addConfigLocals,
+  addNoLayoutLocals,
+  addUserLocals,
   error,
   isHTML,
-  noRenderLayout,
-  query,
+  parseQuery,
   verify,
   viewTemplate,
 }

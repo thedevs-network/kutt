@@ -1,5 +1,5 @@
 <tr id="tr-{{id}}" {{#if swap_oob}}hx-swap-oob="true"{{/if}}>
-  <td class="original-url">
+  <td class="original-url right-fade">
     <a href="{{target}}">
       {{target}}
     </a>
@@ -17,17 +17,17 @@
       </p>
     {{/if}}
   </td>
-  <td class="short-link">
-    {{!-- <div class="clipboard">
+  <td class="short-link right-fade">
+    <div class="clipboard small">
       <button 
         aria-label="Copy" 
-        hx-on:click="handleShortURLCopyLink(this);" 
-        data-url="{{url}}"
+        hx-on:click="handleShortURLCopyLink(this);"
+        data-url="{{link.url}}"
       >
-        <svg class="copy" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="13" height="13" x="9" y="9" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        {{> icons/copy}}
       </button>
-      <svg class="check" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#000" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
-    </div> --}}
+      {{> icons/check}}
+    </div>
     <a href="{{link.url}}">{{link.link}}</a>
   </td>
   <td class="views">

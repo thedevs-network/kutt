@@ -47,6 +47,10 @@
   to { transform: translateY(0) }
 }
 
+@keyframes tooltip {
+  to { opacity: 0.9; transform: translate(-50%, 0); }
+}
+
 /* GENERAL */
 body {
   margin: 0;
@@ -65,6 +69,18 @@ body {
 
 *::-moz-focus-inner {
   border: none;
+}
+
+.hidden {
+  display: none;
+}
+
+hr {
+  width: 100%;
+  height: 2px;
+  outline: none;
+  border: none;
+  background-color: hsl(200, 20%, 92%);
 }
 
 a {
@@ -175,8 +191,11 @@ button.success:hover {
   box-shadow: 0 6px 15px var(--button-bg-success-box-shadow-color);
 }
 
+button:disabled { cursor: default; }
+button:disabled:hover { transform: none; }
+
 button svg.with-text,
-button span.icon svg {
+button span svg {
   width: 16px;
   height: auto;
   margin-right: 0.5rem;
@@ -189,6 +208,11 @@ button.action {
   width: 24px;
   height: 24px;
   box-shadow: 0 2px 1px hsla(200, 15%, 60%, 0.12);
+}
+
+button.action:disabled {
+  background: none;
+  box-shadow: none;
 }
 
 button.action svg {
@@ -214,6 +238,15 @@ button.action.edit svg {
   stroke: hsl(46, 90%, 50%);
 }
 
+button.action.qrcode {
+  background: hsl(0, 0%, 94%);
+}
+
+button.action.qrcode svg {
+  fill: hsl(0, 0%, 35%);
+  stroke: none;
+}
+
 button.action.stats {
   background: hsl(260, 100%, 96%);
 }
@@ -221,6 +254,21 @@ button.action.stats {
 button.action.stats svg {
   stroke-width: 2.5;
   stroke: hsl(260, 100%, 69%);
+}
+
+button.action.ban {
+  background: hsl(10, 100%, 96%);
+}
+
+button.action.ban svg {
+  stroke-width: 2;
+  stroke: hsl(10, 100%, 40%);
+}
+
+button.action.password svg,
+button.action.banned svg {
+  stroke-width: 2.5;
+  stroke: #bbb;
 }
 
 button.table-nav {
@@ -387,8 +435,8 @@ input[type="checkbox"]:checked:after {
 
 label {
   display: flex;
-  color: #555;
-  font-size: 15px;
+  color: rgb(41, 71, 86);
+  font-size: 1rem;
   flex-direction: column;
   align-items: flex-start;
   font-weight: bold;
@@ -436,11 +484,15 @@ table tr {
 table tr,
 table th,
 table td,
-table tbody,
 table thead,
 table tfoot {
   display: flex;
   overflow: hidden;
+}
+
+table tbody,
+table tr {
+  overflow: visible;
 }
 
 table tbody,
@@ -450,13 +502,26 @@ table tfoot {
 }
 
 table tr {
+  padding: 0 0.5rem;
   border-bottom: 1px solid hsl(200, 14%, 94%);
+}
+
+table th,
+table td {
+  flex-basis: 0;
+  padding: 0.75rem;
+}
+
+table td {
+  position: relative;
+  white-space: nowrap;
+  font-size: 15px;
+  align-items: center;
 }
 
 table tbody {
   border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
-  overflow: hidden;
   animation: fadein 0.3s ease-in-out;
 }
 
@@ -522,6 +587,11 @@ table tr.loading-placeholder td {
   animation: slidey 0.2s ease-in-out;
 }
 
+.dialog.qrcode .box {
+  min-width: auto;
+  padding: 2rem;
+}
+
 .dialog .content-wrapper {
   display: flex;
   flex-direction: column;
@@ -558,8 +628,6 @@ table tr.loading-placeholder td {
   margin-bottom: 0.5rem !important;
   margin-top: 0;
 }
-
-.dialog .content .link-to-delete { font-weight: bold; }
 
 .dialog .content .buttons {
   display: flex;
@@ -619,6 +687,63 @@ table tr.loading-placeholder td {
 .dialog .content.htmx-request svg.spinner { display: block; }
 .dialog .content.htmx-request button { display: none; }
 
+.inputs {  display: flex;  align-items: flex-start; margin-bottom: 1rem; }
+.inputs label { flex: 0 0 0; margin-right: 1rem; }
+.inputs label:last-child { margin-right: 0; }
+
+[data-tooltip] {
+  position: relative;
+  overflow: visible;
+}
+
+[data-tooltip]:before,
+[data-tooltip]:after {
+  position: absolute;
+  left: 50%;
+  display: none;
+  font-size: 11px;
+  line-height: 1;
+  opacity: 0;
+  transform: translate(-50%, -0.5rem);
+}
+
+[data-tooltip]:before {
+  content: "";
+  border: 4px solid transparent;
+  top: -4px;
+  border-bottom-width: 0;
+  border-top-color: #333;
+  z-index: 1001;
+}
+
+[data-tooltip]:after {
+  content: attr(data-tooltip);
+  top: -25px;
+  text-align: center;
+  min-width: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 5px 7px;
+  border-radius: 4px;
+  box-shadow: 0 1em 2em -0.5em rgba(0, 0, 0, 0.35);
+  background: #333;
+  color: #fff;
+  z-index: 1000;
+}
+
+[data-tooltip]:hover:before,
+[data-tooltip]:hover:after {
+  display: block;
+}
+
+[data-tooltip]:before,
+[data-tooltip]:after,
+[data-tooltip]:hover:before,
+[data-tooltip]:hover:after {
+  animation: tooltip 300ms ease-out forwards;
+}
+
 /* DISTINCT */
 
 .main-wrapper {
@@ -641,10 +766,7 @@ form#login-signup {
   margin: 3rem 0 0;
 }
 
-form#login-signup label {
-  font-size: 16px;
-  margin-bottom: 2rem;
-}
+form#login-signup label { margin-bottom: 2rem; }
 
 form#login-signup input {
   width: 100%;
@@ -805,14 +927,14 @@ main #shorturl h1.link:hover {
   opacity: 0.8;
 }
 
-main #shorturl .clipboard {
+.clipboard {
   width: 35px;
   height: 35px;
   display: flex;
   margin-right: 1rem;
 }
 
-main #shorturl button {
+.clipboard button {
   width: 100%;
   height: 100%;
   display: flex;
@@ -831,26 +953,29 @@ main #shorturl button {
   animation: slidey 0.2s ease-in-out;
 }
 
-main #shorturl button:hover,
-main #shorturl button:focus {
+.clipboard.small { width: 24px; height: 24px; }
+.clipboard.small button { width: 24px; height: 24px; padding: 5px; }
+
+.clipboard button:hover,
+.clipboard button:focus {
   transform: translateY(-2px) scale(1.02, 1.02);
 }
 
-main #shorturl button:focus {
+.clipboard button:focus {
   outline: 3px solid rgba(65, 164, 245, 0.5);
 }
 
-main #shorturl svg {
+.clipboard svg {
   stroke: var(--copy-icon-color);
   width: 100%;
   height: auto;
 }
 
-main #shorturl svg.copy {
+.clipboard svg.copy {
   stroke-width: 2.5;
 }
 
-main #shorturl svg.check {
+.clipboard svg.check {
   display: none;
   padding: 3px;
   stroke-width: 3;
@@ -858,14 +983,14 @@ main #shorturl svg.check {
   animation: slidey 0.2s ease-in-out;
 }
 
-main #shorturl.copied button {
+.clipboard.copied button {
   background-color: transparent;
   box-shadow: none;
 }
 
 
-main #shorturl.copied button { display: none; }
-main #shorturl.copied svg.check { display: block; }
+.clipboard.copied button { display: none; }
+.clipboard.copied svg.check { display: block; }
 
 main #shorturl h1 span {
   border-bottom: 1px dotted #999;
@@ -1020,14 +1145,11 @@ main form label#advanced input {
 
 #links-table-wrapper th,
 #links-table-wrapper td {
-  flex-basis: 0;
   padding: 1rem;
 }
 
 #links-table-wrapper td {
-  white-space: nowrap;
   font-size: 16px;
-  align-items: center;
 }
 
 
@@ -1035,7 +1157,7 @@ main form label#advanced input {
 #links-table-wrapper table .created-at { flex: 2.5 2.5 0; }
 #links-table-wrapper table .short-link { flex: 3 3 0; }
 #links-table-wrapper table .views { flex: 1 1 0; justify-content: flex-end; }
-#links-table-wrapper table .actions { flex: 3 3 0; justify-content: flex-end; }
+#links-table-wrapper table .actions { flex: 3 3 0; justify-content: flex-end; overflow: visible; }
 #links-table-wrapper table .actions button { margin-right: 0.5rem; }
 #links-table-wrapper table .actions button:last-child { margin-right: 0; }
 
@@ -1120,8 +1242,29 @@ main form label#advanced input {
   margin: 0 1.5rem;
 }
 
+#links-table-wrapper table tbody tr:hover {
+  background-color: hsl(200, 14%, 98%);
+}
+
+#links-table-wrapper table tbody td.right-fade:after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 16px;
+  background: linear-gradient(to left, white, rgba(255, 255, 255, 0.001));
+}
+
+#links-table-wrapper table tbody tr:hover td.right-fade:after {
+  background: linear-gradient(to left, hsl(200, 14%, 98%), rgba(255, 255, 255, 0.001));
+}
+
+
+#links-table-wrapper table .clipboard { margin-right: 0.5rem; }
+#links-table-wrapper table .clipboard svg.check { width: 24px; }
+
 #links-table-wrapper table tr.edit {
-  border-bottom: 1px solid hsl(200, 14%, 98%);
   background-color: #fafafa;
 }
 
@@ -1194,6 +1337,125 @@ main form label#advanced input {
 #links-table-wrapper table tr.edit form.htmx-request button .loader { display: inline-block; }
 
 #links-table-wrapper table tr.edit form .response p { margin: 2rem 0 0; }
+
+.dialog .ban-checklist {
+  display: flex;
+  align-items: center;
+}
+
+.dialog .ban-checklist label { margin: 1rem 1.5rem 1rem 0; }
+.dialog .ban-checklist label:last-child { margin-right: 0; }
+
+/* SETTINGS */
+
+#settings {
+  width: 600px;
+  max-width: 90%;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 2rem;
+}
+
+h1.settings-welcome {
+  font-size: 28px;
+  font-weight: 300;
+}
+
+h1.settings-welcome span {
+  border-bottom: 2px dotted #999;
+  padding-bottom: 2px;
+  font-weight: normal;
+}
+
+/* SETTINGS - DOMAIN */
+
+#domains-table { margin-top: 1rem; }
+#domains-table .domain { flex: 2 2 0; }
+#domains-table .homepage { flex: 2 2 0; }
+#domains-table .actions { flex: 1 1 0; justify-content: flex-end; padding-right: 1rem; }
+#domains-table .no-entry { flex: 1 1 0; opacity: 0.8; }
+
+.add-domain-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 1.5rem 0 2rem;
+}
+
+.add-domain-wrapper > .spinner { 
+  width: 20px; 
+  display: none; 
+  margin: 1rem 0 0 1rem; 
+}
+.add-domain-wrapper.htmx-request > button { display: none; }
+.add-domain-wrapper.htmx-request > .spinner { display: block; }
+
+form#add-domain { margin-top: 1rem; }
+form#add-domain .buttons-wrapper { display: flex; }
+form#add-domain button { margin-right: 1rem }
+form#add-domain .spinner { width: 20px; display: none; }
+form#add-domain.htmx-request .buttons-wrapper { display: none; }
+form#add-domain.htmx-request .spinner { display: block; }
+form#add-domain .error { font-size: 0.85rem; }
+
+/* SETTINGS - API */
+
+#apikey-wrapper { margin-bottom: 1.5rem; }
+
+#apikey {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+#apikey p {
+  font-weight: bold;
+  border-bottom: 1px dotted #999;
+  transition: opacity 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+#apikey p:hover {
+  opacity: 0.8;
+}
+
+form#generate-apikey .spinner { display: none; }
+form#generate-apikey.htmx-request svg { display: none; }
+form#generate-apikey.htmx-request .spinner { display: block; }
+
+/* SETTINGS - CHANGE PASSWORD */
+
+#change-password-wrapper { margin-bottom: 1.5rem; }
+
+form#change-password { margin-top: 1.5rem; }
+form#change-password button { margin-top: 1rem; }
+form#change-password .spinner { display: none; }
+form#change-password.htmx-request svg { display: none; }
+form#change-password.htmx-request .spinner { display: block; }
+
+/* SETTINGS - CHANGE EMAIL */
+
+#change-email-wrapper { margin-bottom: 1.5rem; }
+
+form#change-email { margin-top: 1.5rem; }
+form#change-email button { margin-top: 1rem; }
+form#change-email .spinner { display: none; }
+form#change-email.htmx-request svg { display: none; }
+form#change-email.htmx-request .spinner { display: block; }
+
+
+/* SETTINGS - DELETE ACCOUNT */
+
+#delete-account-wrapper { margin-bottom: 1.5rem; }
+
+form#delete-account { margin-top: 1.5rem; }
+form#delete-account button { margin-top: 1rem; }
+form#delete-account .spinner { display: none; }
+form#delete-account.htmx-request svg { display: none; }
+form#delete-account.htmx-request .spinner { display: block; }
 
 /* INTRO */
 

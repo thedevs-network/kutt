@@ -1,0 +1,17 @@
+{{> header}}
+<section id="settings">
+  <h1 class="settings-welcome">
+    Welcome, <span>{{user.email}}</span>.
+  </h1>
+  <hr />
+  {{> settings/domain/index}}
+  <hr />
+  {{> settings/apikey}}
+  <hr />
+  {{> settings/change_password}}
+  <hr />
+  {{> settings/change_email}}
+  <hr />
+  {{> settings/delete_account}}
+</section>
+{{> footer}}

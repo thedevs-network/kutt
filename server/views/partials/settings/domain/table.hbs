@@ -1,0 +1,45 @@
+<table id="domains-table" hx-swap-oob="true">
+  <thead>
+    <tr>
+      <th class="domain">Domain</th>
+      <th class="homepage">Homepage</th>
+      <th class="actions"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#if domains}}
+      {{#each domains}}
+        <tr>
+          <td class="domain">
+            {{address}}
+          </td>
+          <td class="homepage">
+            {{#if homepage}}
+              {{homepage}}
+            {{else}}
+              {{@root.default_domain}}
+            {{/if}}
+          </td>
+          <td class="actions">
+            <button 
+              class="action delete" 
+              hx-on:click='openDialog("domain-dialog")' 
+              hx-get="/confirm-domain-delete" 
+              hx-target="#domain-dialog .content-wrapper" 
+              hx-indicator="#domain-dialog" 
+              hx-vals='{"id":"{{id}}"}'
+            >
+              {{> icons/trash}}
+            </button>
+          </td>
+        </tr>
+      {{/each}}
+    {{else}}
+      <tr>
+        <td class="no-entry">
+          No domains yet.
+        </td>
+      </tr>
+    {{/if}}
+  </tbody>
+</table>

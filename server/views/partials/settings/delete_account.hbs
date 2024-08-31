@@ -1,0 +1,42 @@
+<section id="delete-account-wrapper">
+  <h2>
+    Delete account
+  </h2>
+  <p>Delete your account from {{default_domain}}.</p>
+  <form 
+    id="delete-account"
+    hx-post="/api/users/delete"
+    hx-select="form"
+    hx-target="this"
+    hx-swap="outerHTML"
+    hx-sync="this:abort"
+  >
+    {{#if success}}
+      <p class="success">{{success}}</p>
+    {{else}}
+      <div class="inputs">
+        <label class="{{#if errors.password}}error{{/if}}">
+          Password:
+          <input 
+            id="password-for-delete-account" 
+            name="password" 
+            type="password" 
+            placeholder="Password..."
+            hx-preserve="true"
+          />
+          {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
+        </label>
+      </div>
+      <button class="danger" type="submit">
+        <span>{{> icons/trash}}</span>
+        <span>{{> icons/spinner}}</span>
+        Delete
+      </button>
+      {{#if error}}
+        {{#unless errors}}
+          <p class="error">{{error}}</p>
+        {{/unless}}
+      {{/if}}
+    {{/if}}
+  </form>
+</section>

@@ -16,6 +16,7 @@ const env = require("../env");
 const dnsLookup = promisify(dns.lookup);
 
 const checkUser = (value, { req }) => !!req.user;
+const sanitizeCheckbox = value => value === true || value === "on" || value;
 
 let body1;
 let body2;
@@ -177,39 +178,39 @@ const editLink = [
 //     .isLength({ min: 36, max: 36 })
 // ];
 
-// export const addDomain = [
-//   body("address", "Domain is not valid")
-//     .exists({ checkFalsy: true, checkNull: true })
-//     .isLength({ min: 3, max: 64 })
-//     .withMessage("Domain length must be between 3 and 64.")
-//     .trim()
-//     .customSanitizer(value => {
-//       const parsed = URL.parse(value);
-//       return removeWww(parsed.hostname || parsed.href);
-//     })
-//     .custom(value => urlRegex({ exact: true, strict: false }).test(value))
-//     .custom(value => value !== env.DEFAULT_DOMAIN)
-//     .withMessage("You can't use the default domain.")
-//     .custom(async value => {
-//       const domain = await query.domain.find({ address: value });
-//       if (domain?.user_id || domain?.banned) return Promise.reject();
-//     })
-//     .withMessage("You can't add this domain."),
-//   body("homepage")
-//     .optional({ checkFalsy: true, nullable: true })
-//     .customSanitizer(addProtocol)
-//     .custom(value => urlRegex({ exact: true, strict: false }).test(value))
-//     .withMessage("Homepage is not valid.")
-// ];
+const addDomain = [
+  body("address", "Domain is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 3, max: 64 })
+    .withMessage("Domain length must be between 3 and 64.")
+    .trim()
+    .customSanitizer(value => {
+      const parsed = URL.parse(value);
+      return removeWww(parsed.hostname || parsed.href);
+    })
+    .custom(value => urlRegex({ exact: true, strict: false }).test(value))
+    .custom(value => value !== env.DEFAULT_DOMAIN)
+    .withMessage("You can't use the default domain.")
+    .custom(async value => {
+      const domain = await query.domain.find({ address: value });
+      if (domain?.user_id || domain?.banned) return Promise.reject();
+    })
+    .withMessage("You can't add this domain."),
+  body("homepage")
+    .optional({ checkFalsy: true, nullable: true })
+    .customSanitizer(addProtocol)
+    .custom(value => urlRegex({ exact: true, strict: false }).test(value))
+    .withMessage("Homepage is not valid.")
+];
 
-// export const removeDomain = [
-//   param("id", "ID is invalid.")
-//     .exists({
-//       checkFalsy: true,
-//       checkNull: true
-//     })
-//     .isLength({ min: 36, max: 36 })
-// ];
+const removeDomain = [
+  param("id", "ID is invalid.")
+    .exists({
+      checkFalsy: true,
+      checkNull: true
+    })
+    .isLength({ min: 36, max: 36 })
+];
 
 const deleteLink = [
   param("id", "ID is invalid.")
@@ -233,34 +234,38 @@ const deleteLink = [
 //     .withMessage(`You can only report a ${env.DEFAULT_DOMAIN} link.`)
 // ];
 
-// export const banLink = [
-//   param("id", "ID is invalid.")
-//     .exists({
-//       checkFalsy: true,
-//       checkNull: true
-//     })
-//     .isLength({ min: 36, max: 36 }),
-//   body("host", '"host" should be a boolean.')
-//     .optional({
-//       nullable: true
-//     })
-//     .isBoolean(),
-//   body("user", '"user" should be a boolean.')
-//     .optional({
-//       nullable: true
-//     })
-//     .isBoolean(),
-//   body("userlinks", '"userlinks" should be a boolean.')
-//     .optional({
-//       nullable: true
-//     })
-//     .isBoolean(),
-//   body("domain", '"domain" should be a boolean.')
-//     .optional({
-//       nullable: true
-//     })
-//     .isBoolean()
-// ];
+const banLink = [
+  param("id", "ID is invalid.")
+    .exists({
+      checkFalsy: true,
+      checkNull: true
+    })
+    .isLength({ min: 36, max: 36 }),
+  body("host", '"host" should be a boolean.')
+    .optional({
+      nullable: true
+    })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean(),
+  body("user", '"user" should be a boolean.')
+    .optional({
+      nullable: true
+    })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean(),
+  body("userLinks", '"userLinks" should be a boolean.')
+    .optional({
+      nullable: true
+    })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean(),
+  body("domain", '"domain" should be a boolean.')
+    .optional({
+      nullable: true
+    })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean()
+];
 
 // export const getStats = [
 //   param("id", "ID is invalid.")
@@ -303,16 +308,33 @@ const login = [
     .exists({ checkFalsy: true, checkNull: true })
     .trim()
     .isEmail()
-    .isLength({ min: 0, max: 255 })
+    .isLength({ min: 1, max: 255 })
     .withMessage("Email length must be max 255.")
 ];
 
-// export const changePassword = [
-//   body("password", "Password is not valid.")
-//     .exists({ checkFalsy: true, checkNull: true })
-//     .isLength({ min: 8, max: 64 })
-//     .withMessage("Password length must be between 8 and 64.")
-// ];
+const changePassword = [
+  body("currentpassword", "Password is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 8, max: 64 })
+    .withMessage("Password length must be between 8 and 64."),
+  body("newpassword", "Password is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 8, max: 64 })
+    .withMessage("Password length must be between 8 and 64.")
+];
+
+const changeEmail = [
+  body("password", "Password is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 8, max: 64 })
+    .withMessage("Password length must be between 8 and 64."),
+  body("email", "Email address is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .trim()
+    .isEmail()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("Email length must be max 255.")
+];
 
 // export const resetPasswordRequest = [
 //   body("email", "Email is not valid.")
@@ -336,15 +358,16 @@ const login = [
 //     .withMessage("Email length must be max 255.")
 // ];
 
-// export const deleteUser = [
-//   body("password", "Password is not valid.")
-//     .exists({ checkFalsy: true, checkNull: true })
-//     .isLength({ min: 8, max: 64 })
-//     .custom(async (password, { req }) => {
-//       const isMatch = await bcrypt.compare(password, req.user.password);
-//       if (!isMatch) return Promise.reject();
-//     })
-// ];
+const deleteUser = [
+  body("password", "Password is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 8, max: 64 })
+    .custom(async (password, { req }) => {
+      const isMatch = await bcrypt.compare(password, req.user.password);
+      if (!isMatch) return Promise.reject();
+    })
+    .withMessage("Password is not correct.")
+];
 
 // TODO: if user has posted malware should do something better
 function cooldown(user) {
@@ -461,15 +484,21 @@ async function bannedHost(domain) {
 };
 
 module.exports = {
+  addDomain,
+  banLink,
   bannedDomain,
   bannedHost,
+  changeEmail,
+  changePassword,
   checkUser,
   cooldown,
   createLink,
   deleteLink,
+  deleteUser,
   editLink,
   linksCount,
   login, 
   malware,
+  removeDomain,
   signup,
 }

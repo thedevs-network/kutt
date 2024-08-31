@@ -1,0 +1,61 @@
+<form 
+  id="add-domain"
+  hx-post="/api/domains"
+  hx-sync="this:abort"
+  hx-swap="outerHTML"
+  hx-on::after-request="
+    document.querySelector('.show-domain-form').classList.remove('hidden');
+    document.querySelector('#add-domain').remove();
+  "
+>
+  <div class="inputs">
+    <label class="{{#if errors.address}}error{{/if}}">
+      Address:
+      <input 
+        id="address" 
+        name="address" 
+        type="text" 
+        placeholder="yoursite.com" 
+        required="true" 
+        hx-preserve="true" 
+
+      />
+      {{#if errors.address}}<p class="error">{{errors.address}}</p>{{/if}}
+    </label>
+    <label class="{{#if errors.homepage}}error{{/if}}">
+      Homepage (Optional):
+      <input 
+        id="homepage" 
+        name="homepage" 
+        placeholder="Homepage URL" 
+        type="text" 
+        hx-preserve="true" 
+
+      />
+      {{#if errors.homepage}}<p class="error">{{errors.homepage}}</p>{{/if}}
+    </label>
+  </div>
+  <p>
+    <small>
+      If you leave homepage empty, <b>yoursite.com</b> will be redirected to <b>{{default_domain}}</b>.
+    </small>
+  </p>
+  <div class="buttons-wrapper">
+    <button type="button" onclick="
+      document.querySelector('.show-domain-form').classList.remove('hidden');
+      document.querySelector('#add-domain').remove();
+    ">
+      Cancel
+    </button>
+    <button type="submit" class="primary">
+      <span>{{> icons/plus}}</span>
+      Add domain
+    </button>
+  </div>
+  {{> icons/spinner}}
+  {{#unless errors}}
+    {{#if error}}
+      <p class="error">{{error}}</p>
+    {{/if}}
+  {{/unless}}
+</form>
