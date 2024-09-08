@@ -1,0 +1,30 @@
+<form
+  id="reset-password-form"
+  hx-post="/api/auth/reset-password"
+  hx-sync="this:abort"
+  hx-swap="outerHTML"
+> 
+  {{#if message}}
+    <p class="success">{{message}}</p>
+  {{else}}
+    <div class="inputs-wrapper">
+      <label>
+        Email address:
+        <input 
+          id="reset-password-email" 
+          name="email" 
+          type="email" 
+          placeholder="Email address..."
+          hx-preserve="true"
+          class="{{#if errors.email}}error{{/if}}"
+          required 
+        />
+      </label>
+      <button type="submit" class="primary">
+        <span>{{> icons/spinner}}</span>
+        Reset password
+      </button>
+    </div>
+    {{#if error}}<p class="error">{{error}}</p>{{/if}}
+  {{/if}}
+</form>

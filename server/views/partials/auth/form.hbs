@@ -25,11 +25,12 @@
   {{!-- TODO: Agree with terms --}}
   <div class="buttons-wrapper">
     <button type="submit" class="primary login">
-      <svg class="with-text icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#000" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4m-5-4 5-5-5-5m3.8 5H3"/></svg>
-      <svg class="with-text spinner" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M5 5l2.8 2.8m8.4 8.4 2.9 2.9M2 12h4m12 0h4M5 19l2.8-2.8m8.4-8.4 2.9-2.9"/></svg>
+      <span>{{> icons/login}}</span>
+      <span>{{> icons/spinner}}</span>
       Log in
     </button>
     <button 
+      type="button"
       class="secondary signup" 
       hx-post="/api/auth/signup" 
       hx-target="#login-signup" 
@@ -40,12 +41,12 @@
       hx-on:htmx:before-request="htmx.addClass('#login-signup', 'signup')"
       hx-on:htmx:after-request="htmx.removeClass('#login-signup', 'signup')"
     >
-        <svg class="with-text icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#000" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6m3-3h-6"/></svg>
-        <svg class="with-text spinner" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M5 5l2.8 2.8m8.4 8.4 2.9 2.9M2 12h4m12 0h4M5 19l2.8-2.8m8.4-8.4 2.9-2.9"/></svg>
+        <span>{{> icons/new_user}}</span>
+        <span>{{> icons/spinner}}</span>
         Sign up
     </button>
   </div>
-  <a class="forgot-password" href="/forgot-password" title="Reset password">Forgot your password?</a>
+  <a class="forgot-password" href="/reset-password" title="Reset password">Forgot your password?</a>
   {{#unless errors}}
     {{#if error}}
       <p class="error">{{error}}</p>

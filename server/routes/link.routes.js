@@ -66,27 +66,32 @@ router.post(
   asyncHandler(link.ban)
 );
 
-// router.get(
-//   "/:id/stats",
-//   asyncHandler(auth.apikey),
-//   asyncHandler(auth.jwt),
-//   validators.getStats,
-//   asyncHandler(link.stats)
-// );
+router.get(
+  "/:id/stats",
+  helpers.viewTemplate("partials/stats"),
+  asyncHandler(auth.apikey),
+  asyncHandler(auth.jwt),
+  validators.getStats,
+  asyncHandler(helpers.verify),
+  asyncHandler(link.stats)
+);
 
-// router.post(
-//   "/:id/protected",
-//   validators.redirectProtected,
-//   asyncHandler(helpers.verify),
-//   asyncHandler(link.redirectProtected)
-// );
+router.post(
+  "/:id/protected",
+  helpers.viewTemplate("partials/protected/form"),
+  locals.protected,
+  validators.redirectProtected,
+  asyncHandler(helpers.verify),
+  asyncHandler(link.redirectProtected)
+);
 
-// router.post(
-//   "/report",
-//   validators.reportLink,
-//   asyncHandler(helpers.verify),
-//   asyncHandler(link.report)
-// );
+router.post(
+  "/report",
+  helpers.viewTemplate("partials/report/form"),
+  validators.reportLink,
+  asyncHandler(helpers.verify),
+  asyncHandler(link.report)
+);
 
 
 module.exports = router;

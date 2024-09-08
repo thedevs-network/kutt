@@ -2,7 +2,7 @@ const ms = require("ms");
 const path = require("path");
 const nanoid = require("nanoid/generate");
 const JWT = require("jsonwebtoken");
-const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays } = require("date-fns");
+const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears } = require("date-fns");
 const hbs = require("hbs");
 
 const env = require("../env");
@@ -15,8 +15,6 @@ class CustomError extends Error {
     this.data = data;
   }
 }
-
-const query = require("../queries");
 
 function isAdmin(email) {
   return env.ADMIN_EMAILS.split(",")
@@ -37,7 +35,7 @@ function signToken(user) {
     )
 }
 
-async function generateId(domain_id) {
+async function generateId(query, domain_id) {
   const address = nanoid(
     "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789",
     env.LINK_LENGTH
@@ -53,7 +51,7 @@ function addProtocol(url) {
 }
 
 function getShortURL(address, domain) {
-  const protocol = env.CUSTOM_DOMAIN_USE_HTTPS || !domain ? "https://" : "http://";
+  const protocol = (env.CUSTOM_DOMAIN_USE_HTTPS || !domain) && !env.isDev ? "https://" : "http://";
   const link = `${domain || env.DEFAULT_DOMAIN}/${address}`;
   const url = `${protocol}${link}`;
   return { link, url };
@@ -96,7 +94,7 @@ function getDifferenceFunction(type) {
   if (type === "lastDay") return differenceInHours;
   if (type === "lastWeek") return differenceInDays;
   if (type === "lastMonth") return differenceInDays;
-  if (type === "allTime") return differenceInMonths;
+  if (type === "lastYear") return differenceInMonths;
   throw new Error("Unknown type.");
 }
 
@@ -110,11 +108,14 @@ function getUTCDate(dateString) {
   );
 }
 
-const STATS_PERIODS = [
-  [1, "lastDay"],
-  [7, "lastWeek"],
-  [30, "lastMonth"]
-];
+function getStatsPeriods(now) {
+  return [
+    ["lastDay", subHours(now, 24)],
+    ["lastWeek", subDays(now, 7)],
+    ["lastMonth", subDays(now, 30)],
+    ["lastYear", subMonths(now, 12)],
+  ]
+}
 
 const preservedURLs = [
   "login",
@@ -233,6 +234,10 @@ function registerHandlebarsHelpers() {
   hbs.registerHelper("ifEquals", function(arg1, arg2, options) {
     return (arg1 === arg2) ? options.fn(this) : options.inverse(this);
   });
+
+  hbs.registerHelper("json", function(context) {
+    return JSON.stringify(context);
+  });
   
   const blocks = {};
 
@@ -270,6 +275,6 @@ module.exports = {
   sanitize,
   signToken,
   sleep,
-  STATS_PERIODS,
+  getStatsPeriods,
   statsObjectToArray,
 }

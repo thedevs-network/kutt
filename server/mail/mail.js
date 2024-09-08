@@ -100,8 +100,23 @@ async function resetPasswordToken(user) {
   }
 }
 
+async function sendReportEmail(link) {
+  const mail = await transporter.sendMail({
+    from: env.MAIL_FROM || env.MAIL_USER,
+    to: env.REPORT_EMAIL,
+    subject: "[REPORT]",
+    text: link,
+    html: link
+  });
+
+  if (!mail.accepted.length) {
+    throw new CustomError("Couldn't submit the report. Try again later.");
+  }
+}
+
 module.exports = {
   changeEmail,
   verification,
   resetPasswordToken,
+  sendReportEmail,
 }

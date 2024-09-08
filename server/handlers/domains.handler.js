@@ -13,8 +13,6 @@ async function add(req, res) {
     user_id: req.user.id
   });
 
-  await sleep(1000);
-
   if (req.isHTML) {
     const domains = (await query.domain.get({ user_id: req.user.id })).map(sanitize.domain);
     res.setHeader("HX-Reswap", "none");
@@ -37,8 +35,6 @@ async function remove(req, res) {
   );
 
   redis.remove.domain(domain);
-
-  await sleep(1000);
 
   if (!domain) {
     throw new CustomError("Could not delete the domain.", 500);

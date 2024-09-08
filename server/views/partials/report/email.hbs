@@ -1,0 +1,17 @@
+<div id="report-email">
+  {{#unless report_email}}
+    <button 
+      class="link"
+      hx-get="/get-report-email"
+      hx-sync="this:abort"
+      hx-swap="innerHTML"
+      hx-target="#report-email"
+    >
+      <span class="eye-icon">{{> icons/eye}}</span>
+      <span>{{> icons/spinner}}</span>
+      show email address
+    </button>
+  {{else}}
+    {{report_email}}
+  {{/unless}}
+</div>

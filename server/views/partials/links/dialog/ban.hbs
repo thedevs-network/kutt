@@ -22,8 +22,9 @@
     </label>
   </div>
   <div class="buttons">
-    <button hx-on:click="closeDialog()">Cancel</button>
+    <button type="button" hx-on:click="closeDialog()">Cancel</button>
     <button 
+      type="button"
       class="danger confirm" 
       hx-post="/api/links/admin/ban/{id}" 
       hx-ext="path-params" 

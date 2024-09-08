@@ -9,9 +9,14 @@
       {{> icons/stop}}
     </button>
   {{/if}}
-  <button class="action stats">
+  <a
+    class="button action stats"
+    href="/stats?id={{id}}"
+    title="Stats"
+    class="action stats"
+  >
     {{> icons/chart}}
-  </button>
+  </a>
   <button
     class="action qrcode"
     hx-on:click="handleQRCode(this)"

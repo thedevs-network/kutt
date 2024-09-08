@@ -1,30 +1,40 @@
-import useragent from "useragent";
-import geoip from "geoip-lite";
-import URL from "url";
+const useragent = require("useragent");
+const geoip = require("geoip-lite");
+const URL = require("url");
 
-import query from "../queries";
-import { getStatsLimit, removeWww } from "../utils/utils";
+const { getStatsLimit, removeWww } = require("../utils");
+const query = require("../queries");
 
 const browsersList = ["IE", "Firefox", "Chrome", "Opera", "Safari", "Edge"];
 const osList = ["Windows", "Mac OS", "Linux", "Android", "iOS"];
-const filterInBrowser = (agent) => (item) =>
-  agent.family.toLowerCase().includes(item.toLocaleLowerCase());
-const filterInOs = (agent) => (item) =>
-  agent.os.family.toLowerCase().includes(item.toLocaleLowerCase());
 
-export default function visit({ data }) {
+function filterInBrowser(agent) {
+  return function(item) {
+    return agent.family.toLowerCase().includes(item.toLocaleLowerCase());
+  }
+}
+
+function filterInOs(agent) {
+  return function(item) {
+    return agent.os.family.toLowerCase().includes(item.toLocaleLowerCase());
+  }
+}
+
+module.exports = function({ data }) {
   const tasks = [];
-
-  tasks.push(query.link.incrementVisit({ id: data.link.id }));
+  
+  tasks.push(query.link.incrementVisit({ id:  data.link.id }));
 
   if (data.link.visit_count < getStatsLimit()) {
     const agent = useragent.parse(data.headers["user-agent"]);
     const [browser = "Other"] = browsersList.filter(filterInBrowser(agent));
     const [os = "Other"] = osList.filter(filterInOs(agent));
     const referrer =
-      data.referrer && removeWww(URL.parse(data.referrer).hostname);
+    data.referrer && removeWww(URL.parse(data.referrer).hostname);
     const location = geoip.lookup(data.realIP);
     const country = location && location.country;
+
+    
     tasks.push(
       query.visit.add({
         browser: browser.toLowerCase(),

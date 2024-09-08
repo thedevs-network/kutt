@@ -4,6 +4,7 @@ const { Router } = require("express");
 const validators = require("../handlers/validators.handler");
 const helpers = require("../handlers/helpers.handler");
 const auth = require("../handlers/auth.handler");
+const utils = require("../utils");
 
 const router = Router();
 
@@ -52,6 +53,12 @@ router.post(
   asyncHandler(auth.generateApiKey)
 );
 
-// router.post("/reset-password", asyncHandler(auth.resetPasswordRequest));
+router.post(
+  "/reset-password",
+  helpers.viewTemplate("partials/reset_password/form"),
+  validators.resetPassword,
+  asyncHandler(helpers.verify),
+  asyncHandler(auth.resetPasswordRequest)
+);
 
 module.exports = router;

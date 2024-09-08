@@ -1,0 +1,19 @@
+{{> header}}
+<section id="verify-change-email" class="section-container verify-page">
+  {{#if token_verified}}
+    <h2 hx-get="/" hx-trigger="load delay:2s" hx-target="body" hx-push-url="/">
+      Email address is verified. Redirecting to homepage...
+    </h2>
+  {{else}}
+    <h2>
+      {{> icons/x}}
+      Couldn't verify the email address. Please try again.
+    </h2>
+    {{#if user}}
+      <a href="/settings" title="Settings">Settings →</a>
+    {{else}}
+      <a href="/login" title="Log in or sign up">Log in / sign up →</a>
+    {{/if}}
+  {{/if}}
+</section>
+{{> footer}}

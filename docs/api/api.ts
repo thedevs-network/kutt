@@ -444,9 +444,6 @@ export default {
       Stats: {
         type: "object",
         properties: {
-          allTime: {
-            $ref: "#/components/schemas/StatsItem"
-          },
           lastDay: {
             $ref: "#/components/schemas/StatsItem"
           },
@@ -454,6 +451,9 @@ export default {
             $ref: "#/components/schemas/StatsItem"
           },
           lastWeek: {
+            $ref: "#/components/schemas/StatsItem"
+          },
+          lastYear: {
             $ref: "#/components/schemas/StatsItem"
           },
           updatedAt: {

@@ -54,9 +54,6 @@ const jwt = authenticate("jwt", "Unauthorized.", true);
 const jwtLoose = authenticate("jwt", "Unauthorized.", false);
 const apikey = authenticate("localapikey", "API key is not correct.", false);
 
-/**
- * @type {import("express").Handler}
- */
 async function cooldown(req, res, next) {
   if (env.DISALLOW_ANONYMOUS_LINKS) return next();
   const cooldownConfig = env.NON_USER_COOLDOWN;
@@ -78,18 +75,12 @@ async function cooldown(req, res, next) {
   next();
 }
 
-/**
- * @type {import("express").Handler}
- */
 function admin(req, res, next) {
   // FIXME: attaching to req is risky, find another way
   if (req.user.admin) return next();
   throw new CustomError("Unauthorized", 401);
 }
 
-/**
- * @type {import("express").Handler}
- */
 async function signup(req, res) {
   const salt = await bcrypt.genSalt(12);
   const password = await bcrypt.hash(req.body.password, salt);
@@ -109,9 +100,6 @@ async function signup(req, res) {
   return res.status(201).send({ message: "A verification email has been sent." });
 }
 
-/**
- * @type {import("express").Handler}
- */
 function login(req, res) {
   const token = utils.signToken(req.user);
 
@@ -128,9 +116,6 @@ function login(req, res) {
   return res.status(200).send({ token });
 }
 
-/**
- * @type {import("express").Handler}
- */
 async function verify(req, res, next) {
   if (!req.params.verificationToken) return next();
   
@@ -148,15 +133,19 @@ async function verify(req, res, next) {
   
   if (user) {
     const token = utils.signToken(user);
-    req.token = token;
+    res.clearCookie("token", { httpOnly: true, secure: env.isProd });
+    res.cookie("token", token, {
+      maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
+      httpOnly: true,
+      secure: env.isProd
+    });
+    res.locals.token_verified = true;
+    req.cookies.token = token;
   }
   
   return next();
 }
 
-/**
- * @type {import("express").Handler}
- */
 async function changePassword(req, res) {
   const isMatch = await bcrypt.compare(req.body.currentpassword, req.user.password);
   if (!isMatch) {
@@ -174,8 +163,6 @@ async function changePassword(req, res) {
     throw new CustomError("Couldn't change the password. Try again later.");
   }
 
-  await utils.sleep(1000);
-
   if (req.isHTML) {
     res.setHeader("HX-Trigger-After-Swap", "resetChangePasswordForm");
     res.render("partials/settings/change_password", {
@@ -189,9 +176,6 @@ async function changePassword(req, res) {
     .send({ message: "Your password has been changed successfully." });
 }
 
-/**
- * @type {import("express").Handler}
- */
 async function generateApiKey(req, res) {
   const apikey = nanoid(40);
   
@@ -203,8 +187,6 @@ async function generateApiKey(req, res) {
     throw new CustomError("Couldn't generate API key. Please try again later.");
   }
 
-  await utils.sleep(1000);
-
   if (req.isHTML) {
     res.render("partials/settings/apikey", {
       user: { apikey },
@@ -215,9 +197,6 @@ async function generateApiKey(req, res) {
   return res.status(201).send({ apikey });
 }
 
-/**
- * @type {import("express").Handler}
- */
 async function resetPasswordRequest(req, res) {
   const [user] = await query.user.update(
     { email: req.body.email },
@@ -228,7 +207,15 @@ async function resetPasswordRequest(req, res) {
   );
   
   if (user) {
-    await mail.resetPasswordToken(user);
+    // TODO: handle error
+    await mail.resetPasswordToken(user).catch(() => null);
+  }
+
+  if (req.isHTML) {
+    res.render("partials/reset_password/form", {
+      message: "If the email address exists, a reset password email will be sent to it."
+    });
+    return;
   }
   
   return res.status(200).send({
@@ -236,12 +223,9 @@ async function resetPasswordRequest(req, res) {
   });
 }
 
-/**
- * @type {import("express").Handler}
- */
 async function resetPassword(req, res, next) {
-  const { resetPasswordToken } = req.params;
-  
+  const resetPasswordToken = req.params.resetPasswordToken;
+
   if (resetPasswordToken) {
     const [user] = await query.user.update(
       {
@@ -253,23 +237,25 @@ async function resetPassword(req, res, next) {
   
     if (user) {
       const token = utils.signToken(user);
-      req.token = token;
+      res.clearCookie("token", { httpOnly: true, secure: env.isProd });
+      res.cookie("token", token, {
+        maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
+        httpOnly: true,
+        secure: env.isProd
+      });
+      res.locals.token_verified = true;
+      req.cookies.token = token;
     }
   }
-  return next();
+
+  next();
 }
 
-/**
- * @type {import("express").Handler}
- */
 function signupAccess(req, res, next) {
   if (!env.DISALLOW_REGISTRATION) return next();
   return res.status(403).send({ message: "Registration is not allowed." });
 }
 
-/**
- * @type {import("express").Handler}
- */
 async function changeEmailRequest(req, res) {
   const { email, password } = req.body;
   
@@ -317,11 +303,10 @@ async function changeEmailRequest(req, res) {
   return res.status(200).send({ message });
 }
 
-/**
- * @type {import("express").Handler}
- */
 async function changeEmail(req, res, next) {
-  const { changeEmailToken } = req.params;
+  const changeEmailToken = req.params.changeEmailToken;
+
+  console.log("-", changeEmailToken, "-");
   
   if (changeEmailToken) {
     const foundUser = await query.user.find({
@@ -347,7 +332,14 @@ async function changeEmail(req, res, next) {
   
     if (user) {
       const token = utils.signToken(user);
-      req.token = token;
+      res.clearCookie("token", { httpOnly: true, secure: env.isProd });
+      res.cookie("token", token, {
+        maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
+        httpOnly: true,
+        secure: env.isProd
+      });
+      res.locals.token_verified = true;
+      req.cookies.token = token;
     }
   }
   return next();

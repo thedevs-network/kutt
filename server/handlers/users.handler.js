@@ -17,8 +17,6 @@ async function get(req, res) {
 async function remove(req, res) {
   await query.user.remove(req.user);
 
-  await utils.sleep(1000);
-
   if (req.isHTML) {
     res.clearCookie("token", { httpOnly: true, secure: env.isProd });
     res.setHeader("HX-Trigger-After-Swap", "redirectToHomepage");

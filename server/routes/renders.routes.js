@@ -2,8 +2,8 @@ const asyncHandler = require("express-async-handler");
 const { Router } = require("express");
 
 const helpers = require("../handlers/helpers.handler");
+const renders = require("../handlers/renders.handler");
 const auth = require("../handlers/auth.handler");
-const renders = require("./renders.handler");
 
 const router = Router();
 
@@ -28,10 +28,67 @@ router.get(
 );
 
 router.get(
+  "/404", 
+  asyncHandler(auth.jwtLoose),
+  asyncHandler(renders.notFound)
+);
+
+router.get(
   "/settings",
   asyncHandler(auth.jwtLoose),
   asyncHandler(helpers.addUserLocals),
   asyncHandler(renders.settings)
+);
+
+router.get(
+  "/stats",
+  asyncHandler(auth.jwtLoose),
+  asyncHandler(helpers.addUserLocals),
+  asyncHandler(renders.stats)
+);
+
+router.get(
+  "/banned",
+  asyncHandler(renders.banned)
+);
+
+router.get(
+  "/report",
+  asyncHandler(renders.report)
+);
+
+router.get(
+  "/reset-password",
+  asyncHandler(renders.resetPassword)
+);
+
+router.get(
+  "/reset-password/:resetPasswordToken",
+  asyncHandler(auth.resetPassword),
+  asyncHandler(auth.jwtLoose),
+  asyncHandler(helpers.addUserLocals),
+  asyncHandler(renders.resetPasswordResult)
+);
+
+router.get(
+  "/verify-email/:changeEmailToken",
+  asyncHandler(auth.changeEmail),
+  asyncHandler(auth.jwtLoose),
+  asyncHandler(helpers.addUserLocals),
+  asyncHandler(renders.verifyChangeEmail)
+);
+
+router.get(
+  "/verify/:verificationToken",
+  asyncHandler(auth.verify),
+  asyncHandler(auth.jwtLoose),
+  asyncHandler(helpers.addUserLocals),
+  asyncHandler(renders.verify)
+);
+
+router.get(
+  "/terms",
+  asyncHandler(renders.terms)
 );
 
 // partial renders
@@ -71,6 +128,13 @@ router.get(
   helpers.viewTemplate("partials/settings/domain/delete"),
   asyncHandler(auth.jwt),
   asyncHandler(renders.confirmDomainDelete)
+);
+
+router.get(
+  "/get-report-email", 
+  helpers.addNoLayoutLocals,
+  helpers.viewTemplate("partials/report/email"),
+  asyncHandler(renders.getReportEmail)
 );
 
 module.exports = router;

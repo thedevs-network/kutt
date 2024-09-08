@@ -1,0 +1,33 @@
+<form
+  id="report-form"
+  hx-post="/api/links/{id}/protected"
+  hx-sync="this:abort"
+  hx-ext="path-params"
+  hx-vals='{"id":"{{id}}"}'
+  hx-swap="outerHTML"
+> 
+  {{#if message}}
+    <p class="success">{{message}}</p>
+  {{else}}
+    <div class="inputs-wrapper">
+      <label>
+        Password:
+        <input 
+          type="password" 
+          id="protected-link-password" 
+          name="password" 
+          placeholder="Password..."
+          hx-preserve="true"
+          class="{{#if errors.link}}error{{/if}}"
+          required 
+        />
+      </label>
+      <button type="submit" class="primary">
+        <span>{{> icons/spinner}}</span>
+        <span>{{> icons/key}}</span>
+        Unlock & Go
+      </button>
+    </div>
+    {{#if error}}<p class="error">{{error}}</p>{{/if}}
+  {{/if}}
+</form>

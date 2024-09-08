@@ -5,9 +5,10 @@ const URL = require("url");
 const dns = require("dns");
 
 const validators = require("./validators.handler");
-// const transporter = require("../mail");
+const map = require("../utils/map.json");
+const transporter = require("../mail");
 const query = require("../queries");
-// const queue = require("../queues");
+const queue = require("../queues");
 const utils = require("../utils");
 const env = require("../env");
 const { differenceInSeconds } = require("date-fns");
@@ -15,9 +16,6 @@ const { differenceInSeconds } = require("date-fns");
 const CustomError = utils.CustomError;
 const dnsLookup = promisify(dns.lookup);
 
-/**
- * @type {import("express").Handler}
- */
 async function get(req, res) {
   const { limit, skip, all } = req.context;
   const search = req.query.search;
@@ -34,8 +32,6 @@ async function get(req, res) {
 
   const links = data.map(utils.sanitize.link);
 
-  await utils.sleep(1000);
-    
   if (req.isHTML) {
     res.render("partials/links/table", {
       total,
@@ -54,9 +50,6 @@ async function get(req, res) {
   });
 };
 
-/**
- * @type {import("express").Handler}
- */
 async function create(req, res) {
   const { reuse, password, customurl, description, target, fetched_domain, expire_in } = req.body;
   const domain_id = fetched_domain ? fetched_domain.id : null;
@@ -78,7 +71,7 @@ async function create(req, res) {
         address: customurl,
         domain_id
       }),
-    !customurl && utils.generateId(domain_id),
+    !customurl && utils.generateId(query, domain_id),
     validators.bannedDomain(targetDomain),
     validators.bannedHost(targetDomain)
   ]);
@@ -161,8 +154,6 @@ async function edit(req, res) {
     isChanged = true;
   });
 
-  await utils.sleep(1000);
-  
   if (!isChanged) {
     throw new CustomError("Should at least update one field.");
   }
@@ -215,9 +206,6 @@ async function edit(req, res) {
   return res.status(200).send(utils.sanitize.link({ ...link, ...updatedLink }));
 };
 
-/**
- * @type {import("express").Handler}
- */
 async function remove(req, res) {
   const { error, isRemoved, link } = await query.link.remove({
     uuid: req.params.id,
@@ -228,8 +216,6 @@ async function remove(req, res) {
     const messsage = error || "Could not delete the link.";
     throw new CustomError(messsage);
   }
-
-  await utils.sleep(1000);
 
   if (req.isHTML) {
     res.setHeader("HX-Reswap", "outerHTML");
@@ -245,24 +231,22 @@ async function remove(req, res) {
     .send({ message: "Link has been deleted successfully." });
 };
 
-// export const report: Handler = async (req, res) => {
-//   const { link } = req.body;
+async function report(req, res) {
+  const { link } = req.body;
 
-//   const mail = await transporter.sendMail({
-//     from: env.MAIL_FROM || env.MAIL_USER,
-//     to: env.REPORT_EMAIL,
-//     subject: "[REPORT]",
-//     text: link,
-//     html: link
-//   });
+  await transporter.sendReportEmail(link);
 
-//   if (!mail.accepted.length) {
-//     throw new CustomError("Couldn't submit the report. Try again later.");
-//   }
-//   return res
-//     .status(200)
-//     .send({ message: "Thanks for the report, we'll take actions shortly." });
-// };
+  if (req.isHTML) {
+    res.render("partials/report/form", {
+      message: "Report was received. We'll take actions shortly."
+    });
+    return;
+  }
+  
+  return res
+    .status(200)
+    .send({ message: "Thanks for the report, we'll take actions shortly." });
+};
 
 async function ban(req, res) {
   const { id } = req.params;
@@ -320,8 +304,6 @@ async function ban(req, res) {
   });
 
   // 8. Send response
-  await utils.sleep(1000);
-  
   if (req.isHTML) {
     res.setHeader("HX-Reswap", "outerHTML");
     res.setHeader("HX-Trigger", "reloadLinks");
@@ -334,148 +316,178 @@ async function ban(req, res) {
   return res.status(200).send({ message: "Banned link successfully." });
 };
 
-// export const redirect = (app) => async (
-//   req,
-//   res,
-//   next
-// ) => {
-//   const isBot = isbot(req.headers["user-agent"]);
-//   const isPreservedUrl = validators.preservedUrls.some(
-//     item => item === req.path.replace("/", "")
-//   );
+async function redirect(req, res, next) {
+  const isPreservedUrl = utils.preservedURLs.some(
+    item => item === req.path.replace("/", "")
+  );
 
-//   if (isPreservedUrl) return next();
+  if (isPreservedUrl) return next();
 
-//   // 1. If custom domain, get domain info
-//   const host = utils.removeWww(req.headers.host);
-//   const domain =
-//     host !== env.DEFAULT_DOMAIN
-//       ? await query.domain.find({ address: host })
-//       : null;
+  // 1. If custom domain, get domain info
+  const host = utils.removeWww(req.headers.host);
+  const domain =
+    host !== env.DEFAULT_DOMAIN
+      ? await query.domain.find({ address: host })
+      : null;
 
-//   // 2. Get link
-//   const address = req.params.id.replace("+", "");
-//   const link = await query.link.find({
-//     address,
-//     domain_id: domain ? domain.id : null
-//   });
+  // 2. Get link
+  const address = req.params.id.replace("+", "");
+  const link = await query.link.find({
+    address,
+    domain_id: domain ? domain.id : null
+  });
 
-//   // 3. When no link, if has domain redirect to domain's homepage
-//   // otherwise redirect to 404
-//   if (!link) {
-//     return res.redirect(302, domain ? domain.homepage : "/404");
-//   }
+  // 3. When no link, if has domain redirect to domain's homepage
+  // otherwise redirect to 404
+  if (!link) {
+    return res.redirect(domain.homepage || "/404");
+  }
 
-//   // 4. If link is banned, redirect to banned page.
-//   if (link.banned) {
-//     return res.redirect("/banned");
-//   }
+  // 4. If link is banned, redirect to banned page.
+  if (link.banned) {
+    return res.redirect("/banned");
+  }
 
-//   // 5. If wants to see link info, then redirect
-//   const doesRequestInfo = /.*\+$/gi.test(req.params.id);
-//   if (doesRequestInfo && !link.password) {
-//     return app.render(req, res, "/url-info", { target: link.target });
-//   }
+  // 5. If wants to see link info, then redirect
+  const isRequestingInfo = /.*\+$/gi.test(req.params.id);
+  if (isRequestingInfo && !link.password) {
+    if (req.isHTML) {
+      res.render("url_info", { 
+        title: "Short link information",
+        target: link.target,
+        link: utils.getShortURL(link.address, link.domain).link
+      });
+      return;
+    }
+    return res.send({ target: link.target });
+  }
 
-//   // 6. If link is protected, redirect to password page
-//   if (link.password) {
-//     return res.redirect(`/protected/${link.uuid}`);
-//   }
+  // 6. If link is protected, redirect to password page
+  if (link.password) {
+    res.render("protected", {
+      title: "Protected short link",
+      id: link.uuid
+    });
+    return;
+  }
 
-//   // 7. Create link visit
-//   if (link.user_id && !isBot) {
-//     queue.visit.add({
-//       headers: req.headers,
-//       realIP: req.realIP,
-//       referrer: req.get("Referrer"),
-//       link
-//     });
-//   }
+  // 7. Create link visit
+  const isBot = isbot(req.headers["user-agent"]);
+  if (link.user_id && !isBot) {
+    queue.visit.add({
+      headers: req.headers,
+      realIP: req.realIP,
+      referrer: req.get("Referrer"),
+      link
+    });
+  }
 
-//   // 8. Redirect to target
-//   return res.redirect(link.target);
-// };
+  // 8. Redirect to target
+  return res.redirect(link.target);
+};
 
-// export const redirectProtected: Handler = async (req, res) => {
-//   // 1. Get link
-//   const uuid = req.params.id;
-//   const link = await query.link.find({ uuid });
+async function redirectProtected(req, res) {
+  // 1. Get link
+  const uuid = req.params.id;
+  const link = await query.link.find({ uuid });
 
-//   // 2. Throw error if no link
-//   if (!link || !link.password) {
-//     throw new CustomError("Couldn't find the link.", 400);
-//   }
+  // 2. Throw error if no link
+  if (!link || !link.password) {
+    throw new CustomError("Couldn't find the link.", 400);
+  }
 
-//   // 3. Check if password matches
-//   const matches = await bcrypt.compare(req.body.password, link.password);
+  // 3. Check if password matches
+  const matches = await bcrypt.compare(req.body.password, link.password);
 
-//   if (!matches) {
-//     throw new CustomError("Password is not correct.", 401);
-//   }
+  if (!matches) {
+    throw new CustomError("Password is not correct.", 401);
+  }
 
-//   // 4. Create visit
-//   if (link.user_id) {
-//     queue.visit.add({
-//       headers: req.headers,
-//       realIP: req.realIP,
-//       referrer: req.get("Referrer"),
-//       link
-//     });
-//   }
+  // 4. Create visit
+  if (link.user_id) {
+    queue.visit.add({
+      headers: req.headers,
+      realIP: req.realIP,
+      referrer: req.get("Referrer"),
+      link
+    });
+  }
 
-//   // 5. Send target
-//   return res.status(200).send({ target: link.target });
-// };
+  // 5. Send target
+  if (req.isHTML) {
+    res.setHeader("HX-Redirect", link.target);
+    res.render("partials/protected/form", {
+      id: link.uuid,
+      message: "Redirecting...",
+    });
+    return;
+  }
+  return res.status(200).send({ target: link.target });
+};
 
-// export const redirectCustomDomain: Handler = async (req, res, next) => {
-//   const { path } = req;
-//   const host = utils.removeWww(req.headers.host);
+async function redirectCustomDomainHomepage(req, res, next) {
+  const path = req.path;
+  const host = utils.removeWww(req.headers.host);
 
-//   if (host === env.DEFAULT_DOMAIN) {
-//     return next();
-//   }
+  if (host === env.DEFAULT_DOMAIN) {
+    return next();
+  }
 
-//   if (
-//     path === "/" ||
-//     validators.preservedUrls
-//       .filter(l => l !== "url-password")
-//       .some(item => item === path.replace("/", ""))
-//   ) {
-//     const domain = await query.domain.find({ address: host });
-//     const redirectURL = domain
-//       ? domain.homepage
-//       : `https://${env.DEFAULT_DOMAIN + path}`;
+  if (
+    path === "/" ||
+    utils.preservedURLs
+      .filter(l => l !== "url-password")
+      .some(item => item === path.replace("/", ""))
+  ) {
+    const domain = await query.domain.find({ address: host });
+    const redirectURL = domain
+      ? domain.homepage
+      : `https://${env.DEFAULT_DOMAIN + path}`;
 
-//     return res.redirect(302, redirectURL);
-//   }
+    return res.redirect(302, redirectURL);
+  }
 
-//   return next();
-// };
+  return next();
+};
 
-// export const stats: Handler = async (req, res) => {
-//   const { user } = req;
-//   const uuid = req.params.id;
+async function stats(req, res) {
+  const { user } = req;
+  const uuid = req.params.id;
 
-//   const link = await query.link.find({
-//     ...(!user.admin && { user_id: user.id }),
-//     uuid
-//   });
+  const link = await query.link.find({
+    ...(!user.admin && { user_id: user.id }),
+    uuid
+  });
 
-//   if (!link) {
-//     throw new CustomError("Link could not be found.");
-//   }
+  if (!link) {
+    if (req.isHTML) {
+      res.setHeader("HX-Redirect", "/404");
+      res.status(200).send("");
+      return;
+    }
+    throw new CustomError("Link could not be found.");
+  }
 
-//   const stats = await query.visit.find({ link_id: link.id }, link.visit_count);
+  const stats = await query.visit.find({ link_id: link.id }, link.visit_count);
 
-//   if (!stats) {
-//     throw new CustomError("Could not get the short link stats.");
-//   }
+  if (!stats) {
+    throw new CustomError("Could not get the short link stats. Try again later.");
+  }
 
-//   return res.status(200).send({
-//     ...stats,
-//     ...utils.sanitize.link(link)
-//   });
-// };
+  if (req.isHTML) {
+    res.render("partials/stats", {
+      link: utils.sanitize.link(link),
+      stats,
+      map,
+    });
+    return;
+  }
+
+  return res.status(200).send({
+    ...stats,
+    ...utils.sanitize.link(link)
+  });
+};
 
 module.exports = {
   ban,
@@ -483,4 +495,9 @@ module.exports = {
   edit,
   get,
   remove,
+  report,
+  stats,
+  redirect,
+  redirectProtected,
+  redirectCustomDomainHomepage,
 }

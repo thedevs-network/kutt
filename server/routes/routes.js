@@ -1,19 +1,25 @@
 const { Router } = require("express");
 
 const helpers = require("./../handlers/helpers.handler");
+const renders = require("./renders.routes");
 const domains = require("./domain.routes");
-// import health from "./health.routes";
+const health = require("./health.routes");
 const link = require("./link.routes");
 const user = require("./user.routes");
 const auth = require("./auth.routes");
 
-const router = Router();
+const apiRouter = Router();
+const renderRouter = Router();
 
-router.use(helpers.addNoLayoutLocals);
-router.use("/domains", domains);
-// router.use("/health", health);
-router.use("/links", link);
-router.use("/users", user);
-router.use("/auth", auth);
+renderRouter.use(renders);
+apiRouter.use(helpers.addNoLayoutLocals);
+apiRouter.use("/domains", domains);
+apiRouter.use("/health", health);
+apiRouter.use("/links", link);
+apiRouter.use("/users", user);
+apiRouter.use("/auth", auth);
 
-module.exports = router;
+module.exports = {
+  api: apiRouter,
+  render: renderRouter,
+};

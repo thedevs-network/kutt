@@ -1,0 +1,24 @@
+{{> header}}
+<section
+  id="stats-section"
+  class="section-container"
+  hx-get="/api/links/{id}/stats"
+  hx-swap="innerHTML"
+  hx-trigger="load once"
+  hx-vals='js:{ id: getQueryParams().id || "" }' 
+  hx-ext="path-params"
+  hx-on::after-swap="
+    trimText('.stats-info p', 80);
+    formatDateHour('#stats .last-update-value');
+    createCharts();
+  "
+>
+  <div class="loading-stats">
+    {{> icons/spinner}}
+    Loading stats...
+  </div>
+</section>
+{{> footer}}
+{{#extend "scripts"}}
+  <script src="/libs/chart.min.js"></script>
+{{/extend}}

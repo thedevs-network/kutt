@@ -167,16 +167,16 @@ const editLink = [
     .isLength({ min: 36, max: 36 })
 ];
 
-// export const redirectProtected = [
-//   body("password", "Password is invalid.")
-//     .exists({ checkFalsy: true, checkNull: true })
-//     .isString()
-//     .isLength({ min: 3, max: 64 })
-//     .withMessage("Password length must be between 3 and 64."),
-//   param("id", "ID is invalid.")
-//     .exists({ checkFalsy: true, checkNull: true })
-//     .isLength({ min: 36, max: 36 })
-// ];
+const redirectProtected = [
+  body("password", "Password is invalid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isString()
+    .isLength({ min: 3, max: 64 })
+    .withMessage("Password length must be between 3 and 64."),
+  param("id", "ID is invalid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 36, max: 36 })
+];
 
 const addDomain = [
   body("address", "Domain is not valid.")
@@ -221,18 +221,18 @@ const deleteLink = [
     .isLength({ min: 36, max: 36 })
 ];
 
-// export const reportLink = [
-//   body("link", "No link has been provided.")
-//     .exists({
-//       checkFalsy: true,
-//       checkNull: true
-//     })
-//     .customSanitizer(addProtocol)
-//     .custom(
-//       value => removeWww(URL.parse(value).hostname) === env.DEFAULT_DOMAIN
-//     )
-//     .withMessage(`You can only report a ${env.DEFAULT_DOMAIN} link.`)
-// ];
+const reportLink = [
+  body("link", "No link has been provided.")
+    .exists({
+      checkFalsy: true,
+      checkNull: true
+    })
+    .customSanitizer(addProtocol)
+    .custom(
+      value => removeWww(URL.parse(value).host) === env.DEFAULT_DOMAIN
+    )
+    .withMessage(`You can only report a ${env.DEFAULT_DOMAIN} link.`)
+];
 
 const banLink = [
   param("id", "ID is invalid.")
@@ -267,14 +267,14 @@ const banLink = [
     .isBoolean()
 ];
 
-// export const getStats = [
-//   param("id", "ID is invalid.")
-//     .exists({
-//       checkFalsy: true,
-//       checkNull: true
-//     })
-//     .isLength({ min: 36, max: 36 })
-// ];
+const getStats = [
+  param("id", "ID is invalid.")
+    .exists({
+      checkFalsy: true,
+      checkNull: true
+    })
+    .isLength({ min: 36, max: 36 })
+];
 
 const signup = [
   body("password", "Password is not valid.")
@@ -336,18 +336,14 @@ const changeEmail = [
     .withMessage("Email length must be max 255.")
 ];
 
-// export const resetPasswordRequest = [
-//   body("email", "Email is not valid.")
-//     .exists({ checkFalsy: true, checkNull: true })
-//     .trim()
-//     .isEmail()
-//     .isLength({ min: 0, max: 255 })
-//     .withMessage("Email length must be max 255."),
-//   body("password", "Password is not valid.")
-//     .exists({ checkFalsy: true, checkNull: true })
-//     .isLength({ min: 8, max: 64 })
-//     .withMessage("Password length must be between 8 and 64.")
-// ];
+const resetPassword = [
+  body("email", "Email is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .trim()
+    .isEmail()
+    .isLength({ min: 0, max: 255 })
+    .withMessage("Email length must be max 255.")
+];
 
 // export const resetEmailRequest = [
 //   body("email", "Email is not valid.")
@@ -496,9 +492,13 @@ module.exports = {
   deleteLink,
   deleteUser,
   editLink,
+  getStats,
   linksCount,
   login, 
   malware,
+  redirectProtected,
   removeDomain,
+  reportLink,
+  resetPassword,
   signup,
 }

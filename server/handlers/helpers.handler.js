@@ -12,9 +12,6 @@ const env = require("../env");
 //   return next();
 // };
 
-/**
- * @type {import("express").Handler}
- */
 function isHTML(req, res, next) {
   const accepts = req.accepts(["json", "html"]);
   req.isHTML = accepts === "html";
@@ -22,9 +19,6 @@ function isHTML(req, res, next) {
 }
 
 function addNoLayoutLocals(req, res, next) {
-/**
- * @type {import("express").Handler}
- */
   res.locals.layout = null;
   next();
 }
@@ -36,17 +30,12 @@ function viewTemplate(template) {
   }
 }
 
-/**
- * @type {import("express").Handler}
- */
 function addConfigLocals(req, res, next) {
   res.locals.default_domain = env.DEFAULT_DOMAIN;
+  res.locals.site_name = env.SITE_NAME;
   next();
 }
 
-/**
- * @type {import("express").Handler}
- */
 async function addUserLocals(req, res, next) {
   const user = req.user;
   res.locals.user = user;
@@ -54,9 +43,6 @@ async function addUserLocals(req, res, next) {
   next();
 }
 
-/**
- * @type {import("express").ErrorRequestHandler}
- */
 function error(error, req, res, _next) {
   if (env.isDev) {
     signale.fatal(error);
@@ -74,9 +60,6 @@ function error(error, req, res, _next) {
 };
 
 
-/**
- * @type {import("express").Handler}
- */
 function verify(req, res, next) {
   const result = validationResult(req);
   if (result.isEmpty()) return next();
@@ -124,7 +107,7 @@ function parseQuery(req, res, next) {
   req.context = {
     limit: limit > 50 ? 50 : limit,
     skip,
-    all: admin ? req.query.all === "true" : false
+    all: admin ? req.query.all === "true" || req.query.all === "on" : false
   };
 
   next();

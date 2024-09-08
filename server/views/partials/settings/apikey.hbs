@@ -12,6 +12,7 @@
     {{#if user.apikey}}
       <div class="clipboard small">
         <button 
+          type="button"
           aria-label="Copy" 
           hx-on:click="handleShortURLCopyLink(this);" 
           data-url="{{user.apikey}}"
@@ -37,7 +38,7 @@
     hx-target="#apikey-wrapper" 
     hx-swap="outerHTML"
   >
-    <button class="secondary">
+    <button type="button" class="secondary">
       <span>{{> icons/zap}}</span>
       <span>{{> icons/spinner}}</span>
       {{#if user.apikey}}Reg{{else}}G{{/if}}enerate key
