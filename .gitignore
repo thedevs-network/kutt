@@ -12,3 +12,4 @@ production-server
 dump.rdb
 docs/api/*.js
 docs/api/static
+**/.DS_Store

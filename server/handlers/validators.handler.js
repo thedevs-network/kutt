@@ -1,6 +1,5 @@
 const { body, param } = require("express-validator");
 const { isAfter, subDays, subHours, addMilliseconds } = require("date-fns");
-const urlRegex = require("url-regex-safe");
 const { promisify } = require("util");
 const bcrypt = require("bcryptjs");
 const axios = require("axios");
@@ -8,8 +7,8 @@ const dns = require("dns");
 const URL = require("url");
 const ms = require("ms");
 
-const { CustomError, addProtocol, preservedURLs, removeWww } = require("../utils");
 const query = require("../queries");
+const utils = require("../utils");
 const knex = require("../knex");
 const env = require("../env");
 
@@ -17,9 +16,6 @@ const dnsLookup = promisify(dns.lookup);
 
 const checkUser = (value, { req }) => !!req.user;
 const sanitizeCheckbox = value => value === true || value === "on" || value;
-
-let body1;
-let body2;
 
 const createLink = [
   body("target")
@@ -29,14 +25,10 @@ const createLink = [
     .trim()
     .isLength({ min: 1, max: 2040 })
     .withMessage("Maximum URL length is 2040.")
-    .customSanitizer(addProtocol)
-    .custom(
-      value =>
-        urlRegex({ exact: true, strict: false }).test(value) ||
-        /^(?!https?)(\w+):\/\//.test(value)
-    )
+    .customSanitizer(utils.addProtocol)
+    .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
     .withMessage("URL is not valid.")
-    .custom(value => removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
+    .custom(value => utils.removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
     .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
   body("password")
     .optional({ nullable: true, checkFalsy: true })
@@ -55,7 +47,7 @@ const createLink = [
     .withMessage("Custom URL length must be between 1 and 64.")
     .custom(value => /^[a-zA-Z0-9-_]+$/g.test(value))
     .withMessage("Custom URL is not valid.")
-    .custom(value => !preservedURLs.some(url => url.toLowerCase() === value))
+    .custom(value => !utils.preservedURLs.some(url => url.toLowerCase() === value))
     .withMessage("You can't use this custom URL."),
   body("reuse")
     .optional({ nullable: true })
@@ -116,14 +108,14 @@ const editLink = [
     .trim()
     .isLength({ min: 1, max: 2040 })
     .withMessage("Maximum URL length is 2040.")
-    .customSanitizer(addProtocol)
+    .customSanitizer(utils.addProtocol)
     .custom(
       value =>
         urlRegex({ exact: true, strict: false }).test(value) ||
         /^(?!https?)(\w+):\/\//.test(value)
     )
     .withMessage("URL is not valid.")
-    .custom(value => removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
+    .custom(value => utils.removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
     .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
   body("password")
     .optional({ nullable: true, checkFalsy: true })
@@ -138,7 +130,7 @@ const editLink = [
     .withMessage("Custom URL length must be between 1 and 64.")
     .custom(value => /^[a-zA-Z0-9-_]+$/g.test(value))
     .withMessage("Custom URL is not valid")
-    .custom(value => !preservedURLs.some(url => url.toLowerCase() === value))
+    .custom(value => !utils.preservedURLs.some(url => url.toLowerCase() === value))
     .withMessage("You can't use this custom URL."),
   body("expire_in")
     .optional({ nullable: true, checkFalsy: true })
@@ -186,7 +178,7 @@ const addDomain = [
     .trim()
     .customSanitizer(value => {
       const parsed = URL.parse(value);
-      return removeWww(parsed.hostname || parsed.href);
+      return utils.removeWww(parsed.hostname || parsed.href);
     })
     .custom(value => urlRegex({ exact: true, strict: false }).test(value))
     .custom(value => value !== env.DEFAULT_DOMAIN)
@@ -198,7 +190,7 @@ const addDomain = [
     .withMessage("You can't add this domain."),
   body("homepage")
     .optional({ checkFalsy: true, nullable: true })
-    .customSanitizer(addProtocol)
+    .customSanitizer(utils.addProtocol)
     .custom(value => urlRegex({ exact: true, strict: false }).test(value))
     .withMessage("Homepage is not valid.")
 ];
@@ -227,9 +219,9 @@ const reportLink = [
       checkFalsy: true,
       checkNull: true
     })
-    .customSanitizer(addProtocol)
+    .customSanitizer(utils.addProtocol)
     .custom(
-      value => removeWww(URL.parse(value).host) === env.DEFAULT_DOMAIN
+      value => utils.removeWww(URL.parse(value).host) === env.DEFAULT_DOMAIN
     )
     .withMessage(`You can only report a ${env.DEFAULT_DOMAIN} link.`)
 ];
@@ -375,7 +367,7 @@ function cooldown(user) {
   );
 
   if (hasCooldownNow) {
-    throw new CustomError("Cooldown because of a malware URL. Wait 12h");
+    throw new utils.CustomError("Cooldown because of a malware URL. Wait 12h");
   }
 }
 
@@ -423,11 +415,11 @@ async function malware(user, target) {
     // Ban if too many cooldowns
     if (updatedUser.cooldowns.length > 2) {
       await query.user.update({ id: user.id }, { banned: true });
-      throw new CustomError("Too much malware requests. You are now banned.");
+      throw new utils.CustomError("Too much malware requests. You are now banned.");
     }
   }
 
-  throw new CustomError(
+  throw new utils.CustomError(
     user ? "Malware detected! Cooldown for 12h." : "Malware detected!"
   );
 };
@@ -441,7 +433,7 @@ async function linksCount(user) {
   });
 
   if (count > env.USER_LIMIT_PER_DAY) {
-    throw new CustomError(
+    throw new utils.CustomError(
       `You have reached your daily limit (${env.USER_LIMIT_PER_DAY}). Please wait 24h.`
     );
   }
@@ -454,7 +446,7 @@ async function bannedDomain(domain) {
   });
 
   if (isBanned) {
-    throw new CustomError("URL is containing malware/scam.", 400);
+    throw new utils.CustomError("URL is containing malware/scam.", 400);
   }
 };
 
@@ -475,7 +467,7 @@ async function bannedHost(domain) {
   }
 
   if (isBanned) {
-    throw new CustomError("URL is containing malware/scam.", 400);
+    throw new utils.CustomError("URL is containing malware/scam.", 400);
   }
 };
 

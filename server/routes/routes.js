@@ -1,6 +1,7 @@
 const { Router } = require("express");
 
 const helpers = require("./../handlers/helpers.handler");
+const locals = require("./../handlers/locals.handler");
 const renders = require("./renders.routes");
 const domains = require("./domain.routes");
 const health = require("./health.routes");
@@ -12,7 +13,7 @@ const apiRouter = Router();
 const renderRouter = Router();
 
 renderRouter.use(renders);
-apiRouter.use(helpers.addNoLayoutLocals);
+apiRouter.use(locals.addNoLayoutLocals);
 apiRouter.use("/domains", domains);
 apiRouter.use("/health", health);
 apiRouter.use("/links", link);

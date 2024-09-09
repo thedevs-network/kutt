@@ -28,7 +28,7 @@ const env = cleanEnv(process.env, {
   ADMIN_EMAILS: str({ default: "" }),
   RECAPTCHA_SITE_KEY: str({ default: "" }),
   RECAPTCHA_SECRET_KEY: str({ default: "" }),
-  GOOGLE_SAFE_BROWSING_KEY: str({ default: "" }), // TODO: something about it
+  GOOGLE_SAFE_BROWSING_KEY: str({ default: "" }),
   MAIL_HOST: str(),
   MAIL_PORT: num(),
   MAIL_SECURE: bool({ default: false }),

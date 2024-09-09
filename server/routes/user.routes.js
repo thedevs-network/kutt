@@ -1,8 +1,9 @@
-const asyncHandler = require("express-async-handler");
 const { Router } = require("express");
 
 const validators = require("../handlers/validators.handler");
 const helpers = require("../handlers/helpers.handler");
+const asyncHandler = require("../utils/asyncHandler");
+const locals = require("../handlers/locals.handler");
 const user = require("../handlers/users.handler");
 const auth = require("../handlers/auth.handler");
 
@@ -17,7 +18,7 @@ router.get(
 
 router.post(
   "/delete",
-  helpers.viewTemplate("partials/settings/delete_account"),
+  locals.viewTemplate("partials/settings/delete_account"),
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   validators.deleteUser,

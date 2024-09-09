@@ -1,16 +1,17 @@
 const { Router } = require("express");
-const asyncHandler = require("express-async-handler");
 
 const validators = require("../handlers/validators.handler");
 const helpers = require("../handlers/helpers.handler");
 const domains = require("../handlers/domains.handler");
+const asyncHandler = require("../utils/asyncHandler");
+const locals = require("../handlers/locals.handler");
 const auth = require("../handlers/auth.handler");
 
 const router = Router();
 
 router.post(
   "/",
-  helpers.viewTemplate("partials/settings/domain/add_form"),
+  locals.viewTemplate("partials/settings/domain/add_form"),
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   validators.addDomain,
@@ -20,7 +21,7 @@ router.post(
 
 router.delete(
   "/:id",
-  helpers.viewTemplate("partials/settings/domain/delete"),
+  locals.viewTemplate("partials/settings/domain/delete"),
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   validators.removeDomain,

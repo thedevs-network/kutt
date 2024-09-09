@@ -1,8 +1,6 @@
 const env = require("./env");
 
-const asyncHandler = require("express-async-handler");
 const cookieParser = require("cookie-parser");
-const compression = require("compression");
 const passport = require("passport");
 const express = require("express");
 const helmet = require("helmet");
@@ -11,20 +9,18 @@ const path = require("path");
 const hbs = require("hbs");
 
 const helpers = require("./handlers/helpers.handler");
+const asyncHandler = require("./utils/asyncHandler");
+const locals = require("./handlers/locals.handler");
 const links = require("./handlers/links.handler");
 const { stream } = require("./config/winston");
 const routes = require("./routes");
 const utils = require("./utils");
 
-// import "./cron";
+require("./cron");
 require("./passport");
 
+// create express app
 const app = express();
-
-// enable gzip on dev
-if (env.isDev) {
-  app.use(compression());
-}
 
 // TODO: comments
 app.set("trust proxy", true);
@@ -41,8 +37,8 @@ app.use(express.static("static"));
 
 app.use(passport.initialize());
 // app.use(helpers.ip);
-app.use(helpers.isHTML);
-app.use(helpers.addConfigLocals);
+app.use(locals.isHTML);
+app.use(locals.addConfigLocals);
 
 // template engine / serve html
 app.set("view engine", "hbs");

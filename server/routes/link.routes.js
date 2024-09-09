@@ -1,10 +1,10 @@
 const { Router } = require("express");
-const asyncHandler = require("express-async-handler");
 const cors = require("cors");
 
 const validators = require("../handlers/validators.handler");
 
 const helpers = require("../handlers/helpers.handler");
+const asyncHandler = require("../utils/asyncHandler");
 const locals = require("../handlers/locals.handler");
 const link = require("../handlers/links.handler");
 const auth = require("../handlers/auth.handler");
@@ -14,7 +14,7 @@ const router = Router();
 
 router.get(
   "/",
-  helpers.viewTemplate("partials/links/table"),
+  locals.viewTemplate("partials/links/table"),
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   helpers.parseQuery,
@@ -24,7 +24,7 @@ router.get(
 router.post(
   "/",
   cors(),
-  helpers.viewTemplate("partials/shortener"),
+  locals.viewTemplate("partials/shortener"),
   asyncHandler(auth.apikey),
   asyncHandler(env.DISALLOW_ANONYMOUS_LINKS ? auth.jwt : auth.jwtLoose),
   asyncHandler(auth.cooldown),
@@ -36,7 +36,7 @@ router.post(
 
 router.patch(
   "/:id",
-  helpers.viewTemplate("partials/links/edit"),
+  locals.viewTemplate("partials/links/edit"),
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   locals.editLink,
@@ -47,7 +47,7 @@ router.patch(
 
 router.delete(
   "/:id",
-  helpers.viewTemplate("partials/links/dialog/delete"),
+  locals.viewTemplate("partials/links/dialog/delete"),
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   validators.deleteLink,
@@ -57,7 +57,7 @@ router.delete(
 
 router.post(
   "/admin/ban/:id",
-  helpers.viewTemplate("partials/links/dialog/ban"),
+  locals.viewTemplate("partials/links/dialog/ban"),
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   asyncHandler(auth.admin),
@@ -68,7 +68,7 @@ router.post(
 
 router.get(
   "/:id/stats",
-  helpers.viewTemplate("partials/stats"),
+  locals.viewTemplate("partials/stats"),
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   validators.getStats,
@@ -78,7 +78,7 @@ router.get(
 
 router.post(
   "/:id/protected",
-  helpers.viewTemplate("partials/protected/form"),
+  locals.viewTemplate("partials/protected/form"),
   locals.protected,
   validators.redirectProtected,
   asyncHandler(helpers.verify),
@@ -87,7 +87,7 @@ router.post(
 
 router.post(
   "/report",
-  helpers.viewTemplate("partials/report/form"),
+  locals.viewTemplate("partials/report/form"),
   validators.reportLink,
   asyncHandler(helpers.verify),
   asyncHandler(link.report)

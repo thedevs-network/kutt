@@ -12,38 +12,17 @@
   <meta name="theme-color" content="#f3f3f3" />
   <meta property="fb:app_id" content="123456789" />
   <meta name="htmx-config" content='{"withCredentials":true}'>
-  {{!-- TODO: meta tags --}}
-  {{!-- <meta
-    property="og:url"
-    content={`https://${publicRuntimeConfig.DEFAULT_DOMAIN}`}
-  />
+  <meta property="og:url" content="https://{{default_domain}}" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content={publicRuntimeConfig.SITE_NAME} />
-  <meta
-    property="og:image"
-    content={`https://${publicRuntimeConfig.DEFAULT_DOMAIN}/images/card.png`}
-  />
-  <meta
-    property="og:description"
-    content="Free & Open Source Modern URL Shortener"
-  />
-  <meta
-    name="twitter:url"
-    content={`https://${publicRuntimeConfig.DEFAULT_DOMAIN}`}
-  />
-  <meta name="twitter:title" content={publicRuntimeConfig.SITE_NAME} />
-  <meta
-    name="twitter:description"
-    content="Free & Open Source Modern URL Shortener"
-  />
-  <meta
-    name="twitter:image"
-    content={`https://${publicRuntimeConfig.DEFAULT_DOMAIN}/images/card.png`}
-  /> --}}
-  {{!-- TODO: configurable title --}}
-  <meta name="description" content="Kutt is a free and open source URL shortener with custom domains and stats." />
-  {{!-- TODO: configurable title --}}
-  <title>Kutt | {{title}}</title>
+  <meta property="og:title" content="{{site_name}}" />
+  <meta property="og:image" content="https://{{default_domain}}/images/card.png" />
+  <meta property="og:description" content="Free & Open Source Modern URL Shortener" />
+  <meta name="twitter:url" content="https://{{default_domain}}" />
+  <meta name="twitter:title" content="{{site_name}}" />
+  <meta name="twitter:description" content="Free & Open Source Modern URL Shortener" />
+  <meta name="twitter:image" content="https://{{default_domain}}/images/card.png" />
+  <meta name="description" content="{{site_name}} is a free and open source URL shortener with custom domains and stats." />
+  <title>{{site_name}} | {{title}}</title>
   <link rel="stylesheet" href="/css/styles.css">
   {{{block "stylesheets"}}}
 </head>

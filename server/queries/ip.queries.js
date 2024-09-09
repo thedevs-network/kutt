@@ -37,7 +37,7 @@ async function find(match) {
 }
 
 function clear() {
-  return knex<IP>("ips")
+  return knex("ips")
   .where(
     "created_at",
     "<",
