@@ -359,12 +359,10 @@ const deleteUser = [
 
 // TODO: if user has posted malware should do something better
 function cooldown(user) {
-  if (!env.GOOGLE_SAFE_BROWSING_KEY || !user || !user.cooldowns) return;
+  if (!env.GOOGLE_SAFE_BROWSING_KEY || !user || !user.cooldown) return;
 
-  // If has active cooldown then throw error
-  const hasCooldownNow = user.cooldowns.some(cooldown =>
-    isAfter(subHours(new Date(), 12), new Date(cooldown))
-  );
+  // If user has active cooldown then throw error
+  const hasCooldownNow = isAfter(subHours(new Date(), 12), new Date(user.cooldown))
 
   if (hasCooldownNow) {
     throw new utils.CustomError("Cooldown because of a malware URL. Wait 12h");
@@ -406,14 +404,13 @@ async function malware(user, target) {
     const [updatedUser] = await query.user.update(
       { id: user.id },
       {
-        cooldowns: knex.raw("array_append(cooldowns, ?)", [
-          new Date().toISOString()
-        ])
-      }
+        cooldown: new Date().toISOString(),
+      },
+      ['malicious_attempts']
     );
 
     // Ban if too many cooldowns
-    if (updatedUser.cooldowns.length > 2) {
+    if (updatedUser.malicious_attempts.length > 2) {
       await query.user.update({ id: user.id }, { banned: true });
       throw new utils.CustomError("Too much malware requests. You are now banned.");
     }
