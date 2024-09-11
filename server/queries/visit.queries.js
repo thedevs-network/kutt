@@ -41,11 +41,11 @@ async function add(params) {
           updated_at: new Date().toISOString(),
           countries: {
             ...visit.countries,
-            [data.country]: visit.countries[data.country] + 1
+            [data.country]: (visit.countries[data.country] ?? 0) + 1
           },
           referrers: {
             ...visit.referrers,
-             [data.referrer]: visit.referrers[data.referrer] + 1
+             [data.referrer]: (visit.referrers[data.referrer] ?? 0) + 1
           }
         });
     } else {
