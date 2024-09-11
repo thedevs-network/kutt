@@ -4,6 +4,7 @@ const nanoid = require("nanoid/generate");
 const JWT = require("jsonwebtoken");
 const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears } = require("date-fns");
 const hbs = require("hbs");
+const   knexUtils = require('./knex')
 
 const env = require("../env");
 
@@ -280,4 +281,5 @@ module.exports = {
   sleep,
   statsObjectToArray,
   urlRegex,
+  ...knexUtils,
 }

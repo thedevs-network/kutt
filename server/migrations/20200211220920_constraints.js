@@ -9,30 +9,30 @@ async function up(knex) {
   await models.createVisitTable(knex);
 
   await Promise.all([
-    knex.raw(`
-      ALTER TABLE domains
-      DROP CONSTRAINT domains_user_id_foreign,
-      ADD CONSTRAINT domains_user_id_foreign
-        FOREIGN KEY (user_id) 
-        REFERENCES users (id)
-        ON DELETE SET NULL;
-    `),
-    knex.raw(`
-      ALTER TABLE links
-      DROP CONSTRAINT links_user_id_foreign,
-      ADD CONSTRAINT links_user_id_foreign
-        FOREIGN KEY (user_id)
-        REFERENCES users (id)
-        ON DELETE CASCADE;
-    `),
-    knex.raw(`
-      ALTER TABLE visits
-      DROP CONSTRAINT visits_link_id_foreign,
-      ADD CONSTRAINT visits_link_id_foreign
-        FOREIGN KEY (link_Id)
-        REFERENCES links (id)
-        ON DELETE CASCADE;
-    `)
+    knex.schema.alterTable('domains', (table) => {
+      table.dropForeign('ignored', 'domains_user_id_foreign');
+      table.foreign('user_id')
+        .references('id')
+        .inTable('users')
+        .onDelete('SET NULL')
+        .withKeyName('domains_user_id_foreign');
+    }),
+    knex.schema.alterTable('links', (table) => {
+      table.dropForeign('ignored', 'links_user_id_foreign');
+      table.foreign('user_id')
+        .references('id')
+        .inTable('users')
+        .onDelete('CASCADE')
+        .withKeyName('links_user_id_foreign');
+    }),
+    knex.schema.alterTable('visits', (table) => {
+      table.dropForeign('ignored', 'visits_link_id_foreign');
+      table.foreign('link_Id')
+        .references('id')
+        .inTable('links')
+        .onDelete('CASCADE')
+        .withKeyName('visits_link_id_foreign');
+    }),
   ]);
 }
 

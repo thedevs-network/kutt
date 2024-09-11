@@ -4,7 +4,6 @@ async function createLinkTable(knex) {
   if (!hasTable) {
     await knex.schema.raw('create extension if not exists "uuid-ossp"');
     await knex.schema.createTable("links", table => {
-      knex.raw('create extension if not exists "uuid-ossp"');
       table.increments("id").primary();
       table.string("address").notNullable();
       table.string("description");
@@ -43,7 +42,7 @@ async function createLinkTable(knex) {
       table
         .uuid("uuid")
         .notNullable()
-        .defaultTo(knex.raw("uuid_generate_v4()"));
+        .defaultTo(knex.fn.uuid());
     });
   }
 }
