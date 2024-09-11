@@ -4,6 +4,7 @@ const JWT = require("jsonwebtoken");
 const path = require("path");
 const hbs = require("hbs");
 const ms = require("ms");
+const knexUtils = require('./knex')
 
 const env = require("../env");
 
@@ -305,4 +306,5 @@ module.exports = {
   sleep,
   statsObjectToArray,
   urlRegex,
+  ...knexUtils,
 }

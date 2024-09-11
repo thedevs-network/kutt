@@ -9,14 +9,17 @@ async function up(knex) {
   await models.createVisitTable(knex);
 
   await Promise.all([
-    knex.raw(`
-      ALTER TABLE domains
-      DROP CONSTRAINT IF EXISTS domains_user_id_unique
-    `),
-    knex.raw(`
-      ALTER TABLE domains
-      ADD COLUMN IF NOT EXISTS uuid UUID DEFAULT uuid_generate_v4()
-    `)
+    async () => {
+      try {
+        await knex.schema.alterTable("domains", (table) => {
+          table.dropUnique([], "domains_user_id_unique");
+        });
+      } catch (ignored) {
+      }
+    },
+    await knex.schema.alterTable("domains", (table) => {
+      table.uuid("uuid").defaultTo(knex.fn.uuid());
+    }),
   ]);
 }
 

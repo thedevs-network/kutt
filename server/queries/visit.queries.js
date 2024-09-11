@@ -11,13 +11,22 @@ async function add(params) {
     referrer: params.referrer.toLowerCase()
   };
 
-  const visit = await knex("visits")
+  const truncatedNow = new Date();
+  truncatedNow.setMinutes(0, 0, 0);
+
+  // Create a subquery first that truncates the
+  const subquery = knex("visits")
+    .select("visits.*")
+    .select({
+      created_at_hours: utils.knexUtils(knex).truncatedTimestamp("created_at", "hour")
+    })
     .where({ link_id: params.id })
-    .andWhere(
-      knex.raw("date_trunc('hour', created_at) = date_trunc('hour', ?)", [
-        knex.fn.now()
-      ])
-    )
+    .as("subquery");
+
+  const visit = await knex
+    .select("*")
+    .from(subquery)
+    .where("created_at_hours", "=", truncatedNow.toISOString())
     .first();
 
   if (visit) {
@@ -49,7 +58,7 @@ async function add(params) {
   }
 
   return visit;
-};
+}
 
 async function find(match, total) {
   if (match.link_id) {
@@ -176,5 +185,5 @@ async function find(match, total) {
 
 module.exports = {
   add,
-  find,
-}
+  find
+};
