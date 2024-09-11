@@ -14,50 +14,54 @@ async function add(params) {
   const truncatedNow = new Date();
   truncatedNow.setMinutes(0, 0, 0);
 
-  // Create a subquery first that truncates the
-  const subquery = knex("visits")
-    .select("visits.*")
-    .select({
-      created_at_hours: utils.knexUtils(knex).truncatedTimestamp("created_at", "hour")
-    })
-    .where({ link_id: params.id })
-    .as("subquery");
+  return  knex.transaction(async (trx) => {
+    // Create a subquery first that truncates the
+    const subquery = trx("visits")
+      .select("visits.*")
+      .select({
+        created_at_hours: utils.knexUtils(trx).truncatedTimestamp("created_at", "hour")
+      })
+      .where({ link_id: params.id })
+      .as("subquery");
 
-  const visit = await knex
-    .select("*")
-    .from(subquery)
-    .where("created_at_hours", "=", truncatedNow.toISOString())
-    .first();
+    const visit = await trx
+      .select("*")
+      .from(subquery)
+      .where("created_at_hours", "=", truncatedNow.toISOString())
+      .forUpdate()
+      .first();
 
-  if (visit) {
-    await knex("visits")
-      .where({ id: visit.id })
-      .increment(`br_${data.browser}`, 1)
-      .increment(`os_${data.os}`, 1)
-      .increment("total", 1)
-      .update({
-        updated_at: new Date().toISOString(),
-        countries: knex.raw(
-          "jsonb_set(countries, '{??}', (COALESCE(countries->>?,'0')::int + 1)::text::jsonb)",
-          [data.country, data.country]
-        ),
-        referrers: knex.raw(
-          "jsonb_set(referrers, '{??}', (COALESCE(referrers->>?,'0')::int + 1)::text::jsonb)",
-          [data.referrer, data.referrer]
-        )
+    if (visit) {
+      await trx("visits")
+        .where({ id: visit.id })
+        .increment(`br_${data.browser}`, 1)
+        .increment(`os_${data.os}`, 1)
+        .increment("total", 1)
+        .update({
+          updated_at: new Date().toISOString(),
+          countries: {
+            ...visit.countries,
+            [data.country]: visit.countries[data.country] + 1
+          },
+          referrers: {
+            ...visit.referrers,
+             [data.referrer]: visit.referrers[data.referrer] + 1
+          }
+        });
+    } else {
+      // This must also happen in the transaction to avoid concurrency
+      await trx("visits").insert({
+        [`br_${data.browser}`]: 1,
+        countries: { [data.country]: 1 },
+        referrers: { [data.referrer]: 1 },
+        [`os_${data.os}`]: 1,
+        total: 1,
+        link_id: data.id
       });
-  } else {
-    await knex("visits").insert({
-      [`br_${data.browser}`]: 1,
-      countries: { [data.country]: 1 },
-      referrers: { [data.referrer]: 1 },
-      [`os_${data.os}`]: 1,
-      total: 1,
-      link_id: data.id
-    });
-  }
+    }
 
-  return visit;
+    return visit;
+  });
 }
 
 async function find(match, total) {
