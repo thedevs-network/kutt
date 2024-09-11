@@ -12,7 +12,9 @@ async function createUserTable(knex) {
         .integer("banned_by_id")
         .references("id")
         .inTable("users");
-      table.specificType("cooldowns", "timestamptz[]");
+      table
+        .json("cooldowns")
+        .defaultTo("[]");
       table
         .string("email")
         .unique()
