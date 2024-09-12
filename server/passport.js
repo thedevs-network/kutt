@@ -17,7 +17,7 @@ passport.use(
     try {
       const user = await query.user.find({ email: payload.sub });
       if (!user) return done(null, false);
-      return done(null, user);
+      return done(null, user, payload);
     } catch (err) {
       return done(err);
     }

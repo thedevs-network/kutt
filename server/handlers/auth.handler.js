@@ -1,4 +1,4 @@
-const { differenceInMinutes, addMinutes, subMinutes } = require("date-fns");
+const { differenceInDays, differenceInMinutes, addMinutes, subMinutes } = require("date-fns");
 const passport = require("passport");
 const { v4: uuid } = require("uuid");
 const bcrypt = require("bcryptjs");
@@ -16,7 +16,7 @@ function authenticate(type, error, isStrict, redirect) {
   return function auth(req, res, next) {
     if (req.user) return next();
     
-    passport.authenticate(type, (err, user) => {
+    passport.authenticate(type, (err, user, info) => {
       if (err) return next(err);
 
       if (
@@ -50,14 +50,23 @@ function authenticate(type, error, isStrict, redirect) {
       if (user && user.banned) {
         throw new CustomError("You're banned from using this website.", 403);
       }
-
       if (user) {
         res.locals.isAdmin = utils.isAdmin(user.email);
         req.user = {
           ...user,
           admin: utils.isAdmin(user.email)
         };
-        return next();
+
+        // renew token if it's been at least one day since the token has been created
+        // only do it for html page requests not api requests
+        if (info?.exp && req.isHTML && redirect === "page") {
+          const diff = Math.abs(differenceInDays(new Date(info.exp * 1000), new Date()));
+          if (diff < 6) {
+            const token = utils.signToken(user);
+            utils.deleteCurrentToken(res);
+            utils.setToken(res, token);
+          }
+        }
       }
       return next();
     })(req, res, next);
