@@ -11,26 +11,25 @@ const router = Router();
 // pages
 router.get(
   "/",
-  asyncHandler(auth.jwtLoose),
+  asyncHandler(auth.jwtLoosePage),
   asyncHandler(locals.user), 
   asyncHandler(renders.homepage)
 );
 
 router.get(
   "/login", 
-  asyncHandler(auth.jwtLoose),
+  asyncHandler(auth.jwtLoosePage),
   asyncHandler(renders.login)
 );
 
 router.get(
   "/logout", 
-  asyncHandler(auth.jwtLoose),
   asyncHandler(renders.logout)
 );
 
 router.get(
   "/404", 
-  asyncHandler(auth.jwtLoose),
+  asyncHandler(auth.jwtLoosePage),
   asyncHandler(locals.user),
   asyncHandler(renders.notFound)
 );
@@ -51,21 +50,21 @@ router.get(
 
 router.get(
   "/banned",
-  asyncHandler(auth.jwtLoose),
+  asyncHandler(auth.jwtLoosePage),
   asyncHandler(locals.user),
   asyncHandler(renders.banned)
 );
 
 router.get(
   "/report",
-  asyncHandler(auth.jwtLoose),
+  asyncHandler(auth.jwtLoosePage),
   asyncHandler(locals.user),
   asyncHandler(renders.report)
 );
 
 router.get(
   "/reset-password",
-  asyncHandler(auth.jwtLoose),
+  asyncHandler(auth.jwtLoosePage),
   asyncHandler(locals.user),
   asyncHandler(renders.resetPassword)
 );
@@ -73,7 +72,7 @@ router.get(
 router.get(
   "/reset-password/:resetPasswordToken",
   asyncHandler(auth.resetPassword),
-  asyncHandler(auth.jwtLoose),
+  asyncHandler(auth.jwtLoosePage),
   asyncHandler(locals.user),
   asyncHandler(renders.resetPasswordResult)
 );
@@ -81,7 +80,7 @@ router.get(
 router.get(
   "/verify-email/:changeEmailToken",
   asyncHandler(auth.changeEmail),
-  asyncHandler(auth.jwtLoose),
+  asyncHandler(auth.jwtLoosePage),
   asyncHandler(locals.user),
   asyncHandler(renders.verifyChangeEmail)
 );
@@ -89,14 +88,14 @@ router.get(
 router.get(
   "/verify/:verificationToken",
   asyncHandler(auth.verify),
-  asyncHandler(auth.jwtLoose),
+  asyncHandler(auth.jwtLoosePage),
   asyncHandler(locals.user),
   asyncHandler(renders.verify)
 );
 
 router.get(
   "/terms",
-  asyncHandler(auth.jwtLoose),
+  asyncHandler(auth.jwtLoosePage),
   asyncHandler(locals.user),
   asyncHandler(renders.terms)
 );

@@ -152,7 +152,7 @@ async function linkEdit(req, res) {
     ...(!req.user.admin && { user_id: req.user.id })
   });
   res.render("partials/links/edit", {
-    ...(!link && utils.sanitize.link(link)),
+    ...(link && utils.sanitize.link(link)),
   });
 }
 

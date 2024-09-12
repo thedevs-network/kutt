@@ -20,17 +20,19 @@ function authenticate(type, error, isStrict, redirect) {
       if (err) return next(err);
 
       if (
+        req.isHTML &&
         redirect &&
         ((!user && isStrict) ||
         (user && isStrict && !user.verified) ||
         (user && user.banned))
       ) {
+        const path = user.banned ? "/logout" : "/login";
         if (redirect === "page") {
-          res.redirect("/login");
+          res.redirect(path);
           return;
         }
         if (redirect === "header") {
-          res.setHeader("HX-Redirect", "/login");
+          res.setHeader("HX-Redirect", path);
           res.send("NOT_AUTHENTICATED");
           return;
         }
@@ -65,7 +67,8 @@ function authenticate(type, error, isStrict, redirect) {
 const local = authenticate("local", "Login credentials are wrong.", true, null);
 const jwt = authenticate("jwt", "Unauthorized.", true, "header");
 const jwtPage = authenticate("jwt", "Unauthorized.", true, "page");
-const jwtLoose = authenticate("jwt", "Unauthorized.", false, null);
+const jwtLoose = authenticate("jwt", "Unauthorized.", false, "header");
+const jwtLoosePage = authenticate("jwt", "Unauthorized.", false, "page");
 const apikey = authenticate("localapikey", "API key is not correct.", false, null);
 
 async function cooldown(req, res, next) {
@@ -350,6 +353,7 @@ module.exports = {
   generateApiKey,
   jwt,
   jwtLoose,
+  jwtLoosePage,
   jwtPage,
   local,
   login,
