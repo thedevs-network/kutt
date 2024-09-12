@@ -23,6 +23,7 @@ const env = cleanEnv(process.env, {
   DEFAULT_MAX_STATS_PER_LINK: num({ default: 5000 }),
   DISALLOW_ANONYMOUS_LINKS: bool({ default: false }),
   DISALLOW_REGISTRATION: bool({ default: false }),
+  SERVER_IP_ADDRESS: str({ default: "" }),
   CUSTOM_DOMAIN_USE_HTTPS: bool({ default: false }),
   JWT_SECRET: str(),
   ADMIN_EMAILS: str({ default: "" }),

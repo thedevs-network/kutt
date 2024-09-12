@@ -1,5 +1,5 @@
+const query = require("../queries");
 const utils = require("../utils");
-const query = require("../queries")
 const env = require("../env");
 
 async function homepage(req, res) {
@@ -10,7 +10,8 @@ async function homepage(req, res) {
 
 function login(req, res) {
   if (req.user) {
-    return res.redirect("/");
+    res.redirect("/");
+    return;
   }
   res.render("login", {
     title: "Log in or sign up"
@@ -18,7 +19,7 @@ function login(req, res) {
 }
 
 function logout(req, res) {
-  res.clearCookie("token", { httpOnly: true, secure: env.isProd });
+  utils.deleteCurrentToken(res);
   res.render("logout", {
     title: "Logging out.."
   });
@@ -31,21 +32,12 @@ function notFound(req, res) {
 }
 
 function settings(req, res) {
-  // TODO: make this a middelware function, apply it to where it's necessary
-  if (!req.user) {
-    return res.redirect("/");
-  }
   res.render("settings", {
     title: "Settings"
   });
 }
 
 function stats(req, res) {
-  // TODO: make this a middelware function, apply it to where it's necessary
-  if (!req.user) {
-    return res.redirect("/");
-  }
-  const id = req.query.id;
   res.render("stats", {
     title: "Stats"
   });
@@ -154,21 +146,13 @@ async function getReportEmail(req, res) {
   });
 }
 
-
 async function linkEdit(req, res) {
   const link = await query.link.find({
     uuid: req.params.id,
     ...(!req.user.admin && { user_id: req.user.id })
   });
-  // TODO: handle when no link
-  // if (!link) {
-  //   return res.render("partials/links/dialog/message", {
-  //     layout: false,
-  //     message: "Could not find the link."
-  //   });
-  // }
   res.render("partials/links/edit", {
-    ...utils.sanitize.link(link),
+    ...(!link && utils.sanitize.link(link)),
   });
 }
 

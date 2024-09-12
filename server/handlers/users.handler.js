@@ -18,7 +18,7 @@ async function remove(req, res) {
   await query.user.remove(req.user);
 
   if (req.isHTML) {
-    res.clearCookie("token", { httpOnly: true, secure: env.isProd });
+    utils.deleteCurrentToken(res);
     res.setHeader("HX-Trigger-After-Swap", "redirectToHomepage");
     res.render("partials/settings/delete_account", {
       success: "Account has been deleted. Logging out..."

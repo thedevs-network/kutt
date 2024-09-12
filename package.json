@@ -27,7 +27,6 @@
   "homepage": "https://github.com/thedevs-network/kutt#readme",
   "dependencies": {
     "app-root-path": "3.1.0",
-    "axios": "1.7.7",
     "bcryptjs": "2.4.3",
     "bull": "4.16.2",
     "cookie-parser": "1.4.6",

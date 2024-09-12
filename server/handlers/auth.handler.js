@@ -3,36 +3,49 @@ const passport = require("passport");
 const { v4: uuid } = require("uuid");
 const bcrypt = require("bcryptjs");
 const nanoid = require("nanoid");
-const axios = require("axios");
 
-const { CustomError } = require("../utils");
 const query = require("../queries");
 const utils = require("../utils");
 const redis = require("../redis");
 const mail = require("../mail");
 const env = require("../env");
 
-function authenticate(type, error, isStrict) {
+const CustomError = utils.CustomError;
+
+function authenticate(type, error, isStrict, redirect) {
   return function auth(req, res, next) {
     if (req.user) return next();
     
     passport.authenticate(type, (err, user) => {
       if (err) return next(err);
-      const accepts = req.accepts(["json", "html"]);
 
+      if (
+        redirect &&
+        ((!user && isStrict) ||
+        (user && isStrict && !user.verified) ||
+        (user && user.banned))
+      ) {
+        if (redirect === "page") {
+          res.redirect("/login");
+          return;
+        }
+        if (redirect === "header") {
+          res.setHeader("HX-Redirect", "/login");
+          res.send("NOT_AUTHENTICATED");
+          return;
+        }
+      }
+      
       if (!user && isStrict) {
-        req.viewTemplate = "partials/auth/form";
         throw new CustomError(error, 401);
       }
 
       if (user && isStrict && !user.verified) {
-        req.viewTemplate = "partials/auth/form";
         throw new CustomError("Your email address is not verified. " +
           "Sign up to get the verification link again.", 400);
       }
 
       if (user && user.banned) {
-        req.viewTemplate = "partials/auth/form";
         throw new CustomError("You're banned from using this website.", 403);
       }
 
@@ -49,10 +62,11 @@ function authenticate(type, error, isStrict) {
   }
 }
 
-const local = authenticate("local", "Login credentials are wrong.", true);
-const jwt = authenticate("jwt", "Unauthorized.", true);
-const jwtLoose = authenticate("jwt", "Unauthorized.", false);
-const apikey = authenticate("localapikey", "API key is not correct.", false);
+const local = authenticate("local", "Login credentials are wrong.", true, null);
+const jwt = authenticate("jwt", "Unauthorized.", true, "header");
+const jwtPage = authenticate("jwt", "Unauthorized.", true, "page");
+const jwtLoose = authenticate("jwt", "Unauthorized.", false, null);
+const apikey = authenticate("localapikey", "API key is not correct.", false, null);
 
 async function cooldown(req, res, next) {
   if (env.DISALLOW_ANONYMOUS_LINKS) return next();
@@ -76,7 +90,6 @@ async function cooldown(req, res, next) {
 }
 
 function admin(req, res, next) {
-  // FIXME: attaching to req is risky, find another way
   if (req.user.admin) return next();
   throw new CustomError("Unauthorized", 401);
 }
@@ -104,11 +117,7 @@ function login(req, res) {
   const token = utils.signToken(req.user);
 
   if (req.isHTML) {
-    res.cookie("token", token, {
-      maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
-      httpOnly: true,
-      secure: env.isProd
-    });
+    utils.setToken(res, token);
     res.render("partials/auth/welcome");
     return;
   }
@@ -133,12 +142,8 @@ async function verify(req, res, next) {
   
   if (user) {
     const token = utils.signToken(user);
-    res.clearCookie("token", { httpOnly: true, secure: env.isProd });
-    res.cookie("token", token, {
-      maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
-      httpOnly: true,
-      secure: env.isProd
-    });
+    utils.deleteCurrentToken(res);
+    utils.setToken(res, token);
     res.locals.token_verified = true;
     req.cookies.token = token;
   }
@@ -208,7 +213,7 @@ async function resetPasswordRequest(req, res) {
   
   if (user) {
     // TODO: handle error
-    await mail.resetPasswordToken(user).catch(() => null);
+    mail.resetPasswordToken(user).catch(() => null);
   }
 
   if (req.isHTML) {
@@ -237,12 +242,8 @@ async function resetPassword(req, res, next) {
   
     if (user) {
       const token = utils.signToken(user);
-      res.clearCookie("token", { httpOnly: true, secure: env.isProd });
-      res.cookie("token", token, {
-        maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
-        httpOnly: true,
-        secure: env.isProd
-      });
+      utils.deleteCurrentToken(res);
+      utils.setToken(res, token);
       res.locals.token_verified = true;
       req.cookies.token = token;
     }
@@ -305,8 +306,6 @@ async function changeEmailRequest(req, res) {
 
 async function changeEmail(req, res, next) {
   const changeEmailToken = req.params.changeEmailToken;
-
-  console.log("-", changeEmailToken, "-");
   
   if (changeEmailToken) {
     const foundUser = await query.user.find({
@@ -332,12 +331,8 @@ async function changeEmail(req, res, next) {
   
     if (user) {
       const token = utils.signToken(user);
-      res.clearCookie("token", { httpOnly: true, secure: env.isProd });
-      res.cookie("token", token, {
-        maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
-        httpOnly: true,
-        secure: env.isProd
-      });
+      utils.deleteCurrentToken(res);
+      utils.setToken(res, token);
       res.locals.token_verified = true;
       req.cookies.token = token;
     }
@@ -355,6 +350,7 @@ module.exports = {
   generateApiKey,
   jwt,
   jwtLoose,
+  jwtPage,
   local,
   login,
   resetPassword,

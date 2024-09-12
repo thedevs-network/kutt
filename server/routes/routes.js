@@ -9,11 +9,11 @@ const link = require("./link.routes");
 const user = require("./user.routes");
 const auth = require("./auth.routes");
 
-const apiRouter = Router();
 const renderRouter = Router();
-
 renderRouter.use(renders);
-apiRouter.use(locals.addNoLayoutLocals);
+
+const apiRouter = Router();
+apiRouter.use(locals.noLayout);
 apiRouter.use("/domains", domains);
 apiRouter.use("/health", health);
 apiRouter.use("/links", link);

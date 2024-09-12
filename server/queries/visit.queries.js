@@ -52,11 +52,11 @@ async function add(params) {
 };
 
 async function find(match, total) {
-  // if (match.link_id) {
-  //   const key = redis.key.stats(match.link_id);
-  //   const cached = await redis.client.get(key);
-  //   if (cached) return JSON.parse(cached);
-  // }
+  if (match.link_id) {
+    const key = redis.key.stats(match.link_id);
+    const cached = await redis.client.get(key);
+    if (cached) return JSON.parse(cached);
+  }
 
   const stats = {
     lastDay: {

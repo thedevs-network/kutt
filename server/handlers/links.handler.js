@@ -1,3 +1,4 @@
+const { differenceInSeconds } = require("date-fns");
 const promisify = require("util").promisify;
 const bcrypt = require("bcryptjs");
 const isbot = require("isbot");
@@ -11,7 +12,6 @@ const query = require("../queries");
 const queue = require("../queues");
 const utils = require("../utils");
 const env = require("../env");
-const { differenceInSeconds } = require("date-fns");
 
 const CustomError = utils.CustomError;
 const dnsLookup = promisify(dns.lookup);
@@ -56,7 +56,7 @@ async function create(req, res) {
   
   const targetDomain = utils.removeWww(URL.parse(target).hostname);
   
-  const queries = await Promise.all([
+  const tasks = await Promise.all([
     validators.cooldown(req.user),
     validators.malware(req.user, target),
     validators.linksCount(req.user),
@@ -78,19 +78,19 @@ async function create(req, res) {
   
   // if "reuse" is true, try to return
   // the existent URL without creating one
-  if (queries[3]) {
-    return res.json(utils.sanitize.link(queries[3]));
+  if (tasks[3]) {
+    return res.json(utils.sanitize.link(tasks[3]));
   }
   
   // Check if custom link already exists
-  if (queries[4]) {
+  if (tasks[4]) {
     const error = "Custom URL is already in use.";
     res.locals.errors = { customurl: error };
     throw new CustomError(error);
   }
 
   // Create new link
-  const address = customurl || queries[5];
+  const address = customurl || tasks[5];
   const link = await query.link.create({
     password,
     address,
@@ -122,7 +122,6 @@ async function create(req, res) {
 }
 
 async function edit(req, res) {
-  const { address, target, description, expire_in, password } = req.body;
   const link = await query.link.find({
     uuid: req.params.id,
     ...(!req.user.admin && { user_id: req.user.id })
@@ -134,23 +133,32 @@ async function edit(req, res) {
 
   let isChanged = false;
   [
-    [address, "address"], 
-    [target, "target"], 
-    [description, "description"], 
-    [expire_in, "expire_in"], 
-    [password, "password"]
+    [req.body.address, "address"], 
+    [req.body.target, "target"], 
+    [req.body.description, "description"], 
+    [req.body.expire_in, "expire_in"], 
+    [req.body.password, "password"]
   ].forEach(([value, name]) => {
     if (!value) {
-      delete req.body[name];
-      return;
+      if (name === "password" && link.password) 
+        req.body.password = null;
+      else {
+        delete req.body[name];
+        return;
+      }
     }
-    if (value === link[name]) {
+    if (value === link[name] && name !== "password") {
       delete req.body[name];
       return;
     }
     if (name === "expire_in")
       if (differenceInSeconds(new Date(value), new Date(link.expire_in)) <= 60) 
           return;
+    if (name === "password")
+      if (value && value.replace(/•/ig, "").length === 0) {
+        delete req.body.password;
+        return;
+      }
     isChanged = true;
   });
 
@@ -158,23 +166,25 @@ async function edit(req, res) {
     throw new CustomError("Should at least update one field.");
   }
 
-  const targetDomain = utils.removeWww(URL.parse(target).hostname);
+  const { address, target, description, expire_in, password } = req.body;
+  
+  const targetDomain = target && utils.removeWww(URL.parse(target).hostname);
   const domain_id = link.domain_id || null;
 
-  const queries = await Promise.all([
+  const tasks = await Promise.all([
     validators.cooldown(req.user),
     target && validators.malware(req.user, target),
-    address && address !== link.address &&
+    address &&
       query.link.find({
         address,
         domain_id
       }),
-    validators.bannedDomain(targetDomain),
-    validators.bannedHost(targetDomain)
+    target && validators.bannedDomain(targetDomain),
+    target && validators.bannedHost(targetDomain)
   ]);
 
   // Check if custom link already exists
-  if (queries[2]) {
+  if (tasks[2]) {
     const error = "Custom URL is already in use.";
     res.locals.errors = { address: error };
     throw new CustomError("Custom URL is already in use.");
@@ -190,7 +200,7 @@ async function edit(req, res) {
       ...(description && { description }),
       ...(target && { target }),
       ...(expire_in && { expire_in }),
-      ...(password && { password })
+      ...((password || password === null) && { password })
     }
   );
 

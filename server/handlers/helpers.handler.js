@@ -1,16 +1,14 @@
 const { validationResult } = require("express-validator");
 const signale = require("signale");
 
-const { CustomError, sanitize } = require("../utils");
 const { logger } = require("../config/winston");
-const query = require("../queries")
+const { CustomError } = require("../utils");
 const env = require("../env");
 
-// export const ip: Handler = (req, res, next) => {
-//   req.realIP =
-//     (req.headers["x-real-ip"] as string) || req.connection.remoteAddress || "";
-//   return next();
-// };
+function ip(req, res, next) {
+  req.realIP = req.headers["x-real-ip"] || req.connection.remoteAddress || "";
+  return next();
+};
 
 function error(error, req, res, _next) {
   if (env.isDev) {
@@ -42,7 +40,6 @@ function verify(req, res, next) {
     res.locals.errors[e.param] = e.msg;
   });
 
-
   throw new CustomError(error, 400);
 }
 
@@ -71,11 +68,10 @@ function parseQuery(req, res, next) {
   }
 
   const limit = parseInt(req.query.limit) || 10;
-  const skip = parseInt(req.query.skip) || 0;
 
   req.context = {
     limit: limit > 50 ? 50 : limit,
-    skip,
+    skip: parseInt(req.query.skip) || 0,
     all: admin ? req.query.all === "true" || req.query.all === "on" : false
   };
 
@@ -84,6 +80,7 @@ function parseQuery(req, res, next) {
 
 module.exports = {
   error,
+  ip,
   parseQuery,
   verify,
 }

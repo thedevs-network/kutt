@@ -1407,6 +1407,11 @@ main form label#advanced input {
 
 #links-table-wrapper table tr.edit form .response p { margin: 2rem 0 0; }
 
+#links-table-wrapper table tr.edit p.no-links {
+  width: 100%;
+  text-align: center;
+}
+
 .dialog .ban-checklist {
   display: flex;
   align-items: center;

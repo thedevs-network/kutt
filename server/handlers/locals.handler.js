@@ -8,7 +8,7 @@ function isHTML(req, res, next) {
   next();
 }
 
-function addNoLayoutLocals(req, res, next) {
+function noLayout(req, res, next) {
   res.locals.layout = null;
   next();
 }
@@ -20,13 +20,14 @@ function viewTemplate(template) {
   }
 }
 
-function addConfigLocals(req, res, next) {
+function config(req, res, next) {
   res.locals.default_domain = env.DEFAULT_DOMAIN;
   res.locals.site_name = env.SITE_NAME;
+  res.locals.server_ip_address = env.SERVER_IP_ADDRESS;
   next();
 }
 
-async function addUserLocals(req, res, next) {
+async function user(req, res, next) {
   const user = req.user;
   res.locals.user = user;
   res.locals.domains = user && (await query.domain.get({ user_id: user.id })).map(utils.sanitize.domain);
@@ -50,12 +51,12 @@ function protected(req, res, next) {
 }
 
 module.exports = {
-  addConfigLocals,
-  addNoLayoutLocals,
-  addUserLocals,
+  config,
   createLink,
   editLink,
   isHTML,
+  noLayout,
   protected,
+  user,
   viewTemplate,
 }

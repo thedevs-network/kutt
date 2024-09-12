@@ -1,6 +1,6 @@
 const { Handler } = require("express");
 
-const { CustomError, sanitize, sleep } = require("../utils");
+const { CustomError, sanitize } = require("../utils");
 const query = require("../queries");
 const redis = require("../redis");
 

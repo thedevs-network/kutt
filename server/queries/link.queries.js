@@ -1,6 +1,5 @@
 const bcrypt = require("bcryptjs");
 
-// FIXME: circular dependency
 const CustomError = require("../utils").CustomError;
 const redis = require("../redis");
 const knex = require("../knex");

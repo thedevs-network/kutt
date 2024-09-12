@@ -12,7 +12,7 @@ const router = Router();
 router.get(
   "/",
   asyncHandler(auth.jwtLoose),
-  asyncHandler(locals.addUserLocals), 
+  asyncHandler(locals.user), 
   asyncHandler(renders.homepage)
 );
 
@@ -31,35 +31,42 @@ router.get(
 router.get(
   "/404", 
   asyncHandler(auth.jwtLoose),
+  asyncHandler(locals.user),
   asyncHandler(renders.notFound)
 );
 
 router.get(
   "/settings",
-  asyncHandler(auth.jwtLoose),
-  asyncHandler(locals.addUserLocals),
+  asyncHandler(auth.jwtPage),
+  asyncHandler(locals.user),
   asyncHandler(renders.settings)
 );
 
 router.get(
   "/stats",
-  asyncHandler(auth.jwtLoose),
-  asyncHandler(locals.addUserLocals),
+  asyncHandler(auth.jwtPage),
+  asyncHandler(locals.user),
   asyncHandler(renders.stats)
 );
 
 router.get(
   "/banned",
+  asyncHandler(auth.jwtLoose),
+  asyncHandler(locals.user),
   asyncHandler(renders.banned)
 );
 
 router.get(
   "/report",
+  asyncHandler(auth.jwtLoose),
+  asyncHandler(locals.user),
   asyncHandler(renders.report)
 );
 
 router.get(
   "/reset-password",
+  asyncHandler(auth.jwtLoose),
+  asyncHandler(locals.user),
   asyncHandler(renders.resetPassword)
 );
 
@@ -67,7 +74,7 @@ router.get(
   "/reset-password/:resetPasswordToken",
   asyncHandler(auth.resetPassword),
   asyncHandler(auth.jwtLoose),
-  asyncHandler(locals.addUserLocals),
+  asyncHandler(locals.user),
   asyncHandler(renders.resetPasswordResult)
 );
 
@@ -75,7 +82,7 @@ router.get(
   "/verify-email/:changeEmailToken",
   asyncHandler(auth.changeEmail),
   asyncHandler(auth.jwtLoose),
-  asyncHandler(locals.addUserLocals),
+  asyncHandler(locals.user),
   asyncHandler(renders.verifyChangeEmail)
 );
 
@@ -83,26 +90,28 @@ router.get(
   "/verify/:verificationToken",
   asyncHandler(auth.verify),
   asyncHandler(auth.jwtLoose),
-  asyncHandler(locals.addUserLocals),
+  asyncHandler(locals.user),
   asyncHandler(renders.verify)
 );
 
 router.get(
   "/terms",
+  asyncHandler(auth.jwtLoose),
+  asyncHandler(locals.user),
   asyncHandler(renders.terms)
 );
 
 // partial renders
 router.get(
   "/confirm-link-delete", 
-  locals.addNoLayoutLocals,
+  locals.noLayout,
   asyncHandler(auth.jwt),
   asyncHandler(renders.confirmLinkDelete)
 );
 
 router.get(
   "/confirm-link-ban", 
-  locals.addNoLayoutLocals,
+  locals.noLayout,
   locals.viewTemplate("partials/links/dialog/message"),
   asyncHandler(auth.jwt),
   asyncHandler(auth.admin), 
@@ -111,21 +120,21 @@ router.get(
 
 router.get(
   "/link/edit/:id",
-  locals.addNoLayoutLocals,
+  locals.noLayout,
   asyncHandler(auth.jwt),
   asyncHandler(renders.linkEdit)
 );
 
 router.get(
   "/add-domain-form", 
-  locals.addNoLayoutLocals,
+  locals.noLayout,
   asyncHandler(auth.jwt),
   asyncHandler(renders.addDomainForm)
 );
 
 router.get(
   "/confirm-domain-delete", 
-  locals.addNoLayoutLocals,
+  locals.noLayout,
   locals.viewTemplate("partials/settings/domain/delete"),
   asyncHandler(auth.jwt),
   asyncHandler(renders.confirmDomainDelete)
@@ -133,7 +142,7 @@ router.get(
 
 router.get(
   "/get-report-email", 
-  locals.addNoLayoutLocals,
+  locals.noLayout,
   locals.viewTemplate("partials/report/email"),
   asyncHandler(renders.getReportEmail)
 );

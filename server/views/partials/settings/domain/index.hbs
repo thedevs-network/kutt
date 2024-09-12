@@ -6,10 +6,17 @@
   <b>{{default_domain}}/shorturl</b> you can have
   <b>yoursite.com/shorturl.</b>
 </p>
+
 <p>
-  Point your domain's A record to <b>192.64.116.170</b> then add the domain
-  via the form below:
+  Point your domain's A record to 
+  {{#if server_ip_address}}
+    <b>{{server_ip_address}}</b>
+  {{else}}
+    our <b>IP address</b>
+  {{/if}} 
+  then add the domain via the form below:
 </p>
+
 {{> settings/domain/table}}
 <div class="add-domain-wrapper">
   <button

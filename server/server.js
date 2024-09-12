@@ -22,7 +22,8 @@ require("./passport");
 // create express app
 const app = express();
 
-// TODO: comments
+// stating that this app is running behind a proxy
+// and the express app should get the IP address from the proxy server
 app.set("trust proxy", true);
 
 if (env.isDev) {
@@ -36,27 +37,29 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("static"));
 
 app.use(passport.initialize());
-// app.use(helpers.ip);
+app.use(helpers.ip);
 app.use(locals.isHTML);
-app.use(locals.addConfigLocals);
+app.use(locals.config);
 
 // template engine / serve html
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 utils.registerHandlebarsHelpers();
 
+// render html pages
 app.use("/", routes.render);
 
 // if is custom domain, redirect to the set homepage
 app.use(asyncHandler(links.redirectCustomDomainHomepage));
 
+// handle api requests
 app.use("/api/v2", routes.api);
 app.use("/api", routes.api);
 
 // finally, redirect the short link to the target
 app.get("/:id", asyncHandler(links.redirect));
 
-// Error handler
+// handle errors coming from above routes
 app.use(helpers.error);
   
 app.listen(env.PORT, () => {

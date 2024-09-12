@@ -23,10 +23,7 @@ const transporter = nodemailer.createTransport(mailConfig);
 // Read email templates
 const resetEmailTemplatePath = path.join(__dirname, "template-reset.html");
 const verifyEmailTemplatePath = path.join(__dirname, "template-verify.html");
-const changeEmailTemplatePath = path.join(
-  __dirname,
-  "template-change-email.html"
-);
+const changeEmailTemplatePath = path.join(__dirname,"template-change-email.html");
 const resetEmailTemplate = fs
   .readFileSync(resetEmailTemplatePath, { encoding: "utf-8" })
   .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)

@@ -1,9 +1,9 @@
-const ms = require("ms");
-const path = require("path");
+const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears } = require("date-fns");
 const nanoid = require("nanoid/generate");
 const JWT = require("jsonwebtoken");
-const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears } = require("date-fns");
+const path = require("path");
 const hbs = require("hbs");
+const ms = require("ms");
 
 const env = require("../env");
 
@@ -35,6 +35,18 @@ function signToken(user) {
       },
       env.JWT_SECRET
     )
+}
+
+function setToken(res, token) {
+  res.cookie("token", token, {
+    maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
+    httpOnly: true,
+    secure: env.isProd
+  });
+}
+
+function deleteCurrentToken(res) {
+  res.clearCookie("token", { httpOnly: true, secure: env.isProd });
 }
 
 async function generateId(query, domain_id) {
@@ -262,6 +274,7 @@ function registerHandlebarsHelpers() {
 module.exports = {
   addProtocol,
   CustomError,
+  deleteCurrentToken,
   generateId,
   getDifferenceFunction,
   getInitStats,
@@ -276,6 +289,7 @@ module.exports = {
   registerHandlebarsHelpers,
   removeWww,
   sanitize,
+  setToken,
   signToken,
   sleep,
   statsObjectToArray,

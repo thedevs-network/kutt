@@ -117,7 +117,6 @@ function handleShortURLCopyLink(element) {
   }, 1000);
 }
 
-// TODO: make it an extension
 // open and close dialog
 function openDialog(id, name) {
   const dialog = document.getElementById(id);

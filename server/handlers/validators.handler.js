@@ -1,8 +1,7 @@
-const { body, param } = require("express-validator");
 const { isAfter, subDays, subHours, addMilliseconds } = require("date-fns");
-const { promisify } = require("util");
+const { body, param } = require("express-validator");
+const promisify = require("util").promisify;
 const bcrypt = require("bcryptjs");
-const axios = require("axios");
 const dns = require("dns");
 const URL = require("url");
 const ms = require("ms");
@@ -109,11 +108,7 @@ const editLink = [
     .isLength({ min: 1, max: 2040 })
     .withMessage("Maximum URL length is 2040.")
     .customSanitizer(utils.addProtocol)
-    .custom(
-      value =>
-        urlRegex({ exact: true, strict: false }).test(value) ||
-        /^(?!https?)(\w+):\/\//.test(value)
-    )
+    .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
     .withMessage("URL is not valid.")
     .custom(value => utils.removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
     .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
@@ -176,11 +171,12 @@ const addDomain = [
     .isLength({ min: 3, max: 64 })
     .withMessage("Domain length must be between 3 and 64.")
     .trim()
+    .customSanitizer(utils.addProtocol)
+    .custom(value => utils.urlRegex.test(value))
     .customSanitizer(value => {
       const parsed = URL.parse(value);
       return utils.removeWww(parsed.hostname || parsed.href);
     })
-    .custom(value => urlRegex({ exact: true, strict: false }).test(value))
     .custom(value => value !== env.DEFAULT_DOMAIN)
     .withMessage("You can't use the default domain.")
     .custom(async value => {
@@ -191,7 +187,7 @@ const addDomain = [
   body("homepage")
     .optional({ checkFalsy: true, nullable: true })
     .customSanitizer(utils.addProtocol)
-    .custom(value => urlRegex({ exact: true, strict: false }).test(value))
+    .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
     .withMessage("Homepage is not valid.")
 ];
 
@@ -282,11 +278,11 @@ const signup = [
     .custom(async (value, { req }) => {
       const user = await query.user.find({ email: value });
 
-      if (user) {
+      if (user)
         req.user = user;
-      }
 
-      if (user?.verified) return Promise.reject();
+      if (user?.verified) 
+        return Promise.reject();
     })
     .withMessage("You can't use this email address.")
 ];
@@ -337,15 +333,6 @@ const resetPassword = [
     .withMessage("Email length must be max 255.")
 ];
 
-// export const resetEmailRequest = [
-//   body("email", "Email is not valid.")
-//     .exists({ checkFalsy: true, checkNull: true })
-//     .trim()
-//     .isEmail()
-//     .isLength({ min: 0, max: 255 })
-//     .withMessage("Email length must be max 255.")
-// ];
-
 const deleteUser = [
   body("password", "Password is not valid.")
     .exists({ checkFalsy: true, checkNull: true })
@@ -375,31 +362,34 @@ function cooldown(user) {
 async function malware(user, target) {
   if (!env.GOOGLE_SAFE_BROWSING_KEY) return;
 
-  const isMalware = await axios.post(
+  const isMalware = await fetch(
     `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${env.GOOGLE_SAFE_BROWSING_KEY}`,
     {
-      client: {
-        clientId: env.DEFAULT_DOMAIN.toLowerCase().replace(".", ""),
-        clientVersion: "1.0.0"
-      },
-      threatInfo: {
-        threatTypes: [
-          "THREAT_TYPE_UNSPECIFIED",
-          "MALWARE",
-          "SOCIAL_ENGINEERING",
-          "UNWANTED_SOFTWARE",
-          "POTENTIALLY_HARMFUL_APPLICATION"
-        ],
-        platformTypes: ["ANY_PLATFORM", "PLATFORM_TYPE_UNSPECIFIED"],
-        threatEntryTypes: [
-          "EXECUTABLE",
-          "URL",
-          "THREAT_ENTRY_TYPE_UNSPECIFIED"
-        ],
-        threatEntries: [{ url: target }]
-      }
+      method: "post",
+      body: JSON.stringify({
+        client: {
+          clientId: env.DEFAULT_DOMAIN.toLowerCase().replace(".", ""),
+          clientVersion: "1.0.0"
+        },
+        threatInfo: {
+          threatTypes: [
+            "THREAT_TYPE_UNSPECIFIED",
+            "MALWARE",
+            "SOCIAL_ENGINEERING",
+            "UNWANTED_SOFTWARE",
+            "POTENTIALLY_HARMFUL_APPLICATION"
+          ],
+          platformTypes: ["ANY_PLATFORM", "PLATFORM_TYPE_UNSPECIFIED"],
+          threatEntryTypes: [
+            "EXECUTABLE",
+            "URL",
+            "THREAT_ENTRY_TYPE_UNSPECIFIED"
+          ],
+          threatEntries: [{ url: target }]
+        }
+      })
     }
-  );
+  ).then(res => res.json());
   if (!isMalware.data || !isMalware.data.matches) return;
 
   if (user) {
