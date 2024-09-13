@@ -1,7 +1,6 @@
 async function createDomainTable(knex) {
   const hasTable = await knex.schema.hasTable("domains");
   if (!hasTable) {
-    await knex.schema.raw('create extension if not exists "uuid-ossp"');
     await knex.schema.createTable("domains", table => {
       table.increments("id").primary();
       table
