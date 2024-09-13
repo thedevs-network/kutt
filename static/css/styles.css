@@ -1598,6 +1598,19 @@ footer {
   text-align: center;
 }
 
+footer button.link {
+  display: inline-block;
+  font-size: 13px;
+}
+
+footer button.link .spinner {
+  display: none;
+  width: 1em;
+  margin: 0 0 -2px;
+}
+
+footer button.link.htmx-request .spinner { display: inline; }
+
 /* SETTINGS */
 
 #settings {

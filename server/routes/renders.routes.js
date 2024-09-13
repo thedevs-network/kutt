@@ -146,4 +146,11 @@ router.get(
   asyncHandler(renders.getReportEmail)
 );
 
+router.get(
+  "/get-support-email", 
+  locals.noLayout,
+  locals.viewTemplate("partials/support_email"),
+  asyncHandler(renders.getSupportEmail)
+);
+
 module.exports = router;

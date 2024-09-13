@@ -146,6 +146,16 @@ async function getReportEmail(req, res) {
   });
 }
 
+async function getSupportEmail(req, res) {
+  if (!env.CONTACT_EMAIL) {
+    throw new utils.CustomError("No support email is available.", 400);
+  }
+  await utils.sleep(500);
+  res.render("partials/support_email", {
+    email: env.CONTACT_EMAIL,
+  });
+}
+
 async function linkEdit(req, res) {
   const link = await query.link.find({
     uuid: req.params.id,
@@ -163,6 +173,7 @@ module.exports = {
   confirmLinkBan,
   confirmLinkDelete,
   getReportEmail,
+  getSupportEmail,
   homepage,
   linkEdit,
   login,
