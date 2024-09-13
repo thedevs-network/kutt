@@ -6,9 +6,9 @@ async function find(match) {
     const cachedDomain = await redis.client.get(redis.key.domain(match.address));
     if (cachedDomain) return JSON.parse(cachedDomain);
   }
-  
+
   const domain = await knex("domains").where(match).first();
-  
+
   if (domain) {
     redis.client.set(
       redis.key.domain(domain.address),
@@ -17,7 +17,7 @@ async function find(match) {
       60 * 60 * 6
     );
   }
-  
+
   return domain;
 }
 
@@ -27,44 +27,53 @@ function get(match) {
 
 async function add(params) {
   params.address = params.address.toLowerCase();
-  const exists = await knex("domains").where("address", params.address).first();
-  
+
+  let { id } = await knex("domains")
+    .where("address", params.address)
+    .first();
+
   const newDomain = {
     address: params.address,
-    homepage: params.homepage || null,
-    user_id: params.user_id || null,
-    banned: !!params.banned
+    homepage: params.homepage,
+    user_id: params.user_id,
+    banned: !!params.banned,
+    banned_by_id: params.banned_by_id
   };
-  
-  let domain;
-  if (exists) {
-    const [response] = await knex("domains")
-      .where("id", exists.id)
-      .update(
-        {
-          ...newDomain,
-          updated_at: params.updated_at || new Date().toISOString()
-        },
-        "*"
-      );
-    domain = response;
+
+  if (id) {
+    await knex("domains")
+      .where("id", id)
+      .update({
+        ...newDomain,
+        updated_at: params.updated_at || new Date().toISOString()
+      });
   } else {
-    const [response] = await knex("domains").insert(newDomain, "*");
-    domain = response;
+    // Mysql and sqlite don't support returning but return the inserted id by default
+    [id] = await knex("domains")
+      .insert(newDomain)
+      .returning("id");
   }
-  
+
+  // Query domain instead of using returning as sqlite and mysql don't support it
+  const domain = await knex("domains")
+    .where("id", id);
+
   redis.remove.domain(domain);
-  
+
   return domain;
 }
 
 async function update(match, update) {
-  const domains = await knex("domains")
+  await knex("domains")
     .where(match)
-    .update({ ...update, updated_at: new Date().toISOString() }, "*");
-  
+    .update({ ...update, updated_at: new Date().toISOString() });
+
+  const domains = await knex("domains")
+    .select("*")
+    .where(match);
+
   domains.forEach(redis.remove.domain);
-  
+
   return domains;
 }
 

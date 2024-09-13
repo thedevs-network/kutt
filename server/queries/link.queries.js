@@ -40,7 +40,7 @@ function normalizeMatch(match) {
   }
 
   return newMatch;
-};
+}
 
 async function total(match, params) {
   let query = knex("links");
@@ -137,7 +137,7 @@ async function remove(match) {
   
   if (!link) {
     return { isRemoved: false, error: "Could not find the link.", link: null }
-  };
+  }
 
   const deletedLink = await knex("links").where("id", link.id).delete();
   redis.remove.link(link);
@@ -167,10 +167,14 @@ async function update(match, update) {
     update.password = await bcrypt.hash(update.password, salt);
   }
   
-  const links = await knex("links")
+  await knex("links")
     .where(match)
-    .update({ ...update, updated_at: new Date().toISOString() }, "*");
-  
+    .update({ ...update, updated_at: new Date().toISOString() });
+
+  const links = await knex("links")
+    .select('*')
+    .where(match);
+
   links.forEach(redis.remove.link);
   
   return links;

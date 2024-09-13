@@ -34,8 +34,6 @@ async function remove(req, res) {
     { user_id: null }
   );
 
-  redis.remove.domain(domain);
-
   if (!domain) {
     throw new CustomError("Could not delete the domain.", 500);
   }

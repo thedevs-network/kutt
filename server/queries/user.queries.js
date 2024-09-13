@@ -53,23 +53,20 @@ async function add(params, user) {
 
 async function update(match, update, increments = []) {
   const query = knex("users");
-  
+
   Object.entries(match).forEach(([key, value]) => {
     query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
   });
 
-  let updateQuery = query;
+  let updateQuery = query.clone();
   increments.forEach(columnName => {
     updateQuery.increment(columnName);
   });
   
-  await updateQuery.update(
-    { ...update, updated_at: new Date().toISOString() },
-    "*"
-  );
+  await updateQuery.update({ ...update, updated_at: new Date().toISOString() });
 
-  const users = await query.all();
-  
+  const users = await query.select('*');
+
   users.forEach(redis.remove.user);
   
   return users;
