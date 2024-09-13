@@ -46,9 +46,7 @@ async function total(match, params) {
   let query = knex("links");
 
   Object.entries(normalizeMatch(match)).forEach(([key, value]) => {
-    query = Array.isArray(value)
-      ? query.where(key, ...value)
-      : query.where(key, value);
+    query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
   });
 
   if (params?.search) {
