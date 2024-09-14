@@ -638,6 +638,7 @@ table tr.loading-placeholder td {
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
   padding: 3rem 2rem;
   background-color: white;
   border-radius: 8px;
@@ -694,7 +695,7 @@ table tr.loading-placeholder td {
 }
 
 .dialog .content .buttons button { margin-right: 2rem; }
-.dialog .content .buttons button:last-child { margin-right: 0; }
+.dialog .content .buttons button:last-of-type { margin-right: 0; }
 
 .dialog .content {
   align-items: center;
@@ -745,7 +746,7 @@ table tr.loading-placeholder td {
 .dialog .content.htmx-request svg.spinner { display: block; }
 .dialog .content.htmx-request button { display: none; }
 
-.inputs {  display: flex;  align-items: flex-start; margin-bottom: 1rem; }
+.inputs { display: flex; align-items: flex-start; margin-bottom: 1rem; }
 .inputs label { flex: 0 0 0; margin-right: 1rem; }
 .inputs label:last-child { margin-right: 0; }
 
@@ -825,11 +826,12 @@ table tr.loading-placeholder td {
 /* LOGIN & SIGNUP */
 
 form#login-signup {
+  width: 400px;
   max-width: 100%;
   flex: 1 1 auto;
   display: flex;
+  padding: 0 16px;
   flex-direction: column;
-  width: 400px;
   margin: 3rem 0 0;
 }
 
@@ -936,7 +938,7 @@ header ul.logo-links li {
 }
 
 header ul.logo-links li a {
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 header nav ul {
@@ -949,12 +951,11 @@ header nav ul {
 }
 
 header nav ul li {
-  margin: 0 0 0 32px;
+  margin: 0 0 0 2rem;
   padding: 0;
 }
 
 header nav ul li:last-child { margin-left: 0; }
-
 
 /* SHORTENER */
 
@@ -1166,7 +1167,6 @@ main form label#advanced input {
   margin-bottom: 1rem;
 }
 
-
 .advanced-input-wrapper label {
   flex: 1 1 0;
   padding-right: 1rem;
@@ -1187,11 +1187,12 @@ main form label#advanced input {
 
 #links-table-wrapper {
   width: 1200px;
-  max-width: 95%;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
   align-items: flex-start;
+  padding: 0 1rem;
   margin: 7rem 0 7.5rem;
 }
 
@@ -1216,7 +1217,7 @@ main form label#advanced input {
 }
 
 #links-table-wrapper td {
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 
@@ -1443,7 +1444,7 @@ main form label#advanced input {
   font-weight: 300;
   font-size: 28px;
   padding-right: 2rem;
-  margin-bottom: 2.5rem
+  margin-bottom: 2.5rem;
 }
 
 .introduction img {
@@ -1615,7 +1616,9 @@ footer button.link.htmx-request .spinner { display: inline; }
 
 #settings {
   width: 600px;
-  max-width: 90%;
+  max-width: 100%;
+  padding: 0 16px;
+  overflow: hidden;
 }
 
 h1.settings-welcome {
@@ -1676,6 +1679,7 @@ form#add-domain .error { font-size: 0.85rem; }
   border-bottom: 1px dotted #999;
   transition: opacity 0.2s ease-in-out;
   cursor: pointer;
+  line-break: anywhere;
 }
 
 #apikey p:hover {
@@ -1721,7 +1725,8 @@ form#delete-account.htmx-request .spinner { display: block; }
 
 #stats-section {
   width: 1200px;
-  max-width: 95%;
+  max-width: 100%;
+  padding: 0 16px;
 }
 
 .loading-stats { 
@@ -1815,6 +1820,8 @@ p.last-update {
   flex: 1 1 50%;
 }
 
+svg.map { width: 100%; }
+
 svg.map path {
   fill: hsl(200, 15%, 92%);
   stroke: #fff;
@@ -1879,11 +1886,12 @@ svg.map path.active { stroke: hsl(261, 46%, 50%); stroke-width: 1.5; }
 #notfound h2 { 
   font-size: 28px;
   font-weight: 300;
+  text-align: center;
 }
 
 /* BANNED */
 
-#banned { width: 1200px; align-items: center; }
+#banned { width: 1200px; align-items: center; text-align: center }
 #banned h2 { font-weight: normal; }
 #banned h4 { font-weight: normal; margin: 0; }
 
@@ -1965,9 +1973,11 @@ svg.map path.active { stroke: hsl(261, 46%, 50%); stroke-width: 1.5; }
   width: 1200px;
   align-items: center;
   text-align: center;
+  padding: 0 16px;
 }
 
 #url-info h3 { font-weight: normal; margin: 0; }
+#url-info p { line-break: anywhere; }
 
 /* PROTECTED */
 
@@ -1985,3 +1995,183 @@ svg.map path.active { stroke: hsl(261, 46%, 50%); stroke-width: 1.5; }
 /* TERMS */
 
 #terms { width: 600px; }
+
+/* RESPONSIVE STYLES */
+
+@media only screen and (max-width: 768px) {
+  html, body { font-size: 14px; }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  select  {
+    font-size: 14px;
+    padding: 0 16px;
+    height: 38px;
+    letter-spacing: 0.04em;
+    border-bottom-width: 4px;
+  }
+
+  label input { margin-top: 0.25rem; }
+
+  input[type="text"]::placeholder,
+  input[type="email"]::placeholder,
+  input[type="password"]::placeholder { font-size: 13px; letter-spacing: 0.04em; }
+  
+  table tr { padding: 0 0.25rem; } 
+  table th,
+  table td { padding: 0.5rem; }
+  table td { font-size: 14px; }
+  table tr.loading-placeholder td { font-size: 16px; }
+  
+  a.button,
+  button { height: 32px; padding: 0 22px; font-size: 12px; }
+  a.button.action,
+  button.action { padding: 4px; width: 20px; height: 20px; }
+  button.nav { height: 26px; padding: 0 7px; font-size: 11px; }
+
+  .dialog .box { min-width: 300px; padding: 2rem 1.25rem; }
+  .dialog.qrcode .box { padding: 1.5rem; }
+  .dialog .loading { width: 20px; height: 20px; margin: 2rem 0; }
+  .dialog .content .buttons { margin-top: 1rem; }
+
+  header { padding: 0 16px; height: 72px; }
+  header a.logo { font-size: 20px; }
+  header ul.logo-links { display: none; }
+  header .logo img { margin-right: 8px; }
+  header nav ul li { margin-left: 1rem }
+
+  form#login-signup label { margin-bottom: 1.5rem; }
+  form#login-signup input {
+    height: 58px;
+    margin-top: 0.75rem;
+    padding: 0 2rem;
+    font-size: 15px;
+  }
+  form#login-signup .buttons-wrapper { margin-bottom: 1rem; }
+  form#login-signup .buttons-wrapper button { height: 44px; }
+  form#login-signup a.forgot-password { font-size: 13px; }
+  .login-signup-message { margin-top: 1.5rem; }
+  .login-signup-message h1 { font-size: 20px; }
+
+  main #shorturl { margin-bottom: 1.5rem; }
+  main #shorturl h1 { font-size: 1.6rem; }
+  .clipboard { width: 30px; height: 30px; margin-right: 0.5rem; }
+  .clipboard svg.check { padding: 2px; }
+  main form input#target { height: 58px; padding: 0 58px 0 26px; font-size: 15px; }
+  main form input#target::placeholder { font-size: 14px; }
+  main form p.error { font-size: 12px; margin-left: 0.25rem; }
+  main form .target-wrapper p.error { font-size: 13px; margin-left: 0.5rem; }
+  main form button.submit { width: 22px; top: 13px; margin: 0 1rem 0; }
+  main form label#advanced { margin-top: 1.5rem; }
+  main form label#advanced input { margin-bottom: 3px; }
+  #links-table-wrapper { margin: 4rem 0 4.5rem;}
+  #links-table-wrapper h2 { margin-bottom: 0.5rem; }
+  #links-table-wrapper table thead,
+  #links-table-wrapper table tbody,
+  #links-table-wrapper table tfoot { min-width: 800px; }
+  #links-table-wrapper tr { padding: 0 0.25rem; }
+  #links-table-wrapper th,
+  #links-table-wrapper td { padding: 0.75rem; }
+  #links-table-wrapper table .actions a.button,
+  #links-table-wrapper table .actions button { margin-right: 0.3rem; }
+  #links-table-wrapper table td.original-url p.description,
+  #links-table-wrapper table td.created-at p.expire-in { font-size: 12px; }
+  #links-table-wrapper table tr.no-links td { font-size: 16px; }
+  #links-table-wrapper table [name="search"] { height: 28px; font-size: 13px; padding: 0 1rem; }
+  #links-table-wrapper table [name="search"]::placeholder { font-size: 12px; }
+  #links-table-wrapper table tr.links-controls .checkbox { font-size: 13px; }
+  #links-table-wrapper table button.nav { margin-right: 0.5rem; }
+  #links-table-wrapper table .nav-divider { height: 18px; margin: 0 1rem; }
+  #links-table-wrapper table tbody td.right-fade:after { width: 14px; }
+  #links-table-wrapper table tr.edit td { padding: 1.25rem 1rem; }
+  #links-table-wrapper table tr.edit label { margin: 0 0.25rem 0.5rem; }
+  #links-table-wrapper table tr.edit input { height: 38px; padding: 0 1rem; font-size: 13px; }
+  #links-table-wrapper table tr.edit input,
+  #links-table-wrapper table tr.edit input + p { width: 200px; }
+  #links-table-wrapper table tr.edit input[name="target"],
+  #links-table-wrapper table tr.edit input[name="description"],
+  #links-table-wrapper table tr.edit input[name="target"] + p,
+  #links-table-wrapper table tr.edit input[name="description"] + p { width: 320px; }
+  #links-table-wrapper table tr.edit button { height: 32px; margin-right: 0.5rem; }
+  #links-table-wrapper table tr.edit td.loading svg { width: 14px; height: 14px; }
+  #links-table-wrapper table tr.edit form .response p { margin: 1rem 0 0; }
+  .dialog .ban-checklist label { margin: 0.5rem 1rem 0.5rem 0; }
+  .introduction img { width: 90%; margin-top: 2rem; }
+
+  .introduction { margin: 100px 0 0; flex-direction: column; }
+  .introduction .text-wrapper { align-items: center; text-align: center; }
+  .introduction h2 { font-size: 22px; padding: 0 1rem; margin-bottom: 1.5rem; }
+
+  .features { padding: 2rem 0; }
+  .features h3 { font-size: 22px; margin-bottom: 2.5rem; }
+  .features ul { flex-wrap: wrap; }
+  .features ul li { max-width: 100%; padding: 0 2.5rem; margin-bottom: 2rem; }
+  .features ul li .icon { width: 40px; height: 40px; }
+  .features ul li .icon svg { width: 14px; }
+  .features ul li h4 { margin: 0.75rem; }
+
+  .extensions { padding: 2rem 0; }
+  .extensions h3 { font-size: 22px; margin-bottom: 2rem; }
+  .extensions .extenstions-wrapper { flex-direction: column; align-items: center }
+  .extensions a.extension-button { width: 225px; margin: 0 0 1rem; padding: 0.6rem 1.25rem; font-size: 13px; }
+  .extensions a.extension-button svg { width: 16px; margin: 0 0.75rem 3px 0; }
+
+  footer { padding: 0.75rem 0; font-size: 12px; }
+  footer button.link { font-size: 12px; }
+
+  h1.settings-welcome { font-size: 18px; }
+  .add-domain-wrapper { margin: 1rem 0 1rem; }
+  .add-domain-wrapper > .spinner { width: 18px; margin: 0.5rem 0 0 0.5rem;  }
+  form#add-domain { margin-top: 0.75rem; }
+  form#add-domain button { margin-right: 0.5rem }
+
+  .stats-info { flex-direction: column; align-items: flex-start; justify-content: flex-start; }
+  .stats-info h2 { font-size: 18px; margin-bottom: 0.25rem; }
+  .stats-info p { font-size: 11px; line-break: anywhere; }
+  .stats-head { padding: 0rem 1rem; }
+  .stats-head p { font-size: 0.9rem; }
+  .stats-nav button { margin-right: 0.5rem; }
+  .stats-period { padding: 0.5rem 1rem; }
+  .stats-period h2 { font-size: 18px;  margin: 0.5rem 0 0; }
+  p.last-update { font-size: 12px; }
+  #stats canvas { margin: 1rem 0; }
+  .stats-columns-wrapper { flex-direction: column; }
+  .stats-columns-wrapper > div { flex-basis: 100%; }
+
+  #notfound h2 { font-size: 20px; }
+
+  #report form { margin-top: 1.5rem; }
+  #report form .inputs-wrapper { flex-direction: column; align-items: flex-start; }
+  #report form button { margin: 0.75rem 0 0.2rem 0; }
+
+  #reset-password form .inputs-wrapper { flex-direction: column; align-items: flex-start; margin-top: 1rem; }
+  #reset-password form label { flex-basis: 0; width: 280px; }
+  #reset-password form button { margin: 0.75rem 0 0.2rem 0; }
+
+  .verify-page h2,
+  .verify-page h3 { display: flex; flex-direction: column; }
+
+  #protected form { margin-top: 0.5rem; }
+  #protected form .inputs-wrapper {  flex-direction: column; align-items: flex-start; }
+  #protected form label { flex-basis: 0; width: 280px; }
+  #protected form button { margin: 0.75rem 0 0.2rem 0; }
+}
+
+@media only screen and (max-width: 640px) {
+  table tr.loading-placeholder { justify-content: flex-start; }
+  
+  .inputs { flex-direction: column; margin-bottom: 0.75rem; }
+  .inputs label { margin: 0 0 0.75rem; }
+  .inputs label:last-child { margin: 0; }
+  
+  .advanced-input-wrapper { flex-direction: column; margin-bottom: 0; }
+  .advanced-input-wrapper label { width: 100%; margin-bottom: 0.75rem; padding-right: 0; }
+  .advanced-input-wrapper label input,
+  .advanced-input-wrapper label select { margin-top: 0.5rem; }
+  form#add-domain .spinner { width: 18px; }
+
+  #apikey-wrapper { max-width: 100%; }
+  #apikey p { font-size: 0.85rem; }
+  #apikey .clipboard { width: 22px; height: 22px; }
+}
