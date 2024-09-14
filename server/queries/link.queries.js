@@ -69,7 +69,7 @@ async function get(match, params) {
     .where(normalizeMatch(match))
     .offset(params.skip)
     .limit(params.limit)
-    .orderBy("created_at", "desc");
+    .orderBy("links.created_at", "desc");
   
   if (params?.search) {
     query.andWhereRaw(
@@ -79,10 +79,8 @@ async function get(match, params) {
   }
   
   query.leftJoin("domains", "links.domain_id", "domains.id");
-  
-  const links = await query;
-  
-  return links;
+
+  return query;
 }
 
 async function find(match) {

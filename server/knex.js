@@ -16,7 +16,8 @@ const db = knex({
       min: env.DB_POOL_MIN,
       max: env.DB_POOL_MAX
     }
-  }
+  },
+  useNullAsDefault: true,
 });
 
 module.exports = db;

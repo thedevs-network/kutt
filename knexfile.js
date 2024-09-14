@@ -2,8 +2,9 @@ const env = require("./server/env");
 
 module.exports = {
   production: {
-    client: "postgresql",
+    client: env.DB_CLIENT,
     connection: {
+      filename: env.DB_FILENAME,
       host: env.DB_HOST,
       database: env.DB_NAME,
       user: env.DB_USER,
