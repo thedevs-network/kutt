@@ -26,9 +26,11 @@ async function find(match) {
 async function add(params) {
   params.address = params.address.toLowerCase();
 
-  let { id } = await knex("hosts")
+  const existingHost = await knex("hosts")
     .where("address", params.address)
     .first();
+
+  let id = existingHost?.id;
 
   const newHost = {
     address: params.address,

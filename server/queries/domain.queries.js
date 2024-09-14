@@ -28,9 +28,11 @@ function get(match) {
 async function add(params) {
   params.address = params.address.toLowerCase();
 
-  let { id } = await knex("domains")
+  const existingDomain = await knex("domains")
     .where("address", params.address)
     .first();
+
+  let id = existingDomain?.id;
 
   const newDomain = {
     address: params.address,
