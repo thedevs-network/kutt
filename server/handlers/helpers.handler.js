@@ -15,6 +15,10 @@ function error(error, req, res, _next) {
     signale.fatal(error);
   }
 
+  if (!env.isDev && !(error instanceof CustomError)) {
+    logger.error(error.message);
+  }
+
   const message = error instanceof CustomError ? error.message : "An error occurred.";
   const statusCode = error.statusCode ?? 500;
 
@@ -22,6 +26,14 @@ function error(error, req, res, _next) {
     res.render(req.viewTemplate, { error: message });
     return;
   }
+
+  if (req.isHTML) {
+    res.render("error", {
+      message: "An error occurred. Please try again later."
+    });
+    return;
+  }
+
 
   return res.status(statusCode).json({ error: message });
 };

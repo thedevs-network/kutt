@@ -1996,6 +1996,12 @@ svg.map path.active { stroke: hsl(261, 46%, 50%); stroke-width: 1.5; }
 
 #terms { width: 600px; }
 
+/* ERROR PAGE */
+
+#error-page { align-items: center; text-align: center; }
+#error-page h2 { margin: 0; }
+#error-page .back-to-home { margin-top: 2rem; }
+
 /* RESPONSIVE STYLES */
 
 @media only screen and (max-width: 768px) {
