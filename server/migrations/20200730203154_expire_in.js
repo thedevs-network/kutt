@@ -1,17 +1,16 @@
 async function up(knex) {
-  const hasExpireIn = await knex.schema.hasColumn("links", "expire_in");
-  if (!hasExpireIn) {
-    await knex.schema.alterTable("links", table => {
-      table.dateTime("expire_in");
-    });
-  }
+  await knex.schema.alterTable("links", table => {
+    table.dateTime("expire_in");
+  });
 }
 
-async function down() {
-  return null;
+async function down(knex) {
+  await knex.schema.alterTable("links", table => {
+    table.dropColumn("expire_in");
+  });
 }
 
 module.exports = {
   up,
   down
-}
+};

@@ -1,33 +1,26 @@
-const models = require("../models");
-
 async function up(knex) {
-  await models.createUserTable(knex);
-  await models.createIPTable(knex);
-  await models.createDomainTable(knex);
-  await models.createHostTable(knex);
-  await models.createLinkTable(knex);
-  await models.createVisitTable(knex);
-
-  await Promise.all([
-    async () => {
-      try {
-        await knex.schema.alterTable("domains", (table) => {
-          table.dropUnique([], "domains_user_id_unique");
-        });
-      } catch (ignored) {
-      }
-    },
-    await knex.schema.alterTable("domains", (table) => {
-      table.uuid("uuid").defaultTo(knex.fn.uuid());
-    }),
-  ]);
+  await knex.schema.alterTable("domains", (table) => {
+    // Foreign needs to be temporarily dropped as unique is used as index
+    table.dropForeign(["user_id"]);
+    table.dropUnique(["user_id"]);
+    table
+      .foreign("user_id")
+      .references("id")
+      .inTable("users");
+    table.uuid("uuid").defaultTo(knex.fn.uuid());
+  });
 }
 
-async function down() {
-  // do nothing
+async function down(knex) {
+  await knex.schema.alterTable("domains", (table) => {
+    table.unique("user_id", {
+      indexName: "domains_user_id_unique"
+    });
+    table.dropColumn("uuid");
+  });
 }
 
 module.exports = {
   up,
   down
-}
+};
