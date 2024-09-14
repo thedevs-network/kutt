@@ -1,7 +1,7 @@
 const { differenceInSeconds } = require("date-fns");
 const promisify = require("util").promisify;
 const bcrypt = require("bcryptjs");
-const isbot = require("isbot");
+const { isbot } = require("isbot");
 const URL = require("url");
 const dns = require("dns");
 
