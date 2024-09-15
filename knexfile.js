@@ -13,7 +13,8 @@ module.exports = {
     },
     migrations: {
       tableName: "knex_migrations",
-      directory: "server/migrations"
+      directory: "server/migrations",
+      disableMigrationsListValidation: true,
     }
   }
 };
