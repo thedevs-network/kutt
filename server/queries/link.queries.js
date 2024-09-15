@@ -43,9 +43,13 @@ function normalizeMatch(match) {
 };
 
 async function total(match, params) {
-  const query = knex("links")
-    .where(normalizeMatch(match));
+  const normalizedMatch = normalizeMatch(match);
+  const query = knex("links");
   
+  Object.entries(normalizedMatch).forEach(([key, value]) => {
+    query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+  });
+
   if (params?.search) {
     query.andWhereRaw(
       "concat_ws(' ', description, links.address, target, domains.address) ILIKE '%' || ? || '%'",
