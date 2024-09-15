@@ -25,6 +25,7 @@ function config(req, res, next) {
   res.locals.site_name = env.SITE_NAME;
   res.locals.contact_email = env.CONTACT_EMAIL;
   res.locals.server_ip_address = env.SERVER_IP_ADDRESS;
+  res.locals.disallow_registration = env.DISALLOW_REGISTRATION;
   next();
 }
 

@@ -266,7 +266,7 @@ async function resetPassword(req, res, next) {
 
 function signupAccess(req, res, next) {
   if (!env.DISALLOW_REGISTRATION) return next();
-  return res.status(403).send({ message: "Registration is not allowed." });
+  throw new CustomError("Registration is not allowed.");
 }
 
 async function changeEmailRequest(req, res) {

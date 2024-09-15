@@ -24,9 +24,12 @@ module.exports = function({ data }) {
   const tasks = [];
   
   tasks.push(query.link.incrementVisit({ id:  data.link.id }));
-
+  
   if (data.link.visit_count < getStatsLimit()) {
-    const agent = useragent.parse(data.headers["user-agent"]);
+    // the following line is for backward compatibility
+    // used to send the whole header to get the user agent
+    const userAgent = data.userAgent || data.headers?.["user-agent"];
+    const agent = useragent.parse(userAgent);
     const [browser = "Other"] = browsersList.filter(filterInBrowser(agent));
     const [os = "Other"] = osList.filter(filterInOs(agent));
     const referrer =
