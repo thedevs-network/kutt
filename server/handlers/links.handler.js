@@ -385,7 +385,7 @@ async function redirect(req, res, next) {
   const isBot = isbot(req.headers["user-agent"]);
   if (link.user_id && !isBot) {
     queue.visit.add({
-      headers: req.headers,
+      userAgent: req.headers["user-agent"],
       realIP: req.realIP,
       referrer: req.get("Referrer"),
       link
@@ -416,7 +416,7 @@ async function redirectProtected(req, res) {
   // 4. Create visit
   if (link.user_id) {
     queue.visit.add({
-      headers: req.headers,
+      userAgent: req.headers["user-agent"],
       realIP: req.realIP,
       referrer: req.get("Referrer"),
       link
