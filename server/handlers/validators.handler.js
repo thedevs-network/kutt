@@ -78,17 +78,13 @@ const createLink = [
     .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
   body("domain")
     .optional({ nullable: true, checkFalsy: true })
+    .customSanitizer(value => value === env.DEFAULT_DOMAIN ? null : value)
     .custom(checkUser)
     .withMessage("Only users can use this field.")
     .isString()
     .withMessage("Domain should be string.")
     .customSanitizer(value => value.toLowerCase())
     .custom(async (address, { req }) => {
-      if (address === env.DEFAULT_DOMAIN) {
-        req.body.domain = null;
-        return;
-      }
-
       const domain = await query.domain.find({
         address,
         user_id: req.user.id
