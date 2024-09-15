@@ -826,7 +826,7 @@ table tr.loading-placeholder td {
 /* LOGIN & SIGNUP */
 
 form#login-signup {
-  width: 400px;
+  width: 420px;
   max-width: 100%;
   flex: 1 1 auto;
   display: flex;
@@ -848,17 +848,16 @@ form#login-signup input {
 form#login-signup .buttons-wrapper {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 1.5rem;
 }
 
 form#login-signup .buttons-wrapper button {
   height: 56px;
-  flex: 1 1 auto;
+  flex: 0 0 48%;
   padding: 0 1rem 2px;
-  margin-right: 1rem;
+  margin: 0;
 }
-
-form#login-signup .buttons-wrapper button:last-child { margin-right: 0; }
 
 form#login-signup a.forgot-password {
   align-self: flex-start;
