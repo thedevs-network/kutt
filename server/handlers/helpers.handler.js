@@ -1,7 +1,5 @@
 const { validationResult } = require("express-validator");
-const signale = require("signale");
 
-const { logger } = require("../config/winston");
 const { CustomError } = require("../utils");
 const env = require("../env");
 
@@ -11,12 +9,10 @@ function ip(req, res, next) {
 };
 
 function error(error, req, res, _next) {
-  if (env.isDev) {
-    signale.fatal(error);
-  }
-
-  if (!env.isDev && !(error instanceof CustomError)) {
-    logger.error(error.message);
+  if (!(error instanceof CustomError)) {
+    console.error(error);
+  } else if (env.isDev) {
+    console.error(error.message);
   }
 
   const message = error instanceof CustomError ? error.message : "An error occurred.";

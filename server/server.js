@@ -13,7 +13,6 @@ const renders = require("./handlers/renders.handler");
 const asyncHandler = require("./utils/asyncHandler");
 const locals = require("./handlers/locals.handler");
 const links = require("./handlers/links.handler");
-const { stream } = require("./config/winston");
 const routes = require("./routes");
 const utils = require("./utils");
 
@@ -26,10 +25,6 @@ const app = express();
 // stating that this app is running behind a proxy
 // and the express app should get the IP address from the proxy server
 app.set("trust proxy", true);
-
-if (env.isDev) {
-  app.use(morgan("combined", { stream }));
-}
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cookieParser());
