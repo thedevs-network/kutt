@@ -27,8 +27,6 @@ const env = cleanEnv(process.env, {
   CUSTOM_DOMAIN_USE_HTTPS: bool({ default: false }),
   JWT_SECRET: str(),
   ADMIN_EMAILS: str({ default: "" }),
-  RECAPTCHA_SITE_KEY: str({ default: "" }),
-  RECAPTCHA_SECRET_KEY: str({ default: "" }),
   GOOGLE_SAFE_BROWSING_KEY: str({ default: "" }),
   MAIL_HOST: str(),
   MAIL_PORT: num(),
