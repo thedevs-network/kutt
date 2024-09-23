@@ -10,8 +10,10 @@
   <hr />
   {{> settings/change_password}}
   <hr />
-  {{> settings/change_email}}
-  <hr />
+  {{#if mail_enabled}}
+    {{> settings/change_email}}
+    <hr />
+  {{/if}}
   {{> settings/delete_account}}
 </section>
 {{> footer}}

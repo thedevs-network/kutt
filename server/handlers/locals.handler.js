@@ -26,6 +26,7 @@ function config(req, res, next) {
   res.locals.contact_email = env.CONTACT_EMAIL;
   res.locals.server_ip_address = env.SERVER_IP_ADDRESS;
   res.locals.disallow_registration = env.DISALLOW_REGISTRATION;
+  res.locals.mail_enabled = env.MAIL_ENABLED;
   next();
 }
 

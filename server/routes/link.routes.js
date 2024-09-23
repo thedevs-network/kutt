@@ -88,6 +88,7 @@ router.post(
 router.post(
   "/report",
   locals.viewTemplate("partials/report/form"),
+  auth.featureAccess([env.MAIL_ENABLED]),
   validators.reportLink,
   asyncHandler(helpers.verify),
   asyncHandler(link.report)

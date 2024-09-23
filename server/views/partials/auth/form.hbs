@@ -29,25 +29,29 @@
       Log in
     </button>
     {{#unless disallow_registration}}
-      <button 
-        type="button"
-        class="secondary signup" 
-        hx-post="/api/auth/signup" 
-        hx-target="#login-signup" 
-        hx-trigger="click" 
-        hx-indicator="#login-signup" 
-        hx-swap="outerHTML"
-        hx-sync="closest form"
-        hx-on:htmx:before-request="htmx.addClass('#login-signup', 'signup')"
-        hx-on:htmx:after-request="htmx.removeClass('#login-signup', 'signup')"
-      >
-          <span>{{> icons/new_user}}</span>
-          <span>{{> icons/spinner}}</span>
-          Sign up
-      </button>
+      {{#if mail_enabled}}
+        <button 
+          type="button"
+          class="secondary signup" 
+          hx-post="/api/auth/signup" 
+          hx-target="#login-signup" 
+          hx-trigger="click" 
+          hx-indicator="#login-signup" 
+          hx-swap="outerHTML"
+          hx-sync="closest form"
+          hx-on:htmx:before-request="htmx.addClass('#login-signup', 'signup')"
+          hx-on:htmx:after-request="htmx.removeClass('#login-signup', 'signup')"
+        >
+            <span>{{> icons/new_user}}</span>
+            <span>{{> icons/spinner}}</span>
+            Sign up
+        </button>
+      {{/if}}
     {{/unless}}
   </div>
-  <a class="forgot-password" href="/reset-password" title="Reset password">Forgot your password?</a>
+  {{#if mail_enabled}}
+    <a class="forgot-password" href="/reset-password" title="Reset password">Forgot your password?</a>
+  {{/if}}
   {{#unless errors}}
     {{#if error}}
       <p class="error">{{error}}</p>

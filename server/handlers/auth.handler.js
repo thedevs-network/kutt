@@ -222,10 +222,11 @@ async function resetPasswordRequest(req, res) {
       reset_password_expires: addMinutes(new Date(), 30).toISOString()
     }
   );
-  
+
   if (user) {
-    // TODO: handle error
-    mail.resetPasswordToken(user).catch(() => null);
+    mail.resetPasswordToken(user).catch(error => {
+      console.error("Send reset-password token email error:\n", error);
+    });
   }
 
   if (req.isHTML) {
@@ -262,11 +263,6 @@ async function resetPassword(req, res, next) {
   }
 
   next();
-}
-
-function signupAccess(req, res, next) {
-  if (!env.DISALLOW_REGISTRATION) return next();
-  throw new CustomError("Registration is not allowed.");
 }
 
 async function changeEmailRequest(req, res) {
@@ -352,6 +348,25 @@ async function changeEmail(req, res, next) {
   return next();
 }
 
+function featureAccess(features, redirect) {
+  return function(req, res, next) {
+    for (let i = 0; i < features.length; ++i) {
+      if (!features[i]) {
+        if (redirect) {
+          return res.redirect("/");
+        } else {
+          throw new CustomError("Request is not allowed.", 400);
+        }
+      } 
+    }
+    next();
+  }
+}
+
+function featureAccessPage(features) {
+  return featureAccess(features, true);
+}
+
 module.exports = {
   admin,
   apikey,
@@ -359,6 +374,8 @@ module.exports = {
   changeEmailRequest,
   changePassword,
   cooldown,
+  featureAccess,
+  featureAccessPage,
   generateApiKey,
   jwt,
   jwtLoose,
@@ -369,6 +386,5 @@ module.exports = {
   resetPassword,
   resetPasswordRequest,
   signup,
-  signupAccess,
   verify,
 }

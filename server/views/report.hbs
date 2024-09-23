@@ -4,10 +4,12 @@
     Report abuse.
   </h2>
   <p>
-    Report abuses, malware and phishing links to the email address below
-    or use the form. We will review as soon as we can.
+    Report abuses, malware and phishing links to the email address below {{#if mail_enabled}}or use the form{{/if}}.
+    We will review as soon as we can.
   </p>
   {{> report/email}}
-  {{> report/form}}
+  {{#if mail_enabled}}
+    {{> report/form}}
+  {{/if}}
 </section>
 {{> footer}}
