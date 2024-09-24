@@ -56,8 +56,7 @@ async function add(params) {
   }
 
   // Query domain instead of using returning as sqlite and mysql don't support it
-  const domain = await knex("domains")
-    .where("id", id);
+  const domain = await knex("domains").where("id", id).first();
 
   redis.remove.domain(domain);
 
