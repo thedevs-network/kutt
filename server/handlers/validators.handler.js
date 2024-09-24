@@ -396,7 +396,7 @@ async function malware(user, target) {
     );
 
     // Ban if too many cooldowns
-    if (updatedUser.malicious_attempts.length > 2) {
+    if (updatedUser.malicious_attempts > 2) {
       await query.user.update({ id: user.id }, { banned: true });
       throw new utils.CustomError("Too much malware requests. You are now banned.");
     }
