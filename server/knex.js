@@ -5,7 +5,7 @@ const env = require("./env");
 const db = knex({
   client: env.DB_CLIENT,
   connection: {
-    filename: env.DB_FILENAME,
+    filename: "db/" + env.DB_FILENAME,
     host: env.DB_HOST,
     port: env.DB_PORT,
     database: env.DB_NAME,
