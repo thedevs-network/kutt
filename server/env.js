@@ -18,7 +18,7 @@ const env = cleanEnv(process.env, {
   DEFAULT_DOMAIN: str({ example: "kutt.it" }),
   LINK_LENGTH: num({ default: 6 }),
   DB_CLIENT: str({ choices: supportedDBClients, default: "pg" }),
-  DB_FILENAME: str(),
+  DB_FILENAME: str({ default: "data" }),
   DB_HOST: str({ default: "localhost" }),
   DB_PORT: num({ default: 5432 }),
   DB_NAME: str({ default: "postgres" }),
