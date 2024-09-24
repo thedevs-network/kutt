@@ -5,6 +5,7 @@ const renders = require("../handlers/renders.handler");
 const asyncHandler = require("../utils/asyncHandler");
 const locals = require("../handlers/locals.handler");
 const auth = require("../handlers/auth.handler");
+const env = require("../env");
 
 const router = Router();
 
@@ -64,6 +65,7 @@ router.get(
 
 router.get(
   "/reset-password",
+  auth.featureAccessPage([env.MAIL_ENABLED]),
   asyncHandler(auth.jwtLoosePage),
   asyncHandler(locals.user),
   asyncHandler(renders.resetPassword)

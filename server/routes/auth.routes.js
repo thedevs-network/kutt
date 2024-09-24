@@ -6,6 +6,7 @@ const asyncHandler = require("../utils/asyncHandler");
 const locals = require("../handlers/locals.handler");
 const auth = require("../handlers/auth.handler");
 const utils = require("../utils");
+const env = require("../env");
 
 const router = Router();
 
@@ -21,7 +22,7 @@ router.post(
 router.post(
   "/signup",
   locals.viewTemplate("partials/auth/form"),
-  auth.signupAccess,
+  auth.featureAccess([!env.DISALLOW_REGISTRATION, env.MAIL_ENABLED]),
   validators.signup,
   asyncHandler(helpers.verify),
   asyncHandler(auth.signup)
@@ -40,6 +41,7 @@ router.post(
   "/change-email",
   locals.viewTemplate("partials/settings/change_email"),
   asyncHandler(auth.jwt),
+  auth.featureAccess([env.MAIL_ENABLED]),
   validators.changeEmail,
   asyncHandler(helpers.verify),
   asyncHandler(auth.changeEmailRequest)
@@ -55,6 +57,7 @@ router.post(
 router.post(
   "/reset-password",
   locals.viewTemplate("partials/reset_password/form"),
+  auth.featureAccess([env.MAIL_ENABLED]),
   validators.resetPassword,
   asyncHandler(helpers.verify),
   asyncHandler(auth.resetPasswordRequest)

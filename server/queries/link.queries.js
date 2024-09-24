@@ -43,9 +43,10 @@ function normalizeMatch(match) {
 }
 
 async function total(match, params) {
-  let query = knex("links");
-
-  Object.entries(normalizeMatch(match)).forEach(([key, value]) => {
+  const normalizedMatch = normalizeMatch(match);
+  const query = knex("links");
+  
+  Object.entries(normalizedMatch).forEach(([key, value]) => {
     query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
   });
 

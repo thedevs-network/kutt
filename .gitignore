@@ -10,6 +10,5 @@ server/old.config.js
 production-server
 .idea/
 dump.rdb
-docs/api/*.js
 docs/api/static
 **/.DS_Store
