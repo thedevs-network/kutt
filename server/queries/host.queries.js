@@ -47,7 +47,7 @@ async function add(params) {
       });
   } else {
     // Mysql and sqlite don't support returning but return the inserted id by default
-    const [createdHost] = await knex("hosts").insert(newHost).returning('*');
+    const [createdHost] = await knex("hosts").insert(newHost).returning("id");
     id = createdHost.id;
   }
 
