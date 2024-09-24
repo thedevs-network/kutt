@@ -28,9 +28,7 @@ function get(match) {
 async function add(params) {
   params.address = params.address.toLowerCase();
 
-  const existingDomain = await knex("domains")
-    .where("address", params.address)
-    .first();
+  const existingDomain = await knex("domains").where("address", params.address).first();
 
   let id = existingDomain?.id;
 
@@ -43,12 +41,10 @@ async function add(params) {
   };
 
   if (id) {
-    await knex("domains")
-      .where("id", id)
-      .update({
-        ...newDomain,
-        updated_at: params.updated_at || new Date().toISOString()
-      });
+    await knex("domains").where("id", id).update({
+      ...newDomain,
+      updated_at: params.updated_at || new Date().toISOString()
+    });
   } else {
     // Mysql and sqlite don't support returning but return the inserted id by default
     const [createdDomain] = await knex("domains").insert(newDomain).returning("id");
@@ -68,9 +64,7 @@ async function update(match, update) {
     .where(match)
     .update({ ...update, updated_at: new Date().toISOString() });
 
-  const domains = await knex("domains")
-    .select("*")
-    .where(match);
+  const domains = await knex("domains").select("*").where(match);
 
   domains.forEach(redis.remove.domain);
 

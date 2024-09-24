@@ -26,9 +26,7 @@ async function find(match) {
 async function add(params) {
   params.address = params.address.toLowerCase();
 
-  const existingHost = await knex("hosts")
-    .where("address", params.address)
-    .first();
+  const existingHost = await knex("hosts").where("address", params.address).first();
 
   let id = existingHost?.id;
 
@@ -39,12 +37,10 @@ async function add(params) {
   };
 
   if (id) {
-    await knex("hosts")
-      .where("id", id)
-      .update({
-          ...newHost,
-          updated_at: params.updated_at || new Date().toISOString()
-      });
+    await knex("hosts").where("id", id).update({
+      ...newHost,
+      updated_at: params.updated_at || new Date().toISOString()
+    });
   } else {
     // Mysql and sqlite don't support returning but return the inserted id by default
     const [createdHost] = await knex("hosts").insert(newHost).returning("id");
@@ -52,8 +48,7 @@ async function add(params) {
   }
 
   // Query domain instead of using returning as sqlite and mysql don't support it
-  const host = await knex("hosts")
-    .where("id", id);
+  const host = await knex("hosts").where("id", id);
 
   redis.remove.host(host);
 

@@ -385,15 +385,14 @@ async function malware(user, target) {
       })
     }
   ).then(res => res.json());
+
   if (!isMalware.data || !isMalware.data.matches) return;
 
   if (user) {
     const [updatedUser] = await query.user.update(
       { id: user.id },
-      {
-        cooldown: new Date().toISOString(),
-      },
-      ['malicious_attempts']
+      { cooldown: new Date().toISOString() },
+      { increments: ["malicious_attempts"] }
     );
 
     // Ban if too many cooldowns

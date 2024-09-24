@@ -170,9 +170,7 @@ async function update(match, update) {
     .where(match)
     .update({ ...update, updated_at: new Date().toISOString() });
 
-  const links = await knex("links")
-    .select('*')
-    .where(match);
+  const links = await knex("links").select('*').where(match);
 
   links.forEach(redis.remove.link);
   

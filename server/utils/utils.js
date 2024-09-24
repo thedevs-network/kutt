@@ -1,10 +1,10 @@
 const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears } = require("date-fns");
 const nanoid = require("nanoid/generate");
+const knexUtils = require("./knex");
 const JWT = require("jsonwebtoken");
 const path = require("path");
 const hbs = require("hbs");
 const ms = require("ms");
-const knexUtils = require('./knex')
 
 const env = require("../env");
 
