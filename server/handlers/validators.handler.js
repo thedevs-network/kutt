@@ -1,4 +1,4 @@
-const { isAfter, subDays, subHours, addMilliseconds } = require("date-fns");
+const { isAfter, subDays, subHours, addMilliseconds, differenceInHours } = require("date-fns");
 const { body, param } = require("express-validator");
 const promisify = require("util").promisify;
 const bcrypt = require("bcryptjs");
@@ -342,10 +342,11 @@ const deleteUser = [
 
 // TODO: if user has posted malware should do something better
 function cooldown(user) {
-  if (!env.GOOGLE_SAFE_BROWSING_KEY || !user || !user.cooldown) return;
+
+  if (!user?.cooldown) return;
 
   // If user has active cooldown then throw error
-  const hasCooldownNow = isAfter(subHours(new Date(), 12), new Date(user.cooldown))
+  const hasCooldownNow = differenceInHours(new Date(), new Date(user.cooldown)) < 12;
 
   if (hasCooldownNow) {
     throw new utils.CustomError("Cooldown because of a malware URL. Wait 12h");
