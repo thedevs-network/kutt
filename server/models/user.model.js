@@ -13,13 +13,12 @@ async function createUserTable(knex) {
         .references("id")
         .inTable("users");
       table
-        .json("cooldowns")
-        .defaultTo("[]");
-      table
         .string("email")
         .unique()
         .notNullable();
       table.string("password").notNullable();
+      table.datetime("cooldown").nullable();
+      table.integer("malicious_attempts").notNullable().defaultTo(0);
       table.dateTime("reset_password_expires");
       table.string("reset_password_token");
       table.dateTime("change_email_expires");
