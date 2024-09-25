@@ -27,7 +27,7 @@ async function up(knex) {
     }),
     knex.schema.alterTable('visits', (table) => {
       table.dropForeign('ignored', 'visits_link_id_foreign');
-      table.foreign('link_Id')
+      table.foreign('link_id')
         .references('id')
         .inTable('links')
         .onDelete('CASCADE')
