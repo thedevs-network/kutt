@@ -26,19 +26,25 @@ async function add(req, res) {
 };
 
 async function remove(req, res) {
-  const [domain] = await query.domain.update(
-    {
-      uuid: req.params.id,
-      user_id: req.user.id
-    },
-    { user_id: null }
-  );
+  const domain = await query.domain.find({
+    uuid: req.params.id,
+    user_id: req.user.id
+  });
 
   if (!domain) {
     throw new CustomError("Could not delete the domain.", 500);
   }
+  
+  const [updatedDomain] = await query.domain.update(
+    { id: domain.id },
+    { user_id: null }
+  );
 
-  redis.remove.domain(domain);
+  if (!updatedDomain) {
+    throw new CustomError("Could not delete the domain.", 500);
+  }
+
+  redis.remove.domain(updatedDomain);
 
   if (req.isHTML) {
     const domains = (await query.domain.get({ user_id: req.user.id })).map(sanitize.domain);

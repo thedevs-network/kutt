@@ -139,12 +139,16 @@ function login(req, res) {
 
 async function verify(req, res, next) {
   if (!req.params.verificationToken) return next();
+
+  const user = await query.user.find({
+    verification_token: req.params.verificationToken,
+    verification_expires: [">", new Date().toISOString()]
+  });
+
+  if (!user) return next();
   
-  const [user] = await query.user.update(
-    {
-      verification_token: req.params.verificationToken,
-      verification_expires: [">", new Date().toISOString()]
-    },
+  const [updatedUser] = await query.user.update(
+    { id: user.id },
     {
       verified: true,
       verification_token: null,
@@ -152,7 +156,7 @@ async function verify(req, res, next) {
     }
   );
   
-  if (user) {
+  if (updatedUser) {
     const token = utils.signToken(user);
     utils.deleteCurrentToken(res);
     utils.setToken(res, token);
@@ -317,16 +321,14 @@ async function changeEmail(req, res, next) {
   
   if (changeEmailToken) {
     const foundUser = await query.user.find({
-      change_email_token: changeEmailToken
+      change_email_token: changeEmailToken,
+      change_email_expires: [">", new Date().toISOString()]
     });
   
     if (!foundUser) return next();
   
     const [user] = await query.user.update(
-      {
-        change_email_token: changeEmailToken,
-        change_email_expires: [">", new Date().toISOString()]
-      },
+      { id: foundUser.id },
       {
         change_email_token: null,
         change_email_expires: null,

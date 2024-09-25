@@ -10,8 +10,13 @@ async function find(match) {
     const cachedUser = await redis.client.get(key);
     if (cachedUser) return JSON.parse(cachedUser);
   }
-  
-  const user = await knex("users").where(match).first();
+
+  const query = knex("users");
+  Object.entries(match).forEach(([key, value]) => {
+    query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+  });
+
+  const user = await query.first();
   
   if (user) {
     const emailKey = redis.key.user(user.email);
@@ -24,7 +29,6 @@ async function find(match) {
   }
   
   return user;
-
 }
 
 async function add(params, user) {
