@@ -30,6 +30,10 @@ async function createLinkTable(knex) {
         .integer("visit_count")
         .notNullable()
         .defaultTo(0);
+      table
+        .uuid("uuid")
+        .notNullable()
+        .defaultTo(knex.fn.uuid());
       table.timestamps(false, true);
     });
   }
