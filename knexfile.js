@@ -11,6 +11,7 @@ module.exports = {
     password: env.DB_PASSWORD,
     ssl: env.DB_SSL,
   },
+  useNullAsDefault: true,
   migrations: {
     tableName: "knex_migrations",
     directory: "server/migrations",
