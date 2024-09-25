@@ -17,15 +17,19 @@ async function createDomainTable(knex) {
         .notNullable();
       table.string("homepage").nullable();
       table
-        .integer("user_id")
+        .integer("user_id");
+      table
+        .foreign("user_id")
         .references("id")
         .inTable("users")
-        .onDelete("SET NULL");
+        .onDelete("SET NULL")
+        .withKeyName("domains_user_id_foreign");
       table
         .uuid("uuid")
         .notNullable()
         .defaultTo(knex.fn.uuid());
       table.timestamps(false, true);
+      
     });
   }
 }

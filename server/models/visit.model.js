@@ -10,11 +10,13 @@ async function createVisitTable(knex) {
         .defaultTo(knex.fn.now());
       table.dateTime("updated_at").defaultTo(knex.fn.now());
       table
-        .integer("link_id")
+        .integer("link_id");
+      table
+        .foreign("link_id")
         .references("id")
         .inTable("links")
-        .notNullable()
-        .onDelete("CASCADE");
+        .onDelete("CASCADE")
+        .withKeyName("visits_link_id_foreign");
       table.jsonb("referrers").defaultTo("{}");
       table
         .integer("total")

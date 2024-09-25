@@ -22,10 +22,13 @@ async function createLinkTable(knex) {
       table.dateTime("expire_in");
       table.string("target", 2040).notNullable();
       table
-        .integer("user_id")
+        .integer("user_id");
+      table
+        .foreign("user_id")
         .references("id")
         .inTable("users")
-        .onDelete("CASCADE");
+        .onDelete("CASCADE")
+        .withKeyName("links_user_id_foreign");
       table
         .integer("visit_count")
         .notNullable()
