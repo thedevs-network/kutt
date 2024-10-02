@@ -18,6 +18,11 @@ import env from "../env";
 const dnsLookup = promisify(dns.lookup);
 
 export const get: Handler = async (req, res) => {
+  const { prefix, id } = req.params; // Capture the parameters
+  console.log(`Requested Prefix: ${prefix}, ID: ${id}`);
+
+  const fullAddress = `${prefix}/${id}`; // Construct the full address
+  console.log(`Full Address: ${fullAddress}`);
   const { limit, skip, all } = req.context;
   const search = req.query.search as string;
   const userId = req.user.id;
@@ -49,7 +54,8 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
     description,
     target,
     domain,
-    expire_in
+    expire_in,
+    prefix // Custom prefix from request body
   } = req.body;
   const domain_id = domain ? domain.id : null;
 
@@ -87,7 +93,13 @@ export const create: Handler = async (req: CreateLinkReq, res) => {
   }
 
   // Create new link
-  const address = customurl || queries[5];
+
+
+  // Determine the address: use the custom prefix if provided, otherwise no prefix
+  const baseAddress = customurl || queries[5];
+  const address = prefix ? `${prefix}/${baseAddress}` : baseAddress; // Use the prefix if provided
+  
+  console.log("link generated is", address)
   const link = await query.link.create({
     password,
     address,
@@ -272,7 +284,17 @@ export const redirect = (app: ReturnType<typeof next>): Handler => async (
       : null;
 
   // 2. Get link
-  const address = req.params.id.replace("+", "");
+  // const address = req.params.id.replace("+", "");
+  // Construct the address based on whether the prefix exists
+  const { prefix, id } = req.params; // Capture prefix and id from URL params
+  let address;
+  if (prefix) {
+      address = `${prefix}/${id.replace("+", "")}`; // Use prefix if provided
+  } else {
+      address = id.replace("+", ""); // Just use the id if no prefix
+  }
+  console.log("Searching for*********", address);
+  console.log("Searching for*********", prefix,id)
   const link = await query.link.find({
     address,
     domain_id: domain ? domain.id : null

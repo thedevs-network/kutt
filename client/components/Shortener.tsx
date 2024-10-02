@@ -57,6 +57,7 @@ interface Form {
   description?: string;
   expire_in?: string;
   showAdvanced?: boolean;
+  prefix?: string; // Add prefix to the form interface  
 }
 
 const defaultDomain = publicRuntimeConfig.DEFAULT_DOMAIN;
@@ -212,6 +213,16 @@ const Shortener = () => {
           autoFocus
           data-lpignore
         />
+        <TextInput
+  {...text("prefix")}  // Add input for prefix
+  placeholder="Custom prefix (optional)"
+  fontSize={[18, 20, 22]}
+  width={1}
+  height={[58, 64, 72]}
+  px={0}
+  pr={[48, 84]}
+  pl={[32, 40]}
+/>
         <SubmitIconWrapper onClick={onSubmit} role="button" aria-label="submit">
           <Icon
             name={loading ? "spinner" : "send"}

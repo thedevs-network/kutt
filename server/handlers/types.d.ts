@@ -9,5 +9,6 @@ export interface CreateLinkReq extends Request {
     expire_in?: string;
     domain?: Domain;
     target: string;
+    prefix :string;
   };
 }

@@ -61,6 +61,7 @@ app.prepare().then(async () => {
   );
 
   server.get("/:id", asyncHandler(links.redirect(app)));
+  server.get("/:prefix/:id", asyncHandler(links.redirect(app))); // Redirects with dynamic prefix
 
   // Error handler
   server.use(helpers.error);
