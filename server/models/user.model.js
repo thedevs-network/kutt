@@ -10,6 +10,7 @@ async function createUserTable(knex) {
         .defaultTo(false);
       table
         .integer("banned_by_id")
+        .unsigned()
         .references("id")
         .inTable("users");
       table

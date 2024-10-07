@@ -10,7 +10,8 @@ async function createVisitTable(knex) {
         .defaultTo(knex.fn.now());
       table.dateTime("updated_at").defaultTo(knex.fn.now());
       table
-        .integer("link_id");
+        .integer("link_id")
+        .unsigned();
       table
         .foreign("link_id")
         .references("id")

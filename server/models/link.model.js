@@ -12,17 +12,20 @@ async function createLinkTable(knex) {
         .defaultTo(false);
       table
         .integer("banned_by_id")
+        .unsigned()
         .references("id")
         .inTable("users");
       table
         .integer("domain_id")
+        .unsigned()
         .references("id")
         .inTable("domains");
       table.string("password");
       table.dateTime("expire_in");
       table.string("target", 2040).notNullable();
       table
-        .integer("user_id");
+        .integer("user_id")
+        .unsigned();
       table
         .foreign("user_id")
         .references("id")

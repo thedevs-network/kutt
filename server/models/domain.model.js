@@ -9,6 +9,7 @@ async function createDomainTable(knex) {
         .defaultTo(false);
       table
         .integer("banned_by_id")
+        .unsigned()
         .references("id")
         .inTable("users");
       table
@@ -17,7 +18,8 @@ async function createDomainTable(knex) {
         .notNullable();
       table.string("homepage").nullable();
       table
-        .integer("user_id");
+        .integer("user_id")
+        .unsigned();
       table
         .foreign("user_id")
         .references("id")
