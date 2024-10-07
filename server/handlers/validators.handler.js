@@ -75,7 +75,7 @@ const createLink = [
     .customSanitizer(ms)
     .custom(value => value >= ms("1m"))
     .withMessage("Expire time should be more than 1 minute.")
-    .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
+    .customSanitizer(value => utils.dateToUTC(addMilliseconds(new Date(), value))),
   body("domain")
     .optional({ nullable: true, checkFalsy: true })
     .customSanitizer(value => value === env.DEFAULT_DOMAIN ? null : value)
@@ -138,7 +138,7 @@ const editLink = [
     .customSanitizer(ms)
     .custom(value => value >= ms("1m"))
     .withMessage("Expire time should be more than 1 minute.")
-    .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
+    .customSanitizer(value => utils.dateToUTC(addMilliseconds(new Date(), value))),
   body("description")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
@@ -346,7 +346,7 @@ function cooldown(user) {
   if (!user?.cooldown) return;
 
   // If user has active cooldown then throw error
-  const hasCooldownNow = differenceInHours(new Date(), new Date(user.cooldown)) < 12;
+  const hasCooldownNow = differenceInHours(new Date(), utils.parseDatetime(user.cooldown)) < 12;
 
   if (hasCooldownNow) {
     throw new utils.CustomError("Cooldown because of a malware URL. Wait 12h");
@@ -391,7 +391,7 @@ async function malware(user, target) {
   if (user) {
     const [updatedUser] = await query.user.update(
       { id: user.id },
-      { cooldown: new Date().toISOString() },
+      { cooldown: utils.dateToUTC(new Date()) },
       { increments: ["malicious_attempts"] }
     );
 
@@ -412,7 +412,7 @@ async function linksCount(user) {
 
   const count = await query.link.total({
     user_id: user.id,
-    "links.created_at": [">", subDays(new Date(), 1).toISOString()]
+    "links.created_at": [">", utils.dateToUTC(subDays(new Date(), 1))]
   });
 
   if (count > env.USER_LIMIT_PER_DAY) {

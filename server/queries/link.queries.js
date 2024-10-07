@@ -1,8 +1,10 @@
 const bcrypt = require("bcryptjs");
 
-const CustomError = require("../utils").CustomError;
+const utils = require("../utils");
 const redis = require("../redis");
 const knex = require("../knex");
+
+const CustomError = utils.CustomError;
 
 const selectable = [
   "links.id",
@@ -155,9 +157,9 @@ async function batchRemove(match) {
   
   const links = await findQuery;
   
-  links.forEach(redis.remove.link);
-  
   await deleteQuery.delete();
+  
+  links.forEach(redis.remove.link);
 }
 
 async function update(match, update) {
@@ -168,7 +170,7 @@ async function update(match, update) {
   
   await knex("links")
     .where(match)
-    .update({ ...update, updated_at: new Date().toISOString() });
+    .update({ ...update, updated_at: utils.dateToUTC(new Date()) });
 
   const links = await knex("links").select('*').where(match);
 

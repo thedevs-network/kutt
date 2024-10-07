@@ -20,4 +20,6 @@ const db = knex({
   useNullAsDefault: true,
 });
 
+db.isSqlite3 = db.client.driverName === "sqlite3" || db.client.driverName === "better-sqlite3";
+
 module.exports = db;

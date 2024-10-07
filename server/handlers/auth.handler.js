@@ -87,12 +87,11 @@ async function cooldown(req, res, next) {
   
   const ip = await query.ip.find({
     ip: req.realIP.toLowerCase(),
-    created_at: [">", subMinutes(new Date(), cooldownConfig).toISOString()]
+    created_at: [">", utils.dateToUTC(subMinutes(new Date(), cooldownConfig))]
   });
   
   if (ip) {
-    const timeToWait =
-      cooldownConfig - differenceInMinutes(new Date(), new Date(ip.created_at));
+    const timeToWait = cooldownConfig - differenceInMinutes(new Date(), utils.parseDatetime(ip.created_at));
     throw new CustomError(
       `Non-logged in users are limited. Wait ${timeToWait} minutes or log in.`,
       400
@@ -142,7 +141,7 @@ async function verify(req, res, next) {
 
   const user = await query.user.find({
     verification_token: req.params.verificationToken,
-    verification_expires: [">", new Date().toISOString()]
+    verification_expires: [">", utils.dateToUTC(new Date())]
   });
 
   if (!user) return next();
@@ -223,7 +222,7 @@ async function resetPasswordRequest(req, res) {
     { email: req.body.email },
     {
       reset_password_token: uuid(),
-      reset_password_expires: addMinutes(new Date(), 30).toISOString()
+      reset_password_expires: utils.dateToUTC(addMinutes(new Date(), 30))
     }
   );
 
@@ -252,7 +251,7 @@ async function resetPassword(req, res, next) {
     const [user] = await query.user.update(
       {
         reset_password_token: resetPasswordToken,
-        reset_password_expires: [">", new Date().toISOString()]
+        reset_password_expires: [">", utils.dateToUTC(new Date())]
       },
       { reset_password_expires: null, reset_password_token: null }
     );
@@ -293,7 +292,7 @@ async function changeEmailRequest(req, res) {
     {
       change_email_address: email,
       change_email_token: uuid(),
-      change_email_expires: addMinutes(new Date(), 30).toISOString()
+      change_email_expires: utils.dateToUTC(addMinutes(new Date(), 30))
     }
   );
   
@@ -322,7 +321,7 @@ async function changeEmail(req, res, next) {
   if (changeEmailToken) {
     const foundUser = await query.user.find({
       change_email_token: changeEmailToken,
-      change_email_expires: [">", new Date().toISOString()]
+      change_email_expires: [">", utils.dateToUTC(new Date())]
     });
   
     if (!foundUser) return next();

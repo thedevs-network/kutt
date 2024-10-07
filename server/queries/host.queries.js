@@ -1,4 +1,5 @@
 const redis = require("../redis");
+const utils = require("../utils");
 const knex = require("../knex");
 
 async function find(match) {
@@ -39,7 +40,7 @@ async function add(params) {
   if (id) {
     await knex("hosts").where("id", id).update({
       ...newHost,
-      updated_at: params.updated_at || new Date().toISOString()
+      updated_at: params.updated_at || utils.dateToUTC(new Date())
     });
   } else {
     // Mysql and sqlite don't support returning but return the inserted id by default

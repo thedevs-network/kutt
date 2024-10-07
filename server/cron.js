@@ -1,6 +1,7 @@
 const cron = require("node-cron");
 
 const query = require("./queries");
+const utils = require("./utils");
 const env = require("./env");
 
 if (env.NON_USER_COOLDOWN) {
@@ -9,6 +10,6 @@ if (env.NON_USER_COOLDOWN) {
   });
 }
 
-cron.schedule("*/15 * * * * *", function() {
-  query.link.batchRemove({ expire_in: ["<", new Date().toISOString()] }).catch();
+cron.schedule("*/1 * * * * *", function() {
+  query.link.batchRemove({ expire_in: ["<", utils.dateToUTC(new Date())] }).catch();
 });
