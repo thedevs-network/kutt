@@ -2,10 +2,15 @@ const knex = require("knex");
 
 const env = require("./env");
 
+const isSqlite = env.DB_CLIENT === "sqlite3" || env.DB_CLIENT === "better-sqlite3";
+const isPostgres = env.DB_CLIENT === "pg" || env.DB_CLIENT === "pg-native";
+const isMySQL = env.DB_CLIENT === "mysql" || env.DB_CLIENT === "mysql2";
+
 const db = knex({
   client: env.DB_CLIENT,
   connection: {
-    filename: "db/" + env.DB_FILENAME,
+    ...(isSqlite && { filename: "db/" + env.DB_FILENAME }),
+    ...(isMySQL && { dateStrings: true, timezone: "Z" }),
     host: env.DB_HOST,
     port: env.DB_PORT,
     database: env.DB_NAME,
@@ -20,6 +25,8 @@ const db = knex({
   useNullAsDefault: true,
 });
 
-db.isSqlite3 = db.client.driverName === "sqlite3" || db.client.driverName === "better-sqlite3";
+db.isPostgres = isPostgres;
+db.isSqlite = isSqlite;
+db.isMySQL = isMySQL;
 
 module.exports = db;

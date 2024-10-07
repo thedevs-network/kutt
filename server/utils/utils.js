@@ -128,9 +128,9 @@ function parseTimestamps(item) {
 
 function dateToUTC(date) {
   const dateUTC = date instanceof Date ? date.toISOString() : new Date(date).toISOString();
-  
-  // sqlite needs iso 8601 string in utc
-  if (knex.isSqlite3) {
+
+  // databases other than postgres need the date to be formatted in 'YYYY-MM-DD hh:mm:ss'
+  if (!knex.isPostgres) {
     return dateUTC.substring(0, 10) + " " + dateUTC.substring(11, 19);
   };
   
