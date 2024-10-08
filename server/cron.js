@@ -11,6 +11,6 @@ if (env.NON_USER_COOLDOWN) {
 }
 
 // check and delete links every minute
-cron.schedule("* * * * *", function() {
+cron.schedule("*/15 * * * * *", function() {
   query.link.batchRemove({ expire_in: ["<", utils.dateToUTC(new Date())] }).catch();
 });
