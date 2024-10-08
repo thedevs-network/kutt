@@ -7,9 +7,7 @@ const supportedDBClients = [
   "sqlite3",
   "better-sqlite3",
   "mysql",
-  "mysql2",
-  "oracledb",
-  "tedious"
+  "mysql2"
 ];
 
 const env = cleanEnv(process.env, {
