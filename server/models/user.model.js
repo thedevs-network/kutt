@@ -10,14 +10,16 @@ async function createUserTable(knex) {
         .defaultTo(false);
       table
         .integer("banned_by_id")
+        .unsigned()
         .references("id")
         .inTable("users");
-      table.specificType("cooldowns", "timestamptz[]");
       table
         .string("email")
         .unique()
         .notNullable();
       table.string("password").notNullable();
+      table.datetime("cooldown").nullable();
+      table.integer("malicious_attempts").notNullable().defaultTo(0);
       table.dateTime("reset_password_expires");
       table.string("reset_password_token");
       table.dateTime("change_email_expires");

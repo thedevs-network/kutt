@@ -1,8 +1,10 @@
 const bcrypt = require("bcryptjs");
 
-const CustomError = require("../utils").CustomError;
+const utils = require("../utils");
 const redis = require("../redis");
 const knex = require("../knex");
+
+const CustomError = utils.CustomError;
 
 const selectable = [
   "links.id",
@@ -40,7 +42,7 @@ function normalizeMatch(match) {
   }
 
   return newMatch;
-};
+}
 
 async function total(match, params) {
   const normalizedMatch = normalizeMatch(match);
@@ -70,7 +72,7 @@ async function get(match, params) {
     .where(normalizeMatch(match))
     .offset(params.skip)
     .limit(params.limit)
-    .orderBy("created_at", "desc");
+    .orderBy("links.created_at", "desc");
   
   if (params?.search) {
     query.andWhereRaw(
@@ -80,10 +82,8 @@ async function get(match, params) {
   }
   
   query.leftJoin("domains", "links.domain_id", "domains.id");
-  
-  const links = await query;
-  
-  return links;
+
+  return query;
 }
 
 async function find(match) {
@@ -138,7 +138,7 @@ async function remove(match) {
   
   if (!link) {
     return { isRemoved: false, error: "Could not find the link.", link: null }
-  };
+  }
 
   const deletedLink = await knex("links").where("id", link.id).delete();
   redis.remove.link(link);
@@ -157,9 +157,9 @@ async function batchRemove(match) {
   
   const links = await findQuery;
   
-  links.forEach(redis.remove.link);
-  
   await deleteQuery.delete();
+  
+  links.forEach(redis.remove.link);
 }
 
 async function update(match, update) {
@@ -168,10 +168,12 @@ async function update(match, update) {
     update.password = await bcrypt.hash(update.password, salt);
   }
   
-  const links = await knex("links")
+  await knex("links")
     .where(match)
-    .update({ ...update, updated_at: new Date().toISOString() }, "*");
-  
+    .update({ ...update, updated_at: utils.dateToUTC(new Date()) });
+
+  const links = await knex("links").select('*').where(match);
+
   links.forEach(redis.remove.link);
   
   return links;

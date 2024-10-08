@@ -1,6 +1,8 @@
-const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears } = require("date-fns");
+const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears, format } = require("date-fns");
 const nanoid = require("nanoid/generate");
+const knexUtils = require("./knex");
 const JWT = require("jsonwebtoken");
+const knex = require("../knex");
 const path = require("path");
 const hbs = require("hbs");
 const ms = require("ms");
@@ -112,14 +114,33 @@ function getDifferenceFunction(type) {
   throw new Error("Unknown type.");
 }
 
-function getUTCDate(dateString) {
-  const date = new Date(dateString || Date.now());
-  return new Date(
-    date.getUTCFullYear(),
-    date.getUTCMonth(),
-    date.getUTCDate(),
-    date.getUTCHours()
-  );
+function parseDatetime(date) {
+  // because postgres and mysql return date, sqlite returns formatted iso 8601 string in utc
+  return date instanceof Date ? date : new Date(date + "Z");
+}
+
+function parseTimestamps(item) {
+  return {
+    created_at: parseDatetime(item.created_at),
+    updated_at: parseDatetime(item.updated_at),
+  }
+}
+
+function dateToUTC(date) {
+  const dateUTC = date instanceof Date ? date.toISOString() : new Date(date).toISOString();
+
+  // format the utc date in 'YYYY-MM-DD hh:mm:ss' for SQLite
+  if (knex.isSQLite) {
+    return dateUTC.substring(0, 10) + " " + dateUTC.substring(11, 19);
+  }
+  
+  // mysql doesn't save time in utc, so format the date in local timezone instead
+  if (knex.isMySQL) {
+    return format(new Date(date), "yyyy-MM-dd HH:mm:ss");
+  }
+  
+  // return unformatted utc string for postgres
+  return dateUTC;
 }
 
 function getStatsPeriods(now) {
@@ -196,7 +217,8 @@ const MINUTE = 60,
       WEEK = DAY * 7,
       MONTH = DAY * 30,
       YEAR = DAY * 365;
-function getTimeAgo(date) {
+function getTimeAgo(dateString) {
+  const date = new Date(dateString);
   const secondsAgo = Math.round((Date.now() - Number(date)) / 1000);
 
   if (secondsAgo < MINUTE) {
@@ -228,23 +250,28 @@ function getTimeAgo(date) {
 const sanitize = {
   domain: domain => ({
     ...domain,
+    ...parseTimestamps(domain),
     id: domain.uuid,
     uuid: undefined,
     user_id: undefined,
     banned_by_id: undefined
   }),
-  link: link => ({
-    ...link,
-    banned_by_id: undefined,
-    domain_id: undefined,
-    user_id: undefined,
-    uuid: undefined,
-    id: link.uuid,
-    relative_created_at: getTimeAgo(link.created_at),
-    relative_expire_in: link.expire_in && ms(differenceInMilliseconds(new Date(link.expire_in), new Date()), { long: true }),
-    password: !!link.password,
-    link: getShortURL(link.address, link.domain)
-  })
+  link: link => {
+    const timestamps = parseTimestamps(link);
+    return {
+      ...link,
+      ...timestamps,
+      banned_by_id: undefined,
+      domain_id: undefined,
+      user_id: undefined,
+      uuid: undefined,
+      id: link.uuid,
+      relative_created_at: getTimeAgo(timestamps.created_at),
+      relative_expire_in: link.expire_in && ms(differenceInMilliseconds(parseDatetime(link.expire_in), new Date()), { long: true }),
+      password: !!link.password,
+      link: getShortURL(link.address, link.domain)
+    }
+  }
 };
 
 function sleep(ms) {
@@ -285,6 +312,7 @@ function registerHandlebarsHelpers() {
 module.exports = {
   addProtocol,
   CustomError,
+  dateToUTC,
   deleteCurrentToken,
   generateId,
   getDifferenceFunction,
@@ -294,8 +322,9 @@ module.exports = {
   getStatsCacheTime,
   getStatsLimit,
   getStatsPeriods,
-  getUTCDate,
   isAdmin,
+  parseDatetime,
+  parseTimestamps,
   preservedURLs,
   registerHandlebarsHelpers,
   removeWww,
@@ -305,4 +334,5 @@ module.exports = {
   sleep,
   statsObjectToArray,
   urlRegex,
+  ...knexUtils,
 }

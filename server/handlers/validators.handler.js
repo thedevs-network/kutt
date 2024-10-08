@@ -1,4 +1,4 @@
-const { isAfter, subDays, subHours, addMilliseconds } = require("date-fns");
+const { isAfter, subDays, subHours, addMilliseconds, differenceInHours } = require("date-fns");
 const { body, param } = require("express-validator");
 const promisify = require("util").promisify;
 const bcrypt = require("bcryptjs");
@@ -75,7 +75,7 @@ const createLink = [
     .customSanitizer(ms)
     .custom(value => value >= ms("1m"))
     .withMessage("Expire time should be more than 1 minute.")
-    .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
+    .customSanitizer(value => utils.dateToUTC(addMilliseconds(new Date(), value))),
   body("domain")
     .optional({ nullable: true, checkFalsy: true })
     .customSanitizer(value => value === env.DEFAULT_DOMAIN ? null : value)
@@ -138,7 +138,7 @@ const editLink = [
     .customSanitizer(ms)
     .custom(value => value >= ms("1m"))
     .withMessage("Expire time should be more than 1 minute.")
-    .customSanitizer(value => addMilliseconds(new Date(), value).toISOString()),
+    .customSanitizer(value => utils.dateToUTC(addMilliseconds(new Date(), value))),
   body("description")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
@@ -342,12 +342,11 @@ const deleteUser = [
 
 // TODO: if user has posted malware should do something better
 function cooldown(user) {
-  if (!env.GOOGLE_SAFE_BROWSING_KEY || !user || !user.cooldowns) return;
 
-  // If has active cooldown then throw error
-  const hasCooldownNow = user.cooldowns.some(cooldown =>
-    isAfter(subHours(new Date(), 12), new Date(cooldown))
-  );
+  if (!user?.cooldown) return;
+
+  // If user has active cooldown then throw error
+  const hasCooldownNow = differenceInHours(new Date(), utils.parseDatetime(user.cooldown)) < 12;
 
   if (hasCooldownNow) {
     throw new utils.CustomError("Cooldown because of a malware URL. Wait 12h");
@@ -386,20 +385,18 @@ async function malware(user, target) {
       })
     }
   ).then(res => res.json());
+
   if (!isMalware.data || !isMalware.data.matches) return;
 
   if (user) {
     const [updatedUser] = await query.user.update(
       { id: user.id },
-      {
-        cooldowns: knex.raw("array_append(cooldowns, ?)", [
-          new Date().toISOString()
-        ])
-      }
+      { cooldown: utils.dateToUTC(new Date()) },
+      { increments: ["malicious_attempts"] }
     );
 
     // Ban if too many cooldowns
-    if (updatedUser.cooldowns.length > 2) {
+    if (updatedUser.malicious_attempts > 2) {
       await query.user.update({ id: user.id }, { banned: true });
       throw new utils.CustomError("Too much malware requests. You are now banned.");
     }
@@ -415,7 +412,7 @@ async function linksCount(user) {
 
   const count = await query.link.total({
     user_id: user.id,
-    "links.created_at": [">", subDays(new Date(), 1).toISOString()]
+    "links.created_at": [">", utils.dateToUTC(subDays(new Date(), 1))]
   });
 
   if (count > env.USER_LIMIT_PER_DAY) {

@@ -1,4 +1,5 @@
 const redis = require("../redis");
+const utils = require("../utils");
 const knex = require("../knex");
 
 async function find(match) {
@@ -21,41 +22,39 @@ async function find(match) {
   }
 
   return host;
-};
+}
 
 async function add(params) {
   params.address = params.address.toLowerCase();
 
-  const exists = await knex("hosts")
-    .where("address", params.address)
-    .first();
+  const existingHost = await knex("hosts").where("address", params.address).first();
+
+  let id = existingHost?.id;
 
   const newHost = {
     address: params.address,
-    banned: !!params.banned
+    banned: !!params.banned,
+    banned_by_id: params.banned_by_id,
   };
 
-  let host;
-  if (exists) {
-    const [response] = await knex("hosts")
-      .where("id", exists.id)
-      .update(
-        {
-          ...newHost,
-          updated_at: params.updated_at || new Date().toISOString()
-        },
-        "*"
-      );
-    host = response;
+  if (id) {
+    await knex("hosts").where("id", id).update({
+      ...newHost,
+      updated_at: params.updated_at || utils.dateToUTC(new Date())
+    });
   } else {
-    const [response] = await knex("hosts").insert(newHost, "*");
-    host = response;
+    // Mysql and sqlite don't support returning but return the inserted id by default
+    const [createdHost] = await knex("hosts").insert(newHost).returning("id");
+    id = createdHost.id;
   }
+
+  // Query domain instead of using returning as sqlite and mysql don't support it
+  const host = await knex("hosts").where("id", id);
 
   redis.remove.host(host);
 
   return host;
-};
+}
 
 module.exports = {
   add,

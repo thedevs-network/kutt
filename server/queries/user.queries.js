@@ -1,6 +1,7 @@
 const { addMinutes } = require("date-fns");
 const { v4: uuid } = require("uuid");
 
+const utils = require("../utils");
 const redis = require("../redis");
 const knex = require("../knex");
 
@@ -10,8 +11,13 @@ async function find(match) {
     const cachedUser = await redis.client.get(key);
     if (cachedUser) return JSON.parse(cachedUser);
   }
-  
-  const user = await knex("users").where(match).first();
+
+  const query = knex("users");
+  Object.entries(match).forEach(([key, value]) => {
+    query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+  });
+
+  const user = await query.first();
   
   if (user) {
     const emailKey = redis.key.user(user.email);
@@ -24,7 +30,6 @@ async function find(match) {
   }
   
   return user;
-
 }
 
 async function add(params, user) {
@@ -32,13 +37,13 @@ async function add(params, user) {
     email: params.email,
     password: params.password,
     verification_token: uuid(),
-    verification_expires: addMinutes(new Date(), 60).toISOString()
+    verification_expires: utils.dateToUTC(addMinutes(new Date(), 60))
   };
   
   if (user) {
     await knex("users")
       .where("id", user.id)
-      .update({ ...data, updated_at: new Date().toISOString() });
+      .update({ ...data, updated_at: utils.dateToUTC(new Date()) });
   } else {
     await knex("users").insert(data);
   }
@@ -51,18 +56,24 @@ async function add(params, user) {
   };
 }
 
-async function update(match, update) {
+async function update(match, update, methods) {
   const query = knex("users");
-  
+
   Object.entries(match).forEach(([key, value]) => {
     query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
   });
+
+  const updateQuery = query.clone();
+  if (methods?.increments) {
+    methods.increments.forEach(columnName => {
+      updateQuery.increment(columnName);
+    });
+  }
   
-  const users = await query.update(
-    { ...update, updated_at: new Date().toISOString() },
-    "*"
-  );
-  
+  await updateQuery.update({ ...update, updated_at: utils.dateToUTC(new Date()) });
+
+  const users = await query.select("*");
+
   users.forEach(redis.remove.user);
   
   return users;

@@ -1,4 +1,4 @@
-const { isAfter, subDays, subHours, set } = require("date-fns");
+const { isAfter, subDays, subHours, set, format } = require("date-fns");
 
 const utils = require("../utils");
 const redis = require("../redis");
@@ -11,45 +11,60 @@ async function add(params) {
     referrer: params.referrer.toLowerCase()
   };
 
-  const visit = await knex("visits")
-    .where({ link_id: params.id })
-    .andWhere(
-      knex.raw("date_trunc('hour', created_at) = date_trunc('hour', ?)", [
-        knex.fn.now()
-      ])
-    )
-    .first();
+  const nowUTC = new Date().toISOString();
+  const truncatedNow = nowUTC.substring(0, 10) + " " + nowUTC.substring(11, 14) + "00:00";
 
-  if (visit) {
-    await knex("visits")
-      .where({ id: visit.id })
-      .increment(`br_${data.browser}`, 1)
-      .increment(`os_${data.os}`, 1)
-      .increment("total", 1)
-      .update({
-        updated_at: new Date().toISOString(),
-        countries: knex.raw(
-          "jsonb_set(countries, '{??}', (COALESCE(countries->>?,'0')::int + 1)::text::jsonb)",
-          [data.country, data.country]
-        ),
-        referrers: knex.raw(
-          "jsonb_set(referrers, '{??}', (COALESCE(referrers->>?,'0')::int + 1)::text::jsonb)",
-          [data.referrer, data.referrer]
-        )
+  return knex.transaction(async (trx) => {
+    // Create a subquery first that truncates the
+    const subquery = trx("visits")
+      .select("visits.*")
+      .select({
+        created_at_hours: utils.knexUtils(trx).truncatedTimestamp("created_at", "hour")
+      })
+      .where({ link_id: params.id })
+      .as("subquery");
+
+    const visit = await trx
+      .select("*")
+      .from(subquery)
+      .where("created_at_hours", "=", truncatedNow)
+      .forUpdate()
+      .first();
+      
+    if (visit) {
+      const countries = typeof visit.countries === "string" ? JSON.parse(visit.countries) : visit.countries;
+      const referrers = typeof visit.referrers === "string" ? JSON.parse(visit.referrers) : visit.referrers;
+      await trx("visits")
+        .where({ id: visit.id })
+        .increment(`br_${data.browser}`, 1)
+        .increment(`os_${data.os}`, 1)
+        .increment("total", 1)
+        .update({
+          updated_at: utils.dateToUTC(new Date()),
+          countries: JSON.stringify({
+            ...countries,
+            [data.country]: (countries[data.country] ?? 0) + 1
+          }),
+          referrers: JSON.stringify({
+            ...referrers,
+             [data.referrer]: (referrers[data.referrer] ?? 0) + 1
+          })
+        });
+    } else {
+      // This must also happen in the transaction to avoid concurrency
+      await trx("visits").insert({
+        [`br_${data.browser}`]: 1,
+        countries: { [data.country]: 1 },
+        referrers: { [data.referrer]: 1 },
+        [`os_${data.os}`]: 1,
+        total: 1,
+        link_id: data.id
       });
-  } else {
-    await knex("visits").insert({
-      [`br_${data.browser}`]: 1,
-      countries: { [data.country]: 1 },
-      referrers: { [data.referrer]: 1 },
-      [`os_${data.os}`]: 1,
-      total: 1,
-      link_id: data.id
-    });
-  }
+    }
 
-  return visit;
-};
+    return visit;
+  });
+}
 
 async function find(match, total) {
   if (match.link_id) {
@@ -82,20 +97,21 @@ async function find(match, total) {
   };
 
   const visitsStream = knex("visits").where(match).stream();
-  const nowUTC = utils.getUTCDate();
   const now = new Date();
 
   const periods = utils.getStatsPeriods(now);
 
   for await (const visit of visitsStream) {
     periods.forEach(([type, fromDate]) => {
-      const isIncluded = isAfter(new Date(visit.created_at), fromDate);
+      const isIncluded = isAfter(utils.parseDatetime(visit.created_at), fromDate);
       if (!isIncluded) return;
       const diffFunction = utils.getDifferenceFunction(type);
-      const diff = diffFunction(now, new Date(visit.created_at));
+      const diff = diffFunction(now, utils.parseDatetime(visit.created_at));
       const index = stats[type].views.length - diff - 1;
       const view = stats[type].views[index];
       const period = stats[type].stats;
+      const countries = typeof visit.countries === "string" ? JSON.parse(visit.countries) : visit.countries;
+      const referrers = typeof visit.referrers === "string" ? JSON.parse(visit.referrers) : visit.referrers;
       stats[type].stats = {
         browser: {
           chrome: period.browser.chrome + visit.br_chrome,
@@ -116,7 +132,7 @@ async function find(match, total) {
         },
         country: {
           ...period.country,
-          ...Object.entries(visit.countries).reduce(
+          ...Object.entries(countries).reduce(
             (obj, [country, count]) => ({
               ...obj,
               [country]: (period.country[country] || 0) + count
@@ -126,7 +142,7 @@ async function find(match, total) {
         },
         referrer: {
           ...period.referrer,
-          ...Object.entries(visit.referrers).reduce(
+          ...Object.entries(referrers).reduce(
             (obj, [referrer, count]) => ({
               ...obj,
               [referrer]: (period.referrer[referrer] || 0) + count
@@ -161,7 +177,7 @@ async function find(match, total) {
       views: stats.lastWeek.views,
       total: stats.lastWeek.total
     },
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date()
   };
 
   if (match.link_id) {
@@ -176,5 +192,5 @@ async function find(match, total) {
 
 module.exports = {
   add,
-  find,
-}
+  find
+};

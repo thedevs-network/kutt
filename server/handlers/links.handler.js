@@ -151,8 +151,8 @@ async function edit(req, res) {
       delete req.body[name];
       return;
     }
-    if (name === "expire_in")
-      if (differenceInSeconds(new Date(value), new Date(link.expire_in)) <= 60) 
+    if (name === "expire_in" && link.expire_in)
+      if (Math.abs(differenceInSeconds(utils.parseDatetime(value), utils.parseDatetime(link.expire_in))) < 60)
           return;
     if (name === "password")
       if (value && value.replace(/•/ig, "").length === 0) {

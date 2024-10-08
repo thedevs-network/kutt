@@ -13,6 +13,7 @@ async function createHostTable(knex) {
         .defaultTo(false);
       table
         .integer("banned_by_id")
+        .unsigned()
         .references("id")
         .inTable("users");
       table.timestamps(false, true);

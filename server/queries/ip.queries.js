@@ -1,5 +1,6 @@
 const { subMinutes } = require("date-fns");
 
+const utils = require("../utils");
 const knex = require("../knex");
 const env = require("../env");
 
@@ -9,7 +10,7 @@ async function add(ipToAdd) {
   const currentIP = await knex("ips").where("ip", ip).first();
   
   if (currentIP) {
-    const currentDate = new Date().toISOString();
+    const currentDate = utils.dateToUTC(new Date());
     await knex("ips")
       .where({ ip })
       .update({
@@ -41,7 +42,7 @@ function clear() {
   .where(
     "created_at",
     "<",
-    subMinutes(new Date(), env.NON_USER_COOLDOWN).toISOString()
+    utils.dateToUTC(subMinutes(new Date(), env.NON_USER_COOLDOWN))
   )
   .delete();
 }

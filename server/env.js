@@ -1,18 +1,29 @@
 require("dotenv").config();
 const { cleanEnv, num, str, bool } = require("envalid");
 
+const supportedDBClients = [
+  "pg",
+  "pg-native",
+  "sqlite3",
+  "better-sqlite3",
+  "mysql",
+  "mysql2"
+];
+
 const env = cleanEnv(process.env, {
   PORT: num({ default: 3000 }),
   SITE_NAME: str({ example: "Kutt" }),
   DEFAULT_DOMAIN: str({ example: "kutt.it" }),
   LINK_LENGTH: num({ default: 6 }),
+  DB_CLIENT: str({ choices: supportedDBClients }),
+  DB_FILENAME: str({ default: "data" }),
   DB_HOST: str({ default: "localhost" }),
   DB_PORT: num({ default: 5432 }),
   DB_NAME: str({ default: "postgres" }),
-  DB_USER: str(),
-  DB_PASSWORD: str(),
+  DB_USER: str({ default: "postgres" }),
+  DB_PASSWORD: str({ default: "" }),
   DB_SSL: bool({ default: false }),
-  DB_POOL_MIN: num({ default: 2 }),
+  DB_POOL_MIN: num({ default: 0 }),
   DB_POOL_MAX: num({ default: 10 }),
   REDIS_HOST: str({ default: "127.0.0.1" }),
   REDIS_PORT: num({ default: 6379 }),
