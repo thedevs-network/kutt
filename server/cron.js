@@ -10,6 +10,7 @@ if (env.NON_USER_COOLDOWN) {
   });
 }
 
-cron.schedule("*/1 * * * * *", function() {
+// check and delete links every minute
+cron.schedule("* * * * *", function() {
   query.link.batchRemove({ expire_in: ["<", utils.dateToUTC(new Date())] }).catch();
 });
