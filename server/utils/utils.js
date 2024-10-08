@@ -115,7 +115,7 @@ function getDifferenceFunction(type) {
 }
 
 function parseDatetime(date) {
-  // because postgres returns date, sqlite returns iso 8601 string in utc
+  // because postgres and mysql return date, sqlite returns formatted iso 8601 string in utc
   return date instanceof Date ? date : new Date(date + "Z");
 }
 
@@ -129,17 +129,17 @@ function parseTimestamps(item) {
 function dateToUTC(date) {
   const dateUTC = date instanceof Date ? date.toISOString() : new Date(date).toISOString();
 
-  // databases other than postgres need the date to be formatted in 'YYYY-MM-DD hh:mm:ss'
-  if (!knex.isPostgres) {
-    // mysql doesn't save time in utc, so format the date in local timezone instead
-    if (knex.isMySQL) {
-      return format(new Date(date), "yyyy-MM-dd HH:mm:ss");
-    }
-    // format utc date instead of local date
-    // (this is the same as the format function above, just tiny tiny faster)
+  // format the utc date in 'YYYY-MM-DD hh:mm:ss' for SQLite
+  if (knex.isSQLite) {
     return dateUTC.substring(0, 10) + " " + dateUTC.substring(11, 19);
-  };
+  }
   
+  // mysql doesn't save time in utc, so format the date in local timezone instead
+  if (knex.isMySQL) {
+    return format(new Date(date), "yyyy-MM-dd HH:mm:ss");
+  }
+  
+  // return unformatted utc string for postgres
   return dateUTC;
 }
 
