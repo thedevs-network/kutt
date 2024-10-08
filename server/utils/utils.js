@@ -1,4 +1,4 @@
-const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears } = require("date-fns");
+const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears, format } = require("date-fns");
 const nanoid = require("nanoid/generate");
 const knexUtils = require("./knex");
 const JWT = require("jsonwebtoken");
@@ -131,6 +131,12 @@ function dateToUTC(date) {
 
   // databases other than postgres need the date to be formatted in 'YYYY-MM-DD hh:mm:ss'
   if (!knex.isPostgres) {
+    // mysql doesn't save time in utc, so format the date in local timezone instead
+    if (knex.isMySQL) {
+      return format(new Date(date), "yyyy-MM-dd HH:mm:ss");
+    }
+    // format utc date instead of local date
+    // (this is the same as the format function above, just tiny tiny faster)
     return dateUTC.substring(0, 10) + " " + dateUTC.substring(11, 19);
   };
   

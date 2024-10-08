@@ -10,7 +10,6 @@ const db = knex({
   client: env.DB_CLIENT,
   connection: {
     ...(isSqlite && { filename: "db/" + env.DB_FILENAME }),
-    ...(isMySQL && { dateStrings: true, timezone: "Z" }),
     host: env.DB_HOST,
     port: env.DB_PORT,
     database: env.DB_NAME,
