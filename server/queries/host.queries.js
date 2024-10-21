@@ -1,9 +1,10 @@
 const redis = require("../redis");
 const utils = require("../utils");
 const knex = require("../knex");
+const env = require("../env");
 
 async function find(match) {
-  if (match.address) {
+  if (match.address && env.REDIS_ENABLED) {
     const cachedHost = await redis.client.get(redis.key.host(match.address));
     if (cachedHost) return JSON.parse(cachedHost);
   }
@@ -12,13 +13,9 @@ async function find(match) {
     .where(match)
     .first();
 
-  if (host) {
-    redis.client.set(
-      redis.key.host(host.address),
-      JSON.stringify(host),
-      "EX",
-      60 * 60 * 6
-    );
+  if (host && env.REDIS_ENABLED) {
+    const key = redis.key.host(host.address);
+    redis.client.set(key, JSON.stringify(host), "EX", 60 * 15);
   }
 
   return host;
@@ -51,7 +48,9 @@ async function add(params) {
   // Query domain instead of using returning as sqlite and mysql don't support it
   const host = await knex("hosts").where("id", id);
 
-  redis.remove.host(host);
+  if (env.REDIS_ENABLED) {
+    redis.remove.host(host);
+  }
 
   return host;
 }

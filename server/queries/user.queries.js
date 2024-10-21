@@ -4,9 +4,10 @@ const { v4: uuid } = require("uuid");
 const utils = require("../utils");
 const redis = require("../redis");
 const knex = require("../knex");
+const env = require("../env");
 
 async function find(match) {
-  if (match.email || match.apikey) {
+  if ((match.email || match.apikey) && env.REDIS_ENABLED) {
     const key = redis.key.user(match.email || match.apikey);
     const cachedUser = await redis.client.get(key);
     if (cachedUser) return JSON.parse(cachedUser);
@@ -19,13 +20,13 @@ async function find(match) {
 
   const user = await query.first();
   
-  if (user) {
+  if (user && env.REDIS_ENABLED) {
     const emailKey = redis.key.user(user.email);
-    redis.client.set(emailKey, JSON.stringify(user), "EX", 60 * 60 * 1);
+    redis.client.set(emailKey, JSON.stringify(user), "EX", 60 * 15);
   
     if (user.apikey) {
       const apikeyKey = redis.key.user(user.apikey);
-      redis.client.set(apikeyKey, JSON.stringify(user), "EX", 60 * 60 * 1);
+      redis.client.set(apikeyKey, JSON.stringify(user), "EX", 60 * 15);
     }
   }
   
@@ -48,7 +49,9 @@ async function add(params, user) {
     await knex("users").insert(data);
   }
   
-  redis.remove.user(user);
+  if (env.REDIS_ENABLED) {
+    redis.remove.user(user);
+  }
   
   return {
     ...user,
@@ -74,7 +77,9 @@ async function update(match, update, methods) {
 
   const users = await query.select("*");
 
-  users.forEach(redis.remove.user);
+  if (env.REDIS_ENABLED) {
+    users.forEach(redis.remove.user);
+  }
   
   return users;
 }
@@ -82,7 +87,9 @@ async function update(match, update, methods) {
 async function remove(user) {
   const deletedUser = await knex("users").where("id", user.id).delete();
   
-  redis.remove.user(user);
+  if (env.REDIS_ENABLED) {
+    redis.remove.user(user);
+  }
   
   return !!deletedUser;
 }

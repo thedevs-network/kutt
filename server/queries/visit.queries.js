@@ -3,6 +3,7 @@ const { isAfter, subDays, subHours, set, format } = require("date-fns");
 const utils = require("../utils");
 const redis = require("../redis");
 const knex = require("../knex");
+const env = require("../env");
 
 async function add(params) {
   const data = {
@@ -67,7 +68,7 @@ async function add(params) {
 }
 
 async function find(match, total) {
-  if (match.link_id) {
+  if (match.link_id && env.REDIS_ENABLED) {
     const key = redis.key.stats(match.link_id);
     const cached = await redis.client.get(key);
     if (cached) return JSON.parse(cached);
@@ -180,10 +181,9 @@ async function find(match, total) {
     updatedAt: new Date()
   };
 
-  if (match.link_id) {
-    const cacheTime = utils.getStatsCacheTime(total);
+  if (match.link_id && env.REDIS_ENABLED) {
     const key = redis.key.stats(match.link_id);
-    redis.client.set(key, JSON.stringify(response), "EX", cacheTime);
+    redis.client.set(key, JSON.stringify(response), "EX", 60);
   }
 
   return response;

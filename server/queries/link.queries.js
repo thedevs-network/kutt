@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const utils = require("../utils");
 const redis = require("../redis");
 const knex = require("../knex");
+const env = require("../env");
 
 const CustomError = utils.CustomError;
 
@@ -87,7 +88,7 @@ async function get(match, params) {
 }
 
 async function find(match) {
-  if (match.address && match.domain_id) {
+  if (match.address && match.domain_id && env.REDIS_ENABLED) {
     const key = redis.key.link(match.address, match.domain_id);
     const cachedLink = await redis.client.get(key);
     if (cachedLink) return JSON.parse(cachedLink);
@@ -99,9 +100,9 @@ async function find(match) {
     .leftJoin("domains", "links.domain_id", "domains.id")
     .first();
   
-  if (link) {
+  if (link && env.REDIS_ENABLED) {
     const key = redis.key.link(link.address, link.domain_id);
-    redis.client.set(key, JSON.stringify(link), "EX", 60 * 60 * 2);
+    redis.client.set(key, JSON.stringify(link), "EX", 60 * 15);
   }
   
   return link;
@@ -141,7 +142,10 @@ async function remove(match) {
   }
 
   const deletedLink = await knex("links").where("id", link.id).delete();
-  redis.remove.link(link);
+
+  if (env.REDIS_ENABLED) {
+    redis.remove.link(link);
+  }
   
   return { isRemoved: !!deletedLink, link };
 }
@@ -159,7 +163,9 @@ async function batchRemove(match) {
   
   await deleteQuery.delete();
   
-  links.forEach(redis.remove.link);
+  if (env.REDIS_ENABLED) {
+    links.forEach(redis.remove.link);
+  }
 }
 
 async function update(match, update) {
@@ -174,7 +180,9 @@ async function update(match, update) {
 
   const links = await knex("links").select('*').where(match);
 
-  links.forEach(redis.remove.link);
+  if (env.REDIS_ENABLED) {
+    links.forEach(redis.remove.link);
+  }
   
   return links;
 }

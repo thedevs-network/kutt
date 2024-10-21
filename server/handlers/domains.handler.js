@@ -3,6 +3,7 @@ const { Handler } = require("express");
 const { CustomError, sanitize } = require("../utils");
 const query = require("../queries");
 const redis = require("../redis");
+const env = require("../env");
 
 async function add(req, res) {
   const { address, homepage } = req.body;
@@ -44,7 +45,9 @@ async function remove(req, res) {
     throw new CustomError("Could not delete the domain.", 500);
   }
 
-  redis.remove.domain(updatedDomain);
+  if (env.REDIS_ENABLED) {
+    redis.remove.domain(updatedDomain);
+  }
 
   if (req.isHTML) {
     const domains = (await query.domain.get({ user_id: req.user.id })).map(sanitize.domain);

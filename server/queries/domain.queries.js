@@ -1,22 +1,19 @@
 const redis = require("../redis");
 const utils = require("../utils");
 const knex = require("../knex");
+const env = require("../env");
 
 async function find(match) {
-  if (match.address) {
+  if (match.address && env.REDIS_ENABLED) {
     const cachedDomain = await redis.client.get(redis.key.domain(match.address));
     if (cachedDomain) return JSON.parse(cachedDomain);
   }
 
   const domain = await knex("domains").where(match).first();
 
-  if (domain) {
-    redis.client.set(
-      redis.key.domain(domain.address),
-      JSON.stringify(domain),
-      "EX",
-      60 * 60 * 6
-    );
+  if (domain && env.REDIS_ENABLED) {
+    const key = redis.key.domain(domain.address);
+    redis.client.set(key, JSON.stringify(domain), "EX", 60 * 15);
   }
 
   return domain;
@@ -55,7 +52,9 @@ async function add(params) {
   // Query domain instead of using returning as sqlite and mysql don't support it
   const domain = await knex("domains").where("id", id).first();
 
-  redis.remove.domain(domain);
+  if (env.REDIS_ENABLED) {
+    redis.remove.domain(domain);
+  }
 
   return domain;
 }
@@ -67,7 +66,9 @@ async function update(match, update) {
 
   const domains = await knex("domains").select("*").where(match);
 
-  domains.forEach(redis.remove.domain);
+  if (env.REDIS_ENABLED) {
+    domains.forEach(redis.remove.domain);
+  }
 
   return domains;
 }

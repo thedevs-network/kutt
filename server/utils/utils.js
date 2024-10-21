@@ -73,20 +73,8 @@ function getShortURL(address, domain) {
   return { link, url };
 }
 
-const getRedisKey = {
-  // TODO: remove user id and make domain id required
-  link: (address, domain_id, user_id) => `${address}-${domain_id || ""}-${user_id || ""}`,
-  domain: (address) => `d-${address}`,
-  host: (address) => `h-${address}`,
-  user: (emailOrKey) => `u-${emailOrKey}`
-};
-
 function getStatsLimit() {
   return env.DEFAULT_MAX_STATS_PER_LINK || 100000000;
-};
-
-function getStatsCacheTime(total) {
-  return (total > 50000 ? ms("5 minutes") : ms("1 minutes")) / 1000
 };
 
 function statsObjectToArray(obj) {
@@ -317,9 +305,7 @@ module.exports = {
   generateId,
   getDifferenceFunction,
   getInitStats,
-  getRedisKey,
   getShortURL,
-  getStatsCacheTime,
   getStatsLimit,
   getStatsPeriods,
   isAdmin,

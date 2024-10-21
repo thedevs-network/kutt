@@ -25,6 +25,7 @@ const env = cleanEnv(process.env, {
   DB_SSL: bool({ default: false }),
   DB_POOL_MIN: num({ default: 0 }),
   DB_POOL_MAX: num({ default: 10 }),
+  REDIS_ENABLED: bool({ default: false }),
   REDIS_HOST: str({ default: "127.0.0.1" }),
   REDIS_PORT: num({ default: 6379 }),
   REDIS_PASSWORD: str({ default: "" }),

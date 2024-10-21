@@ -2,12 +2,16 @@ const Redis = require("ioredis");
 
 const env = require("./env");
 
-const client = new Redis({
-  host: env.REDIS_HOST,
-  port: env.REDIS_PORT,
-  db: env.REDIS_DB,
-  ...(env.REDIS_PASSWORD && { password: env.REDIS_PASSWORD })
-});
+let client;
+
+if (env.REDIS_ENABLED) {
+  client = new Redis({
+    host: env.REDIS_HOST,
+    port: env.REDIS_PORT,
+    db: env.REDIS_DB,
+    ...(env.REDIS_PASSWORD && { password: env.REDIS_PASSWORD })
+  });
+}
 
 const key = {
   link: (address, domain_id, user_id) => `${address}-${domain_id || ""}-${user_id || ""}`,
