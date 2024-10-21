@@ -13,7 +13,7 @@ async function find(match) {
     .first();
 
   if (host) {
-    redisClient.set(
+    redis.client.set(
       redis.key.host(host.address),
       JSON.stringify(host),
       "EX",
