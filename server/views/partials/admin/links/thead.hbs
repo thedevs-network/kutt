@@ -1,0 +1,112 @@
+<thead>
+  {{> admin/table_tab title='links'}}
+  <tr class="controls links-controls with-filters">
+    <th class="filters">
+      <div>
+        <div class="search-input-wrapper">
+          <input 
+            id="search" 
+            name="search" 
+            type="text" 
+            placeholder="Search link..." 
+            class="table-input search admin" 
+            hx-on:input="onSearchChange(event)" 
+            hx-on:keyup="resetTableNav()"
+            value="{{query.search}}"
+          />
+          <button 
+            type="button" 
+            aria-label="Clear search" 
+            class="clear" 
+            onclick="clearSeachInput(event)"
+          >
+            {{> icons/x}}
+          </button>
+        </div>
+        <div class="search-input-wrapper">
+          <input 
+            id="search_domain" 
+            name="domain" 
+            type="text" 
+            placeholder="Search domain..." 
+            class="table-input search admin" 
+            hx-on:input="onSearchChange(event)" 
+            hx-on:keyup="resetTableNav()"
+            value="{{query.domain}}"
+          />
+          <button 
+            type="button" 
+            aria-label="Clear user search" 
+            class="clear" 
+            onclick="clearSeachInput(event)"
+          >
+            {{> icons/x}}
+          </button>
+        </div>
+        <div class="search-input-wrapper">
+          <input 
+            id="search_user" 
+            name="user" 
+            type="text" 
+            placeholder="Search user..." 
+            class="table-input search admin" 
+            hx-on:input="onSearchChange(event)" 
+            hx-on:keyup="resetTableNav()"
+            value="{{query.user}}"
+          />
+          <button 
+            type="button" 
+            aria-label="Clear user search" 
+            class="clear" 
+            onclick="clearSeachInput(event)"
+          >
+            {{> icons/x}}
+          </button>
+        </div>
+      </div>
+      <div>
+        <select 
+          id="links-select-banned"
+          name="banned"
+          class="table-input ban"
+          hx-on:change="resetTableNav()"
+        >
+          <option value="" selected>Banned...</option>
+          <option value="true">Banned</option>
+          <option value="false">Not banned</option>
+        </select>
+        <select 
+          id="links-select-anonymous"
+          name="anonymous"
+          class="table-input anonymous"
+          hx-on:change="resetTableNav()"
+        >
+          <option value="">Anonymous...</option>
+          <option value="true" {{#ifEquals query.anonymous 'true'}}selected{{/ifEquals}}>Anonymous</option>
+          <option value="false" {{#ifEquals query.anonymous 'false'}}selected{{/ifEquals}}>User</option>
+        </select>
+        <select 
+          id="links-select-anonymous"
+          name="has_domain"
+          class="table-input has_domain"
+          hx-on:change="resetTableNav()"
+        >
+          <option value="">Domain...</option>
+          <option value="true" {{#ifEquals query.has_domain 'true'}}selected{{/ifEquals}}>With domain</option>
+          <option value="false" {{#ifEquals query.has_domain 'false'}}selected{{/ifEquals}}>No domain</option>
+        </select>
+        <input id="total" name="total" type="hidden" value="{{total}}" />
+        <input id="limit" name="limit" type="hidden" value="10" />
+        <input id="skip" name="skip" type="hidden" value="0" />
+      </div>
+    </th>
+    {{> admin/table_nav}}
+  </tr>
+  <tr>
+    <th class="original-url">Original URL</th>
+    <th class="created-at">Created at</th>
+    <th class="short-link">Short link</th>
+    <th class="views">Views</th>
+    <th class="actions"></th>
+  </tr>
+</thead>

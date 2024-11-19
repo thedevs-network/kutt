@@ -1,0 +1,81 @@
+<div class="content create-user">
+  <h2>Create user</h2>
+  <form
+    id="create-user-form"
+    hx-post="/api/users/admin" 
+    hx-target="closest .content" 
+    hx-swap="outerHTML" 
+    hx-indicator="closest .content"
+  >
+    <label class="{{#if errors.email}}error{{/if}}">
+      Email address:
+      <input
+        name="email"
+        id="create-user-email"
+        type="email"
+        placeholder="Email address..."
+        hx-preserve="true"
+      />
+      {{#if errors.email}}<p class="error">{{errors.email}}</p>{{/if}}
+    </label>
+    <label class="{{#if errors.password}}error{{/if}}">
+      Password:
+      <input
+        name="password"
+        id="create-user-password"
+        type="password"
+        placeholder="Password..."
+        hx-preserve="true"
+      />
+      {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
+    </label>
+    <label class="{{#if errors.role}}error{{/if}}">
+      Role:
+      <select name="role" id="create-user-role" hx-preserve="true">
+        <option value="USER" selected>User</option>
+        <option value="ADMIN">Admin</option>
+      </select>
+      {{#if errors.role}}<p class="error">{{errors.role}}</p>{{/if}}
+    </label>
+    <div class="checkbox-wrapper">
+      <label class="checkbox">
+        <input 
+          id="create-user-verified" 
+          name="verified" 
+          type="checkbox"
+          onchange="canSendVerificationEmail();" 
+          hx-preserve="true"
+          checked
+        />
+        Verified
+      </label>
+      <label class="checkbox">
+        <input 
+          id="create-user-banned" 
+          name="banned"
+          type="checkbox"
+          onchange="canSendVerificationEmail();" 
+          hx-preserve="true"
+        />
+        Banned
+      </label>
+    </div>
+    <label id="send-email-label" class="checkbox hidden" hx-preserve="true">
+      <input id="create-user-send-email" name="verification_email" type="checkbox" />
+      Send verification email
+    </label>
+    <div class="buttons">
+      <button type="button" hx-on:click="closeDialog()">Cancel</button>
+      <button type="submit" class="primary">
+        <span>{{> icons/new_user}}</span>
+        Create
+      </button>
+      {{> icons/spinner}}
+    </div>
+  </form>
+  <div id="dialog-error">
+    {{#if error}}
+      <p class="error">{{error}}</p>
+    {{/if}}
+  </div>
+</div>

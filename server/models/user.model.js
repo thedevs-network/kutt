@@ -1,3 +1,5 @@
+const { ROLES } = require("../consts");
+
 async function createUserTable(knex) {
   const hasTable = await knex.schema.hasTable("users");
   if (!hasTable) {
@@ -17,6 +19,10 @@ async function createUserTable(knex) {
         .string("email")
         .unique()
         .notNullable();
+      table
+        .enu("role", [ROLES.USER, ROLES.ADMIN])
+        .notNullable()
+        .defaultTo(ROLES.USER);
       table.string("password").notNullable();
       table.datetime("cooldown").nullable();
       table.integer("malicious_attempts").notNullable().defaultTo(0);

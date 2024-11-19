@@ -1,0 +1,42 @@
+<div class="content">
+  <h2>Ban user?</h2>
+  <p>
+    Are you sure do you want to ban the user &quot;<b>{{email}}</b>&quot;?
+  </p>
+  <div class="ban-checklist">
+    <label class="checkbox">
+      <input id="ban-user-links" name="links" type="checkbox" />
+      User links
+    </label>
+    <label class="checkbox">
+      <input id="ban-user-domains" name="domains" type="checkbox" />
+      User domains
+    </label>
+  </div>
+  <div class="buttons">
+    <button type="button" hx-on:click="closeDialog()">Cancel</button>
+    <button 
+      type="button"
+      class="danger confirm" 
+      hx-post="/api/users/admin/ban/{id}" 
+      hx-ext="path-params" 
+      hx-vals='{"id":"{{id}}"}' 
+      hx-target="closest .content" 
+      hx-swap="none" 
+      hx-include=".ban-checklist"
+      hx-indicator="closest .content"
+      hx-select-oob="#dialog-error"
+    >
+      <span class="stop">
+        {{> icons/stop}}
+      </span>
+      Ban
+    </button>
+    {{> icons/spinner}}
+  </div>
+  <div id="dialog-error">
+    {{#if error}}
+      <p class="error">{{error}}</p>
+    {{/if}}
+  </div>
+</div>

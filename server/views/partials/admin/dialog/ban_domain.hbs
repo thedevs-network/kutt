@@ -1,0 +1,46 @@
+<div class="content">
+  <h2>Ban domain?</h2>
+  <p>
+    Are you sure do you want to ban the domain &quot;<b>{{address}}</b>&quot;?
+  </p>
+  <div class="ban-checklist">
+    {{#if hasUser}}
+      <label class="checkbox">
+        <input id="ban-domain-user" name="user" type="checkbox" />
+        Owner
+      </label>
+    {{/if}}
+    {{#if hasLink}}
+      <label class="checkbox">
+        <input id="ban-domain-links" name="links" type="checkbox" />
+        Links
+      </label>
+    {{/if}}
+  </div>
+  <div class="buttons">
+    <button type="button" hx-on:click="closeDialog()">Cancel</button>
+    <button 
+      type="button"
+      class="danger confirm" 
+      hx-post="/api/domains/admin/ban/{id}" 
+      hx-ext="path-params" 
+      hx-vals='{"id":"{{id}}"}' 
+      hx-target="closest .content" 
+      hx-swap="none" 
+      hx-include=".ban-checklist"
+      hx-indicator="closest .content"
+      hx-select-oob="#dialog-error"
+    >
+      <span class="stop">
+        {{> icons/stop}}
+      </span>
+      Ban
+    </button>
+    {{> icons/spinner}}
+  </div>
+  <div id="dialog-error">
+    {{#if error}}
+      <p class="error">{{error}}</p>
+    {{/if}}
+  </div>
+</div>

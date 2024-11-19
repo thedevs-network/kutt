@@ -1,11 +1,12 @@
 const { isAfter, subDays, subHours, addMilliseconds, differenceInHours } = require("date-fns");
-const { body, param } = require("express-validator");
+const { body, param, query: queryValidator } = require("express-validator");
 const promisify = require("util").promisify;
 const bcrypt = require("bcryptjs");
 const dns = require("dns");
 const URL = require("url");
 const ms = require("ms");
 
+const { ROLES } = require("../consts");
 const query = require("../queries");
 const utils = require("../utils");
 const knex = require("../knex");
@@ -187,6 +188,36 @@ const addDomain = [
     .withMessage("Homepage is not valid.")
 ];
 
+const addDomainAdmin = [
+  body("address", "Domain is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 3, max: 64 })
+    .withMessage("Domain length must be between 3 and 64.")
+    .trim()
+    .customSanitizer(utils.addProtocol)
+    .custom(value => utils.urlRegex.test(value))
+    .customSanitizer(value => {
+      const parsed = URL.parse(value);
+      return utils.removeWww(parsed.hostname || parsed.href);
+    })
+    .custom(value => value !== env.DEFAULT_DOMAIN)
+    .withMessage("You can't add the default domain.")
+    .custom(async value => {
+      const domain = await query.domain.find({ address: value });
+      if (domain) return Promise.reject();
+    })
+    .withMessage("Domain already exists."),
+  body("homepage")
+    .optional({ checkFalsy: true, nullable: true })
+    .customSanitizer(utils.addProtocol)
+    .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
+    .withMessage("Homepage is not valid."),
+  body("banned")
+    .optional({ nullable: true })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean(),
+]
+
 const removeDomain = [
   param("id", "ID is invalid.")
     .exists({
@@ -194,6 +225,19 @@ const removeDomain = [
       checkNull: true
     })
     .isLength({ min: 36, max: 36 })
+];
+
+const removeDomainAdmin = [
+  param("id", "ID is invalid.")
+    .exists({
+      checkFalsy: true,
+      checkNull: true
+    })
+    .isNumeric(),
+  queryValidator("links")
+    .optional({ nullable: true })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean(),
 ];
 
 const deleteLink = [
@@ -249,6 +293,83 @@ const banLink = [
     })
     .customSanitizer(sanitizeCheckbox)
     .isBoolean()
+];
+
+const banUser = [
+  param("id", "ID is invalid.")
+    .exists({
+      checkFalsy: true,
+      checkNull: true
+    })
+    .isNumeric(),
+  body("links", '"links" should be a boolean.')
+    .optional({
+      nullable: true
+    })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean(),
+  body("domains", '"domains" should be a boolean.')
+    .optional({
+      nullable: true
+    })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean()
+];
+
+const banDomain = [
+  param("id", "ID is invalid.")
+    .exists({
+      checkFalsy: true,
+      checkNull: true
+    })
+    .isNumeric(),
+  body("links", '"links" should be a boolean.')
+    .optional({
+      nullable: true
+    })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean(),
+  body("domains", '"domains" should be a boolean.')
+    .optional({
+      nullable: true
+    })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean()
+];
+
+const createUser = [
+  body("password", "Password is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 8, max: 64 })
+    .withMessage("Password length must be between 8 and 64."),
+  body("email", "Email is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .trim()
+    .isEmail()
+    .isLength({ min: 0, max: 255 })
+    .withMessage("Email length must be max 255.")
+    .custom(async (value, { req }) => {
+      const user = await query.user.find({ email: value });
+      if (user) 
+        return Promise.reject();
+    })
+    .withMessage("User already exists."),
+  body("role", "Role is not valid.")
+    .optional({ nullable: true, checkFalsy: true })
+    .trim()
+    .isIn([ROLES.USER, ROLES.ADMIN]),
+  body("verified")
+    .optional({ nullable: true })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean(),
+  body("banned")
+    .optional({ nullable: true })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean(),
+  body("verification_email")
+    .optional({ nullable: true })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean(),
 ];
 
 const getStats = [
@@ -340,6 +461,12 @@ const deleteUser = [
     .withMessage("Password is not correct.")
 ];
 
+const deleteUserByAdmin = [
+  param("id", "ID is invalid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isNumeric()
+];
+
 // TODO: if user has posted malware should do something better
 function cooldown(user) {
 
@@ -429,7 +556,7 @@ async function bannedDomain(domain) {
   });
 
   if (isBanned) {
-    throw new utils.CustomError("URL is containing malware/scam.", 400);
+    throw new utils.CustomError("Domain is banned.", 400);
   }
 };
 
@@ -456,7 +583,10 @@ async function bannedHost(domain) {
 
 module.exports = {
   addDomain,
+  addDomainAdmin,
+  banDomain,
   banLink,
+  banUser,
   bannedDomain,
   bannedHost,
   changeEmail,
@@ -464,8 +594,10 @@ module.exports = {
   checkUser,
   cooldown,
   createLink,
+  createUser,
   deleteLink,
   deleteUser,
+  deleteUserByAdmin,
   editLink,
   getStats,
   linksCount,
@@ -473,6 +605,7 @@ module.exports = {
   malware,
   redirectProtected,
   removeDomain,
+  removeDomainAdmin,
   reportLink,
   resetPassword,
   signup,

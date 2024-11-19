@@ -1,0 +1,30 @@
+<div class="content">
+  <h2>Delete user?</h2>
+  <p>
+    Are you sure do you want to delete the user &quot;<b>{{email}}</b>&quot;?<br/>
+    <b>All their data including their links</b> will be deleted.
+  </p>
+  <div class="buttons">
+    <button type="button" hx-on:click="closeDialog()">Cancel</button>
+    <button 
+      type="button"
+      class="danger confirm" 
+      hx-delete="/api/users/admin/{id}" 
+      hx-ext="path-params" 
+      hx-vals='{"id":"{{id}}"}' 
+      hx-target="closest .content" 
+      hx-swap="none" 
+      hx-indicator="closest .content"
+      hx-select-oob="#dialog-error"
+    >
+      <span>{{> icons/trash}}</span>
+      Delete
+    </button>
+    {{> icons/spinner}}
+  </div>
+  <div id="dialog-error">
+    {{#if error}}
+      <p class="error">{{error}}</p>
+    {{/if}}
+  </div>
+</div>

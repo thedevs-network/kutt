@@ -80,7 +80,6 @@ function parseQuery(req, res, next) {
   req.context = {
     limit: limit > 50 ? 50 : limit,
     skip: parseInt(req.query.skip) || 0,
-    all: admin ? req.query.all === "true" || req.query.all === "on" : false
   };
 
   next();

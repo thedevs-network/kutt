@@ -1,0 +1,79 @@
+<thead>
+  {{> admin/table_tab title='users'}}
+  <tr class="controls users-controls with-filters">
+    <th class="filters">
+      <div>
+        <div class="search-input-wrapper">
+          <input 
+            id="search" 
+            name="search" 
+            type="text" 
+            placeholder="Search user..." 
+            class="table-input search admin" 
+            hx-on:input="onSearchChange(event)" 
+            hx-on:keyup="resetTableNav()"
+            value="{{query.search}}"
+          />
+          <button 
+            type="button" 
+            aria-label="Clear search" 
+            class="clear" 
+            onclick="clearSeachInput(event)"
+          >
+            {{> icons/x}}
+          </button>
+        </div>
+        <select  id="users-select-verified" name="verified" class="table-input verification" hx-on:change="resetTableNav()">
+          <option value="">Verification...</option>
+          <option value="true" {{#ifEquals query.verified 'true'}}selected{{/ifEquals}}>Verified</option>
+          <option value="false" {{#ifEquals query.verified 'false'}}selected{{/ifEquals}}>Not verified</option>
+        </select>
+        <select id="users-select-banned" name="banned" class="table-input ban" hx-on:change="resetTableNav()">
+          <option value="" selected>Banned...</option>
+          <option value="true">Banned</option>
+          <option value="false">Not banned</option>
+        </select>
+        <select id="users-select-role" name="role" class="table-input role" hx-on:change="resetTableNav()">
+          <option value="">Role...</option>
+          <option value="USER" {{#ifEquals query.role 'USER'}}selected{{/ifEquals}}>User</option>
+          <option value="ADMIN" {{#ifEquals query.role 'ADMIN'}}selected{{/ifEquals}}>Admin</option>
+        </select>
+      </div>
+      <div>
+        <select id="users-select-domain" name="domains" class="table-input domains" hx-on:change="resetTableNav()">
+          <option value="">Domain...</option>
+          <option value="true" {{#ifEquals query.domains 'true'}}selected{{/ifEquals}}>With domains</option>
+          <option value="false" {{#ifEquals query.domains 'false'}}selected{{/ifEquals}}>No domains</option>
+        </select>
+        <select id="users-select-links" name="links" class="table-input links" hx-on:change="resetTableNav()">
+          <option value="" selected>Links...</option>
+          <option value="true" {{#ifEquals query.links 'true'}}selected{{/ifEquals}}>With links</option>
+          <option value="false" {{#ifEquals query.links 'true'}}selected{{/ifEquals}}>No links</option>
+        </select>
+        <input id="total" name="total" type="hidden" value="{{total}}" />
+        <input id="limit" name="limit" type="hidden" value="10" />
+        <input id="skip" name="skip" type="hidden" value="0" />
+        <button 
+          class="table primary"
+          hx-on:click='openDialog("admin-table-dialog")' 
+          hx-get="/create-user" 
+          hx-target="#admin-table-dialog .content-wrapper" 
+          hx-indicator="#admin-table-dialog"
+        >
+          <span>{{> icons/new_user}}</span>
+          Create user
+        </button>
+      </div>
+    </th>
+    {{> admin/table_nav}}
+  </tr>
+  <tr>
+    <th class="users-id">ID</th>
+    <th class="users-email">Email</th>
+    <th class="users-created-at">Created at</th>
+    <th class="users-verified">Verified</th>
+    <th class="users-role">Role</th>
+    <th class="users-links-count">Total links</th>
+    <th class="users-actions"></th>
+  </tr>
+</thead>

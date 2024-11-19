@@ -17,12 +17,12 @@ const CustomError = utils.CustomError;
 const dnsLookup = promisify(dns.lookup);
 
 async function get(req, res) {
-  const { limit, skip, all } = req.context;
+  const { limit, skip } = req.context;
   const search = req.query.search;
   const userId = req.user.id;
 
   const match = {
-    ...(!all && { user_id: userId })
+    user_id: userId
   };
 
   const [data, total] = await Promise.all([
@@ -35,6 +35,54 @@ async function get(req, res) {
   if (req.isHTML) {
     res.render("partials/links/table", {
       total,
+      limit,
+      skip,
+      links,
+    })
+    return;
+  }
+
+  return res.send({
+    total,
+    limit,
+    skip,
+    data: links,
+  });
+};
+
+async function getAdmin(req, res) {
+  const { limit, skip } = req.context;
+  const search = req.query.search;
+  const user = req.query.user;
+  let domain = req.query.domain;
+  const banned = utils.parseBooleanQuery(req.query.banned);
+  const anonymous = utils.parseBooleanQuery(req.query.anonymous);
+  const has_domain = utils.parseBooleanQuery(req.query.has_domain);
+  
+  const match = {
+    ...(banned !== undefined && { banned }),
+    ...(anonymous !== undefined && { user_id: [anonymous ? "is" : "is not", null] }),
+    ...(has_domain !== undefined && { domain_id: [has_domain ? "is not" : "is", null] }),
+  };
+  
+  // if domain is equal to the defualt domain,
+  // it means admins is looking for links with the defualt domain (no custom user domain)
+  if (domain === env.DEFAULT_DOMAIN) {
+    domain = undefined;
+    match.domain_id = null;
+  }
+  
+  const [data, total] = await Promise.all([
+    query.link.getAdmin(match, { limit, search, user, domain, skip }),
+    query.link.totalAdmin(match, { search, user, domain })
+  ]);
+
+  const links = data.map(utils.sanitize.link_admin);
+
+  if (req.isHTML) {
+    res.render("partials/admin/links/table", {
+      total,
+      total_formatted: total.toLocaleString("en-US"),
       limit,
       skip,
       links,
@@ -108,7 +156,7 @@ async function create(req, res) {
   link.domain = fetched_domain?.address;
   
   if (req.isHTML) {
-    res.setHeader("HX-Trigger", "reloadLinks");
+    res.setHeader("HX-Trigger", "reloadMainTable");
     const shortURL = utils.getShortURL(link.address, link.domain);
     return res.render("partials/shortener", {
       link: shortURL.link, 
@@ -216,6 +264,101 @@ async function edit(req, res) {
   return res.status(200).send(utils.sanitize.link({ ...link, ...updatedLink }));
 };
 
+async function editAdmin(req, res) {
+  const link = await query.link.find({
+    uuid: req.params.id,
+    ...(!req.user.admin && { user_id: req.user.id })
+  });
+
+  if (!link) {
+    throw new CustomError("Link was not found.");
+  }
+
+  let isChanged = false;
+  [
+    [req.body.address, "address"], 
+    [req.body.target, "target"], 
+    [req.body.description, "description"], 
+    [req.body.expire_in, "expire_in"], 
+    [req.body.password, "password"]
+  ].forEach(([value, name]) => {
+    if (!value) {
+      if (name === "password" && link.password) 
+        req.body.password = null;
+      else {
+        delete req.body[name];
+        return;
+      }
+    }
+    if (value === link[name] && name !== "password") {
+      delete req.body[name];
+      return;
+    }
+    if (name === "expire_in" && link.expire_in)
+      if (Math.abs(differenceInSeconds(utils.parseDatetime(value), utils.parseDatetime(link.expire_in))) < 60)
+          return;
+    if (name === "password")
+      if (value && value.replace(/•/ig, "").length === 0) {
+        delete req.body.password;
+        return;
+      }
+    isChanged = true;
+  });
+
+  if (!isChanged) {
+    throw new CustomError("Should at least update one field.");
+  }
+
+  const { address, target, description, expire_in, password } = req.body;
+  
+  const targetDomain = target && utils.removeWww(URL.parse(target).hostname);
+  const domain_id = link.domain_id || null;
+
+  const tasks = await Promise.all([
+    validators.cooldown(req.user),
+    target && validators.malware(req.user, target),
+    address &&
+      query.link.find({
+        address,
+        domain_id
+      }),
+    target && validators.bannedDomain(targetDomain),
+    target && validators.bannedHost(targetDomain)
+  ]);
+
+  // Check if custom link already exists
+  if (tasks[2]) {
+    const error = "Custom URL is already in use.";
+    res.locals.errors = { address: error };
+    throw new CustomError("Custom URL is already in use.");
+  }
+
+  // Update link
+  const [updatedLink] = await query.link.update(
+    {
+      id: link.id
+    },
+    {
+      ...(address && { address }),
+      ...(description && { description }),
+      ...(target && { target }),
+      ...(expire_in && { expire_in }),
+      ...((password || password === null) && { password })
+    }
+  );
+
+  if (req.isHTML) {
+    res.render("partials/admin/links/edit", {
+      swap_oob: true,
+      success: "Link has been updated.",
+      ...utils.sanitize.linkAdmin({ ...link, ...updatedLink }),
+    });
+    return;
+  }
+
+  return res.status(200).send(utils.sanitize.link({ ...link, ...updatedLink }));
+};
+
 async function remove(req, res) {
   const { error, isRemoved, link } = await query.link.remove({
     uuid: req.params.id,
@@ -229,7 +372,7 @@ async function remove(req, res) {
 
   if (req.isHTML) {
     res.setHeader("HX-Reswap", "outerHTML");
-    res.setHeader("HX-Trigger", "reloadLinks");
+    res.setHeader("HX-Trigger", "reloadMainTable");
     res.render("partials/links/dialog/delete_success", {
       link: utils.getShortURL(link.address, link.domain).link,
     });
@@ -266,7 +409,7 @@ async function ban(req, res) {
     banned: true
   };
 
-  // 1. Check if link exists
+  // 1. check if link exists
   const link = await query.link.find({ uuid: id });
 
   if (!link) {
@@ -279,17 +422,17 @@ async function ban(req, res) {
 
   const tasks = [];
 
-  // 2. Ban link
+  // 2. ban link
   tasks.push(query.link.update({ uuid: id }, update));
 
   const domain = utils.removeWww(URL.parse(link.target).hostname);
 
-  // 3. Ban target's domain
+  // 3. ban target's domain
   if (req.body.domain) {
     tasks.push(query.domain.add({ ...update, address: domain }));
   }
 
-  // 4. Ban target's host
+  // 4. ban target's host
   if (req.body.host) {
     const dnsRes = await dnsLookup(domain).catch(() => {
       throw new CustomError("Couldn't fetch DNS info.");
@@ -298,25 +441,25 @@ async function ban(req, res) {
     tasks.push(query.host.add({ ...update, address: host }));
   }
 
-  // 5. Ban link owner
+  // 5. ban link owner
   if (req.body.user && link.user_id) {
     tasks.push(query.user.update({ id: link.user_id }, update));
   }
 
-  // 6. Ban all of owner's links
+  // 6. ban all of owner's links
   if (req.body.userLinks && link.user_id) {
     tasks.push(query.link.update({ user_id: link.user_id }, update));
   }
 
-  // 7. Wait for all tasks to finish
+  // 7. wait for all tasks to finish
   await Promise.all(tasks).catch((err) => {
     throw new CustomError("Couldn't ban entries.");
   });
 
-  // 8. Send response
+  // 8. send response
   if (req.isHTML) {
     res.setHeader("HX-Reswap", "outerHTML");
-    res.setHeader("HX-Trigger", "reloadLinks");
+    res.setHeader("HX-Trigger", "reloadMainTable");
     res.render("partials/links/dialog/ban_success", {
       link: utils.getShortURL(link.address, link.domain).link,
     });
@@ -503,7 +646,9 @@ module.exports = {
   ban,
   create,
   edit,
+  editAdmin,
   get,
+  getAdmin,
   remove,
   report,
   stats,

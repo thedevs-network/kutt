@@ -24,6 +24,11 @@ const selectable = [
   "domains.address as domain"
 ];
 
+const selectable_admin = [
+  ...selectable,
+  "users.email as email"
+];
+
 function normalizeMatch(match) {
   const newMatch = { ...match };
 
@@ -40,6 +45,11 @@ function normalizeMatch(match) {
   if (newMatch.uuid) {
     newMatch["links.uuid"] = newMatch.uuid;
     delete newMatch.uuid;
+  }
+
+  if (newMatch.banned !== undefined) {
+    newMatch["links.banned"] = newMatch.banned;
+    delete newMatch.banned;
   }
 
   return newMatch;
@@ -67,13 +77,49 @@ async function total(match, params) {
   return typeof count === "number" ? count : parseInt(count);
 }
 
+async function totalAdmin(match, params) {
+  const query = knex("links");
+
+  Object.entries(normalizeMatch(match)).forEach(([key, value]) => {
+    query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+  });
+  
+  if (params?.user) {
+    const id = parseInt(params?.user);
+    if (Number.isNaN(id)) {
+      query.andWhereILike("users.email", "%" + params.user + "%");
+      } else {
+      query.andWhere("links.user_id", params.user);
+    }
+  }
+
+  if (params?.search) {
+    query.andWhereRaw(
+      "concat_ws(' ', description, links.address, target) ILIKE '%' || ? || '%'",
+      [params.search]
+    );
+  }
+
+  if (params?.domain) {
+    query.andWhereRaw("domains.address ILIKE '%' || ? || '%'", [params.domain]);
+  }
+  
+  query.leftJoin("domains", "links.domain_id", "domains.id");
+  query.leftJoin("users", "links.user_id", "users.id");
+  query.count("links.id");
+
+  const [{ count }] = await query;
+
+  return typeof count === "number" ? count : parseInt(count);
+}
+
 async function get(match, params) {
   const query = knex("links")
     .select(...selectable)
     .where(normalizeMatch(match))
     .offset(params.skip)
     .limit(params.limit)
-    .orderBy("links.created_at", "desc");
+    .orderBy("links.id", "desc");
   
   if (params?.search) {
     query.andWhereRaw(
@@ -83,6 +129,44 @@ async function get(match, params) {
   }
   
   query.leftJoin("domains", "links.domain_id", "domains.id");
+
+  return query;
+}
+
+async function getAdmin(match, params) {
+  const query = knex("links").select(...selectable_admin);
+
+  Object.entries(normalizeMatch(match)).forEach(([key, value]) => {
+    query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+  });
+
+  query
+    .orderBy("links.id", "desc")
+    .offset(params.skip)
+    .limit(params.limit)
+  
+  if (params?.user) {
+    const id = parseInt(params?.user);
+    if (Number.isNaN(id)) {
+      query.andWhereILike("users.email", "%" + params.user + "%");
+    } else {
+      query.andWhere("links.user_id", params.user);
+    }
+  }
+
+  if (params?.search) {
+    query.andWhereRaw(
+      "concat_ws(' ', description, links.address, target) ILIKE '%' || ? || '%'",
+      [params.search]
+    );
+  }
+
+  if (params?.domain) {
+    query.andWhereRaw("domains.address ILIKE '%' || ? || '%'", [params.domain]);
+  }
+  
+  query.leftJoin("domains", "links.domain_id", "domains.id");
+  query.leftJoin("users", "links.user_id", "users.id");
 
   return query;
 }
@@ -151,17 +235,15 @@ async function remove(match) {
 }
 
 async function batchRemove(match) {
-  const deleteQuery = knex("links");
-  const findQuery = knex("links");
+  const query = knex("links");
   
   Object.entries(match).forEach(([key, value]) => {
-    findQuery.andWhere(key, ...(Array.isArray(value) ? value : [value]));
-    deleteQuery.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+    query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
   });
   
-  const links = await findQuery;
+  const links = await query.clone();
   
-  await deleteQuery.delete();
+  await query.delete();
   
   if (env.REDIS_ENABLED) {
     links.forEach(redis.remove.link);
@@ -197,8 +279,10 @@ module.exports = {
   create,
   find,
   get,
+  getAdmin,
   incrementVisit,
   remove,
   total,
+  totalAdmin,
   update,
 }

@@ -53,7 +53,22 @@ function protected(req, res, next) {
   next();
 }
 
+function adminTable(req, res, next) {
+  res.locals.query = {
+    anonymous: req.query.anonymous,
+    domain: req.query.domain,
+    domains: req.query.domains,
+    links: req.query.links,
+    role: req.query.role,
+    search: req.query.search,
+    user: req.query.user,
+    verified: req.query.verified,
+  };
+  next();
+}
+
 module.exports = {
+  adminTable,
   config,
   createLink,
   editLink,

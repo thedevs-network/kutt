@@ -29,9 +29,18 @@
       {{#if user}}
         <li>
           <a class="button primary" href="/settings" title="Settings">
+            <span>{{> icons/cog}}</span>
             Settings
           </a>
         </li>
+        {{#if isAdmin}}
+          <li>
+            <a class="button secondary" href="/admin" title="Admin">
+              <span>{{> icons/shield}}</span>
+              Admin
+            </a>
+          </li>
+        {{/if}}
         <li>
           <a class="nav" href="/logout" title="Log out">
             Log out

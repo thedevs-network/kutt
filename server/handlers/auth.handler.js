@@ -42,19 +42,20 @@ function authenticate(type, error, isStrict, redirect) {
         throw new CustomError(error, 401);
       }
 
+      if (user && user.banned) {
+        throw new CustomError("You're banned from using this website.", 403);
+      }
+
       if (user && isStrict && !user.verified) {
         throw new CustomError("Your email address is not verified. " +
           "Sign up to get the verification link again.", 400);
       }
 
-      if (user && user.banned) {
-        throw new CustomError("You're banned from using this website.", 403);
-      }
       if (user) {
-        res.locals.isAdmin = utils.isAdmin(user.email);
+        res.locals.isAdmin = utils.isAdmin(user);
         req.user = {
           ...user,
-          admin: utils.isAdmin(user.email)
+          admin: utils.isAdmin(user)
         };
 
         // renew token if it's been at least one day since the token has been created

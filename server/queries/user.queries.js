@@ -1,6 +1,7 @@
 const { addMinutes } = require("date-fns");
 const { v4: uuid } = require("uuid");
 
+const { ROLES } = require("../consts");
 const utils = require("../utils");
 const redis = require("../redis");
 const knex = require("../knex");
@@ -94,9 +95,133 @@ async function remove(user) {
   return !!deletedUser;
 }
 
+const selectable_admin = [
+  "users.id",
+  "users.email",
+  "users.verified",
+  "users.role",
+  "users.banned",
+  "users.banned_by_id",
+  "users.created_at",
+  "users.updated_at"
+];
+
+function normalizeMatch(match) {
+  const newMatch = { ...match }
+
+  if (newMatch.banned !== undefined) {
+    newMatch["users.banned"] = newMatch.banned;
+    delete newMatch.banned;
+  }
+
+  return newMatch;
+}
+
+async function getAdmin(match, params) {
+  const query = knex("users")
+    .select(...selectable_admin)
+    .select("l.links_count")
+    .select("d.domains")
+    .fromRaw("users")
+    .where(normalizeMatch(match))
+    .offset(params.skip)
+    .limit(params.limit)
+    .orderBy("users.id", "desc")
+    .groupBy(1)
+    .groupBy("l.links_count")
+    .groupBy("d.domains");
+  
+  if (params?.search) {
+    const id = parseInt(params?.search);
+    if (Number.isNaN(id)) {
+      query.andWhereILike("users.email", "%" + params?.search + "%");
+    } else {
+      query.andWhere("users.id", params?.search);
+    }
+  }
+
+  if (params?.domains !== undefined) {
+    query.andWhere("d.domains", params?.domains ? "is not" : "is", null);
+  }
+
+  if (params?.links !== undefined) {
+    query.andWhere("links_count", params?.links ? "is not" : "is", null);
+  }
+  
+  query.leftJoin(
+    knex("domains")
+    .select("user_id", knex.raw("string_agg(address, ', ') AS domains"))
+    .groupBy("user_id").as("d"),
+    "users.id",
+    "d.user_id"
+  )
+  query.leftJoin(
+    knex("links").select("user_id").count("id as links_count").groupBy("user_id").as("l"),
+    "users.id",
+    "l.user_id"
+  );
+
+  return query;
+}
+
+async function totalAdmin(match, params) {
+  const query = knex("users")
+    .count("users.id")
+    .fromRaw('users')
+    .where(normalizeMatch(match));
+
+  if (params?.search) {
+    const id = parseInt(params?.search);
+    if (Number.isNaN(id)) {
+      query.andWhereILike("users.email", "%" + params?.search + "%");
+    } else {
+      query.andWhere("users.id", params?.search);
+    }
+  }
+
+  if (params?.domains !== undefined) {
+    query.andWhere("domains", params?.domains ? "is not" : "is", null);
+    query.leftJoin(
+      knex("domains")
+        .select("user_id", knex.raw("string_agg(address, ', ') AS domains"))
+        .groupBy("user_id").as("d"),
+      "users.id",
+      "d.user_id"
+    );
+  }
+
+  if (params?.links !== undefined) {
+    query.andWhere("links", params?.links ? "is not" : "is", null);
+    query.leftJoin(
+      knex("links").select("user_id").count("id as links").groupBy("user_id").as("l"),
+      "users.id",
+      "l.user_id"
+    );
+  }
+
+  const [{count}] = await query;
+
+  return typeof count === "number" ? count : parseInt(count);
+}
+
+async function create(params) {
+  const [user] = await knex("users").insert({
+    email: params.email,
+    password: params.password,
+    role: params.role ?? ROLES.USER,
+    verified: params.verified ?? false,
+    banned: params.banned ?? false,
+  }, "*");
+
+  return user;
+}
+
 module.exports = {
   add,
+  create,
   find,
+  getAdmin,
   remove,
+  totalAdmin,
   update,
 }

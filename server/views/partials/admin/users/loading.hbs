@@ -1,0 +1,16 @@
+{{#unless users}}
+  {{#ifEquals users.length 0}}
+    <tr class="no-data">
+      <td>
+        No users.
+      </td>
+    </tr>
+  {{else}}
+    <tr class="loading-placeholder">
+      <td>
+        {{> icons/spinner}}
+        Loading users...
+      </td>
+    </tr>
+  {{/ifEquals}}
+{{/unless}}

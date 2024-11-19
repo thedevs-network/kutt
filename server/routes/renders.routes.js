@@ -43,6 +43,14 @@ router.get(
 );
 
 router.get(
+  "/admin",
+  asyncHandler(auth.jwtPage),
+  asyncHandler(auth.admin),
+  asyncHandler(locals.user),
+  asyncHandler(renders.admin)
+);
+
+router.get(
   "/stats",
   asyncHandler(auth.jwtPage),
   asyncHandler(locals.user),
@@ -120,10 +128,68 @@ router.get(
 );
 
 router.get(
+  "/confirm-user-delete", 
+  locals.noLayout,
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin), 
+  asyncHandler(renders.confirmUserDelete)
+);
+
+router.get(
+  "/confirm-user-ban", 
+  locals.noLayout,
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin), 
+  asyncHandler(renders.confirmUserBan)
+);
+
+router.get(
+  "/create-user", 
+  locals.noLayout,
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin), 
+  asyncHandler(renders.createUser)
+);
+
+router.get(
+  "/add-domain", 
+  locals.noLayout,
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin), 
+  asyncHandler(renders.addDomainAdmin)
+);
+
+
+router.get(
+  "/confirm-domain-ban", 
+  locals.noLayout,
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin), 
+  asyncHandler(renders.confirmDomainBan)
+);
+
+
+router.get(
+  "/confirm-domain-delete-admin", 
+  locals.noLayout,
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin), 
+  asyncHandler(renders.confirmDomainDeleteAdmin)
+);
+
+router.get(
   "/link/edit/:id",
   locals.noLayout,
   asyncHandler(auth.jwt),
   asyncHandler(renders.linkEdit)
+);
+
+router.get(
+  "/admin/link/edit/:id",
+  locals.noLayout,
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin), 
+  asyncHandler(renders.linkEditAdmin)
 );
 
 router.get(

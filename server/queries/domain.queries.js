@@ -73,9 +73,147 @@ async function update(match, update) {
   return domains;
 }
 
+function normalizeMatch(match) {
+  const newMatch = { ...match };
+
+  if (newMatch.address) {
+    newMatch["domains.address"] = newMatch.address;
+    delete newMatch.address;
+  }
+
+  if (newMatch.user_id) {
+    newMatch["domains.user_id"] = newMatch.user_id;
+    delete newMatch.user_id;
+  }
+
+  if (newMatch.uuid) {
+    newMatch["domains.uuid"] = newMatch.uuid;
+    delete newMatch.uuid;
+  }
+
+  if (newMatch.banned !== undefined) {
+    newMatch["domains.banned"] = newMatch.banned;
+    delete newMatch.banned;
+  }
+
+  return newMatch;
+}
+
+
+const selectable_admin = [
+  "domains.id",
+  "domains.address",
+  "domains.homepage",
+  "domains.banned",
+  "domains.created_at",
+  "domains.updated_at",
+  "domains.user_id",
+  "domains.uuid",
+  "users.email as email",
+  "links_count"
+];
+
+
+async function getAdmin(match, params) {
+  const query = knex("domains").select(...selectable_admin);
+
+  Object.entries(normalizeMatch(match)).forEach(([key, value]) => {
+    query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+  });
+
+  query
+    .offset(params.skip)
+    .limit(params.limit)
+    .fromRaw("domains")
+    .orderBy("domains.id", "desc")
+    .groupBy(1)
+    .groupBy("l.links_count")
+    .groupBy("users.email");
+
+  if (params?.user) {
+    const id = parseInt(params?.user);
+    if (Number.isNaN(id)) {
+      query.andWhereILike("users.email", "%" + params.user + "%");
+    } else {
+      query.andWhere("domains.user_id", id);
+    }
+  }
+
+  if (params?.search) {
+    query.andWhereRaw(
+      "concat_ws(' ', domains.address, domains.homepage) ILIKE '%' || ? || '%'",
+      [params.search]
+    );
+  }
+
+  if (params?.links !== undefined) {
+    query.andWhere("links_count", params?.links ? "is not" : "is", null);
+  }
+
+  query.leftJoin(
+    knex("links").select("domain_id").count("id as links_count").groupBy("domain_id").as("l"),
+    "domains.id",
+    "l.domain_id"
+  );
+
+  query.leftJoin("users", "domains.user_id", "users.id");
+
+  return query;
+}
+
+async function totalAdmin(match, params) {
+  const query = knex("domains");
+
+  Object.entries(normalizeMatch(match)).forEach(([key, value]) => {
+    query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+  });
+  
+  if (params?.user) {
+    const id = parseInt(params?.user);
+    if (Number.isNaN(id)) {
+      query.andWhereILike("users.email", "%" + params.user + "%");
+      } else {
+      query.andWhere("domains.user_id", id);
+    }
+  }
+
+  if (params?.search) {
+    query.andWhereILike("domains.address", "%" + params.search + "%");
+  }
+
+  if (params?.links !== undefined) {
+    query.leftJoin(
+      knex("links").select("domain_id").count("id as links_count").groupBy("domain_id").as("l"),
+      "domains.id",
+      "l.domain_id"
+    );
+    query.andWhere("links_count", params?.links ? "is not" : "is", null);
+  }
+
+  query.leftJoin("users", "domains.user_id", "users.id");
+  query.count("domains.id");
+
+  const [{ count }] = await query;
+
+  return typeof count === "number" ? count : parseInt(count);
+}
+
+async function remove(domain) {
+  const deletedDomain = await knex("domains").where("id", domain.id).delete();
+  
+  if (env.REDIS_ENABLED) {
+    redis.remove.domain(domain);
+  }
+  
+  return !!deletedDomain;
+}
+
 module.exports = {
   add,
   find,
   get,
+  getAdmin,
+  remove,
+  totalAdmin,
   update,
 }

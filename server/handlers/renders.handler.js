@@ -37,6 +37,12 @@ function settings(req, res) {
   });
 }
 
+function admin(req, res) {
+  res.render("admin", {
+    title: "Admin"
+  });
+}
+
 function stats(req, res) {
   res.render("stats", {
     title: "Stats"
@@ -119,6 +125,48 @@ async function confirmLinkBan(req, res) {
   });
 }
 
+async function confirmUserDelete(req, res) {
+  const user = await query.user.find({ id: req.query.id });
+  if (!user) {
+    return res.render("partials/admin/dialog/message", {
+      layout: false,
+      message: "Could not find the user."
+    });
+  }
+  res.render("partials/admin/dialog/delete_user", {
+    layout: false,
+    email: user.email,
+    id: user.id
+  });
+}
+
+async function confirmUserBan(req, res) {
+  const user = await query.user.find({ id: req.query.id });
+  if (!user) {
+    return res.render("partials/admin/dialog/message", {
+      layout: false,
+      message: "Could not find the user."
+    });
+  }
+  res.render("partials/admin/dialog/ban_user", {
+    layout: false,
+    email: user.email,
+    id: user.id
+  });
+}
+
+async function createUser(req, res) {
+  res.render("partials/admin/dialog/create_user", {
+    layout: false,
+  });
+}
+
+async function addDomainAdmin(req, res) {
+  res.render("partials/admin/dialog/add_domain", {
+    layout: false,
+  });
+}
+
 async function addDomainForm(req, res) {
   res.render("partials/settings/domain/add_form");
 }
@@ -129,13 +177,44 @@ async function confirmDomainDelete(req, res) {
     user_id: req.user.id
   });
   if (!domain) {
-    throw new utils.CustomError("Could not find the link", 400);
+    throw new utils.CustomError("Could not find the domain.", 400);
   }
   res.render("partials/settings/domain/delete", {
     ...utils.sanitize.domain(domain)
   });
 }
 
+async function confirmDomainBan(req, res) {
+  const domain = await query.domain.find({
+    id: req.query.id
+  });
+  if (!domain) {
+    throw new utils.CustomError("Could not find the domain.", 400);
+  }
+  const hasUser = !!domain.user_id;
+  const hasLink = await query.link.find({ domain_id: domain.id });
+  res.render("partials/admin/dialog/ban_domain", {
+    id: domain.id,
+    address: domain.address,
+    hasUser,
+    hasLink,
+  });
+}
+
+async function confirmDomainDeleteAdmin(req, res) {
+  const domain = await query.domain.find({
+    id: req.query.id
+  });
+  if (!domain) {
+    throw new utils.CustomError("Could not find the domain.", 400);
+  }
+  const hasLink = await query.link.find({ domain_id: domain.id });
+  res.render("partials/admin/dialog/delete_domain", {
+    id: domain.id,
+    address: domain.address,
+    hasLink,
+  });
+}
 
 async function getReportEmail(req, res) {
   if (!env.REPORT_EMAIL) {
@@ -166,16 +245,33 @@ async function linkEdit(req, res) {
   });
 }
 
+async function linkEditAdmin(req, res) {
+  const link = await query.link.find({
+    uuid: req.params.id,
+  });
+  res.render("partials/admin/links/edit", {
+    ...(link && utils.sanitize.link(link)),
+  });
+}
+
 module.exports = {
+  addDomainAdmin,
   addDomainForm,
+  admin,
   banned,
+  confirmDomainBan,
   confirmDomainDelete,
+  confirmDomainDeleteAdmin,
   confirmLinkBan,
   confirmLinkDelete,
+  confirmUserBan,
+  confirmUserDelete,
+  createUser,
   getReportEmail,
   getSupportEmail,
   homepage,
   linkEdit,
+  linkEditAdmin,
   login,
   logout,
   notFound,

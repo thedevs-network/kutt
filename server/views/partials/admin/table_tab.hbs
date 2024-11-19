@@ -1,0 +1,62 @@
+<tr class="category">
+  <th class="category-total">
+    <p id="category-total">
+      Total {{title}}: <b>{{#if total includeZero=true}}{{total_formatted}}{{else}}-{{/if}}</b>
+    </p>
+  </th>
+  <th class="category-tab">
+    <nav class="tab" role="tablist">
+      <a 
+        id="tab-links" 
+        role="tab" 
+        hx-get="/api/links/admin"
+        hx-target="closest table"
+        hx-swap="outerHTML" 
+        hx-disinherit="*"
+        hx-sync="this:replace"
+        hx-indicator="closest table"
+        onclick="setTab(event)"
+        {{#ifEquals title 'links'}}
+          class="active"
+          hx-on:htmx:before-request="event.preventDefault()"
+        {{/ifEquals}}
+      >
+        Links
+      </a>
+      <a 
+        id="tab-users" 
+        role="tab" 
+        hx-get="/api/users/admin"
+        hx-target="closest table"
+        hx-swap="outerHTML" 
+        hx-disinherit="*"
+        hx-sync="this:replace"
+        hx-indicator="closest table"
+        onclick="setTab(event)"
+        {{#ifEquals title 'users'}}
+          class="active"
+          hx-on:htmx:before-request="event.preventDefault()"
+        {{/ifEquals}}
+      >
+        Users
+      </a>
+       <a 
+        id="tab-domains" 
+        role="tab" 
+        hx-get="/api/domains/admin"
+        hx-target="closest table"
+        hx-swap="outerHTML" 
+        hx-disinherit="*"
+        hx-sync="this:replace"
+        hx-indicator="closest table"
+        onclick="setTab(event)"
+        {{#ifEquals title 'domains'}}
+          class="active"
+          hx-on:htmx:before-request="event.preventDefault()"
+        {{/ifEquals}}
+      >
+        Domains
+      </a>
+    </nav>
+  </th>
+</tr>

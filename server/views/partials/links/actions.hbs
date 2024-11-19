@@ -19,7 +19,7 @@
   </a>
   <button
     class="action qrcode"
-    hx-on:click="handleQRCode(this)"
+    hx-on:click="handleQRCode(this, 'link-dialog')"
     data-url="{{link.url}}"
   >
     {{> icons/qrcode}}
@@ -46,20 +46,6 @@
   >
     {{> icons/pencil}}
   </button>
-  {{#unless banned}}
-    {{#if @root.isAdmin}}
-      <button 
-        class="action ban" 
-        hx-on:click='openDialog("link-dialog")' 
-        hx-get="/confirm-link-ban" 
-        hx-target="#link-dialog .content-wrapper" 
-        hx-indicator="#link-dialog" 
-        hx-vals='{"id":"{{id}}"}'
-      >
-        {{> icons/stop}}
-      </button>
-    {{/if}}
-  {{/unless}}
   <button 
     class="action delete" 
     hx-on:click='openDialog("link-dialog")' 

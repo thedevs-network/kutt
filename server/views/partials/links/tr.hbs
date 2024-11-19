@@ -1,6 +1,6 @@
 <tr id="tr-{{id}}" {{#if swap_oob}}hx-swap-oob="true"{{/if}}>
   <td class="original-url right-fade">
-    <a href="{{target}}">
+    <a href="{{target}}" target="_blank" rel="noopener noreferrer">
       {{target}}
     </a>
     {{#if description}}
@@ -28,7 +28,9 @@
       </button>
       {{> icons/check}}
     </div>
-    <a href="{{link.url}}">{{link.link}}</a>
+    <a href="{{link.url}}" target="_blank" rel="noopener noreferrer">
+      {{link.link}}
+    </a>
   </td>
   <td class="views">
     {{visit_count}}

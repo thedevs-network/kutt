@@ -1,0 +1,16 @@
+<th class="nav" >
+  <div class="limit">
+    <button type="button" class="nav" onclick="setLinksLimit(event)" disabled="true">10</button>
+    <button type="button" class="nav" onclick="setLinksLimit(event)">20</button>
+    <button type="button" class="nav" onclick="setLinksLimit(event)">50</button>
+  </div>
+  <div class="nav-divider"></div>
+  <div id="pagination" class="pagination">
+    <button type="button" class="nav prev" onclick="setLinksSkip(event, 'prev')" disabled="true">
+      {{> icons/chevron_left}}
+    </button>
+    <button type="button" class="nav next" onclick="setLinksSkip(event, 'next')">
+      {{> icons/chevron_right}}
+    </button>
+  </div>
+</th>

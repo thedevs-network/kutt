@@ -85,11 +85,11 @@ function formatDateHour(selector) {
 }
 
 // show QR code
-function handleQRCode(element) {
-  const dialog = document.querySelector("#link-dialog");
+function handleQRCode(element, id) {
+  const dialog = document.getElementById(id);
   const dialogContent = dialog.querySelector(".content-wrapper");
   if (!dialogContent) return;
-  openDialog("link-dialog", "qrcode");
+  openDialog(id, "qrcode");
   dialogContent.textContent = "";
   const qrcode = new QRCode(dialogContent, {
     text: element.dataset.url,
@@ -188,13 +188,14 @@ function updateLinksNav() {
   });
 }
 
-function resetLinkNav() {
+function resetTableNav() {
   const totalElm = document.querySelector('#total');
   const skipElm = document.querySelector('#skip');
   const limitElm = document.querySelector('#limit');
   if (!totalElm || !skipElm || !limitElm) return;
   skipElm.value = 0;
   limitElm.value = 10;
+  const total = parseInt(totalElm.value);
   const skip = parseInt(skipElm.value);
   const limit = parseInt(limitElm.value);
   document.querySelectorAll('.pagination .next').forEach(elm => {
@@ -206,6 +207,66 @@ function resetLinkNav() {
   document.querySelectorAll('table .nav .limit button').forEach(b => {
     b.disabled = b.textContent === limit.toString();
   });
+}
+
+// tab click
+function setTab(event, targetId) {
+  const tabs = Array.from(closest("nav", event.target).children);
+  tabs.forEach(function (tab) {
+    tab.classList.remove("active");
+  });
+  if (targetId) {
+    document.getElementById(targetId).classList.add("active");
+  } else {
+    event.target.classList.add("active");
+  }
+}
+
+// show clear search button
+function onSearchChange(event) {
+  const clearButton = event.target.parentElement.querySelector("button.clear");
+  if (!clearButton) return;
+  clearButton.style.display = event.target.value.length > 0 ? "block" : "none";
+}
+
+function clearSeachInput(event) {
+  event.preventDefault();
+  const button = closest("button", event.target);
+  const input = button.parentElement.querySelector("input");
+  if (!input) return;
+  input.value = "";
+  button.style.display = "none";
+  htmx.trigger("body", "reloadMainTable");
+}
+
+// detect if search inputs have value on load to show clear button
+function onSearchInputLoad() {
+  const linkSearchInput = document.getElementById("search");
+  if (!linkSearchInput) return;
+  const linkClearButton = linkSearchInput.parentElement.querySelector("button.clear")
+  linkClearButton.style.display = linkSearchInput.value.length > 0 ? "block" : "none";
+
+  const userSearchInput = document.getElementById("search_user");
+  if (!userSearchInput) return;
+  const userClearButton = userSearchInput.parentElement.querySelector("button.clear")
+  userClearButton.style.display = userSearchInput.value.length > 0 ? "block" : "none";
+
+  const domainSearchInput = document.getElementById("search_domain");
+  if (!domainSearchInput) return;
+  const domainClearButton = domainSearchInput.parentElement.querySelector("button.clear")
+  domainClearButton.style.display = domainSearchInput.value.length > 0 ? "block" : "none";
+}
+
+onSearchInputLoad();
+
+// create user checkbox control
+function canSendVerificationEmail() {
+  const canSendVerificationEmail = !document.getElementById('create-user-verified').checked && !document.getElementById('create-user-banned').checked;
+  const checkbox = document.getElementById('send-email-label');
+  if (canSendVerificationEmail)
+    checkbox.classList.remove('hidden');
+  if (!canSendVerificationEmail && !checkbox.classList.contains('hidden'))
+    checkbox.classList.add('hidden');
 }
 
 // create views chart label

@@ -1,0 +1,71 @@
+<td class="actions">
+  {{#if password}}
+    <button class="action password" disabled="true" data-tooltip="Password protected">
+      {{> icons/key}}
+    </button>
+  {{/if}}
+  {{#if banned}}
+    <button class="action banned" disabled="true" data-tooltip="Banned">
+      {{> icons/stop}}
+    </button>
+  {{/if}}
+  <a
+    class="button action stats"
+    href="/stats?id={{id}}"
+    title="Stats"
+    class="action stats"
+  >
+    {{> icons/chart}}
+  </a>
+  <button
+    class="action qrcode"
+    hx-on:click="handleQRCode(this, 'admin-table-dialog')"
+    data-url="{{link.url}}"
+  >
+    {{> icons/qrcode}}
+  </button>
+  <button 
+    class="action edit"
+    hx-trigger="click queue:none"
+    hx-ext="path-params"
+    hx-get="/admin/link/edit/{id}" 
+    hx-vals='{"id":"{{id}}"}'
+    hx-swap="beforeend"
+    hx-target="next tr.edit"
+    hx-indicator="next tr.edit"
+    hx-sync="this:drop"
+    hx-on::before-request="
+      const tr = event.detail.target;
+      tr.classList.add('show');
+      if (tr.querySelector('.content')) {
+        event.preventDefault();
+        tr.classList.remove('show');
+        tr.removeChild(tr.querySelector('.content'));
+      }
+    "
+  >
+    {{> icons/pencil}}
+  </button>
+  {{#unless banned}}
+    <button 
+      class="action ban" 
+      hx-on:click='openDialog("admin-table-dialog")' 
+      hx-get="/confirm-link-ban" 
+      hx-target="#admin-table-dialog .content-wrapper" 
+      hx-indicator="#admin-table-dialog" 
+      hx-vals='{"id":"{{id}}"}'
+    >
+      {{> icons/stop}}
+    </button>
+  {{/unless}}
+  <button 
+    class="action delete" 
+    hx-on:click='openDialog("admin-table-dialog")' 
+    hx-get="/confirm-link-delete" 
+    hx-target="#admin-table-dialog .content-wrapper" 
+    hx-indicator="#admin-table-dialog" 
+    hx-vals='{"id":"{{id}}"}'
+  >
+    {{> icons/trash}}
+  </button>
+</td>

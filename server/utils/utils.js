@@ -7,6 +7,7 @@ const path = require("path");
 const hbs = require("hbs");
 const ms = require("ms");
 
+const { ROLES } = require("../consts");
 const env = require("../env");
 
 class CustomError extends Error {
@@ -20,10 +21,8 @@ class CustomError extends Error {
 
 const urlRegex = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)+(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
 
-function isAdmin(email) {
-  return env.ADMIN_EMAILS.split(",")
-    .map((e) => e.trim())
-    .includes(email)
+function isAdmin(user) {
+  return user.role === ROLES.ADMIN;
 }
 
 function signToken(user) {
@@ -70,7 +69,7 @@ function getShortURL(address, domain) {
   const protocol = (env.CUSTOM_DOMAIN_USE_HTTPS || !domain) && !env.isDev ? "https://" : "http://";
   const link = `${domain || env.DEFAULT_DOMAIN}/${address}`;
   const url = `${protocol}${link}`;
-  return { link, url };
+  return { address, link, url };
 }
 
 function getStatsLimit() {
@@ -174,6 +173,12 @@ const preservedURLs = [
   "pricing"
 ];
 
+function parseBooleanQuery(query) {
+  if (query === "true" || query === true) return true;
+  if (query === "false" || query === false) return false;
+  return undefined;
+}
+
 function getInitStats() {
   return Object.create({
     browser: {
@@ -257,7 +262,42 @@ const sanitize = {
       relative_created_at: getTimeAgo(timestamps.created_at),
       relative_expire_in: link.expire_in && ms(differenceInMilliseconds(parseDatetime(link.expire_in), new Date()), { long: true }),
       password: !!link.password,
+      visit_count: link.visit_count.toLocaleString("en-US"),
       link: getShortURL(link.address, link.domain)
+    }
+  },
+  link_admin: link => {
+    const timestamps = parseTimestamps(link);
+    return {
+      ...link,
+      ...timestamps,
+      domain: link.domain || env.DEFAULT_DOMAIN,
+      id: link.uuid,
+      relative_created_at: getTimeAgo(timestamps.created_at),
+      relative_expire_in: link.expire_in && ms(differenceInMilliseconds(parseDatetime(link.expire_in), new Date()), { long: true }),
+      password: !!link.password,
+      visit_count: link.visit_count.toLocaleString("en-US"),
+      link: getShortURL(link.address, link.domain)
+    }
+  },
+  user_admin: user => {
+    const timestamps = parseTimestamps(user);
+    return {
+      ...user,
+      ...timestamps,
+      links_count: (user.links_count ?? 0).toLocaleString("en-US"),
+      relative_created_at: getTimeAgo(timestamps.created_at),
+      relative_updated_at: getTimeAgo(timestamps.updated_at),
+    }
+  },
+  domain_admin: domain => {
+    const timestamps = parseTimestamps(domain);
+    return {
+      ...domain,
+      ...timestamps,
+      links_count: (domain.links_count ?? 0).toLocaleString("en-US"),
+      relative_created_at: getTimeAgo(timestamps.created_at),
+      relative_updated_at: getTimeAgo(timestamps.updated_at),
     }
   }
 };
@@ -309,6 +349,7 @@ module.exports = {
   getStatsLimit,
   getStatsPeriods,
   isAdmin,
+  parseBooleanQuery,
   parseDatetime,
   parseTimestamps,
   preservedURLs,

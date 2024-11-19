@@ -1,0 +1,16 @@
+{{#unless table_domains}}
+  {{#ifEquals table_domains.length 0}}
+    <tr class="no-data">
+      <td>
+        No domains.
+      </td>
+    </tr>
+  {{else}}
+    <tr class="loading-placeholder">
+      <td>
+        {{> icons/spinner}}
+        Loading domains...
+      </td>
+    </tr>
+  {{/ifEquals}}
+{{/unless}}

@@ -1,0 +1,56 @@
+<div class="content admin-create">
+  <h2>Add domain</h2>
+  <form
+    id="add-domain-form"
+    hx-post="/api/domains/admin" 
+    hx-target="closest .content" 
+    hx-swap="outerHTML" 
+    hx-indicator="closest .content"
+  >
+    <label class="{{#if errors.address}}error{{/if}}">
+      Address:
+      <input
+        name="address"
+        id="add-domain-address"
+        type="text"
+        placeholder="Address..."
+        hx-preserve="true"
+      />
+      {{#if errors.address}}<p class="error">{{errors.address}}</p>{{/if}}
+    </label>
+    <label class="{{#if errors.homepage}}error{{/if}}">
+      Homepage (optional):
+      <input
+        name="homepage"
+        id="add-domain-homepage"
+        type="text"
+        placeholder="Homepage address.."
+        hx-preserve="true"
+      />
+      {{#if errors.homepage}}<p class="error">{{errors.homepage}}</p>{{/if}}
+    </label>
+    <label class="checkbox">
+      <input 
+        id="add-domain-banned" 
+        name="banned"
+        type="checkbox"
+        onchange="canSendVerificationEmail();" 
+        hx-preserve="true"
+      />
+      Banned
+    </label>
+    <div class="buttons">
+      <button type="button" hx-on:click="closeDialog()">Cancel</button>
+      <button type="submit" class="primary">
+        <span>{{> icons/plus}}</span>
+        Add
+      </button>
+      {{> icons/spinner}}
+    </div>
+  </form>
+  <div id="dialog-error">
+    {{#if error}}
+      <p class="error">{{error}}</p>
+    {{/if}}
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<table 
+  hx-get="/api/links/admin"
+  hx-target="tbody"
+  hx-swap="outerHTML" 
+  hx-select="tbody"
+  hx-disinherit="*"
+  hx-include=".links-controls"
+  hx-params="not total"
+  hx-sync="this:replace"
+  hx-select-oob="#total,#category-total" 
+  hx-trigger="
+    {{#if onload}}load once,{{/if}}
+    reloadMainTable from:body,
+    click delay:100ms from:button.nav, 
+    input changed delay:500ms from:[name='search'],
+    input changed delay:500ms from:[name='user'],
+    input changed delay:500ms from:[name='domain'],
+    input changed from:[name='banned'],
+    input changed from:[name='anonymous'],
+    input changed from:[name='has_domain'],
+  "
+  hx-on:htmx:after-on-load="updateLinksNav();"
+  hx-on:htmx:after-settle="onSearchInputLoad();"
+>
+  {{> admin/links/thead}}
+  {{> admin/links/tbody}}
+  {{> admin/links/tfoot}}
+</table>
+<template>
+  <h2 id="admin-table-title" hx-swap-oob="true">Recent shortened links.</h2>
+</template>

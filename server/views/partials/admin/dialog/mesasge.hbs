@@ -1,0 +1,11 @@
+<div class="content">
+  {{#if error}}
+    <p>{{error}}</p>
+  {{else}}
+    <p>{{message}}</p>
+  {{/if}}
+  <div class="buttons">
+    <button type="button" hx-on:click="closeDialog()">Close</button>
+  </div>
+</div>
+

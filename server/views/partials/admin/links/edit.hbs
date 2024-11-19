@@ -1,0 +1,117 @@
+<td class="content">
+  {{#if id}}
+    <form 
+      id="edit-form-{{id}}"
+      hx-patch="/api/links/admin/{id}"
+      hx-ext="path-params"
+      hx-vals='{"id":"{{id}}"}' 
+      hx-select="form"
+      hx-swap="outerHTML"
+      hx-sync="this:replace"
+      class="{{class}}"
+    >
+      <div>
+        <label class="{{#if errors.target}}error{{/if}}">
+          Target:
+          <input 
+            id="edit-target-{{id}}"
+            name="target" 
+            type="text" 
+            placeholder="Target..." 
+            required="true"
+            value="{{target}}"
+            hx-preserve="true"
+          />
+          {{#if errors.target}}<p class="error">{{errors.target}}</p>{{/if}}
+        </label>
+        <label class="{{#if errors.address}}error{{/if}}">
+          localhost:3000/
+          <input 
+            id="edit-address-{{id}}"
+            name="address" 
+            type="text" 
+            placeholder="Custom URL..." 
+            required="true"
+            value="{{address}}"
+            hx-preserve="true"
+          />
+          {{#if errors.address}}<p class="error">{{errors.address}}</p>{{/if}}
+        </label>
+        <label class="{{#if errors.password}}error{{/if}}">
+          Password:
+          <input 
+            id="edit-password-{{id}}"
+            name="password" 
+            type="password" 
+            placeholder="Password..." 
+            value="{{#if password}}••••••••{{/if}}"
+            hx-preserve="true"
+          />
+          {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
+        </label>
+      </div>
+      <div>
+        <label class="{{#if errors.description}}error{{/if}}">
+          Description:
+          <input 
+            id="edit-description-{{id}}"
+            name="description" 
+            type="text" 
+            placeholder="Description..." 
+            value="{{description}}"
+            hx-preserve="true"
+          />
+          {{#if errors.description}}<p class="error">{{errors.description}}</p>{{/if}}
+        </label>
+        <label class="{{#if errors.expire_in}}error{{/if}}">
+          Expire in:
+          <input 
+            id="edit-expire_in-{{id}}"
+            name="expire_in" 
+            type="text" 
+            placeholder="2 minutes/hours/days"
+            value="{{relative_expire_in}}"
+            hx-preserve="true"
+          />
+          {{#if errors.expire_in}}<p class="error">{{errors.expire_in}}</p>{{/if}}
+        </label>
+      </div>
+      <div>
+        <button 
+          type="button"
+          onclick="
+            const tr = closest('tr');
+            if (!tr) return;
+            tr.classList.remove('show');
+            tr.removeChild(tr.querySelector('.content'));
+          "
+        >
+          Close
+        </button>
+        <button type="submit" class="primary">
+          <span class="reload">
+            {{> icons/reload}}
+          </span>
+          <span class="loader">
+            {{> icons/spinner}}
+          </span>
+          Update
+        </button>
+      </div>
+      <div class="response">
+        {{#if error}}
+          {{#unless errors}}
+            <p class="error">{{error}}</p>
+          {{/unless}}
+        {{else if success}}
+          <p class="success">{{success}}</p>
+        {{/if}}
+      </div>
+      <template>
+        {{> admin/links/tr}}
+      </template>
+    </form>
+  {{else}}
+    <p class="no-data">No link was found.</p>
+  {{/if}}
+</td>

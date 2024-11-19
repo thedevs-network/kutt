@@ -1,0 +1,30 @@
+<table 
+  hx-get="/api/domains/admin"
+  hx-target="tbody"
+  hx-swap="outerHTML" 
+  hx-select="tbody"
+  hx-disinherit="*"
+  hx-include=".domains-controls"
+  hx-params="not total"
+  hx-sync="this:replace"
+  hx-select-oob="#total,#category-total" 
+  hx-trigger="
+    {{#if onload}}load once,{{/if}}
+    reloadMainTable from:body,
+    click delay:100ms from:button.nav, 
+    input changed delay:500ms from:[name='search'],
+    input changed delay:500ms from:[name='user'],
+    input changed from:[name='banned'],
+    input changed from:[name='links'],
+    input changed from:[name='owner'],
+  "
+  hx-on:htmx:after-on-load="updateLinksNav()"
+  hx-on:htmx:after-settle="onSearchInputLoad();"
+>
+  {{> admin/domains/thead}}
+  {{> admin/domains/tbody}}
+  {{> admin/domains/tfoot}}
+</table>
+<template>
+  <h2 id="admin-table-title" hx-swap-oob="true">Recent added domains.</h2>
+</template>

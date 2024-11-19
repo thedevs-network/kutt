@@ -2,7 +2,6 @@ const { Router } = require("express");
 const cors = require("cors");
 
 const validators = require("../handlers/validators.handler");
-
 const helpers = require("../handlers/helpers.handler");
 const asyncHandler = require("../utils/asyncHandler");
 const locals = require("../handlers/locals.handler");
@@ -19,6 +18,17 @@ router.get(
   asyncHandler(auth.jwt),
   helpers.parseQuery,
   asyncHandler(link.get)
+);
+
+router.get(
+  "/admin",
+  locals.viewTemplate("partials/admin/links/table"),
+  asyncHandler(auth.apikey),
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin),
+  helpers.parseQuery,
+  locals.adminTable,
+  asyncHandler(link.getAdmin)
 );
 
 router.post(
@@ -43,6 +53,18 @@ router.patch(
   validators.editLink,
   asyncHandler(helpers.verify),
   asyncHandler(link.edit)
+);
+
+router.patch(
+  "/admin/:id",
+  locals.viewTemplate("partials/links/edit"),
+  asyncHandler(auth.apikey),
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin),
+  locals.editLink,
+  validators.editLink,
+  asyncHandler(helpers.verify),
+  asyncHandler(link.editAdmin)
 );
 
 router.delete(

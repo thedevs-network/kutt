@@ -1,4 +1,4 @@
-<section id="links-table-wrapper">
+<section id="main-table-wrapper">
   <h2>Recent shortened links.</h2>
   <table 
     hx-get="/api/links"
@@ -12,8 +12,7 @@
     hx-select-oob="#total" 
     hx-trigger="
       load once, 
-      reloadLinks from:body, 
-      change from:[name='all'], 
+      reloadMainTable from:body, 
       click delay:100ms from:button.nav, 
       input changed delay:500ms from:[name='search'],
     "

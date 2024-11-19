@@ -1,0 +1,69 @@
+<tr id="tr-{{id}}" {{#if swap_oob}}hx-swap-oob="true"{{/if}}>
+  <td class="users-id">
+    {{id}}
+  </td>
+  <td class="users-email">
+    {{email}}
+    <p class="description">
+      {{#if domains}}
+        <a
+          aria-label="View domains" 
+          data-tooltip="View domains" 
+          hx-get="/api/domains/admin"
+          hx-target="closest table"
+          hx-swap="outerHTML" 
+          hx-sync="this:replace"
+          hx-indicator="closest table"
+          hx-vals='{"user":"{{email}}"}'
+          onclick="setTab(event, 'tab-links')"
+        >
+          {{domains}}
+        </a>
+      {{else}}
+        <span>No domains</span>
+      {{/if}}
+    </p>
+  </td>
+  <td class="users-created-at">
+    {{relative_created_at}}
+  </td>
+  <td class="users-verified">
+    {{#if verified}}
+      <span class="status green">VERIFIED</span>
+    {{else}}
+      <span class="status gray">NOT VERIFIED</span>
+    {{/if}}
+  </td>
+  <td class="users-role">
+    {{#ifEquals role "ADMIN"}}
+    <span class="status red">ADMIN</span>
+    {{else}}
+    <span class="status gray">USER</span>
+    {{/ifEquals}}
+  </td>
+  <td class="users-links-count">
+    {{#ifEquals links_count '0'}}
+      {{links_count}}
+    {{else}}
+      <a
+        data-tooltip="View links"
+        aria-label="View links"
+        hx-get="/api/links/admin"
+        hx-target="closest table"
+        hx-swap="outerHTML" 
+        hx-sync="this:replace"
+        hx-vals='{"user":"{{email}}"}'
+        hx-indicator="closest table"
+        onclick="setTab(event, 'tab-links')"
+      >
+        {{links_count}}
+      </a>
+    {{/ifEquals}}
+  </td>
+  {{> admin/users/actions}}
+</tr>
+<tr class="edit">
+  <td class="loading">
+    {{> icons/spinner}}
+  </td>
+</tr>

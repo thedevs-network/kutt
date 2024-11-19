@@ -1,0 +1,29 @@
+<td class="actions domains-actions">
+  {{#if banned}}
+    <button class="action banned" disabled="true" data-tooltip="Banned">
+      {{> icons/stop}}
+    </button>
+  {{/if}}
+  {{#unless banned}}
+    <button 
+      class="action ban" 
+      hx-on:click='openDialog("admin-table-dialog")' 
+      hx-get="/confirm-domain-ban" 
+      hx-target="#admin-table-dialog .content-wrapper" 
+      hx-indicator="#admin-table-dialog" 
+      hx-vals='{"id":"{{id}}"}'
+    >
+      {{> icons/stop}}
+    </button>
+  {{/unless}}
+  <button 
+    class="action delete" 
+    hx-on:click='openDialog("admin-table-dialog")' 
+    hx-get="/confirm-domain-delete-admin" 
+    hx-target="#admin-table-dialog .content-wrapper" 
+    hx-indicator="#admin-table-dialog" 
+    hx-vals='{"id":"{{id}}"}'
+  >
+    {{> icons/trash}}
+  </button>
+</td>
