@@ -23,7 +23,10 @@
     {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
   </label>
   <div class="buttons-wrapper">
-    <button type="submit" class="primary login">
+    <button 
+      type="submit" 
+      class="primary login {{#if disallow_registration}}full{{else}}{{#unless mail_enabled}}full{{/unless}}{{/if}}"
+    >
       <span>{{> icons/login}}</span>
       <span>{{> icons/spinner}}</span>
       Log in

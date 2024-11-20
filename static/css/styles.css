@@ -1021,6 +1021,8 @@ form#login-signup .buttons-wrapper button {
   margin: 0;
 }
 
+form#login-signup .buttons-wrapper button.full { flex-basis: 100%; }
+
 form#login-signup a.forgot-password {
   align-self: flex-start;
   font-size: 14px;
@@ -1035,6 +1037,13 @@ form#login-signup.htmx-request .error { opacity: 0; }
 
 form#login-signup p.error {
   margin-bottom: 0;
+}
+
+.admin-form-title {
+  font-size: 26px;
+  font-weight: 300;
+  margin: 0 0 3rem;
+  text-align: center;
 }
 
 .login-signup-message {

@@ -38,6 +38,8 @@ async function add(params, user) {
   const data = {
     email: params.email,
     password: params.password,
+    ...(params.role && { role: params.role }),
+    ...(params.verified !== undefined && { verified: params.verified }),
     verification_token: uuid(),
     verification_expires: utils.dateToUTC(addMinutes(new Date(), 60))
   };
@@ -216,10 +218,27 @@ async function create(params) {
   return user;
 }
 
+// check if there exists a user
+async function findAny() {
+  if (env.REDIS_ENABLED) {
+    const anyuser = await redis.client.get("any-user");
+    if (anyuser) return true;
+  }
+
+  const anyuser = await knex("users").select("id").first();
+
+  if (env.REDIS_ENABLED && anyuser) {
+    redis.client.set("any-user", JSON.stringify(anyuser), "EX", 60 * 5);
+  }
+
+  return !!anyuser;
+}
+
 module.exports = {
   add,
   create,
   find,
+  findAny,
   getAdmin,
   remove,
   totalAdmin,

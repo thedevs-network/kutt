@@ -3,16 +3,29 @@ const utils = require("../utils");
 const env = require("../env");
 
 async function homepage(req, res) {
+  const isThereAUser = await query.user.findAny();
+  if (!isThereAUser) {
+    res.redirect("/create-admin");
+    return;
+  }
+  
   res.render("homepage", {
     title: "Modern open source URL shortener",
   });
 }
 
-function login(req, res) {
+async function login(req, res) {
   if (req.user) {
     res.redirect("/");
     return;
   }
+
+  const isThereAUser = await query.user.findAny();
+  if (!isThereAUser) {
+    res.redirect("/create-admin");
+    return;
+  }
+  
   res.render("login", {
     title: "Log in or sign up"
   });
@@ -22,6 +35,17 @@ function logout(req, res) {
   utils.deleteCurrentToken(res);
   res.render("logout", {
     title: "Logging out.."
+  });
+}
+
+async function createAdmin(req, res) {
+  const isThereAUser = await query.user.findAny();
+  if (isThereAUser) {
+    res.redirect("/login");
+    return;
+  }
+  res.render("create_admin", {
+    title: "Create admin account"
   });
 }
 
@@ -266,6 +290,7 @@ module.exports = {
   confirmLinkDelete,
   confirmUserBan,
   confirmUserDelete,
+  createAdmin,
   createUser,
   getReportEmail,
   getSupportEmail,

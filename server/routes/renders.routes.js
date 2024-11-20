@@ -29,6 +29,11 @@ router.get(
 );
 
 router.get(
+  "/create-admin", 
+  asyncHandler(renders.createAdmin)
+);
+
+router.get(
   "/404", 
   asyncHandler(auth.jwtLoosePage),
   asyncHandler(locals.user),

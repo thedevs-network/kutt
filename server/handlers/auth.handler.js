@@ -4,6 +4,7 @@ const { v4: uuid } = require("uuid");
 const bcrypt = require("bcryptjs");
 const nanoid = require("nanoid");
 
+const { ROLES } = require("../consts");
 const query = require("../queries");
 const utils = require("../utils");
 const redis = require("../redis");
@@ -26,13 +27,12 @@ function authenticate(type, error, isStrict, redirect) {
         (user && isStrict && !user.verified) ||
         (user && user.banned))
       ) {
-        const path = user.banned ? "/logout" : "/login";
         if (redirect === "page") {
-          res.redirect(path);
+          res.redirect("/logout");
           return;
         }
         if (redirect === "header") {
-          res.setHeader("HX-Redirect", path);
+          res.setHeader("HX-Redirect", "/logout");
           res.send("NOT_AUTHENTICATED");
           return;
         }
@@ -123,6 +123,33 @@ async function signup(req, res) {
   }
   
   return res.status(201).send({ message: "A verification email has been sent." });
+}
+
+async function createAdminUser(req, res) {
+  const isThereAUser = await query.user.findAny();
+  if (isThereAUser) {
+    throw new CustomError("Can not create the admin user because a user already exists.", 400);
+  }
+  
+  const salt = await bcrypt.genSalt(12);
+  const password = await bcrypt.hash(req.body.password, salt);
+
+  const user = await query.user.add({
+    email: req.body.email, 
+    password, 
+    role: ROLES.ADMIN, 
+    verified: true 
+  });
+
+  const token = utils.signToken(user);
+
+  if (req.isHTML) {
+    utils.setToken(res, token);
+    res.render("partials/auth/welcome");
+    return;
+  }
+  
+  return res.status(201).send({ token });
 }
 
 function login(req, res) {
@@ -382,6 +409,7 @@ module.exports = {
   changeEmailRequest,
   changePassword,
   cooldown,
+  createAdminUser,
   featureAccess,
   featureAccessPage,
   generateApiKey,

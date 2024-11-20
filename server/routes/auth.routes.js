@@ -29,6 +29,14 @@ router.post(
 );
 
 router.post(
+  "/create-admin",
+  locals.viewTemplate("partials/auth/form_admin"),
+  validators.createAdmin,
+  asyncHandler(helpers.verify),
+  asyncHandler(auth.createAdminUser)
+);
+
+router.post(
   "/change-password",
   locals.viewTemplate("partials/settings/change_password"),
   asyncHandler(auth.jwt),
