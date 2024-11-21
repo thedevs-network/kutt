@@ -3,12 +3,21 @@ const utils = require("../utils");
 const env = require("../env");
 
 async function homepage(req, res) {
+  // redirect to custom domain homepage if it is set by user
+  const host = utils.removeWww(req.headers.host);
+  const domain = host !== env.DEFAULT_DOMAIN ? await query.domain.find({ address: host }) : null;
+  if (domain?.homepage) {
+    return res.redirect(domain.homepage);
+  }
+  
+  // redirect to create admin page if the kutt instance is ran for the first time
   const isThereAUser = await query.user.findAny();
   if (!isThereAUser) {
     res.redirect("/create-admin");
     return;
   }
   
+  // render homepage if none above is true
   res.render("homepage", {
     title: "Modern open source URL shortener",
   });
