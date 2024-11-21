@@ -529,7 +529,7 @@ async function redirect(req, res, next) {
   if (link.user_id && !isBot) {
     queue.visit.add({
       userAgent: req.headers["user-agent"],
-      realIP: req.realIP,
+      ip: req.ip,
       referrer: req.get("Referrer"),
       link
     });
@@ -560,7 +560,7 @@ async function redirectProtected(req, res) {
   if (link.user_id) {
     queue.visit.add({
       userAgent: req.headers["user-agent"],
-      realIP: req.realIP,
+      ip: req.ip,
       referrer: req.get("Referrer"),
       link
     });

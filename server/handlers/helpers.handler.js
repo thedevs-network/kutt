@@ -3,11 +3,6 @@ const { validationResult } = require("express-validator");
 const { CustomError } = require("../utils");
 const env = require("../env");
 
-function ip(req, res, next) {
-  req.realIP = req.headers["x-real-ip"] || req.connection.remoteAddress || "";
-  return next();
-};
-
 function error(error, req, res, _next) {
   if (!(error instanceof CustomError)) {
     console.error(error);
@@ -87,7 +82,6 @@ function parseQuery(req, res, next) {
 
 module.exports = {
   error,
-  ip,
   parseQuery,
   verify,
 }

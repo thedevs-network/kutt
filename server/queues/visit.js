@@ -34,7 +34,7 @@ module.exports = function({ data }) {
     const [os = "Other"] = osList.filter(filterInOs(agent));
     const referrer =
     data.referrer && removeWww(URL.parse(data.referrer).hostname);
-    const location = geoip.lookup(data.realIP);
+    const location = geoip.lookup(data.ip);
     const country = location && location.country;
 
     
