@@ -1,13 +1,13 @@
 const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears, format } = require("date-fns");
 const nanoid = require("nanoid/generate");
-const knexUtils = require("./knex");
 const JWT = require("jsonwebtoken");
-const knex = require("../knex");
 const path = require("path");
 const hbs = require("hbs");
 const ms = require("ms");
 
 const { ROLES } = require("../consts");
+const knexUtils = require("./knex");
+const knex = require("../knex");
 const env = require("../env");
 
 class CustomError extends Error {
@@ -71,10 +71,6 @@ function getShortURL(address, domain) {
   const url = `${protocol}${link}`;
   return { address, link, url };
 }
-
-function getStatsLimit() {
-  return env.DEFAULT_MAX_STATS_PER_LINK || 100000000;
-};
 
 function statsObjectToArray(obj) {
   const objToArr = (key) =>
@@ -346,7 +342,6 @@ module.exports = {
   getDifferenceFunction,
   getInitStats,
   getShortURL,
-  getStatsLimit,
   getStatsPeriods,
   isAdmin,
   parseBooleanQuery,

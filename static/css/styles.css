@@ -1262,6 +1262,7 @@ main form p.error {
 main form .target-wrapper p.error {
   font-size: 15px;
   margin-left: 1rem;
+  margin-bottom: 0;
 }
 
 main form .target-wrapper {

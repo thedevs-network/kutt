@@ -15,6 +15,7 @@ router.post(
   locals.viewTemplate("partials/auth/form"),
   validators.login,
   asyncHandler(helpers.verify),
+  helpers.rateLimit({ window: 60, limit: 5 }),
   asyncHandler(auth.local),
   asyncHandler(auth.login)
 );
@@ -25,6 +26,9 @@ router.post(
   auth.featureAccess([!env.DISALLOW_REGISTRATION, env.MAIL_ENABLED]),
   validators.signup,
   asyncHandler(helpers.verify),
+  helpers.rateLimit({ window: 60, limit: 5 }),
+  validators.signupEmailTaken,
+  asyncHandler(helpers.verify),
   asyncHandler(auth.signup)
 );
 
@@ -33,6 +37,7 @@ router.post(
   locals.viewTemplate("partials/auth/form_admin"),
   validators.createAdmin,
   asyncHandler(helpers.verify),
+  helpers.rateLimit({ window: 60, limit: 5 }),
   asyncHandler(auth.createAdminUser)
 );
 
@@ -42,6 +47,7 @@ router.post(
   asyncHandler(auth.jwt),
   validators.changePassword,
   asyncHandler(helpers.verify),
+  helpers.rateLimit({ window: 60, limit: 5 }),
   asyncHandler(auth.changePassword)
 );
 
@@ -52,6 +58,7 @@ router.post(
   auth.featureAccess([env.MAIL_ENABLED]),
   validators.changeEmail,
   asyncHandler(helpers.verify),
+  helpers.rateLimit({ window: 60, limit: 3 }),
   asyncHandler(auth.changeEmailRequest)
 );
 
@@ -59,6 +66,7 @@ router.post(
   "/apikey",
   locals.viewTemplate("partials/settings/apikey"),
   asyncHandler(auth.jwt),
+  helpers.rateLimit({ window: 60, limit: 10 }),
   asyncHandler(auth.generateApiKey)
 );
 
@@ -68,6 +76,7 @@ router.post(
   auth.featureAccess([env.MAIL_ENABLED]),
   validators.resetPassword,
   asyncHandler(helpers.verify),
+  helpers.rateLimit({ window: 60, limit: 3 }),
   asyncHandler(auth.resetPasswordRequest)
 );
 

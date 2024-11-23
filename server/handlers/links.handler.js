@@ -107,7 +107,6 @@ async function create(req, res) {
   const tasks = await Promise.all([
     validators.cooldown(req.user),
     validators.malware(req.user, target),
-    validators.linksCount(req.user),
     reuse &&
       query.link.find({
         target,
@@ -126,19 +125,19 @@ async function create(req, res) {
   
   // if "reuse" is true, try to return
   // the existent URL without creating one
-  if (tasks[3]) {
+  if (tasks[2]) {
     return res.json(utils.sanitize.link(tasks[3]));
   }
   
   // Check if custom link already exists
-  if (tasks[4]) {
+  if (tasks[3]) {
     const error = "Custom URL is already in use.";
     res.locals.errors = { customurl: error };
     throw new CustomError(error);
   }
 
   // Create new link
-  const address = customurl || tasks[5];
+  const address = customurl || tasks[4];
   const link = await query.link.create({
     password,
     address,
@@ -148,10 +147,6 @@ async function create(req, res) {
     expire_in,
     user_id: req.user && req.user.id
   });
-  
-  if (!req.user && env.NON_USER_COOLDOWN) {
-    query.ip.add(req.realIP);
-  }
 
   link.domain = fetched_domain?.address;
   

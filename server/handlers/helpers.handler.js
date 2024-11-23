@@ -1,6 +1,9 @@
+const { RedisStore: RateLimitRedisStore } = require("rate-limit-redis");
+const { rateLimit: expressRateLimit } = require("express-rate-limit");
 const { validationResult } = require("express-validator");
 
 const { CustomError } = require("../utils");
+const redis = require("../redis");
 const env = require("../env");
 
 function error(error, req, res, _next) {
@@ -14,7 +17,8 @@ function error(error, req, res, _next) {
   const statusCode = error.statusCode ?? 500;
 
   if (req.isHTML && req.viewTemplate) {
-    res.render(req.viewTemplate, { error: message });
+    res.locals.error = message;
+    res.render(req.viewTemplate);
     return;
   }
 
@@ -80,8 +84,47 @@ function parseQuery(req, res, next) {
   next();
 };
 
+function rateLimit(params) {
+  if (!env.ENABLE_RATE_LIMIT) {
+    return function(req, res, next) {
+      return next();
+    }
+  }
+  
+  let store = undefined;
+  if (env.REDIS_ENABLED) {
+    store = new RateLimitRedisStore({
+      sendCommand: (...args) => redis.client.call(...args),
+    })
+  }
+  
+  return expressRateLimit({
+    windowMs: params.window * 1000,
+    validate: { trustProxy: false },
+    skipSuccessfulRequests: !!params.skipSuccess,
+    skipFailedRequests: !!params.skipFailed,
+    ...(store && { store }),
+    limit: function (req, res) {
+      if (params.user && req.user) {
+        return params.user;
+      }
+      return params.limit;
+    },
+    keyGenerator: function(req, res) {
+      return "rl:" + req.method + req.baseUrl + req.path + ":" + req.ip;
+    },
+    requestWasSuccessful: function(req, res) {
+      return !res.locals.error && res.statusCode < 400;
+    },
+    handler: function (req, res, next, options) {
+      throw new CustomError(options.message, options.statusCode);
+    },
+  });
+}
+
 module.exports = {
   error,
   parseQuery,
+  rateLimit,
   verify,
 }

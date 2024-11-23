@@ -345,9 +345,9 @@ const createUser = [
   body("email", "Email is not valid.")
     .exists({ checkFalsy: true, checkNull: true })
     .trim()
-    .isEmail()
-    .isLength({ min: 0, max: 255 })
+    .isLength({ min: 1, max: 255 })
     .withMessage("Email length must be max 255.")
+    .isEmail()
     .custom(async (value, { req }) => {
       const user = await query.user.find({ email: value });
       if (user) 
@@ -389,17 +389,23 @@ const signup = [
   body("email", "Email is not valid.")
     .exists({ checkFalsy: true, checkNull: true })
     .trim()
-    .isEmail()
     .isLength({ min: 0, max: 255 })
     .withMessage("Email length must be max 255.")
+    .isEmail()
+];
+
+const signupEmailTaken = [
+  body("email", "Email is not valid.")
     .custom(async (value, { req }) => {
       const user = await query.user.find({ email: value });
 
-      if (user)
+      if (user) {
         req.user = user;
+      }
 
-      if (user?.verified) 
+      if (user?.verified) {
         return Promise.reject();
+      }
     })
     .withMessage("You can't use this email address.")
 ];
@@ -412,9 +418,9 @@ const login = [
   body("email", "Email is not valid.")
     .exists({ checkFalsy: true, checkNull: true })
     .trim()
-    .isEmail()
     .isLength({ min: 1, max: 255 })
     .withMessage("Email length must be max 255.")
+    .isEmail()
 ];
 
 const createAdmin = [
@@ -425,9 +431,9 @@ const createAdmin = [
   body("email", "Email is not valid.")
     .exists({ checkFalsy: true, checkNull: true })
     .trim()
-    .isEmail()
     .isLength({ min: 0, max: 255 })
     .withMessage("Email length must be max 255.")
+    .isEmail()
 ];
 
 const changePassword = [
@@ -449,18 +455,18 @@ const changeEmail = [
   body("email", "Email address is not valid.")
     .exists({ checkFalsy: true, checkNull: true })
     .trim()
-    .isEmail()
     .isLength({ min: 1, max: 255 })
     .withMessage("Email length must be max 255.")
+    .isEmail()
 ];
 
 const resetPassword = [
   body("email", "Email is not valid.")
     .exists({ checkFalsy: true, checkNull: true })
     .trim()
-    .isEmail()
     .isLength({ min: 0, max: 255 })
     .withMessage("Email length must be max 255.")
+    .isEmail()
 ];
 
 const deleteUser = [
@@ -547,21 +553,6 @@ async function malware(user, target) {
   );
 };
 
-async function linksCount(user) {
-  if (!user) return;
-
-  const count = await query.link.total({
-    user_id: user.id,
-    "links.created_at": [">", utils.dateToUTC(subDays(new Date(), 1))]
-  });
-
-  if (count > env.USER_LIMIT_PER_DAY) {
-    throw new utils.CustomError(
-      `You have reached your daily limit (${env.USER_LIMIT_PER_DAY}). Please wait 24h.`
-    );
-  }
-};
-
 async function bannedDomain(domain) {
   const isBanned = await query.domain.find({
     address: domain,
@@ -614,7 +605,6 @@ module.exports = {
   deleteUserByAdmin,
   editLink,
   getStats,
-  linksCount,
   login, 
   malware,
   redirectProtected,
@@ -623,4 +613,5 @@ module.exports = {
   reportLink,
   resetPassword,
   signup,
+  signupEmailTaken,
 }

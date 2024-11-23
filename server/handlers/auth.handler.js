@@ -81,26 +81,6 @@ const jwtLoose = authenticate("jwt", "Unauthorized.", false, "header");
 const jwtLoosePage = authenticate("jwt", "Unauthorized.", false, "page");
 const apikey = authenticate("localapikey", "API key is not correct.", false, null);
 
-async function cooldown(req, res, next) {
-  if (env.DISALLOW_ANONYMOUS_LINKS) return next();
-  const cooldownConfig = env.NON_USER_COOLDOWN;
-  if (req.user || !cooldownConfig) return next();
-  
-  const ip = await query.ip.find({
-    ip: req.realIP.toLowerCase(),
-    created_at: [">", utils.dateToUTC(subMinutes(new Date(), cooldownConfig))]
-  });
-  
-  if (ip) {
-    const timeToWait = cooldownConfig - differenceInMinutes(new Date(), utils.parseDatetime(ip.created_at));
-    throw new CustomError(
-      `Non-logged in users are limited. Wait ${timeToWait} minutes or log in.`,
-      400
-    );
-  }
-  next();
-}
-
 function admin(req, res, next) {
   if (req.user.admin) return next();
   throw new CustomError("Unauthorized", 401);
@@ -408,7 +388,6 @@ module.exports = {
   changeEmail,
   changeEmailRequest,
   changePassword,
-  cooldown,
   createAdminUser,
   featureAccess,
   featureAccessPage,

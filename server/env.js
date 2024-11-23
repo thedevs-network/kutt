@@ -30,15 +30,11 @@ const env = cleanEnv(process.env, {
   REDIS_PORT: num({ default: 6379 }),
   REDIS_PASSWORD: str({ default: "" }),
   REDIS_DB: num({ default: 0 }),
-  USER_LIMIT_PER_DAY: num({ default: 50 }),
-  NON_USER_COOLDOWN: num({ default: 10 }),
-  DEFAULT_MAX_STATS_PER_LINK: num({ default: 5000 }),
   DISALLOW_ANONYMOUS_LINKS: bool({ default: false }),
   DISALLOW_REGISTRATION: bool({ default: false }),
   SERVER_IP_ADDRESS: str({ default: "" }),
   CUSTOM_DOMAIN_USE_HTTPS: bool({ default: false }),
   JWT_SECRET: str(),
-  ADMIN_EMAILS: str({ default: "" }),
   GOOGLE_SAFE_BROWSING_KEY: str({ default: "" }),
   MAIL_ENABLED: bool({ default: false }),
   MAIL_HOST: str({ default: "" }),
@@ -47,8 +43,10 @@ const env = cleanEnv(process.env, {
   MAIL_USER: str({ default: "" }),
   MAIL_FROM: str({ default: "", example: "Kutt <support@kutt.it>" }),
   MAIL_PASSWORD: str({ default: "" }),
+  ENABLE_RATE_LIMIT: bool({ default: false }),
   REPORT_EMAIL: str({ default: "" }),
-  CONTACT_EMAIL: str({ default: "" })
+  CONTACT_EMAIL: str({ default: "" }),
+  NODE_APP_INSTANCE: num({ default: 0 }),
 });
 
 module.exports = env;
