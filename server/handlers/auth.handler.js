@@ -147,15 +147,11 @@ function login(req, res) {
 async function verify(req, res, next) {
   if (!req.params.verificationToken) return next();
 
-  const user = await query.user.find({
-    verification_token: req.params.verificationToken,
-    verification_expires: [">", utils.dateToUTC(new Date())]
-  });
-
-  if (!user) return next();
-  
-  const [updatedUser] = await query.user.update(
-    { id: user.id },
+  const user = await query.user.update(
+    {
+      verification_token: req.params.verificationToken,
+      verification_expires: [">", utils.dateToUTC(new Date())]
+    },
     {
       verified: true,
       verification_token: null,
@@ -163,7 +159,7 @@ async function verify(req, res, next) {
     }
   );
   
-  if (updatedUser) {
+  if (user) {
     const token = utils.signToken(user);
     utils.deleteCurrentToken(res);
     utils.setToken(res, token);
@@ -185,7 +181,7 @@ async function changePassword(req, res) {
   const salt = await bcrypt.genSalt(12);
   const newpassword = await bcrypt.hash(req.body.newpassword, salt);
   
-  const [user] = await query.user.update({ id: req.user.id }, { password: newpassword });
+  const user = await query.user.update({ id: req.user.id }, { password: newpassword });
   
   if (!user) {
     throw new CustomError("Couldn't change the password. Try again later.");
@@ -211,7 +207,7 @@ async function generateApiKey(req, res) {
     redis.remove.user(req.user);
   }
   
-  const [user] = await query.user.update({ id: req.user.id }, { apikey });
+  const user = await query.user.update({ id: req.user.id }, { apikey });
   
   if (!user) {
     throw new CustomError("Couldn't generate API key. Please try again later.");
@@ -228,7 +224,7 @@ async function generateApiKey(req, res) {
 }
 
 async function resetPasswordRequest(req, res) {
-  const [user] = await query.user.update(
+  const user = await query.user.update(
     { email: req.body.email },
     {
       reset_password_token: uuid(),
@@ -258,14 +254,14 @@ async function resetPassword(req, res, next) {
   const resetPasswordToken = req.params.resetPasswordToken;
 
   if (resetPasswordToken) {
-    const [user] = await query.user.update(
+    const user = await query.user.update(
       {
         reset_password_token: resetPasswordToken,
         reset_password_expires: [">", utils.dateToUTC(new Date())]
       },
       { reset_password_expires: null, reset_password_token: null }
     );
-  
+
     if (user) {
       const token = utils.signToken(user);
       utils.deleteCurrentToken(res);
@@ -289,15 +285,15 @@ async function changeEmailRequest(req, res) {
     throw new CustomError(error, 401);
   }
   
-  const currentUser = await query.user.find({ email });
+  const user = await query.user.find({ email });
   
-  if (currentUser) {
+  if (user) {
     const error = "Can't use this email address.";
     res.locals.errors = { email: error };
     throw new CustomError(error, 400);
   }
   
-  const [updatedUser] = await query.user.update(
+  const updatedUser = await query.user.update(
     { id: req.user.id },
     {
       change_email_address: email,
@@ -305,10 +301,6 @@ async function changeEmailRequest(req, res) {
       change_email_expires: utils.dateToUTC(addMinutes(new Date(), 30))
     }
   );
-  
-  if (env.REDIS_ENABLED) {
-    redis.remove.user(updatedUser);
-  }
   
   if (updatedUser) {
     await mail.changeEmail({ ...updatedUser, email });
@@ -338,7 +330,7 @@ async function changeEmail(req, res, next) {
   
     if (!foundUser) return next();
   
-    const [user] = await query.user.update(
+    const user = await query.user.update(
       { id: foundUser.id },
       {
         change_email_token: null,
@@ -347,10 +339,6 @@ async function changeEmail(req, res, next) {
         email: foundUser.change_email_address
       }
     );
-  
-    if (env.REDIS_ENABLED) {
-      redis.remove.user(foundUser);
-    }
   
     if (user) {
       const token = utils.signToken(user);

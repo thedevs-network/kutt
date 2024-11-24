@@ -63,28 +63,33 @@ async function add(params, user) {
 }
 
 async function update(match, update, methods) {
-  const query = knex("users");
+  const user = await knex.transaction(async function(trx) {
+    const query = trx("users");
+    Object.entries(match).forEach(([key, value]) => {
+      query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+    });
 
-  Object.entries(match).forEach(([key, value]) => {
-    query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
+    const user = await query.select("id").first();
+    if (!user) return null;
+    
+    const updateQuery = trx("users").where("id", user.id);
+    if (methods?.increments) {
+      methods.increments.forEach(columnName => {
+        updateQuery.increment(columnName);
+      });
+    }
+    
+    await updateQuery.update({ ...update, updated_at: utils.dateToUTC(new Date()) });
+    const updatedUser = await trx("users").where("id", user.id).first();
+
+    return updatedUser;
   });
 
-  const updateQuery = query.clone();
-  if (methods?.increments) {
-    methods.increments.forEach(columnName => {
-      updateQuery.increment(columnName);
-    });
+  if (env.REDIS_ENABLED && user) {
+    redis.remove.user(user);
   }
-  
-  await updateQuery.update({ ...update, updated_at: utils.dateToUTC(new Date()) });
 
-  const users = await query.select("*");
-
-  if (env.REDIS_ENABLED) {
-    users.forEach(redis.remove.user);
-  }
-  
-  return users;
+  return user;
 }
 
 async function remove(user) {

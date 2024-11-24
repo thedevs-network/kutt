@@ -535,7 +535,7 @@ async function malware(user, target) {
   if (!isMalware.data || !isMalware.data.matches) return;
 
   if (user) {
-    const [updatedUser] = await query.user.update(
+    const updatedUser = await query.user.update(
       { id: user.id },
       { cooldown: utils.dateToUTC(new Date()) },
       { increments: ["malicious_attempts"] }
