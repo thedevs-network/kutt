@@ -126,7 +126,7 @@ async function create(req, res) {
   // if "reuse" is true, try to return
   // the existent URL without creating one
   if (tasks[2]) {
-    return res.json(utils.sanitize.link(tasks[3]));
+    return res.json(utils.sanitize.link(tasks[2]));
   }
   
   // Check if custom link already exists
