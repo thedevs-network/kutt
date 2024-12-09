@@ -60,7 +60,7 @@ export const total = async (match: Match<Link>, params: TotalParams = {}) => {
     );
   }
 
-  const [{ count }] = await query.count("*");
+  const [{ count }]: { count: number }[] = await query.count("*");
 
   return typeof count === "number" ? count : parseInt(count);
 };
