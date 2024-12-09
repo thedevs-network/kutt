@@ -2,7 +2,7 @@ const useragent = require("useragent");
 const geoip = require("geoip-lite");
 const URL = require("url");
 
-const { getStatsLimit, removeWww } = require("../utils");
+const { removeWww } = require("../utils");
 const query = require("../queries");
 
 const browsersList = ["IE", "Firefox", "Chrome", "Opera", "Safari", "Edge"];
