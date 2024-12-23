@@ -22,7 +22,7 @@ async function add(params) {
       .select({
         created_at_hours: utils.knexUtils(trx).truncatedTimestamp("created_at", "hour")
       })
-      .where({ link_id: params.id })
+      .where({ link_id: data.link_id })
       .as("subquery");
 
     const visit = await trx
@@ -59,7 +59,8 @@ async function add(params) {
         referrers: { [data.referrer]: 1 },
         [`os_${data.os}`]: 1,
         total: 1,
-        link_id: data.id
+        link_id: data.link_id,
+        user_id: data.user_id,
       });
     }
 

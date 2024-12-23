@@ -18,6 +18,15 @@ async function createVisitTable(knex) {
         .inTable("links")
         .onDelete("CASCADE")
         .withKeyName("visits_link_id_foreign");
+      table
+        .integer("user_id")
+        .unsigned();
+      table
+        .foreign("user_id")
+        .references("id")
+        .inTable("users")
+        .onDelete("CASCADE")
+        .withKeyName("visits_user_id_foreign");
       table.jsonb("referrers").defaultTo("{}");
       table
         .integer("total")

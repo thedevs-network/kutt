@@ -40,7 +40,8 @@ module.exports = function({ data }) {
     query.visit.add({
       browser: browser.toLowerCase(),
       country: country || "Unknown",
-      id: data.link.id,
+      link_id: data.link.id,
+      user_id: data.link.user_id,
       os: os.toLowerCase().replace(/\s/gi, ""),
       referrer: (referrer && referrer.replace(/\./gi, "[dot]")) || "Direct"
     })
