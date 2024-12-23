@@ -33,10 +33,9 @@ module.exports = function({ data }) {
   const [os = "Other"] = osList.filter(filterInOs(agent));
   const referrer =
   data.referrer && removeWww(URL.parse(data.referrer).hostname);
-  const location = geoip.lookup(data.ip);
-  const country = location && location.country;
-
   
+  const country = data.country || geoip.lookup(data.ip)?.country;
+
   tasks.push(
     query.visit.add({
       browser: browser.toLowerCase(),
