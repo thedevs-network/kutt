@@ -8,8 +8,8 @@ const knex = require("../knex");
 const env = require("../env");
 
 async function find(match) {
-  if ((match.email || match.apikey) && env.REDIS_ENABLED) {
-    const key = redis.key.user(match.email || match.apikey);
+  if ((match.id || match.apikey) && env.REDIS_ENABLED) {
+    const key = redis.key.user(match.id || match.apikey);
     const cachedUser = await redis.client.get(key);
     if (cachedUser) return JSON.parse(cachedUser);
   }
@@ -22,8 +22,8 @@ async function find(match) {
   const user = await query.first();
   
   if (user && env.REDIS_ENABLED) {
-    const emailKey = redis.key.user(user.email);
-    redis.client.set(emailKey, JSON.stringify(user), "EX", 60 * 15);
+    const idKey = redis.key.user(user.id);
+    redis.client.set(idKey, JSON.stringify(user), "EX", 60 * 15);
   
     if (user.apikey) {
       const apikeyKey = redis.key.user(user.apikey);

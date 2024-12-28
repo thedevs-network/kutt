@@ -15,7 +15,12 @@ const jwtOptions = {
 passport.use(
   new JwtStrategy(jwtOptions, async (payload, done) => {
     try {
-      const user = await query.user.find({ email: payload.sub });
+      // 'sub' used to be the email address
+      // this check makes sure to invalidate old JWTs where the sub is still the email address
+      if (typeof payload.sub === "string") {
+        return done(null, false);
+      }
+      const user = await query.user.find({ id: payload.sub });
       if (!user) return done(null, false);
       return done(null, user, payload);
     } catch (err) {

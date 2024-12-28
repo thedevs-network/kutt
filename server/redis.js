@@ -18,7 +18,7 @@ const key = {
   domain: (address) => `d-${address}`,
   stats: (link_id) => `s-${link_id}`,
   host: (address) => `h-${address}`,
-  user: (emailOrKey) => `u-${emailOrKey}`
+  user: (idOrKey) => `u-${idOrKey}`
 };
 
 const remove = {
@@ -37,8 +37,8 @@ const remove = {
   user: (user) => {
     if (!user) return;
     return Promise.all([
-      client.del(key.user(user.email)),
-      client.del(key.user(user.apikey))
+      client.del(key.user(user.id)),
+      client.del(key.user(user.apikey)),
     ]);
   }
 };

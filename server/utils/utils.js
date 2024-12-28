@@ -29,8 +29,7 @@ function signToken(user) {
   return JWT.sign(
       {
         iss: "ApiAuth",
-        sub: user.email,
-        domain: user.domain || "",
+        sub: user.id,
         iat: parseInt((new Date().getTime() / 1000).toFixed(0)),
         exp: parseInt((addDays(new Date(), 7).getTime() / 1000).toFixed(0))
       },
