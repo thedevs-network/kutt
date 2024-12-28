@@ -25,7 +25,7 @@ function knexUtils(knex) {
       case "pgnative":
       case "cockroachdb":
         // PostgreSQL has the `date_trunc` function, which is ideal for this task
-        return knex.raw(`date_trunc(?, ${columnName})`, [precision]);
+        return knex.raw(`date_trunc(?, ${columnName} at time zone 'Z')`, [precision]);
       case "oracle":
       case "oracledb":
         // Oracle truncates dates using the `TRUNC` function
