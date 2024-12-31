@@ -37,6 +37,11 @@ async function user(req, res, next) {
   next();
 }
 
+function newPassword(req, res, next) {
+  res.locals.reset_password_token = req.body.reset_password_token;
+  next();
+}
+
 function createLink(req, res, next) {
   res.locals.show_advanced = !!req.body.show_advanced;
   next();
@@ -73,6 +78,7 @@ module.exports = {
   createLink,
   editLink,
   isHTML,
+  newPassword,
   noLayout,
   protected,
   user,

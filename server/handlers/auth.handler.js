@@ -223,7 +223,7 @@ async function generateApiKey(req, res) {
   return res.status(201).send({ apikey });
 }
 
-async function resetPasswordRequest(req, res) {
+async function resetPassword(req, res) {
   const user = await query.user.update(
     { email: req.body.email },
     {
@@ -239,7 +239,7 @@ async function resetPasswordRequest(req, res) {
   }
 
   if (req.isHTML) {
-    res.render("partials/reset_password/form", {
+    res.render("partials/reset_password/request_form", {
       message: "If the email address exists, a reset password email will be sent to it."
     });
     return;
@@ -250,28 +250,29 @@ async function resetPasswordRequest(req, res) {
   });
 }
 
-async function resetPassword(req, res, next) {
-  const resetPasswordToken = req.params.resetPasswordToken;
+async function newPassword(req, res) {
+  const { new_password, reset_password_token } = req.body;
 
-  if (resetPasswordToken) {
-    const user = await query.user.update(
-      {
-        reset_password_token: resetPasswordToken,
-        reset_password_expires: [">", utils.dateToUTC(new Date())]
-      },
-      { reset_password_expires: null, reset_password_token: null }
-    );
-
-    if (user) {
-      const token = utils.signToken(user);
-      utils.deleteCurrentToken(res);
-      utils.setToken(res, token);
-      res.locals.token_verified = true;
-      req.cookies.token = token;
+  const salt = await bcrypt.genSalt(12);
+  const password = await bcrypt.hash(req.body.new_password, salt);
+  
+  const user = await query.user.update(
+    {
+      reset_password_token,
+      reset_password_expires: [">", utils.dateToUTC(new Date())]
+    },
+    { 
+      reset_password_expires: null, 
+      reset_password_token: null,
+      password,
     }
+  );
+
+  if (!user) {
+    throw new CustomError("Could not set the password. Please try again later.");
   }
 
-  next();
+  res.render("partials/reset_password/new_password_success");
 }
 
 async function changeEmailRequest(req, res) {
@@ -386,8 +387,8 @@ module.exports = {
   jwtPage,
   local,
   login,
+  newPassword,
   resetPassword,
-  resetPasswordRequest,
   signup,
   verify,
 }

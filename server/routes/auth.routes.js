@@ -72,12 +72,22 @@ router.post(
 
 router.post(
   "/reset-password",
-  locals.viewTemplate("partials/reset_password/form"),
+  locals.viewTemplate("partials/reset_password/request_form"),
   auth.featureAccess([env.MAIL_ENABLED]),
   validators.resetPassword,
   asyncHandler(helpers.verify),
   helpers.rateLimit({ window: 60, limit: 3 }),
-  asyncHandler(auth.resetPasswordRequest)
+  asyncHandler(auth.resetPassword)
+);
+
+router.post(
+  "/new-password",
+  locals.viewTemplate("partials/reset_password/new_password_form"),
+  locals.newPassword,
+  validators.newPassword,
+  asyncHandler(helpers.verify),
+  helpers.rateLimit({ window: 60, limit: 5 }),
+  asyncHandler(auth.newPassword)
 );
 
 module.exports = router;

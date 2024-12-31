@@ -985,6 +985,10 @@ table .tab a:not(.active):hover {
   margin-top: 1rem;
 }
 
+.htmx-spinner .spinner { display: none; }
+.htmx-spinner.htmx-request button svg { display: none; }
+.htmx-spinner.htmx-request .spinner { display: block; }
+
 /* LOGIN & SIGNUP */
 
 form#login-signup {
@@ -2192,15 +2196,42 @@ svg.map path.active { stroke: hsl(261, 46%, 50%); stroke-width: 1.5; }
   display: flex;
   align-items: flex-end;
   margin-top: 2rem;
-  
 }
 
 #reset-password form label { flex: 0 0 280px; }
 #reset-password form label input { width: 100%; }
 #reset-password form button { margin: 0 0 0.2rem 1rem; }
-#reset-password .spinner { display: none; }
-#reset-password .htmx-request svg { display: none; }
-#reset-password .htmx-request .spinner { display: block; }
+
+#new-password h2 { margin-bottom: 0.5rem; }
+#new-password p { margin-bottom: 1.5rem; }
+
+#new-password-form label { margin-bottom: 1.5rem; }
+#new-password-form label input { width: 280px; }
+
+#new-password form {
+  width: 420px;
+  max-width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  padding: 0 16px;
+  flex-direction: column;
+}
+
+#new-password form label { margin-bottom: 2rem; }
+
+#new-password form input {
+  width: 100%;
+  height: 72px;
+  margin-top: 1rem;
+  padding: 0 3rem;
+  font-size: 16px;
+}
+
+#new-password form button {
+  height: 56px;
+  padding: 0 1rem 2px;
+  margin: 0;
+}
 
 /* VERIFY USER */
 /* VERIFY CHANGE EMAIL */
@@ -2424,6 +2455,15 @@ svg.map path.active { stroke: hsl(261, 46%, 50%); stroke-width: 1.5; }
   #reset-password form .inputs-wrapper { flex-direction: column; align-items: flex-start; margin-top: 1rem; }
   #reset-password form label { flex-basis: 0; width: 280px; }
   #reset-password form button { margin: 0.75rem 0 0.2rem 0; }
+
+  #new-password form label { margin-bottom: 1.5rem; }
+  #new-password form input {
+    height: 58px;
+    margin-top: 0.75rem;
+    padding: 0 2rem;
+    font-size: 15px;
+  }
+  #new-password form button { height: 44px; }
 
   .verify-page h2,
   .verify-page h3 { display: flex; flex-direction: column; }

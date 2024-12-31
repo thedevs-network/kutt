@@ -469,6 +469,21 @@ const resetPassword = [
     .isEmail()
 ];
 
+const newPassword = [
+  body("reset_password_token", "Reset password token is invalid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 36, max: 36 }),
+  body("new_password", "Password is not valid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isLength({ min: 8, max: 64 })
+    .withMessage("Password length must be between 8 and 64."),
+  body("repeat_password", "Password is not valid.")
+    .custom((repeat_password, { req }) => {
+      return repeat_password === req.body.new_password;
+    })
+    .withMessage("Passwords don't match."),
+];
+
 const deleteUser = [
   body("password", "Password is not valid.")
     .exists({ checkFalsy: true, checkNull: true })
@@ -607,6 +622,7 @@ module.exports = {
   getStats,
   login, 
   malware,
+  newPassword,
   redirectProtected,
   removeDomain,
   removeDomainAdmin,

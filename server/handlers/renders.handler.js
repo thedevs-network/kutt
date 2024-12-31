@@ -2,6 +2,12 @@ const query = require("../queries");
 const utils = require("../utils");
 const env = require("../env");
 
+/** 
+*
+* PAGES
+*
+**/
+
 async function homepage(req, res) {
   // redirect to custom domain homepage if it is set by user
   const host = utils.removeWww(req.headers.host);
@@ -100,9 +106,25 @@ async function resetPassword(req, res) {
   });
 }
 
-async function resetPasswordResult(req, res) {
-  res.render("reset_password_result", {
+async function resetPasswordSetNewPassword(req, res) {
+  const reset_password_token = req.params.resetPasswordToken;
+  
+  if (reset_password_token) {
+    const user = await query.user.find(
+      {
+        reset_password_token,
+        reset_password_expires: [">", utils.dateToUTC(new Date())]
+      }
+    );
+    if (user) {
+      res.locals.token_verified = true;
+    }
+  }
+
+  
+  res.render("reset_password_set_new_password", {
     title: "Reset password",
+    ...(res.locals.token_verified && { reset_password_token }),
   });
 }
 
@@ -123,6 +145,12 @@ async function terms(req, res) {
     title: "Terms of Service",
   });
 }
+
+/**
+*
+* PARTIALS
+*
+**/
 
 async function confirmLinkDelete(req, res) {
   const link = await query.link.find({
@@ -311,7 +339,7 @@ module.exports = {
   notFound,
   report,
   resetPassword,
-  resetPasswordResult,
+  resetPasswordSetNewPassword,
   settings,
   stats,
   terms,

@@ -86,10 +86,9 @@ router.get(
 
 router.get(
   "/reset-password/:resetPasswordToken",
-  asyncHandler(auth.resetPassword),
   asyncHandler(auth.jwtLoosePage),
   asyncHandler(locals.user),
-  asyncHandler(renders.resetPasswordResult)
+  asyncHandler(renders.resetPasswordSetNewPassword)
 );
 
 router.get(
