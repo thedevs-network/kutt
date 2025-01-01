@@ -1,5 +1,5 @@
 const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears, format } = require("date-fns");
-const nanoid = require("nanoid/generate");
+const { customAlphabet } = require("nanoid");
 const JWT = require("jsonwebtoken");
 const path = require("path");
 const hbs = require("hbs");
@@ -9,6 +9,11 @@ const { ROLES } = require("../consts");
 const knexUtils = require("./knex");
 const knex = require("../knex");
 const env = require("../env");
+
+const nanoid = customAlphabet(
+  "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789",
+  env.LINK_LENGTH
+);
 
 class CustomError extends Error {
   constructor(message, statusCode, data) {
@@ -50,13 +55,12 @@ function deleteCurrentToken(res) {
 }
 
 async function generateId(query, domain_id) {
-  const address = nanoid(
-    "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789",
-    env.LINK_LENGTH
-  );
+  const address = nanoid();
   const link = await query.link.find({ address, domain_id });
-  if (!link) return address;
-  return generateId(domain_id);
+  if (link) {
+    return generateId(query, domain_id)
+  };
+  return address;
 }
 
 function addProtocol(url) {

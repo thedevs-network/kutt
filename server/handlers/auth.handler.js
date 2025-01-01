@@ -1,8 +1,8 @@
 const { differenceInDays, differenceInMinutes, addMinutes, subMinutes } = require("date-fns");
+const { nanoid } = require("nanoid");
 const passport = require("passport");
 const { v4: uuid } = require("uuid");
 const bcrypt = require("bcryptjs");
-const nanoid = require("nanoid");
 
 const { ROLES } = require("../consts");
 const query = require("../queries");
