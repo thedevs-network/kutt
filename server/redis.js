@@ -14,11 +14,11 @@ if (env.REDIS_ENABLED) {
 }
 
 const key = {
-  link: (address, domain_id, user_id) => `${address}-${domain_id || ""}-${user_id || ""}`,
-  domain: (address) => `d-${address}`,
-  stats: (link_id) => `s-${link_id}`,
-  host: (address) => `h-${address}`,
-  user: (idOrKey) => `u-${idOrKey}`
+  link: (address, domain_id, user_id) => `l:${address}:${domain_id || ""}:${user_id || ""}`,
+  domain: (address) => `d:${address}`,
+  stats: (link_id) => `s:${link_id}`,
+  host: (address) => `h:${address}`,
+  user: (idOrKey) => `u:${idOrKey}`
 };
 
 const remove = {
