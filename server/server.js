@@ -4,7 +4,6 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const express = require("express");
 const helmet = require("helmet");
-const morgan = require("morgan");
 const path = require("path");
 const hbs = require("hbs");
 
