@@ -52,11 +52,11 @@ app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 utils.registerHandlebarsHelpers();
 
-// render html pages
-app.use("/", routes.render);
-
 // if is custom domain, redirect to the set homepage
 app.use(asyncHandler(links.redirectCustomDomainHomepage));
+
+// render html pages
+app.use("/", routes.render);
 
 // handle api requests
 app.use("/api/v2", routes.api);

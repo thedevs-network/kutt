@@ -576,28 +576,26 @@ async function redirectProtected(req, res) {
 };
 
 async function redirectCustomDomainHomepage(req, res, next) {
-  const path = req.path;
   const host = utils.removeWww(req.headers.host);
-
   if (host === env.DEFAULT_DOMAIN) {
-    return next();
+    next();
+    return;
   }
 
+  const path = req.path;
+  const pathName = path.replace("/", "").split("/")[0];
   if (
     path === "/" ||
-    utils.preservedURLs
-      .filter(l => l !== "url-password")
-      .some(item => item === path.replace("/", ""))
+    utils.preservedURLs.includes(pathName)
   ) {
     const domain = await query.domain.find({ address: host });
-    const redirectURL = domain
-      ? domain.homepage
-      : `https://${env.DEFAULT_DOMAIN + path}`;
-
-    return res.redirect(302, redirectURL);
+    if (domain?.homepage) {
+      res.redirect(302, domain.homepage);
+      return;
+    }
   }
 
-  return next();
+  next();
 };
 
 async function stats(req, res) {
