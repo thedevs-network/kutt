@@ -9,6 +9,10 @@ const env = require("../env");
 **/
 
 async function homepage(req, res) {
+  if (env.DISALLOW_ANONYMOUS_LINKS && !req.user) {
+    res.redirect("/login");
+    return;
+  }
   res.render("homepage", {
     title: "Modern open source URL shortener",
   });
