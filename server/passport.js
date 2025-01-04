@@ -17,7 +17,7 @@ passport.use(
     try {
       // 'sub' used to be the email address
       // this check makes sure to invalidate old JWTs where the sub is still the email address
-      if (typeof payload.sub === "string") {
+      if (typeof payload.sub === "string" || !payload.sub) {
         return done(null, false);
       }
       const user = await query.user.find({ id: payload.sub });
