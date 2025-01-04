@@ -6,8 +6,8 @@
   "scripts": {
     "docker:build": "docker build -t kutt .",
     "docker:run": "docker run -p 3000:3000 --env-file .env -d kutt:latest",
-    "dev": "npm run migrate && node --watch-path=./server server/server.js",
-    "start": "npm run migrate && cross-env NODE_ENV=production node server/server.js",
+    "dev": "cross-env NODE_ENV=development node --watch-path=./server server/server.js",
+    "start": "cross-env NODE_ENV=production node server/server.js",
     "migrate": "knex migrate:latest",
     "migrate:make": "knex migrate:make",
     "docs:build": "cd docs/api && node generate && cd ../.."
