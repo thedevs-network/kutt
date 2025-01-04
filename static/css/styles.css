@@ -1136,7 +1136,7 @@ header nav ul li:last-child { margin-left: 0; }
 main {
   width: 800px;
   max-width: 100%;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1684,172 +1684,6 @@ input.search.admin {
 
 .content.admin-create .buttons { justify-content: center; }
 .content.admin-create .buttons button { flex: 1 1 auto; }
-
-/* INTRO */
-
-.introduction {
-  width: 1200px;
-  max-width: 98%;
-  display: flex;
-  align-items: center;
-  margin: 150px 0 0;
-}
-
-.introduction .text-wrapper {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-top: -32px;
-}
-
-.introduction h2 {
-  font-weight: 300;
-  font-size: 28px;
-  padding-right: 2rem;
-  margin-bottom: 2.5rem;
-}
-
-.introduction img {
-  width: 60%;
-  flex: 0 0 60%;
-  max-width: 100%;
-  height: auto;
-}
-
-/* FEATURES */
-
-.features {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  flex: 0 0 auto;
-  padding: 5rem 0;
-  margin: 0;
-  background-color: var(--features-bg);
-}
-
-.features h3 {
-  font-weight: 300;
-  font-size: 28px;
-  margin-bottom: 72px;
-}
-
-.features ul {
-  width: 1200px;
-  max-width: 100%;
-  flex: 1 1 auto;
-  justify-content: center;
-  flex-wrap: nowrap;
-  display: flex;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.features ul li {
-  max-width: 25%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 1.5rem;
-  margin: 0;
-}
-
-.features ul li .icon {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 100%;
-  background-color: var(--color-primary);
-}
-
-.features ul li .icon svg {
-  width: 16px;
-  height: auto;
-  stroke: white;
-  stroke-width: 2px;
-}
-
-.features ul li h4 {
-  margin: 1rem;
-  padding: 0;
-  font-size: 15px;
-}
-
-.features ul li p {
-  margin: 0;
-  padding: 0;
-  font-size: 14px;
-  font-weight: 300;
-  text-align: center;
-}
-
-/* EXTENSIONS */
-
-.extensions {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 0 0 auto;
-  flex-wrap: nowrap;
-  padding: 5rem 0;
-  background-color: var(--extensions-bg);
-  color: white;
-}
-
-.extensions h3 {
-  font-size: 28px;
-  font-weight: 300;
-  margin-bottom: 4rem;
-}
-
-.extensions .extenstions-wrapper {
-  width: 1200px;
-  max-width: 100%;
-  display: flex;
-  flex: 1 1 auto;
-  justify-content: center;
-  flex-wrap: nowrap;
-}
-
-.extensions a.extension-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 1rem;
-  padding: 0.75rem 1.75rem;
-  background-color: #eee;
-  border: 1px solid #aaa;
-  font-size: 14px;
-  font-weight: bold;
-  text-decoration: none;
-  border-radius: 4px;
-  outline: none;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease-out;
-  cursor: pointer;
-}
-
-.extensions a.extension-button:hover {
-  transform: translateY(-2px);
-}
-
-.extensions a.extension-button.chrome { color: #4285f4; }
-.extensions a.extension-button.firefox { color: #e0890f; }
-
-.extensions a.extension-button svg {
-  width: 18px;
-  height: auto;
-  margin: 0 1rem 2px 0;
-}
-
-.extensions a.extension-button.chrome svg { fill: #4285f4;  }
-.extensions a.extension-button.firefox svg { fill: #e0890f;  }
 
 /* FOOTER */
 
@@ -2404,25 +2238,6 @@ svg.map path.active { stroke: hsl(261, 46%, 50%); stroke-width: 1.5; }
   #main-table-wrapper table tr.edit td.loading svg { width: 14px; height: 14px; }
   #main-table-wrapper table tr.edit form .response p { margin: 1rem 0 0; }
   .dialog .ban-checklist label { margin: 0.5rem 1rem 0.5rem 0; }
-  .introduction img { width: 90%; margin-top: 2rem; }
-
-  .introduction { margin: 100px 0 0; flex-direction: column; }
-  .introduction .text-wrapper { align-items: center; text-align: center; }
-  .introduction h2 { font-size: 22px; padding: 0 1rem; margin-bottom: 1.5rem; }
-
-  .features { padding: 2rem 0; }
-  .features h3 { font-size: 22px; margin-bottom: 2.5rem; }
-  .features ul { flex-wrap: wrap; }
-  .features ul li { max-width: 100%; padding: 0 2.5rem; margin-bottom: 2rem; }
-  .features ul li .icon { width: 40px; height: 40px; }
-  .features ul li .icon svg { width: 14px; }
-  .features ul li h4 { margin: 0.75rem; }
-
-  .extensions { padding: 2rem 0; }
-  .extensions h3 { font-size: 22px; margin-bottom: 2rem; }
-  .extensions .extenstions-wrapper { flex-direction: column; align-items: center }
-  .extensions a.extension-button { width: 225px; margin: 0 0 1rem; padding: 0.6rem 1.25rem; font-size: 13px; }
-  .extensions a.extension-button svg { width: 16px; margin: 0 0.75rem 3px 0; }
 
   footer { padding: 0.75rem 0; font-size: 12px; }
   footer button.link { font-size: 12px; }
