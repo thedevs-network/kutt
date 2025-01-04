@@ -9,14 +9,6 @@ const env = require("../env");
 **/
 
 async function homepage(req, res) {
-  // redirect to create admin page if the kutt instance is ran for the first time
-  const isThereAUser = await query.user.findAny();
-  if (!isThereAUser) {
-    res.redirect("/create-admin");
-    return;
-  }
-  
-  // render homepage if none above is true
   res.render("homepage", {
     title: "Modern open source URL shortener",
   });
@@ -25,12 +17,6 @@ async function homepage(req, res) {
 async function login(req, res) {
   if (req.user) {
     res.redirect("/");
-    return;
-  }
-
-  const isThereAUser = await query.user.findAny();
-  if (!isThereAUser) {
-    res.redirect("/create-admin");
     return;
   }
   

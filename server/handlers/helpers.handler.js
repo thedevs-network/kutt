@@ -3,6 +3,7 @@ const { rateLimit: expressRateLimit } = require("express-rate-limit");
 const { validationResult } = require("express-validator");
 
 const { CustomError } = require("../utils");
+const query = require("../queries");
 const redis = require("../redis");
 const env = require("../env");
 
@@ -122,7 +123,19 @@ function rateLimit(params) {
   });
 }
 
+// redirect to create admin page if the kutt instance is ran for the first time
+async function adminSetup(req, res, next) {
+  const isThereAUser = req.user || (await query.user.findAny());
+  if (isThereAUser) {
+    next();
+    return;
+  }
+
+  res.redirect("/create-admin");
+}
+
 module.exports = {
+  adminSetup,
   error,
   parseQuery,
   rateLimit,

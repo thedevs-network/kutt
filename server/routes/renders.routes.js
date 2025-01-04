@@ -13,6 +13,7 @@ const router = Router();
 router.get(
   "/",
   asyncHandler(auth.jwtLoosePage),
+  asyncHandler(helpers.adminSetup),
   asyncHandler(locals.user), 
   asyncHandler(renders.homepage)
 );
@@ -20,6 +21,7 @@ router.get(
 router.get(
   "/login", 
   asyncHandler(auth.jwtLoosePage),
+  asyncHandler(helpers.adminSetup),
   asyncHandler(renders.login)
 );
 
