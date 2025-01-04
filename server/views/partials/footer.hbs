@@ -2,8 +2,11 @@
   <p>
     Made with love by <a href="https://thedevs.network" title="The Devs" target="_blank" rel="noopener noreferrer">The Devs</a>. <span>|</span> 
     <a href="https://github.com/thedevs-network/kutt" title="GitHub" target="_blank" rel="noopener noreferrer">GitHub</a> <span>|</span> 
-    <a href="/terms" title="Terms of Service">Terms of Service</a> <span>|</span>
-    <a href="/report" title="Report abuse">Report Abuse</a> 
+    <a href="/terms" title="Terms of Service">Terms of Service</a>
+    {{#if report_email}} 
+     <span>|</span>
+     <a href="/report" title="Report abuse">Report Abuse</a>
+    {{/if}}
     {{#if contact_email}}
       <span>|</span> 
       <button class="link" hx-get="/get-support-email" hx-swap="outerHTML">

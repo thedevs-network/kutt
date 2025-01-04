@@ -1,5 +1,5 @@
 <div id="report-email">
-  {{#unless report_email}}
+  {{#unless report_email_address}}
     <button 
       class="link"
       hx-get="/get-report-email"
@@ -12,6 +12,6 @@
       show email address
     </button>
   {{else}}
-    {{report_email}}
+    {{report_email_address}}
   {{/unless}}
 </div>

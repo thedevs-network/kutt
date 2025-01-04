@@ -74,6 +74,10 @@ async function banned(req, res) {
 }
 
 async function report(req, res) {
+  if (!env.REPORT_EMAIL) {
+    res.redirect("/");
+    return;
+  }
   res.render("report", {
     title: "Report abuse",
   });
@@ -261,7 +265,7 @@ async function getReportEmail(req, res) {
     throw new utils.CustomError("No report email is available.", 400);
   }
   res.render("partials/report/email", {
-    report_email: env.REPORT_EMAIL.replace("@", "[at]")
+    report_email_address: env.REPORT_EMAIL.replace("@", "[at]")
   });
 }
 

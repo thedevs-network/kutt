@@ -10,11 +10,13 @@
           GitHub
         </a>
       </li>
-      <li>
-        <a class="nav" href="/report" title="Report abuse">
-          Report
-        </a>
-      </li>
+      {{#if report_email}}
+        <li>
+          <a class="nav" href="/report" title="Report abuse">
+            Report
+          </a>
+        </li>
+      {{/if}}
     </ul>
   </div>
   <nav>
