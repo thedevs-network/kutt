@@ -173,7 +173,7 @@ async function getAdmin(match, params) {
 
 async function totalAdmin(match, params) {
   const query = knex("users")
-    .count("users.id")
+    .count("users.id as count")
     .fromRaw('users')
     .where(normalizeMatch(match));
 

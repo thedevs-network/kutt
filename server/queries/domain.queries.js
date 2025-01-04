@@ -191,7 +191,7 @@ async function totalAdmin(match, params) {
   }
 
   query.leftJoin("users", "domains.user_id", "users.id");
-  query.count("domains.id");
+  query.count("domains.id as count");
 
   const [{ count }] = await query;
 

@@ -70,7 +70,7 @@ async function total(match, params) {
     );
   }
   query.leftJoin("domains", "links.domain_id", "domains.id");
-  query.count("links.id");
+  query.count("links.id as count");
   
   const [{ count }] = await query;
 
@@ -106,7 +106,7 @@ async function totalAdmin(match, params) {
   
   query.leftJoin("domains", "links.domain_id", "domains.id");
   query.leftJoin("users", "links.user_id", "users.id");
-  query.count("links.id");
+  query.count("links.id as count");
 
   const [{ count }] = await query;
 
