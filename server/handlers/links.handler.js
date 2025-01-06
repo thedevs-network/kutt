@@ -105,8 +105,6 @@ async function create(req, res) {
   const targetDomain = utils.removeWww(URL.parse(target).hostname);
   
   const tasks = await Promise.all([
-    validators.cooldown(req.user),
-    validators.malware(req.user, target),
     reuse &&
       query.link.find({
         target,
@@ -125,19 +123,19 @@ async function create(req, res) {
   
   // if "reuse" is true, try to return
   // the existent URL without creating one
-  if (tasks[2]) {
-    return res.json(utils.sanitize.link(tasks[2]));
+  if (tasks[0]) {
+    return res.json(utils.sanitize.link(tasks[0]));
   }
   
   // Check if custom link already exists
-  if (tasks[3]) {
+  if (tasks[1]) {
     const error = "Custom URL is already in use.";
     res.locals.errors = { customurl: error };
     throw new CustomError(error);
   }
 
   // Create new link
-  const address = customurl || tasks[4];
+  const address = customurl || tasks[2];
   const link = await query.link.create({
     password,
     address,
@@ -215,8 +213,6 @@ async function edit(req, res) {
   const domain_id = link.domain_id || null;
 
   const tasks = await Promise.all([
-    validators.cooldown(req.user),
-    target && validators.malware(req.user, target),
     address &&
       query.link.find({
         address,
@@ -227,7 +223,7 @@ async function edit(req, res) {
   ]);
 
   // Check if custom link already exists
-  if (tasks[2]) {
+  if (tasks[0]) {
     const error = "Custom URL is already in use.";
     res.locals.errors = { address: error };
     throw new CustomError("Custom URL is already in use.");
@@ -310,8 +306,6 @@ async function editAdmin(req, res) {
   const domain_id = link.domain_id || null;
 
   const tasks = await Promise.all([
-    validators.cooldown(req.user),
-    target && validators.malware(req.user, target),
     address &&
       query.link.find({
         address,
@@ -322,7 +316,7 @@ async function editAdmin(req, res) {
   ]);
 
   // Check if custom link already exists
-  if (tasks[2]) {
+  if (tasks[0]) {
     const error = "Custom URL is already in use.";
     res.locals.errors = { address: error };
     throw new CustomError("Custom URL is already in use.");

@@ -501,73 +501,6 @@ const deleteUserByAdmin = [
     .isNumeric()
 ];
 
-// TODO: if user has posted malware should do something better
-function cooldown(user) {
-
-  if (!user?.cooldown) return;
-
-  // If user has active cooldown then throw error
-  const hasCooldownNow = differenceInHours(new Date(), utils.parseDatetime(user.cooldown)) < 12;
-
-  if (hasCooldownNow) {
-    throw new utils.CustomError("Cooldown because of a malware URL. Wait 12h");
-  }
-}
-
-// TODO: if user or non-user has posted malware should do something better
-async function malware(user, target) {
-  if (!env.GOOGLE_SAFE_BROWSING_KEY) return;
-
-  const isMalware = await fetch(
-    `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${env.GOOGLE_SAFE_BROWSING_KEY}`,
-    {
-      method: "post",
-      body: JSON.stringify({
-        client: {
-          clientId: env.DEFAULT_DOMAIN.toLowerCase().replace(".", ""),
-          clientVersion: "1.0.0"
-        },
-        threatInfo: {
-          threatTypes: [
-            "THREAT_TYPE_UNSPECIFIED",
-            "MALWARE",
-            "SOCIAL_ENGINEERING",
-            "UNWANTED_SOFTWARE",
-            "POTENTIALLY_HARMFUL_APPLICATION"
-          ],
-          platformTypes: ["ANY_PLATFORM", "PLATFORM_TYPE_UNSPECIFIED"],
-          threatEntryTypes: [
-            "EXECUTABLE",
-            "URL",
-            "THREAT_ENTRY_TYPE_UNSPECIFIED"
-          ],
-          threatEntries: [{ url: target }]
-        }
-      })
-    }
-  ).then(res => res.json());
-
-  if (!isMalware.data || !isMalware.data.matches) return;
-
-  if (user) {
-    const updatedUser = await query.user.update(
-      { id: user.id },
-      { cooldown: utils.dateToUTC(new Date()) },
-      { increments: ["malicious_attempts"] }
-    );
-
-    // Ban if too many cooldowns
-    if (updatedUser.malicious_attempts > 2) {
-      await query.user.update({ id: user.id }, { banned: true });
-      throw new utils.CustomError("Too much malware requests. You are now banned.");
-    }
-  }
-
-  throw new utils.CustomError(
-    user ? "Malware detected! Cooldown for 12h." : "Malware detected!"
-  );
-};
-
 async function bannedDomain(domain) {
   const isBanned = await query.domain.find({
     address: domain,
@@ -611,7 +544,6 @@ module.exports = {
   changeEmail,
   changePassword,
   checkUser,
-  cooldown,
   createAdmin,
   createLink,
   createUser,
@@ -621,7 +553,6 @@ module.exports = {
   editLink,
   getStats,
   login, 
-  malware,
   newPassword,
   redirectProtected,
   removeDomain,
