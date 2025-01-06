@@ -34,7 +34,7 @@ const env = cleanEnv(process.env, {
   DISALLOW_REGISTRATION: bool({ default: true }),
   SERVER_IP_ADDRESS: str({ default: "" }),
   CUSTOM_DOMAIN_USE_HTTPS: bool({ default: false }),
-  JWT_SECRET: str(),
+  JWT_SECRET: str({ devDefault: "securekey" }),
   GOOGLE_SAFE_BROWSING_KEY: str({ default: "" }),
   MAIL_ENABLED: bool({ default: false }),
   MAIL_HOST: str({ default: "" }),
