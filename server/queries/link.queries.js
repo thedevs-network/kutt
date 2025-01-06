@@ -200,7 +200,7 @@ async function create(params) {
     encryptedPassword = await bcrypt.hash(params.password, salt);
   }
   
-  const [link] = await knex(
+  let [link] = await knex(
     "links"
   ).insert(
     {
@@ -214,7 +214,13 @@ async function create(params) {
     },
     "*"
   );
-  
+
+  // mysql doesn't return the whole link, but rather the id number only
+  // so we need to fetch the link ourselves
+  if (typeof link === "number") {
+    link = await knex("links").where("id", link).first();
+  }
+
   return link;
 }
 

@@ -212,13 +212,19 @@ async function totalAdmin(match, params) {
 }
 
 async function create(params) {
-  const [user] = await knex("users").insert({
+  let [user] = await knex("users").insert({
     email: params.email,
     password: params.password,
     role: params.role ?? ROLES.USER,
     verified: params.verified ?? false,
     banned: params.banned ?? false,
   }, "*");
+
+  // mysql doesn't return the whole user, but rather the id number only
+  // so we need to fetch the user ourselves
+  if (typeof user === "number") {
+    user = await knex("users").where("id", user).first();
+  }
 
   return user;
 }

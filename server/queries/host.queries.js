@@ -41,8 +41,8 @@ async function add(params) {
     });
   } else {
     // Mysql and sqlite don't support returning but return the inserted id by default
-    const [createdHost] = await knex("hosts").insert(newHost).returning("id");
-    id = createdHost.id;
+    const [createdHost] = await knex("hosts").insert(newHost, "*");
+    id = typeof createdHost === "number" ? createdHost : createdHost.id;
   }
 
   // Query domain instead of using returning as sqlite and mysql don't support it
