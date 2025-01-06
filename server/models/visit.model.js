@@ -3,7 +3,7 @@ async function createVisitTable(knex) {
   if (!hasTable) {
     await knex.schema.createTable("visits", table => {
       table.increments("id").primary();
-      table.jsonb("countries").defaultTo("{}");
+      table.jsonb("countries");
       table
         .dateTime("created_at")
         .notNullable()
@@ -27,7 +27,7 @@ async function createVisitTable(knex) {
         .inTable("users")
         .onDelete("CASCADE")
         .withKeyName("visits_user_id_foreign");
-      table.jsonb("referrers").defaultTo("{}");
+      table.jsonb("referrers");
       table
         .integer("total")
         .notNullable()
