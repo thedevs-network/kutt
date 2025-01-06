@@ -1035,8 +1035,8 @@ form#login-signup a.forgot-password {
 form#login-signup svg.spinner {  display: none; }
 form#login-signup.htmx-request:not(.signup) .login svg { display: none; } 
 form#login-signup.htmx-request:not(.signup) .login svg.spinner { display: block; } 
+form#login-signup.htmx-request.signup .signup svg { display: none; } 
 form#login-signup.htmx-request.signup .signup svg.spinner { display: block; } 
-form#login-signup.htmx-request.signup .signup svg.icon { display: none; } 
 form#login-signup.htmx-request .error { opacity: 0; }
 
 form#login-signup p.error {
