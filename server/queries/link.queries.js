@@ -261,18 +261,25 @@ async function update(match, update) {
     const salt = await bcrypt.genSalt(12);
     update.password = await bcrypt.hash(update.password, salt);
   }
+
+  // make sure to delete the original link from cache if its adddress or domain is changed
+  let links = []
+  if (env.REDIS_ENABLED && (update.address || update.domain_id)) {
+    links = await knex("links").select('*').where(match);
+  }
   
   await knex("links")
     .where(match)
     .update({ ...update, updated_at: utils.dateToUTC(new Date()) });
 
-  const links = await knex("links").select('*').where(match);
+  const updated_links = await knex("links").select('*').where(match);
 
   if (env.REDIS_ENABLED) {
     links.forEach(redis.remove.link);
+    updated_links.forEach(redis.remove.link);
   }
   
-  return links;
+  return updated_links;
 }
 
 function incrementVisit(match) {
