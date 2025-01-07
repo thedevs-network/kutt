@@ -7,15 +7,29 @@
   <b>yoursite.com/shorturl.</b>
 </p>
 
-<p>
-  Point your domain's A record to 
-  {{#if server_ip_address}}
-    <b>{{server_ip_address}}</b>
-  {{else}}
-    our <b>IP address</b>
-  {{/if}} 
-  then add the domain via the form below:
-</p>
+{{#if server_cname_address}}
+  <p>
+    Point your domain's A record to 
+    {{#if server_ip_address}}
+      <b>{{server_ip_address}}</b>
+    {{else}}
+      our <b>IP address</b>
+    {{/if}} or your subdomain's CNAME record to
+    <b>{{server_cname_address}}</b>. If you're using <b>Cloudflare</b>,
+    make sure to use <b>DNS only</b> mode for your subdomain.
+  </p>
+  <p>Then, add the domain via the form below:</p>
+{{else}}
+  <p>
+    Point your domain's A record to 
+    {{#if server_ip_address}}
+      <b>{{server_ip_address}}</b>
+    {{else}}
+      our <b>IP address</b>
+    {{/if}} 
+    then add the domain via the form below:
+  </p>
+{{/if}}
 
 {{> settings/domain/table}}
 <div class="add-domain-wrapper">
