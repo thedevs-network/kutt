@@ -172,7 +172,7 @@ async function getAdmin(match, params) {
 }
 
 async function find(match) {
-  if (match.address && match.domain_id && env.REDIS_ENABLED) {
+  if (match.address && match.domain_id !== undefined && env.REDIS_ENABLED) {
     const key = redis.key.link(match.address, match.domain_id);
     const cachedLink = await redis.client.get(key);
     if (cachedLink) return JSON.parse(cachedLink);
