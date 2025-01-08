@@ -17,7 +17,7 @@
 - [Setup](#setup)
 - [Docker](#docker)
 - [API](#api)
-- [Browser Extensions](#browser-extensions)
+- [Browser extensions](#browser-extensions)
 - [Configuration](#configuration)
 - [Integrations](#integrations)
 - [Contributing](#contributing)
@@ -77,7 +77,7 @@ Official Kutt Docker image is available on [Docker Hub](https://hub.docker.com/r
 
 [View API documentation →](https://docs.kutt.it)
 
-## Browser Extensions
+## Browser extensions
 
 Download Kutt's extension for web browsers via below links.
 
@@ -133,11 +133,11 @@ All variables are optional except `JWT_SECRET` which is required on production.
 
 You can use Kutt as your default URL shortener in [ShareX](https://getsharex.com/). If you host your custom instance of Kutt, refer to [ShareX wiki](https://github.com/thedevs-network/kutt/wiki/ShareX) on how to setup.
 
-### Alfred Workflow
+### Alfred workflow
 
 Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app from [alfred-kutt](https://github.com/thedevs-network/alfred-kutt) repository.
 
-### 3rd Party packages
+### Third-party packages
 | Language   | Link                                                                              | Description                                        |
 | ---------- | --------------------------------------------------------------------------------- | -------------------------------------------------- |
 | C# (.NET)  | [KuttSharp](https://github.com/0xaryan/KuttSharp)                                 | .NET package for Kutt.it url shortener             |
