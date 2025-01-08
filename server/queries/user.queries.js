@@ -22,10 +22,12 @@ async function find(match) {
   const user = await query.first();
   
   if (user && env.REDIS_ENABLED) {
-    const idKey = redis.key.user(user.id);
-    redis.client.set(idKey, JSON.stringify(user), "EX", 60 * 15);
+    if (match.id) {
+      const idKey = redis.key.user(user.id);
+      redis.client.set(idKey, JSON.stringify(user), "EX", 60 * 15);
+    }
   
-    if (user.apikey) {
+    if (match.apikey) {
       const apikeyKey = redis.key.user(user.apikey);
       redis.client.set(apikeyKey, JSON.stringify(user), "EX", 60 * 15);
     }
