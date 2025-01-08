@@ -4,8 +4,6 @@
   "description": "Modern URL shortener.",
   "main": "./server/server.js",
   "scripts": {
-    "docker:build": "docker build -t kutt .",
-    "docker:run": "docker run -p 3000:3000 --env-file .env -d kutt:latest",
     "dev": "cross-env NODE_ENV=development node --watch-path=./server server/server.js",
     "start": "cross-env NODE_ENV=production node server/server.js",
     "migrate": "knex migrate:latest",
