@@ -55,7 +55,7 @@ When you first start the app, you're prompted to create an admin account.
 
 ## Docker
 
-Make sure [Docker](https://www.docker.com/) is installed, then you can start the app from the root directory:
+Make sure Docker is installed, then you can start the app from the root directory:
 
 ```sh
 docker compose up
@@ -64,11 +64,11 @@ docker compose up
 Various docker-compose configurations are available. Use `docker compose -f <file_name> up` to start the one you want:
 
 - [`docker-compose.yml`](./docker-compose.yml): Default Kutt setup. Uses SQLite for the database.
-- [`docker-compose.sqlite-redis.yml`](./docker-compose.sqlite-redis.yml): Uses Kutt with SQLite and Redis.
+- [`docker-compose.sqlite-redis.yml`](./docker-compose.sqlite-redis.yml): Starts Kutt with SQLite and Redis.
   - Required envrionment variable: `REDIS_ENABLED`
-- [`docker-compose.postgres.yml`](./docker-compose.postgres.yml): Uses Kutt with Postgres and Redis.
+- [`docker-compose.postgres.yml`](./docker-compose.postgres.yml): Starts Kutt with Postgres and Redis.
   - Required envrionment variables: `REDIS_ENABLED`, `DB_PASSWORD`, `DB_NAME`, `DB_USER`
-- [`docker-compose.mariadb.yml`](./docker-compose.mariadb.yml): Uses Kutt with MariaDB and Redis.
+- [`docker-compose.mariadb.yml`](./docker-compose.mariadb.yml): Starts Kutt with MariaDB and Redis.
   - Required envrionment variables: `REDIS_ENABLED`, `DB_PASSWORD`, `DB_NAME`, `DB_USER`, `DB_PORT`
 
 Official Kutt Docker image is available on [Docker Hub](https://hub.docker.com/r/kutt/kutt).
@@ -86,7 +86,7 @@ Download Kutt's extension for web browsers via below links.
 
 ## Configuration
 
-The app is configured via environment variables. You can pass environment variables directly or create a `.env` file. View [`.example.env`](./.example.env) for the list of configurations.
+The app is configured via environment variables. You can pass environment variables directly or create a `.env` file. View [`.example.env`](./.example.env) file for the list of configurations.
 
 All variables are optional except `JWT_SECRET` which is required on production.
 
