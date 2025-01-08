@@ -17,8 +17,8 @@
 - [Setup](#setup)
 - [Docker](#docker)
 - [API](#api)
-- [Browser extensions](#browser-extensions)
 - [Configuration](#configuration)
+- [Browser extensions](#browser-extensions)
 - [Videos](#videos)
 - [Integrations](#integrations)
 - [Contributing](#contributing)
@@ -78,13 +78,6 @@ Official Kutt Docker image is available on [Docker Hub](https://hub.docker.com/r
 
 [View API documentation →](https://docs.kutt.it)
 
-## Browser extensions
-
-Download Kutt's extension for web browsers via below links.
-
-- [Chrome](https://chrome.google.com/webstore/detail/kutt/pklakpjfiegjacoppcodencchehlfnpd)
-- [Firefox](https://addons.mozilla.org/en-US/firefox/addon/kutt/)
-
 ## Configuration
 
 The app is configured via environment variables. You can pass environment variables directly or create a `.env` file. View [`.example.env`](./.example.env) file for the list of configurations.
@@ -127,6 +120,13 @@ All variables are optional except `JWT_SECRET` which is required on production.
 | `MAIL_SECURE` | Whether use SSL for the email server connection | `false` | `true` | 
 | `REPORT_EMAIL` | The email address that will receive submitted reports | - | `some.address@yoursite.com` | 
 | `CONTACT_EMAIL` | The support email address to show on the app | - | `some.address@yoursite.com` | 
+
+## Browser extensions
+
+Download Kutt's extension for web browsers via below links.
+
+- [Chrome](https://chrome.google.com/webstore/detail/kutt/pklakpjfiegjacoppcodencchehlfnpd)
+- [Firefox](https://addons.mozilla.org/en-US/firefox/addon/kutt/)
 
 ## Videos
 
