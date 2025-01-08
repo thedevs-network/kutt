@@ -2,97 +2,130 @@
 
 # Kutt.it
 
-**Kutt** is a modern URL shortener with support for custom domains. Shorten URLs, manage your links and view the click rate statistics.
-
-_Contributions and bug reports are welcome._
+**Kutt** is a modern URL shortener with support for custom domains. Create and edit links, view statistics, manage users, and more.
 
 [https://kutt.it](https://kutt.it)
 
-[![Build Status](https://travis-ci.org/thedevs-network/kutt.svg?branch=v2-beta)](https://travis-ci.org/thedevs-network/kutt)
+[![Uptime Status](https://uptime.betterstack.com/status-badges/v2/monitor/1ogaa.svg)](https://status.kutt.it)
 [![Contributions](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](https://github.com/thedevs-network/kutt/#contributing)
 [![GitHub license](https://img.shields.io/github/license/thedevs-network/kutt.svg)](https://github.com/thedevs-network/kutt/blob/develop/LICENSE)
-[![Twitter](https://img.shields.io/twitter/url/https/github.com/thedevs-network/kutt/.svg?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fthedevs-network%2Fkutt%2F)
 
-## Table of Contents
+## Table of contents
 
-- [Key Features](#key-features)
-- [Stack](#stack)
+- [Key features](#key-features)
+- [Donations and sponsors](#donations-and-sponsors)
 - [Setup](#setup)
-- [Browser Extensions](#browser-extensions)
+- [Docker](#docker)
 - [API](#api)
+- [Browser Extensions](#browser-extensions)
+- [Configuration](#configuration)
 - [Integrations](#integrations)
-- [3rd Party Packages](#3rd-party-packages)
-- [Donate](#donate)
 - [Contributing](#contributing)
 
-## Key Features
+## Key features
 
-- Free and open source.
-- Custom domain support.
-- Custom URLs for shortened links
-- Set password for links.
-- Set description for links.
-- Expiration time for links.
-- Private statistics for shortened URLs.
-- View, edit, delete and manage your links.
-- Admin account to view, delete and ban links.
-- Ability to disable registration and anonymous link creation for private use.
-- RESTful API.
+- Created with self-host in mind:
+  - Zero configuration needed
+  - Easy setup with no build step
+  - Supporting various databases (SQLite, Postgres, MySQL)
+  - Ability to disable registration and anonymous links
+- Custom domain support
+- Set custom URLs, password, description, and expiration time for links
+- View, edit, delete and manage your links
+- Private statistics for shortened URLs
+- Admin page to manage users and links
+- RESTful API
 
-## Stack
+## Donations and sponsors
 
-- Node (Web server)
-- Express (Web server framework)
-- Passport (Authentication)
-- React (UI library)
-- Next (Universal/server-side rendered React)
-- Easy Peasy (State management)
-- styled-components (CSS styling solution library)
-- Recharts (Chart library)
-- PostgreSQL (database)
-- Redis (Cache layer)
+Support the development of Kutt by making a donation or becoming an sponsor.
+
+[Donate or sponsor →](https://btcpay.kutt.it/apps/L9Gc7PrnLykeRHkhsH2jHivBeEh/crowdfund)
 
 ## Setup
 
-### Manual
+The only prerequisite is [Node.js](https://nodejs.org/) (version 20 or above). The default database is SQLite. You can optionally install Posrgres or MySQL/MariaDB for the database or Redis for the cache. 
 
-You need to have [Node.js](https://nodejs.org/), [PostgreSQL](https://www.postgresql.org/) and [Redis](https://redis.io/) installed.
+When you first start the app, you're prompted to create an admin account.
 
-1. Clone this repository or [download the latest zip](https://github.com/thedevs-network/kutt/releases).
-2. Copy `.example.env` to `.env` and fill it properly ([see below](#configuration)).
-3. Install dependencies: `npm install`.
-4. Run for development: `npm run dev`.
-5. Run for production: `npm run build` then `npm start`.
+1. Clone this repository or [download the latest zip](https://github.com/thedevs-network/kutt/releases)
+2. Install dependencies: `npm install`
+3. Intialize database: `npm run migrate`
+5. Start the app for development `npm run dev` or production `npm start`
 
-### Docker
+## Docker
 
-1. Download the [`docker-compose.yml`](https://raw.githubusercontent.com/thedevs-network/kutt/develop/docker-compose.yml) and the [`.docker.env`](https://raw.githubusercontent.com/thedevs-network/kutt/develop/.docker.env) files.
-2. Rename `.docker.env` to `.env` and fill it properly ([see below](#configuration)).
-3. To execute Kutt you simply have to run `docker-compose up -d` command and then the app should be ready on port "3000".
+Make sure [Docker](https://www.docker.com/) is installed, then you can start the app from the root directory:
 
-The `docker-compose.yml` uses the official kutt docker image available on [Docker Hub](https://hub.docker.com/r/kutt/kutt).
+```sh
+docker compose up
+```
 
-### Configuration
+Various docker-compose configurations are available. Use `docker compose -f <file_name> up` to start the one you want:
 
-For the minimal configuration the following settings have to be changed in the `.env`-file:
+- [`docker-compose.yml`](./docker-compose.yml): Default Kutt setup. Uses SQLite for the database.
+- [`docker-compose.sqlite-redis.yml`](./docker-compose.sqlite-redis.yml): Uses Kutt with SQLite and Redis.
+  - Required envrionment variable: `REDIS_ENABLED`
+- [`docker-compose.postgres.yml`](./docker-compose.postgres.yml): Uses Kutt with Postgres and Redis.
+  - Required envrionment variables: `REDIS_ENABLED`, `DB_PASSWORD`, `DB_NAME`, `DB_USER`
+- [`docker-compose.mariadb.yml`](./docker-compose.mariadb.yml): Uses Kutt with MariaDB and Redis.
+  - Required envrionment variables: `REDIS_ENABLED`, `DB_PASSWORD`, `DB_NAME`, `DB_USER`, `DB_PORT`
 
-- **DEFAULT_DOMAIN**: The domain of your kutt instance
-- **DB_**: The DB credentials (when you use docker-compose you can skip these)
-- **ADMIN_EMAILS**: A comma-separated list of the administrator-accounts
-- **RECAPTCHA_**: Enter your credentials to use reCaptchas or delete this setting if you don't want to use it
-- **MAIL_**: Enter the SMTP-server's credentials (The experience shows SSL works better than STARTTLS; The mail config is required to easily create accounts, see [this comment](https://github.com/thedevs-network/kutt/issues/269#issuecomment-628604256) how it can be done manually)
-- **REPORT_EMAIL**: Kutt offers a form to report malicious links which are sent to this mail-address
+Official Kutt Docker image is available on [Docker Hub](https://hub.docker.com/r/kutt/kutt).
+
+## API
+
+[View API documentation →](https://docs.kutt.it)
 
 ## Browser Extensions
 
-Download Kutt's extension for web browsers via below links. You can also find the source code on [kutt-extension](https://github.com/abhijithvijayan/kutt-extension).
+Download Kutt's extension for web browsers via below links.
 
 - [Chrome](https://chrome.google.com/webstore/detail/kutt/pklakpjfiegjacoppcodencchehlfnpd)
 - [Firefox](https://addons.mozilla.org/en-US/firefox/addon/kutt/)
 
-## API
+## Configuration
 
-Visit API v2 documentation on [docs.kutt.it](https://docs.kutt.it)
+The app is configured via environment variables. You can pass environment variables directly or create a `.env` file. View [`.example.env`](./.example.env) for the list of configurations.
+
+All variables are optional except `JWT_SECRET` which is required on production.
+
+| Variable | Description | Default | Example |
+| -------- | ----------- | ------- | ------- |
+| `JWT_SECRET` | This is used to sign authentication tokens. Use a **long** **random** string. | - | - |
+| `PORT` |  The port to start the app on | `3000` | `8888` |
+| `SITE_NAME` |  Name of the website | `Kutt` | `Your Site` |
+| `DEFAULT_DOMAIN` |  The domain address that this app runs on | `localhost:3000` | `yoursite.com` |
+| `LINK_LENGTH` | The length of of shortened address | `6` | `5` |
+| `DISALLOW_REGISTRATION` | Disable registration. Note that if `MAIL_ENABLED` is set to false, then the registration would still be disabled since it relies on emails to sign up users. | `true` | `false` |
+| `DISALLOW_ANONYMOUS_LINKS` | Disable anonymous link creation | `true` | `false` |
+| `DB_CLIENT` |  Which database client to use. Supported clients: `pg` or `pg-native` for Postgres, `mysql2` for MySQL or MariaDB, `sqlite3` and `better-sqlite3` for SQLite. NOTE: `pg-native` and `better-sqlite3` are not installed by default, use `npm` to install them before use. | `sqlite3` | `pg` |
+| `DB_HOST` | Database connection host. Only if you use Postgres or MySQL. | `localhost` | `your-db-host.com` |
+| `DB_PORT` | Database port. Only if you use Postgres or MySQL. | `5432` (Postgres) | `3306` (MySQL) |
+| `DB_NAME` | Database name. Only if you use Postgres or MySQL. | `kutt` | `mydb` |
+| `DB_USER` | Database user. Only if you use Postgres or MySQL. | `postgres` | `myuser` |
+| `DB_PASSWORD` | Database password. Only if you use Postgres or MySQL. | - | `mypassword` |
+| `DB_SSL` | Whether use SSL for the database connection. Only if you use Postgres or MySQL. | `false` | `true` |
+| `DB_POOL_MIN` | Minimum number of database connection pools. Only if you use Postgres or MySQL. | `0` | `2` |
+| `DB_POOL_MAX` | Maximum number of database connection pools. Only if you use Postgres or MySQL. | `10` | `5` |
+| `REDIS_ENABLED` | Whether to use Redis for cache | `false` | `true` |
+| `REDIS_HOST` | Redis connection host | `127.0.0.1` | `your-redis-host.com` |
+| `REDIS_PORT` | Redis port | `6379` | `6379` |
+| `REDIS_PASSWORD` | Redis passowrd | - | `mypassword` |
+| `REDIS_DB` | Redis database number, between 0 and 15. | `0` | `1` |
+| `SERVER_IP_ADDRESS` | The IP address shown to the user on the setting's page. It's only for display purposes and has no other use. | - | `1.2.3.4` |
+| `SERVER_CNAME_ADDRESS` | The subdomain shown to the user on the setting's page. It's only for display purposes and has no other use. | - | `custom.yoursite.com` |
+| `CUSTOM_DOMAIN_USE_HTTPS` | Use https for links with custom domain. It's on you to generate SSL certificates for those domains manually—at least on this version for now. | `false` | `true` |
+| `ENABLE_RATE_LIMIT` | Enable rate limitting for some API routes. If Redis is enabled uses Redis, otherwise, uses memory. | `false` | `true` |
+| `MAIL_ENABLED` | Enable emails, which are used for signup, verifying or changing email address, resetting password, and sending reports. If is disabled, all these functionalities will be disabled too. | `false` | `true` | 
+| `MAIL_HOST` | Email server host | - | `your-mail-server.com` |
+| `MAIL_PORT` | Email server port | `587` | `465` (SSL) | 
+| `MAIL_USER` | Email server user | - | `myuser` | 
+| `MAIL_PASSWORD` | Email server password for the user | - | `mypassword` | 
+| `MAIL_FROM` | Email address to send the user from | - | `some.address@yoursite.com` | 
+| `MAIL_SECURE` | Whether use SSL for the email server connection | `false` | `true` | 
+| `REPORT_EMAIL` | The email address that will receive submitted reports | - | `some.address@yoursite.com` | 
+| `CONTACT_EMAIL` | The support email address to show on the app | - | `some.address@yoursite.com` | 
 
 ## Integrations
 
@@ -104,7 +137,7 @@ You can use Kutt as your default URL shortener in [ShareX](https://getsharex.com
 
 Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app from [alfred-kutt](https://github.com/thedevs-network/alfred-kutt) repository.
 
-## 3rd Party packages
+### 3rd Party packages
 | Language   | Link                                                                              | Description                                        |
 | ---------- | --------------------------------------------------------------------------------- | -------------------------------------------------- |
 | C# (.NET)  | [KuttSharp](https://github.com/0xaryan/KuttSharp)                                 | .NET package for Kutt.it url shortener             |
@@ -120,21 +153,9 @@ Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app f
 | BASH       | [GitHub Gist](https://gist.github.com/hashworks/6d6e4eae8984a5018f7692a796d570b4) | Simple BASH function to access the API             |
 | BASH       | [url-shortener](https://git.tim-peters.org/Tim/url-shortener)                     | Simple BASH script with GUI                        |
 
-## Donate
-
-<img src="./btc.png" alt="Kutt.it" width="32px" height="32px">
-
-Kutt is free of charge and free of ads. Help us keep our servers running and motivate us to work on this project by donating to our Bitcoin wallet:
-
-```
-1P89WxNTinKxxDQ4FmC4jis3KUdfA9fLJB
-```
-
 ## Contributing
 
-Pull requests are welcome. You'll probably find lots of improvements to be made.
-
-Open issues for feedback, requesting features, reporting bugs or discussing ideas.
+Pull requests are welcome. Open a discussion for feedback, requesting features, or discussing ideas.
 
 Special thanks to [Thomas](https://github.com/trgwii) and [Muthu](https://github.com/MKRhere). Logo design by [Muthu](https://github.com/MKRhere).
 
