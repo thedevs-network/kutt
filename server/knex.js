@@ -9,7 +9,7 @@ const isMySQL = env.DB_CLIENT === "mysql" || env.DB_CLIENT === "mysql2";
 const db = knex({
   client: env.DB_CLIENT,
   connection: {
-    ...(isSQLite && { filename: "db/" + env.DB_FILENAME }),
+    ...(isSQLite && { filename: env.DB_FILENAME }),
     host: env.DB_HOST,
     port: env.DB_PORT,
     database: env.DB_NAME,

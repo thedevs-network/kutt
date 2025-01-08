@@ -13,7 +13,7 @@ const isSQLite = env.DB_CLIENT === "sqlite3" || env.DB_CLIENT === "better-sqlite
 module.exports = {
   client: env.DB_CLIENT,
   connection: {
-    ...(isSQLite && { filename: "db/" + env.DB_FILENAME }),
+    ...(isSQLite && { filename: env.DB_FILENAME }),
     host: env.DB_HOST,
     database: env.DB_NAME,
     user: env.DB_USER,

@@ -16,7 +16,7 @@ const env = cleanEnv(process.env, {
   DEFAULT_DOMAIN: str({ example: "kutt.it", default: "localhost:3000" }),
   LINK_LENGTH: num({ default: 6 }),
   DB_CLIENT: str({ choices: supportedDBClients, default: "sqlite3" }),
-  DB_FILENAME: str({ default: "data" }),
+  DB_FILENAME: str({ default: "db/data" }),
   DB_HOST: str({ default: "localhost" }),
   DB_PORT: num({ default: 5432 }),
   DB_NAME: str({ default: "kutt" }),
