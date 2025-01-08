@@ -19,6 +19,7 @@
 - [API](#api)
 - [Browser extensions](#browser-extensions)
 - [Configuration](#configuration)
+- [Videos](#videos)
 - [Integrations](#integrations)
 - [Contributing](#contributing)
 
@@ -127,21 +128,29 @@ All variables are optional except `JWT_SECRET` which is required on production.
 | `REPORT_EMAIL` | The email address that will receive submitted reports | - | `some.address@yoursite.com` | 
 | `CONTACT_EMAIL` | The support email address to show on the app | - | `some.address@yoursite.com` | 
 
+## Videos
+
+**Official videos**
+
+- [Next.js to htmx – A Real World Example](https://www.youtube.com/watch?v=8RL4NvYZDT4)
+
 ## Integrations
 
-### ShareX
+**ShareX**
 
 You can use Kutt as your default URL shortener in [ShareX](https://getsharex.com/). If you host your custom instance of Kutt, refer to [ShareX wiki](https://github.com/thedevs-network/kutt/wiki/ShareX) on how to setup.
 
-### Alfred workflow
+**Alfred workflow**
 
 Download Kutt's official workflow for [Alfred](https://www.alfredapp.com/) app from [alfred-kutt](https://github.com/thedevs-network/alfred-kutt) repository.
 
-### Third-party packages
+**Third-party packages**
+
+
 | Language   | Link                                                                              | Description                                        |
 | ---------- | --------------------------------------------------------------------------------- | -------------------------------------------------- |
 | C# (.NET)  | [KuttSharp](https://github.com/0xaryan/KuttSharp)                                 | .NET package for Kutt.it url shortener             |
-| C# (.NET)  | [Kutt.NET](https://github.com/AlphaNecron/Kutt.NET)                               | ✂️🔗 C# API Wrapper for Kutt
+| C# (.NET)  | [Kutt.NET](https://github.com/AlphaNecron/Kutt.NET)                               | C# API Wrapper for Kutt
 | Python     | [kutt-cli](https://github.com/RealAmirali/kutt-cli)                               | Command-line client for Kutt written in Python     |
 | Ruby       | [kutt.rb](https://github.com/RealAmirali/kutt.rb)                                 | Kutt library written in Ruby                       |
 | Rust       | [urlshortener](https://github.com/vityafx/urlshortener-rs)                        | URL shortener library written in Rust              |
