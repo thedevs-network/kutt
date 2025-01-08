@@ -63,7 +63,7 @@ async function add(params, user) {
 }
 
 async function update(match, update, methods) {
-  const user = await knex.transaction(async function(trx) {
+  const { user, updated_user } = await knex.transaction(async function(trx) {
     const query = trx("users");
     Object.entries(match).forEach(([key, value]) => {
       query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
@@ -80,16 +80,17 @@ async function update(match, update, methods) {
     }
     
     await updateQuery.update({ ...update, updated_at: utils.dateToUTC(new Date()) });
-    const updatedUser = await trx("users").where("id", user.id).first();
+    const updated_user = await trx("users").where("id", user.id).first();
 
-    return updatedUser;
+    return { user, updated_user };
   });
 
   if (env.REDIS_ENABLED && user) {
     redis.remove.user(user);
+    redis.remove.user(updated_user);
   }
 
-  return user;
+  return updated_user;
 }
 
 async function remove(user) {
