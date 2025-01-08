@@ -1,4 +1,4 @@
-name: docker-build-latest
+name: docker-build-release
 
 env:
   dockerhub_repository: "kutt/kutt"
