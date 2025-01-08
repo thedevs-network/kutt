@@ -1,0 +1,23 @@
+services:
+  server:
+    build:
+      context: .
+    volumes:
+       - db-data:/var/lib/kutt
+    environment:
+      DB_FILENAME: "/var/lib/kutt/data.sqlite"
+      REDIS_ENABLED: true
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - 3000:3000
+    depends_on:
+      redis:
+        condition: service_started
+  redis:
+    image: redis:alpine
+    restart: always
+    expose:
+      - 6379
+volumes:
+  db-data:
