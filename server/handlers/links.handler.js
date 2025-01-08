@@ -30,14 +30,12 @@ async function get(req, res) {
     query.link.total(match, { search })
   ]);
 
-  const links = data.map(utils.sanitize.link);
-
   if (req.isHTML) {
     res.render("partials/links/table", {
       total,
       limit,
       skip,
-      links,
+      links: data.map(utils.sanitize.link_html),
     })
     return;
   }
@@ -46,7 +44,7 @@ async function get(req, res) {
     total,
     limit,
     skip,
-    data: links,
+    data: data.map(utils.sanitize.link),
   });
 };
 
@@ -247,12 +245,12 @@ async function edit(req, res) {
     res.render("partials/links/edit", {
       swap_oob: true,
       success: "Link has been updated.",
-      ...utils.sanitize.link({ ...link, ...updatedLink }),
+      ...utils.sanitize.link_html({ ...updatedLink }),
     });
     return;
   }
 
-  return res.status(200).send(utils.sanitize.link({ ...link, ...updatedLink }));
+  return res.status(200).send(utils.sanitize.link({ ...updatedLink }));
 };
 
 async function editAdmin(req, res) {
@@ -340,12 +338,12 @@ async function editAdmin(req, res) {
     res.render("partials/admin/links/edit", {
       swap_oob: true,
       success: "Link has been updated.",
-      ...utils.sanitize.linkAdmin({ ...link, ...updatedLink }),
+      ...utils.sanitize.linkAdmin({ ...updatedLink }),
     });
     return;
   }
 
-  return res.status(200).send(utils.sanitize.link({ ...link, ...updatedLink }));
+  return res.status(200).send(utils.sanitize.link({ ...updatedLink }));
 };
 
 async function remove(req, res) {
@@ -618,7 +616,7 @@ async function stats(req, res) {
 
   if (req.isHTML) {
     res.render("partials/stats", {
-      link: utils.sanitize.link(link),
+      link: utils.sanitize.link_html(link),
       stats,
       map,
     });

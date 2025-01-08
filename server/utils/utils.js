@@ -253,6 +253,8 @@ const sanitize = {
     ...domain,
     ...parseTimestamps(domain),
     id: domain.uuid,
+    banned: !!domain.banned,
+    homepage: domain.homepage || env.DEFAULT_DOMAIN,
     uuid: undefined,
     user_id: undefined,
     banned_by_id: undefined
@@ -266,12 +268,27 @@ const sanitize = {
       domain_id: undefined,
       user_id: undefined,
       uuid: undefined,
+      banned: !!link.banned,
+      id: link.uuid,
+      password: !!link.password,
+    }
+  },
+  link_html: link => {
+    const timestamps = parseTimestamps(link);
+    return {
+      ...link,
+      ...timestamps,
+      banned_by_id: undefined,
+      domain_id: undefined,
+      user_id: undefined,
+      uuid: undefined,
+      banned: !!link.banned,
       id: link.uuid,
       relative_created_at: getTimeAgo(timestamps.created_at),
       relative_expire_in: link.expire_in && ms(differenceInMilliseconds(parseDatetime(link.expire_in), new Date()), { long: true }),
       password: !!link.password,
       visit_count: link.visit_count.toLocaleString("en-US"),
-      link: getShortURL(link.address, link.domain)
+      link: getShortURL(link.address, link.domain),
     }
   },
   link_admin: link => {

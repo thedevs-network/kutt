@@ -289,7 +289,7 @@ async function linkEdit(req, res) {
     ...(!req.user.admin && { user_id: req.user.id })
   });
   res.render("partials/links/edit", {
-    ...(link && utils.sanitize.link(link)),
+    ...(link && utils.sanitize.link_html(link)),
   });
 }
 
@@ -298,7 +298,7 @@ async function linkEditAdmin(req, res) {
     uuid: req.params.id,
   });
   res.render("partials/admin/links/edit", {
-    ...(link && utils.sanitize.link(link)),
+    ...(link && utils.sanitize.link_html(link)),
   });
 }
 
