@@ -20,8 +20,11 @@ async function up(knex) {
   });
 
   const [{ count }] = await knex("visits").count("* as count");
-  
-  if (count < 1_000_000) {
+
+  const count_number = parseInt(count);
+  if (Number.isNaN(count_number) || count_number === 0) return;
+    
+  if (count_number < 1_000_000) {
     const last_visit = await knex("visits").orderBy("id", "desc").first();
 
     const size = 100_000;
