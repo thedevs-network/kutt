@@ -1,6 +1,11 @@
 # use older node version for build since arm/v8 threw error when node 20 was used
 FROM node:18.19.1-alpine AS build_image
 
+# install additional tools needed if on arm64 / armv7
+RUN RUN apk add --update python3 make g++\
+    && rm -rf /var/cache/apk/*
+
+
 # use production node environment by default
 ENV NODE_ENV=production
 
