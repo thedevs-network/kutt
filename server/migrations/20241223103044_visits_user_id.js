@@ -19,7 +19,7 @@ async function up(knex) {
       .withKeyName("visits_user_id_foreign");
   });
 
-  const [{ count }] = await knex("visits").count("'*' as count");
+  const [{ count }] = await knex("visits").count("* as count");
   
   if (count < 1_000_000) {
     const last_visit = await knex("visits").orderBy("id", "desc").first();
