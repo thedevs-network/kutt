@@ -1,5 +1,5 @@
-# specify node.js image
-FROM node:22-alpine
+# use older node version for build since arm/v8 threw error when node 20 was used
+FROM node:18.19.1-alpine AS build_image
 
 # use production node environment by default
 ENV NODE_ENV=production
@@ -17,6 +17,15 @@ RUN mkdir -p /var/lib/kutt
 
 # copy the rest of source files into the image
 COPY . .
+
+# switch back to node 22 for running the app
+FROM node:22-alpine
+
+# set working directory.
+WORKDIR /kutt
+
+# copy built application from build phase
+COPY --from=build_image /kutt ./
 
 # expose the port that the app listens on
 EXPOSE 3000
