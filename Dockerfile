@@ -2,7 +2,7 @@
 FROM node:18.19.1-alpine AS build_image
 
 # install additional tools needed if on arm64 / armv7
-RUN RUN apk add --update python3 make g++\
+RUN apk add --update python3 make g++\
     && rm -rf /var/cache/apk/*
 
 
