@@ -5,6 +5,7 @@ services:
     environment:
         DB_CLIENT: mysql2
         DB_HOST: mariadb
+        DB_PORT: 3306
         REDIS_ENABLED: true
         REDIS_HOST: redis
         REDIS_PORT: 6379
