@@ -14,7 +14,7 @@ async function homepage(req, res) {
     return;
   }
   res.render("homepage", {
-    title: "Modern open source URL shortener",
+    title: "Free modern URL shortener",
   });
 }
 
