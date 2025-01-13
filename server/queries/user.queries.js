@@ -160,7 +160,10 @@ async function getAdmin(match, params) {
   
   query.leftJoin(
     knex("domains")
-    .select("user_id", knex.raw("string_agg(address, ', ') AS domains"))
+    .select("user_id", knex.isMySQL
+      ? knex.raw("group_concat(address SEPARATOR ', ') AS domains")
+      : knex.raw("string_agg(address, ', ') AS domains")
+    )
     .groupBy("user_id").as("d"),
     "users.id",
     "d.user_id"
@@ -193,7 +196,10 @@ async function totalAdmin(match, params) {
     query.andWhere("domains", params?.domains ? "is not" : "is", null);
     query.leftJoin(
       knex("domains")
-        .select("user_id", knex.raw("string_agg(address, ', ') AS domains"))
+        .select("user_id", knex.isMySQL
+          ? knex.raw("group_concat(address SEPARATOR ', ') AS domains")
+          : knex.raw("string_agg(address, ', ') AS domains")
+        )
         .groupBy("user_id").as("d"),
       "users.id",
       "d.user_id"
