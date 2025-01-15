@@ -24,6 +24,9 @@
   <meta name="description" content="{{site_name}} is a free and open source URL shortener with custom domains and stats." />
   <title>{{site_name}} | {{title}}</title>
   <link rel="stylesheet" href="/css/styles.css">
+  {{#each custom_styles}}
+    <link rel="stylesheet" href="/css/{{this}}">
+  {{/each}}
   {{{block "stylesheets"}}}
 </head>
 <body>

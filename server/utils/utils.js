@@ -1,7 +1,8 @@
 const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears, format } = require("date-fns");
 const { customAlphabet } = require("nanoid");
 const JWT = require("jsonwebtoken");
-const path = require("path");
+const path = require("node:path");
+const fs = require("node:fs");
 const hbs = require("hbs");
 const ms = require("ms");
 
@@ -360,6 +361,31 @@ function registerHandlebarsHelpers() {
       return val;
   });
   hbs.registerPartials(path.join(__dirname, "../views/partials"), function (err) {});
+  const customPartialsPath = path.join(__dirname, "../../custom/views/partials");
+  const customPartialsExist = fs.existsSync(customPartialsPath);
+  if (customPartialsExist) {
+    hbs.registerPartials(customPartialsPath, function (err) {});
+  }
+}
+
+// grab custom styles file name from the custom/css folder
+const custom_css_file_names = [];
+const customCSSPath = path.join(__dirname, "../../custom/css");
+const customCSSExists = fs.existsSync(customCSSPath);
+if (customCSSExists) {
+  fs.readdir(customCSSPath, function(error, files) {
+    if (error) {
+      console.warn("Could not read the custom CSS folder:", error);
+    } else {
+      files.forEach(function(file_name) {
+        custom_css_file_names.push(file_name);
+      });
+    }
+  })
+}
+
+function getCustomCSSFileNames() {
+  return custom_css_file_names;
 }
 
 module.exports = {
@@ -368,6 +394,7 @@ module.exports = {
   dateToUTC,
   deleteCurrentToken,
   generateId,
+  getCustomCSSFileNames,
   getDifferenceFunction,
   getInitStats,
   getShortURL,

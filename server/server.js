@@ -40,6 +40,10 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// serve static
+app.use("/images", express.static("custom/images"));
+app.use("/css", express.static("custom/css", { extensions: ["css"] }));
 app.use(express.static("static"));
 
 app.use(passport.initialize());
@@ -47,8 +51,12 @@ app.use(locals.isHTML);
 app.use(locals.config);
 
 // template engine / serve html
+
 app.set("view engine", "hbs");
-app.set("views", path.join(__dirname, "views"));
+app.set("views", [
+  path.join(__dirname, "../custom/views"),
+  path.join(__dirname, "views"),
+]);
 utils.registerHandlebarsHelpers();
 
 // if is custom domain, redirect to the set homepage
