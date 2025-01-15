@@ -29,12 +29,11 @@ require("./passport");
 // create express app
 const app = express();
 
-// this tells the express app that the app is running behind a proxy server
+// this tells the express app that it's running behind a proxy server
 // and thus it should get the IP address from the proxy server
-// IMPORTANT: users might be able to override their IP address and this
-// might allow users to bypass the rate limit or lead to incorrect link stats
-// read the Kutt documentation to learn how prevent users from changing their real IP address
-app.set("trust proxy", true);
+if (env.TRUST_PROXY) {
+  app.set("trust proxy", true);
+}
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cookieParser());
