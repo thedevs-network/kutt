@@ -4,6 +4,7 @@ services:
       context: .
     volumes:
       - db_data_sqlite:/var/lib/kutt
+      - custom:/app/custom
     environment:
       DB_FILENAME: "/var/lib/kutt/data.sqlite"
       REDIS_ENABLED: true
@@ -21,3 +22,4 @@ services:
       - 6379
 volumes:
   db_data_sqlite:
+  custom:

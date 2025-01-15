@@ -4,9 +4,11 @@ services:
       context: .
     volumes:
        - db_data_sqlite:/var/lib/kutt
+       - custom:/app/custom
     environment:
       DB_FILENAME: "/var/lib/kutt/data.sqlite"
     ports:
       - 3000:3000
 volumes:
   db_data_sqlite:
+  custom:
