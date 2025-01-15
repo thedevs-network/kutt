@@ -93,8 +93,10 @@ All variables are optional except `JWT_SECRET` which is required on production.
 | `SITE_NAME` |  Name of the website | `Kutt` | `Your Site` |
 | `DEFAULT_DOMAIN` |  The domain address that this app runs on | `localhost:3000` | `yoursite.com` |
 | `LINK_LENGTH` | The length of of shortened address | `6` | `5` |
+| `LINK_CUSTOM_ALPHABET` | Alphabet used to generate custom addresses. Default value omits o, O, 0, i, I, l, 1, and j to avoid confusion when reading the URL. | (abcd..789) | `abcABC^&*()@` |
 | `DISALLOW_REGISTRATION` | Disable registration. Note that if `MAIL_ENABLED` is set to false, then the registration would still be disabled since it relies on emails to sign up users. | `true` | `false` |
 | `DISALLOW_ANONYMOUS_LINKS` | Disable anonymous link creation | `true` | `false` |
+| `TRUST_PROXY` | If the app is running behind a proxy server like NGINX or Cloudflare and that it should get the IP address from that proxy server. If you're not using a proxy server then set this to false, otherwise users can override their IP address. | `true` | `false` |
 | `DB_CLIENT` |  Which database client to use. Supported clients: `pg` or `pg-native` for Postgres, `mysql2` for MySQL or MariaDB, `sqlite3` and `better-sqlite3` for SQLite. NOTE: `pg-native` and `better-sqlite3` are not installed by default, use `npm` to install them before use. | `sqlite3` | `pg` |
 | `DB_HOST` | Database connection host. Only if you use Postgres or MySQL. | `localhost` | `your-db-host.com` |
 | `DB_PORT` | Database port. Only if you use Postgres or MySQL. | `5432` (Postgres) | `3306` (MySQL) |
@@ -118,10 +120,10 @@ All variables are optional except `JWT_SECRET` which is required on production.
 | `MAIL_PORT` | Email server port | `587` | `465` (SSL) | 
 | `MAIL_USER` | Email server user | - | `myuser` | 
 | `MAIL_PASSWORD` | Email server password for the user | - | `mypassword` | 
-| `MAIL_FROM` | Email address to send the user from | - | `some.address@yoursite.com` | 
+| `MAIL_FROM` | Email address to send the user from | - | `example@yoursite.com` | 
 | `MAIL_SECURE` | Whether use SSL for the email server connection | `false` | `true` | 
-| `REPORT_EMAIL` | The email address that will receive submitted reports | - | `some.address@yoursite.com` | 
-| `CONTACT_EMAIL` | The support email address to show on the app | - | `some.address@yoursite.com` | 
+| `REPORT_EMAIL` | The email address that will receive submitted reports | - | `example@yoursite.com` | 
+| `CONTACT_EMAIL` | The support email address to show on the app | - | `example@yoursite.com` | 
 
 ## Browser extensions
 
