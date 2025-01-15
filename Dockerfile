@@ -5,7 +5,7 @@ FROM node:22-alpine
 ENV NODE_ENV=production
 
 # set working directory.
-WORKDIR /kutt
+WORKDIR /app
 
 # download dependencies while using Docker's caching
 RUN --mount=type=bind,source=package.json,target=package.json \
