@@ -3,7 +3,7 @@ services:
     build:
       context: .
     volumes:
-       - db-data:/var/lib/kutt
+      - db_data_sqlite:/var/lib/kutt
     environment:
       DB_FILENAME: "/var/lib/kutt/data.sqlite"
       REDIS_ENABLED: true
@@ -20,4 +20,4 @@ services:
     expose:
       - 6379
 volumes:
-  db-data:
+  db_data_sqlite:
