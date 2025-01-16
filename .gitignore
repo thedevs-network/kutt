@@ -14,5 +14,3 @@ docs/api/static
 **/.DS_Store
 db/*
 !db/.gitkeep
-custom/*
-!custom/.gitkeep
