@@ -3,7 +3,7 @@ services:
     build:
       context: .
     volumes:
-      - custom:/app/custom
+      - custom:/kutt/custom
     environment:
         DB_CLIENT: mysql2
         DB_HOST: mariadb
