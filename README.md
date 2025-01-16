@@ -177,7 +177,9 @@ This is an example and official theme. Crimson includes custom styles, images, a
 
 #### Usage with Docker:
 
-If you're using Docker, make sure `/kutt/custom` volume is mounted or you have access to it. [View Docker compose example →](https://github.com/thedevs-network/kutt/blob/main/docker-compose.yml#L7)
+If you're building the image locally, then the `/custom` folder should already be included in your app.
+
+If you're pulling the official image, make sure `/kutt/custom` volume is mounted or you have access to it. [View Docker compose example →](https://github.com/thedevs-network/kutt/blob/main/docker-compose.yml#L7)
 
 Then, move your files to that volume. You can do it with this Docker command:
 
