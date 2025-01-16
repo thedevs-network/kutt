@@ -164,9 +164,7 @@ custom/
  
 #### Example theme: Crimson
 
-This is an example and official theme. 
-
-Crimson includes custom styles, images, and views.
+This is an example and official theme. Crimson includes custom styles, images, and views.
 
 [Get Crimson theme →](https://github.com/thedevs-network/kutt-customizations/tree/main/themes/crimson)
 
