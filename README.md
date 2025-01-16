@@ -177,6 +177,22 @@ Crimson includes custom styles, images, and views.
 | -------- | ---------- | ------------ |
 | ![crimson-homepage](https://github.com/user-attachments/assets/b74fab78-5e80-4f57-8425-f0cc73e9c68d) | ![crimson-admin](https://github.com/user-attachments/assets/a75d2430-8074-4ce4-93ec-d8bdfd75d917) | ![crimson-login-signup ](https://github.com/user-attachments/assets/b915eb77-3d66-4407-8e5d-b556f80ff453)
 
+#### Usage with Docker:
+
+If you're using Docker, make sure `/kutt/custom` volume is mounted or you have access to it. [View Docker compose example →](https://github.com/thedevs-network/kutt/blob/main/docker-compose.yml#L7)
+
+Then, move your files to that volume. You can do it with this Docker command:
+
+```sh
+docker cp <path-to-custom-folder> <kutt-container-name>:/kutt
+```
+
+For example:
+
+```sh
+docker cp custom kutt-server-1:/kutt
+```
+
 ## Browser extensions
 
 Download Kutt's extension for web browsers via below links.
