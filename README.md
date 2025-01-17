@@ -38,6 +38,7 @@
 - View, edit, delete and manage your links
 - Private statistics for shortened URLs
 - Admin page to manage users and links
+- Customizability and themes
 - RESTful API
 
 ## Donations and sponsors
