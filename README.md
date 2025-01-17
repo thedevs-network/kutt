@@ -20,6 +20,7 @@
 - [Docker](#docker)
 - [API](#api)
 - [Configuration](#configuration)
+- [Themes and customizations](#themes-and-customizations)
 - [Browser extensions](#browser-extensions)
 - [Videos](#videos)
 - [Integrations](#integrations)
@@ -93,8 +94,10 @@ All variables are optional except `JWT_SECRET` which is required on production.
 | `SITE_NAME` |  Name of the website | `Kutt` | `Your Site` |
 | `DEFAULT_DOMAIN` |  The domain address that this app runs on | `localhost:3000` | `yoursite.com` |
 | `LINK_LENGTH` | The length of of shortened address | `6` | `5` |
+| `LINK_CUSTOM_ALPHABET` | Alphabet used to generate custom addresses. Default value omits o, O, 0, i, I, l, 1, and j to avoid confusion when reading the URL. | (abcd..789) | `abcABC^&*()@` |
 | `DISALLOW_REGISTRATION` | Disable registration. Note that if `MAIL_ENABLED` is set to false, then the registration would still be disabled since it relies on emails to sign up users. | `true` | `false` |
 | `DISALLOW_ANONYMOUS_LINKS` | Disable anonymous link creation | `true` | `false` |
+| `TRUST_PROXY` | If the app is running behind a proxy server like NGINX or Cloudflare and that it should get the IP address from that proxy server. If you're not using a proxy server then set this to false, otherwise users can override their IP address. | `true` | `false` |
 | `DB_CLIENT` |  Which database client to use. Supported clients: `pg` or `pg-native` for Postgres, `mysql2` for MySQL or MariaDB, `sqlite3` and `better-sqlite3` for SQLite. NOTE: `pg-native` and `better-sqlite3` are not installed by default, use `npm` to install them before use. | `sqlite3` | `pg` |
 | `DB_HOST` | Database connection host. Only if you use Postgres or MySQL. | `localhost` | `your-db-host.com` |
 | `DB_PORT` | Database port. Only if you use Postgres or MySQL. | `5432` (Postgres) | `3306` (MySQL) |
@@ -118,10 +121,77 @@ All variables are optional except `JWT_SECRET` which is required on production.
 | `MAIL_PORT` | Email server port | `587` | `465` (SSL) | 
 | `MAIL_USER` | Email server user | - | `myuser` | 
 | `MAIL_PASSWORD` | Email server password for the user | - | `mypassword` | 
-| `MAIL_FROM` | Email address to send the user from | - | `some.address@yoursite.com` | 
+| `MAIL_FROM` | Email address to send the user from | - | `example@yoursite.com` | 
 | `MAIL_SECURE` | Whether use SSL for the email server connection | `false` | `true` | 
-| `REPORT_EMAIL` | The email address that will receive submitted reports | - | `some.address@yoursite.com` | 
-| `CONTACT_EMAIL` | The support email address to show on the app | - | `some.address@yoursite.com` | 
+| `REPORT_EMAIL` | The email address that will receive submitted reports | - | `example@yoursite.com` | 
+| `CONTACT_EMAIL` | The support email address to show on the app | - | `example@yoursite.com` | 
+
+## Themes and customizations
+
+You can add styles, change images, or render custom HTML. Place your content inside the [`/custom`](./custom) folder according to below instructions.
+
+#### How it works:
+
+The structure of the custom folder is like this:
+
+```
+custom/
+├─ css/
+│  ├─ custom1.css
+│  ├─ custom2.css
+│  ├─ ...
+├─ images/
+│  ├─ logo.png
+│  ├─ favicon.ico
+│  ├─ ...
+├─ views/
+│  ├─ partials/
+│  │  ├─ footer.hbs
+│  ├─ 404.hbs
+│  ├─ ...
+```
+
+- **css**: Put your CSS style files here. ([View example →](https://github.com/thedevs-network/kutt-customizations/tree/main/themes/crimson/css))
+  - You can put as many style files as you want: `custom1.css`, `custom2.css`, etc.
+  - If you name your style file `styles.css`, it will replace Kutt's original `styles.css` file.
+  - Each file will be accessible by `<your-site.com>/css/<file>.css`
+- **images**: Put your images here. ([View example →](https://github.com/thedevs-network/kutt-customizations/tree/main/themes/crimson/images))
+  - Name them just like the files inside the [`/static/images/`](./static/images) folder to replace Kutt's original images.
+  - Each image will be accessible by `<your-site.com>/images/<image>.<image-format>`
+- **views**: Custom HTML templates to render. ([View example →](https://github.com/thedevs-network/kutt-customizations/tree/main/themes/crimson/views))
+  - It should follow the same file naming and folder structure as [`/server/views`](./server/views)
+  - Although we try to keep the original file names unchanged, be aware that new changes on Kutt might break your custom views.
+ 
+#### Example theme: Crimson
+
+This is an example and official theme. Crimson includes custom styles, images, and views.
+
+[Get Crimson theme →](https://github.com/thedevs-network/kutt-customizations/tree/main/themes/crimson)
+
+[View list of themes and customizations →](https://github.com/thedevs-network/kutt-customizations)
+
+
+| Homepage | Admin page | Login/signup |
+| -------- | ---------- | ------------ |
+| ![crimson-homepage](https://github.com/user-attachments/assets/b74fab78-5e80-4f57-8425-f0cc73e9c68d) | ![crimson-admin](https://github.com/user-attachments/assets/a75d2430-8074-4ce4-93ec-d8bdfd75d917) | ![crimson-login-signup ](https://github.com/user-attachments/assets/b915eb77-3d66-4407-8e5d-b556f80ff453)
+
+#### Usage with Docker:
+
+If you're building the image locally, then the `/custom` folder should already be included in your app.
+
+If you're pulling the official image, make sure `/kutt/custom` volume is mounted or you have access to it. [View Docker compose example →](https://github.com/thedevs-network/kutt/blob/main/docker-compose.yml#L7)
+
+Then, move your files to that volume. You can do it with this Docker command:
+
+```sh
+docker cp <path-to-custom-folder> <kutt-container-name>:/kutt
+```
+
+For example:
+
+```sh
+docker cp custom kutt-server-1:/kutt
+```
 
 ## Browser extensions
 

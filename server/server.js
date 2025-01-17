@@ -29,17 +29,20 @@ require("./passport");
 // create express app
 const app = express();
 
-// this tells the express app that the app is running behind a proxy server
+// this tells the express app that it's running behind a proxy server
 // and thus it should get the IP address from the proxy server
-// IMPORTANT: users might be able to override their IP address and this
-// might allow users to bypass the rate limit or lead to incorrect link stats
-// read the Kutt documentation to learn how prevent users from changing their real IP address
-app.set("trust proxy", true);
+if (env.TRUST_PROXY) {
+  app.set("trust proxy", true);
+}
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// serve static
+app.use("/images", express.static("custom/images"));
+app.use("/css", express.static("custom/css", { extensions: ["css"] }));
 app.use(express.static("static"));
 
 app.use(passport.initialize());
@@ -47,8 +50,12 @@ app.use(locals.isHTML);
 app.use(locals.config);
 
 // template engine / serve html
+
 app.set("view engine", "hbs");
-app.set("views", path.join(__dirname, "views"));
+app.set("views", [
+  path.join(__dirname, "../custom/views"),
+  path.join(__dirname, "views"),
+]);
 utils.registerHandlebarsHelpers();
 
 // if is custom domain, redirect to the set homepage

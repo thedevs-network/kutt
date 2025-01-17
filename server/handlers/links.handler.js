@@ -338,7 +338,7 @@ async function editAdmin(req, res) {
     res.render("partials/admin/links/edit", {
       swap_oob: true,
       success: "Link has been updated.",
-      ...utils.sanitize.linkAdmin({ ...updatedLink }),
+      ...utils.sanitize.link_admin({ ...updatedLink }),
     });
     return;
   }

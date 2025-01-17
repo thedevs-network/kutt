@@ -2,9 +2,12 @@ services:
   server:
     build:
       context: .
+    volumes:
+      - custom:/kutt/custom
     environment:
         DB_CLIENT: pg
         DB_HOST: postgres
+        DB_PORT: 5432
         REDIS_ENABLED: true
         REDIS_HOST: redis
         REDIS_PORT: 6379
@@ -38,3 +41,4 @@ services:
       - 6379
 volumes:
   db_data_pg:
+  custom:

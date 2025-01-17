@@ -1,10 +1,10 @@
 {
   "name": "kutt",
-  "version": "3.0.4",
+  "version": "3.1.0",
   "description": "Modern URL shortener.",
   "main": "./server/server.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development node --watch-path=./server server/server.js",
+    "dev": "cross-env NODE_ENV=development node --watch-path=./server --watch-path=./custom server/server.js",
     "start": "cross-env NODE_ENV=production node server/server.js",
     "migrate": "knex migrate:latest",
     "migrate:make": "knex migrate:make",

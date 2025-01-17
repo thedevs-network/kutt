@@ -10,11 +10,18 @@ const supportedDBClients = [
   "mysql2"
 ];
 
+// make sure custom alphabet is not empty
+if (process.env.LINK_CUSTOM_ALPHABET === "") {
+  delete process.env.LINK_CUSTOM_ALPHABET;
+}
+
 const env = cleanEnv(process.env, {
   PORT: num({ default: 3000 }),
   SITE_NAME: str({ example: "Kutt", default: "Kutt" }),
   DEFAULT_DOMAIN: str({ example: "kutt.it", default: "localhost:3000" }),
   LINK_LENGTH: num({ default: 6 }),
+  LINK_CUSTOM_ALPHABET: str({ default: "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789" }),
+  TRUST_PROXY: bool({ default: true }),
   DB_CLIENT: str({ choices: supportedDBClients, default: "sqlite3" }),
   DB_FILENAME: str({ default: "db/data" }),
   DB_HOST: str({ default: "localhost" }),

@@ -2,6 +2,8 @@ services:
   server:
     build:
       context: .
+    volumes:
+      - custom:/kutt/custom
     environment:
         DB_CLIENT: mysql2
         DB_HOST: mariadb
@@ -40,3 +42,4 @@ services:
       - 6379
 volumes:
   db_data_mariadb:
+  custom:
