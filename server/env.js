@@ -15,6 +15,11 @@ if (process.env.LINK_CUSTOM_ALPHABET === "") {
   delete process.env.LINK_CUSTOM_ALPHABET;
 }
 
+// make sure jwt secret is not empty
+if (process.env.JWT_SECRET === "") {
+  delete process.env.JWT_SECRET;
+}
+
 const env = cleanEnv(process.env, {
   PORT: num({ default: 3000 }),
   SITE_NAME: str({ example: "Kutt", default: "Kutt" }),
