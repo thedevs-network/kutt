@@ -194,7 +194,7 @@ For example:
 docker cp custom kutt-server-1:/kutt
 ```
 
-Make sure to restart the Kutt server container after making copying files or making changes.
+Make sure to restart the kutt server container after copying files or making changes.
 
 ## Browser extensions
 
