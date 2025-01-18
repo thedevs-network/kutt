@@ -142,16 +142,16 @@ async function getAdmin(match, params) {
   if (params?.user) {
     const id = parseInt(params?.user);
     if (Number.isNaN(id)) {
-      query.andWhereILike("users.email", "%" + params.user + "%");
+      query[knex.compatibleILIKE]("users.email", "%" + params.user + "%");
     } else {
       query.andWhere("domains.user_id", id);
     }
   }
 
   if (params?.search) {
-    query.andWhereRaw(
-      "concat_ws(' ', domains.address, domains.homepage) ILIKE '%' || ? || '%'",
-      [params.search]
+    query[knex.compatibleILIKE](
+      knex.raw("concat_ws(' ', domains.address, domains.homepage)"),
+      "%" + params.search + "%"
     );
   }
 
@@ -160,7 +160,7 @@ async function getAdmin(match, params) {
   }
 
   query.leftJoin(
-    knex("links").select("domain_id").count("id as links_count").groupBy("domain_id").as("l"),
+    knex("links").select("domain_id").count("* as links_count").groupBy("domain_id").as("l"),
     "domains.id",
     "l.domain_id"
   );
@@ -180,19 +180,22 @@ async function totalAdmin(match, params) {
   if (params?.user) {
     const id = parseInt(params?.user);
     if (Number.isNaN(id)) {
-      query.andWhereILike("users.email", "%" + params.user + "%");
+      query[knex.compatibleILIKE]("users.email", "%" + params.user + "%");
       } else {
       query.andWhere("domains.user_id", id);
     }
   }
 
   if (params?.search) {
-    query.andWhereILike("domains.address", "%" + params.search + "%");
+    query[knex.compatibleILIKE](
+      knex.raw("concat_ws(' ', domains.address, domains.homepage)"),
+      "%" + params.search + "%"
+    );
   }
 
   if (params?.links !== undefined) {
     query.leftJoin(
-      knex("links").select("domain_id").count("id as links_count").groupBy("domain_id").as("l"),
+      knex("links").select("domain_id").count("* as links_count").groupBy("domain_id").as("l"),
       "domains.id",
       "l.domain_id"
     );
@@ -200,7 +203,7 @@ async function totalAdmin(match, params) {
   }
 
   query.leftJoin("users", "domains.user_id", "users.id");
-  query.count("domains.id as count");
+  query.count("* as count");
 
   const [{ count }] = await query;
 

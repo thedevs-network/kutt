@@ -144,7 +144,7 @@ async function getAdmin(match, params) {
   if (params?.search) {
     const id = parseInt(params?.search);
     if (Number.isNaN(id)) {
-      query.andWhereILike("users.email", "%" + params?.search + "%");
+      query[knex.compatibleILIKE]("users.email", "%" + params?.search + "%");
     } else {
       query.andWhere("users.id", params?.search);
     }
@@ -169,7 +169,7 @@ async function getAdmin(match, params) {
     "d.user_id"
   )
   query.leftJoin(
-    knex("links").select("user_id").count("id as links_count").groupBy("user_id").as("l"),
+    knex("links").select("user_id").count("* as links_count").groupBy("user_id").as("l"),
     "users.id",
     "l.user_id"
   );
@@ -179,14 +179,14 @@ async function getAdmin(match, params) {
 
 async function totalAdmin(match, params) {
   const query = knex("users")
-    .count("users.id as count")
+    .count("* as count")
     .fromRaw('users')
     .where(normalizeMatch(match));
 
   if (params?.search) {
     const id = parseInt(params?.search);
     if (Number.isNaN(id)) {
-      query.andWhereILike("users.email", "%" + params?.search + "%");
+      query[knex.compatibleILIKE]("users.email", "%" + params?.search + "%");
     } else {
       query.andWhere("users.id", params?.search);
     }
@@ -209,13 +209,13 @@ async function totalAdmin(match, params) {
   if (params?.links !== undefined) {
     query.andWhere("links", params?.links ? "is not" : "is", null);
     query.leftJoin(
-      knex("links").select("user_id").count("id as links").groupBy("user_id").as("l"),
+      knex("links").select("user_id").count("* as links").groupBy("user_id").as("l"),
       "users.id",
       "l.user_id"
     );
   }
 
-  const [{count}] = await query;
+  const [{ count }] = await query;
 
   return typeof count === "number" ? count : parseInt(count);
 }

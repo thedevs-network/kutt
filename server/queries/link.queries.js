@@ -64,13 +64,13 @@ async function total(match, params) {
   });
 
   if (params?.search) {
-    query.andWhereRaw(
-      "concat_ws(' ', description, links.address, target, domains.address) ILIKE '%' || ? || '%'",
-      [params.search]
+    query[knex.compatibleILIKE](
+      knex.raw("concat_ws(' ', description, links.address, target, domains.address)"), 
+      "%" + params.search + "%"
     );
   }
   query.leftJoin("domains", "links.domain_id", "domains.id");
-  query.count("links.id as count");
+  query.count("* as count");
   
   const [{ count }] = await query;
 
@@ -87,26 +87,26 @@ async function totalAdmin(match, params) {
   if (params?.user) {
     const id = parseInt(params?.user);
     if (Number.isNaN(id)) {
-      query.andWhereILike("users.email", "%" + params.user + "%");
+      query[knex.compatibleILIKE]("users.email", "%" + params.user + "%");
       } else {
       query.andWhere("links.user_id", params.user);
     }
   }
 
   if (params?.search) {
-    query.andWhereRaw(
-      "concat_ws(' ', description, links.address, target) ILIKE '%' || ? || '%'",
-      [params.search]
+    query[knex.compatibleILIKE](
+      knex.raw("concat_ws(' ', description, links.address, target)"),
+      "%" + params.search + "%"
     );
   }
 
   if (params?.domain) {
-    query.andWhereRaw("domains.address ILIKE '%' || ? || '%'", [params.domain]);
+    query[knex.compatibleILIKE]("domains.address", "%" + params.domain + "%");
   }
   
   query.leftJoin("domains", "links.domain_id", "domains.id");
   query.leftJoin("users", "links.user_id", "users.id");
-  query.count("links.id as count");
+  query.count("* as count");
 
   const [{ count }] = await query;
 
@@ -122,9 +122,9 @@ async function get(match, params) {
     .orderBy("links.id", "desc");
   
   if (params?.search) {
-    query.andWhereRaw(
-      "concat_ws(' ', description, links.address, target, domains.address) ILIKE '%' || ? || '%'",
-      [params.search]
+    query[knex.compatibleILIKE](
+      knex.raw("concat_ws(' ', description, links.address, target, domains.address)"), 
+      "%" + params.search + "%"
     );
   }
   
@@ -148,21 +148,21 @@ async function getAdmin(match, params) {
   if (params?.user) {
     const id = parseInt(params?.user);
     if (Number.isNaN(id)) {
-      query.andWhereILike("users.email", "%" + params.user + "%");
+      query[knex.compatibleILIKE]("users.email", "%" + params.user + "%");
     } else {
       query.andWhere("links.user_id", params.user);
     }
   }
 
   if (params?.search) {
-    query.andWhereRaw(
-      "concat_ws(' ', description, links.address, target) ILIKE '%' || ? || '%'",
-      [params.search]
+    query[knex.compatibleILIKE](
+      knex.raw("concat_ws(' ', description, links.address, target)"),
+      "%" + params.search + "%"
     );
   }
 
   if (params?.domain) {
-    query.andWhereRaw("domains.address ILIKE '%' || ? || '%'", [params.domain]);
+    query[knex.compatibleILIKE]("domains.address", "%" + params.domain + "%");
   }
   
   query.leftJoin("domains", "links.domain_id", "domains.id");
