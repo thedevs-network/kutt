@@ -160,7 +160,7 @@ async function getAdmin(match, params) {
   }
 
   query.leftJoin(
-    knex("links").select("domain_id").count("id as links_count").groupBy("domain_id").as("l"),
+    knex("links").select("domain_id").count("* as links_count").groupBy("domain_id").as("l"),
     "domains.id",
     "l.domain_id"
   );
@@ -195,7 +195,7 @@ async function totalAdmin(match, params) {
 
   if (params?.links !== undefined) {
     query.leftJoin(
-      knex("links").select("domain_id").count("id as links_count").groupBy("domain_id").as("l"),
+      knex("links").select("domain_id").count("* as links_count").groupBy("domain_id").as("l"),
       "domains.id",
       "l.domain_id"
     );
@@ -203,7 +203,7 @@ async function totalAdmin(match, params) {
   }
 
   query.leftJoin("users", "domains.user_id", "users.id");
-  query.count("domains.id as count");
+  query.count("* as count");
 
   const [{ count }] = await query;
 
