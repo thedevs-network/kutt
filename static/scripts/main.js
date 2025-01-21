@@ -2,7 +2,7 @@
 // htmx.logAll();
 
 // add text/html accept header to receive html instead of json for the requests
-document.body.addEventListener('htmx:configRequest', function(evt) {
+document.body.addEventListener("htmx:configRequest", function(evt) {
   evt.detail.headers["Accept"] = "text/html,*/*";
 });
 
@@ -21,8 +21,8 @@ function resetForm(id) {
     form.reset();
   }
 }
-document.body.addEventListener('resetChangePasswordForm', resetForm("change-password"));
-document.body.addEventListener('resetChangeEmailForm', resetForm("change-email"));
+document.body.addEventListener("resetChangePasswordForm", resetForm("change-password"));
+document.body.addEventListener("resetChangeEmailForm", resetForm("change-email"));
 
 // an htmx extension to use the specifed params in the path instead of the query or body
 htmx.defineExtension("path-params", {
@@ -31,7 +31,7 @@ htmx.defineExtension("path-params", {
       evt.detail.path = evt.detail.path.replace(/{([^}]+)}/g, function(_, param) {
         var val = evt.detail.parameters[param]
         delete evt.detail.parameters[param]
-        return val === undefined ? '{' + param + '}' : encodeURIComponent(val)
+        return val === undefined ? "{" + param + "}" : encodeURIComponent(val)
       })
     }
   }
@@ -145,8 +145,8 @@ window.addEventListener("click", function(event) {
 
 // handle navigation in the table of links
 function setLinksLimit(event) {
-  const buttons = Array.from(document.querySelectorAll('table .nav .limit button'));
-  const limitInput = document.querySelector('#limit');
+  const buttons = Array.from(document.querySelectorAll("table .nav .limit button"));
+  const limitInput = document.querySelector("#limit");
   if (!limitInput || !buttons || !buttons.length) return;
   limitInput.value = event.target.textContent;
   buttons.forEach(b => {
@@ -155,56 +155,56 @@ function setLinksLimit(event) {
 }
 
 function setLinksSkip(event, action) {
-  const buttons = Array.from(document.querySelectorAll('table .nav .pagination button'));
-  const limitElm = document.querySelector('#limit');
-  const totalElm = document.querySelector('#total');
-  const skipElm = document.querySelector('#skip');
+  const buttons = Array.from(document.querySelectorAll("table .nav .pagination button"));
+  const limitElm = document.querySelector("#limit");
+  const totalElm = document.querySelector("#total");
+  const skipElm = document.querySelector("#skip");
   if (!buttons || !limitElm || !totalElm || !skipElm) return;
   const skip = parseInt(skipElm.value);
   const limit = parseInt(limitElm.value);
   const total = parseInt(totalElm.value);
   skipElm.value = action === "next" ? skip + limit : Math.max(skip - limit, 0);
-  document.querySelectorAll('.pagination .next').forEach(elm => {
+  document.querySelectorAll(".pagination .next").forEach(elm => {
     elm.disabled = total <= parseInt(skipElm.value) + limit;
   });
-  document.querySelectorAll('.pagination .prev').forEach(elm => {
+  document.querySelectorAll(".pagination .prev").forEach(elm => {
     elm.disabled = parseInt(skipElm.value) <= 0;
   });
 }
 
 function updateLinksNav() {
-  const totalElm = document.querySelector('#total');
-  const skipElm = document.querySelector('#skip');
-  const limitElm = document.querySelector('#limit');
+  const totalElm = document.querySelector("#total");
+  const skipElm = document.querySelector("#skip");
+  const limitElm = document.querySelector("#limit");
   if (!totalElm || !skipElm || !limitElm) return;
   const total = parseInt(totalElm.value);
   const skip = parseInt(skipElm.value);
   const limit = parseInt(limitElm.value);
-  document.querySelectorAll('.pagination .next').forEach(elm => {
+  document.querySelectorAll(".pagination .next").forEach(elm => {
     elm.disabled = total <= skip + limit;
   });
-  document.querySelectorAll('.pagination .prev').forEach(elm => {
+  document.querySelectorAll(".pagination .prev").forEach(elm => {
     elm.disabled = skip <= 0;
   });
 }
 
 function resetTableNav() {
-  const totalElm = document.querySelector('#total');
-  const skipElm = document.querySelector('#skip');
-  const limitElm = document.querySelector('#limit');
+  const totalElm = document.querySelector("#total");
+  const skipElm = document.querySelector("#skip");
+  const limitElm = document.querySelector("#limit");
   if (!totalElm || !skipElm || !limitElm) return;
   skipElm.value = 0;
   limitElm.value = 10;
   const total = parseInt(totalElm.value);
   const skip = parseInt(skipElm.value);
   const limit = parseInt(limitElm.value);
-  document.querySelectorAll('.pagination .next').forEach(elm => {
+  document.querySelectorAll(".pagination .next").forEach(elm => {
     elm.disabled = total <= skip + limit;
   });
-  document.querySelectorAll('.pagination .prev').forEach(elm => {
+  document.querySelectorAll(".pagination .prev").forEach(elm => {
     elm.disabled = skip <= 0;
   });
-  document.querySelectorAll('table .nav .limit button').forEach(b => {
+  document.querySelectorAll("table .nav .limit button").forEach(b => {
     b.disabled = b.textContent === limit.toString();
   });
 }
@@ -261,43 +261,43 @@ onSearchInputLoad();
 
 // create user checkbox control
 function canSendVerificationEmail() {
-  const canSendVerificationEmail = !document.getElementById('create-user-verified').checked && !document.getElementById('create-user-banned').checked;
-  const checkbox = document.getElementById('send-email-label');
+  const canSendVerificationEmail = !document.getElementById("create-user-verified").checked && !document.getElementById("create-user-banned").checked;
+  const checkbox = document.getElementById("send-email-label");
   if (canSendVerificationEmail)
-    checkbox.classList.remove('hidden');
-  if (!canSendVerificationEmail && !checkbox.classList.contains('hidden'))
-    checkbox.classList.add('hidden');
+    checkbox.classList.remove("hidden");
+  if (!canSendVerificationEmail && !checkbox.classList.contains("hidden"))
+    checkbox.classList.add("hidden");
 }
 
 // htmx prefetch extension
 // https://github.com/bigskysoftware/htmx-extensions/blob/main/src/preload/README.md
-htmx.defineExtension('preload', {
+htmx.defineExtension("preload", {
   onEvent: function(name, event) {
-    if (name !== 'htmx:afterProcessNode') {
+    if (name !== "htmx:afterProcessNode") {
       return
     }
     var attr = function(node, property) {
       if (node == undefined) { return undefined }
-      return node.getAttribute(property) || node.getAttribute('data-' + property) || attr(node.parentElement, property)
+      return node.getAttribute(property) || node.getAttribute("data-" + property) || attr(node.parentElement, property)
     }
     var load = function(node) {
       var done = function(html) {
         if (!node.preloadAlways) {
-          node.preloadState = 'DONE'
+          node.preloadState = "DONE"
         }
 
-        if (attr(node, 'preload-images') == 'true') {
-          document.createElement('div').innerHTML = html
+        if (attr(node, "preload-images") == "true") {
+          document.createElement("div").innerHTML = html
         }
       }
 
       return function() {
-        if (node.preloadState !== 'READY') {
+        if (node.preloadState !== "READY") {
           return
         }
-        var hxGet = node.getAttribute('hx-get') || node.getAttribute('data-hx-get')
+        var hxGet = node.getAttribute("hx-get") || node.getAttribute("data-hx-get")
         if (hxGet) {
-          htmx.ajax('GET', hxGet, {
+          htmx.ajax("GET", hxGet, {
             source: node,
             handler: function(elt, info) {
               done(info.xhr.responseText)
@@ -305,30 +305,30 @@ htmx.defineExtension('preload', {
           })
           return
         }
-        if (node.getAttribute('href')) {
+        if (node.getAttribute("href")) {
           var r = new XMLHttpRequest()
-          r.open('GET', node.getAttribute('href'))
+          r.open("GET", node.getAttribute("href"))
           r.onload = function() { done(r.responseText) }
           r.send()
         }
       }
     }
     var init = function(node) {
-      if (node.getAttribute('href') + node.getAttribute('hx-get') + node.getAttribute('data-hx-get') == '') {
+      if (node.getAttribute("href") + node.getAttribute("hx-get") + node.getAttribute("data-hx-get") == "") {
         return
       }
       if (node.preloadState !== undefined) {
         return
       }
-      var on = attr(node, 'preload') || 'mousedown'
-      const always = on.indexOf('always') !== -1
+      var on = attr(node, "preload") || "mousedown"
+      const always = on.indexOf("always") !== -1
       if (always) {
-        on = on.replace('always', '').trim()
+        on = on.replace("always", "").trim()
       }
       node.addEventListener(on, function(evt) {
-        if (node.preloadState === 'PAUSE') {
-          node.preloadState = 'READY'
-          if (on === 'mouseover') {
+        if (node.preloadState === "PAUSE") {
+          node.preloadState = "READY"
+          if (on === "mouseover") {
             window.setTimeout(load(node), 100)
           } else {
             load(node)()
@@ -336,27 +336,27 @@ htmx.defineExtension('preload', {
         }
       })
       switch (on) {
-        case 'mouseover':
-          node.addEventListener('touchstart', load(node))
-          node.addEventListener('mouseout', function(evt) {
-            if ((evt.target === node) && (node.preloadState === 'READY')) {
-              node.preloadState = 'PAUSE'
+        case "mouseover":
+          node.addEventListener("touchstart", load(node))
+          node.addEventListener("mouseout", function(evt) {
+            if ((evt.target === node) && (node.preloadState === "READY")) {
+              node.preloadState = "PAUSE"
             }
           })
           break
 
-        case 'mousedown':
-          node.addEventListener('touchstart', load(node))
+        case "mousedown":
+          node.addEventListener("touchstart", load(node))
           break
       }
-      node.preloadState = 'PAUSE'
+      node.preloadState = "PAUSE"
       node.preloadAlways = always
-      htmx.trigger(node, 'preload:init')
+      htmx.trigger(node, "preload:init")
     }
     const parent = event.target || event.detail.elt;
     parent.querySelectorAll("[preload]").forEach(function(node) {
       init(node)
-      node.querySelectorAll('a,[hx-get],[data-hx-get]').forEach(init)
+      node.querySelectorAll("a,[hx-get],[data-hx-get]").forEach(init)
     })
   }
 })

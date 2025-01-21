@@ -1,4 +1,3 @@
-require("dotenv").config();
 const { cleanEnv, num, str, bool } = require("envalid");
 
 const supportedDBClients = [
@@ -20,6 +19,9 @@ if (process.env.JWT_SECRET === "") {
   delete process.env.JWT_SECRET;
 }
 
+// if NODE_ENV is not already set, set it based on --production argument
+process.env.NODE_ENV ??= process.argv.includes("--production") ? "production" : "development";
+
 const env = cleanEnv(process.env, {
   PORT: num({ default: 3000 }),
   SITE_NAME: str({ example: "Kutt", default: "Kutt" }),
@@ -27,7 +29,7 @@ const env = cleanEnv(process.env, {
   LINK_LENGTH: num({ default: 6 }),
   LINK_CUSTOM_ALPHABET: str({ default: "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789" }),
   TRUST_PROXY: bool({ default: true }),
-  DB_CLIENT: str({ choices: supportedDBClients, default: "sqlite3" }),
+  DB_CLIENT: str({ choices: supportedDBClients, default: "better-sqlite3" }),
   DB_FILENAME: str({ default: "db/data" }),
   DB_HOST: str({ default: "localhost" }),
   DB_PORT: num({ default: 5432 }),

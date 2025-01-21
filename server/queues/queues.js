@@ -1,5 +1,5 @@
 const Queue = require("bull");
-const path = require("path");
+const path = require("node:path");
 
 const env = require("../env");
 
@@ -19,8 +19,8 @@ if (env.REDIS_ENABLED) {
   visit.on("completed", job => job.remove());
   
   // TODO: handler error
-  // visit.on('error', function (error) {
-  //   console.log('error');
+  // visit.on("error", function (error) {
+  //   console.log("error");
   // });
 } else {
   const visitProcessor = require(path.resolve(__dirname, "visit.js"));

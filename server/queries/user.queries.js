@@ -1,5 +1,5 @@
 const { addMinutes } = require("date-fns");
-const { v4: uuid } = require("uuid");
+const { randomUUID } = require("node:crypto");
 
 const { ROLES } = require("../consts");
 const utils = require("../utils");
@@ -42,7 +42,7 @@ async function add(params, user) {
     password: params.password,
     ...(params.role && { role: params.role }),
     ...(params.verified !== undefined && { verified: params.verified }),
-    verification_token: uuid(),
+    verification_token: randomUUID(),
     verification_expires: utils.dateToUTC(addMinutes(new Date(), 60))
   };
   
@@ -180,7 +180,7 @@ async function getAdmin(match, params) {
 async function totalAdmin(match, params) {
   const query = knex("users")
     .count("* as count")
-    .fromRaw('users')
+    .fromRaw("users")
     .where(normalizeMatch(match));
 
   if (params?.search) {

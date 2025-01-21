@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
-const path = require("path");
-const fs = require("fs");
+const path = require("node:path");
+const fs = require("node:fs");
 
 const { resetMailText, verifyMailText, changeEmailText } = require("./text");
 const { CustomError } = require("../utils");
