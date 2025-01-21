@@ -275,6 +275,7 @@ const sanitize = {
       banned: !!link.banned,
       id: link.uuid,
       password: !!link.password,
+      link: getShortURL(link.address, link.domain).url,
     }
   },
   link_html: link => {
