@@ -4,8 +4,8 @@
   "description": "Modern URL shortener.",
   "main": "./server/server.js",
   "scripts": {
-    "dev": "node --env-file-if-exists=.env --watch-path=./server --watch-path=./custom server/server.js",
-    "start": "node --env-file-if-exists=.env server/server.js --production",
+    "dev": "node --watch-path=./server --watch-path=./custom server/server.js",
+    "start": "node server/server.js --production",
     "migrate": "knex migrate:latest",
     "migrate:make": "knex migrate:make",
     "docs:build": "cd docs/api && node generate && cd ../.."
@@ -25,11 +25,12 @@
   "homepage": "https://github.com/thedevs-network/kutt#readme",
   "dependencies": {
     "bcryptjs": "2.4.3",
-    "better-sqlite3": "^11.8.1",
+    "better-sqlite3": "11.8.1",
     "bull": "4.16.5",
     "cookie-parser": "1.4.7",
     "cors": "2.8.5",
     "date-fns": "2.30.0",
+    "dotenv": "16.4.7",
     "envalid": "8.0.0",
     "express": "4.21.2",
     "express-rate-limit": "7.5.0",

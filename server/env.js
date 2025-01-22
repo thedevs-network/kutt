@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { cleanEnv, num, str, bool } = require("envalid");
 
 const supportedDBClients = [
