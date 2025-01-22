@@ -1,6 +1,5 @@
-const { join, dirname } = require("path");
-
-const { promises: fs } = require("fs");
+const { join, dirname } = require("node:path");
+const { promises: fs } = require("node:fs");
 
 const api = require("./api");
 
@@ -26,19 +25,19 @@ const Api = output =>
 
 const Redoc = output =>
 	fs.copyFile(join(
-		dirname(require.resolve('redoc')), 
-		'redoc.standalone.js'),
+		dirname(require.resolve("redoc")),
+		"redoc.standalone.js"),
 		output);
 
 module.exports = (async () => {
-	const out = join(__dirname, 'static');
-	const apiFile = 'api.json';
-	const redocFile = 'redoc.js';
+	const out = join(__dirname, "static");
+	const apiFile = "api.json";
+	const redocFile = "redoc.js";
 	await fs.mkdir(out, { recursive: true });
 	return Promise.all([
 		Api(join(out, apiFile)),
 		Redoc(join(out, redocFile)),
-		Template(join(out, 'index.html'), {
+		Template(join(out, "index.html"), {
 			api: apiFile,
 			title: api.info.title,
 			redoc: redocFile

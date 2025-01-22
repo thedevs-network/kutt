@@ -1,9 +1,9 @@
 const { differenceInSeconds } = require("date-fns");
-const promisify = require("util").promisify;
+const promisify = require("node:util").promisify;
 const bcrypt = require("bcryptjs");
 const { isbot } = require("isbot");
-const URL = require("url");
-const dns = require("dns");
+const URL = require("node:url");
+const dns = require("node:dns");
 
 const validators = require("./validators.handler");
 const map = require("../utils/map.json");

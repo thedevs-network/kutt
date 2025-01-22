@@ -360,7 +360,7 @@ function registerHandlebarsHelpers() {
   });
 
   hbs.registerHelper("block", function(name) {
-      const val = (blocks[name] || []).join('\n');
+      const val = (blocks[name] || []).join("\n");
       blocks[name] = [];
       return val;
   });

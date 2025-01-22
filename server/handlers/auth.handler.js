@@ -1,7 +1,7 @@
-const { differenceInDays, differenceInMinutes, addMinutes, subMinutes } = require("date-fns");
+const { differenceInDays, addMinutes } = require("date-fns");
 const { nanoid } = require("nanoid");
 const passport = require("passport");
-const { v4: uuid } = require("uuid");
+const { randomUUID } = require("node:crypto");
 const bcrypt = require("bcryptjs");
 
 const { ROLES } = require("../consts");
@@ -227,7 +227,7 @@ async function resetPassword(req, res) {
   const user = await query.user.update(
     { email: req.body.email },
     {
-      reset_password_token: uuid(),
+      reset_password_token: randomUUID(),
       reset_password_expires: utils.dateToUTC(addMinutes(new Date(), 30))
     }
   );
@@ -298,7 +298,7 @@ async function changeEmailRequest(req, res) {
     { id: req.user.id },
     {
       change_email_address: email,
-      change_email_token: uuid(),
+      change_email_token: randomUUID(),
       change_email_expires: utils.dateToUTC(addMinutes(new Date(), 30))
     }
   );

@@ -1,6 +1,6 @@
 const useragent = require("useragent");
 const geoip = require("geoip-lite");
-const URL = require("url");
+const URL = require("node:url");
 
 const { removeWww } = require("../utils");
 const query = require("../queries");
