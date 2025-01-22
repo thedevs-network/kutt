@@ -1310,6 +1310,7 @@ main form button.submit:hover {
 }
 
 main form button.submit svg.send {
+  width: 100%;
   fill: #aaa;
   animation: fadein 0.3s ease-in-out;
   transition: fill 0.2s ease-in-out;
