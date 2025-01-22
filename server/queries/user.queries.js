@@ -72,7 +72,7 @@ async function update(match, update, methods) {
     });
 
     const user = await query.select("id").first();
-    if (!user) return null;
+    if (!user) return {};
     
     const updateQuery = trx("users").where("id", user.id);
     if (methods?.increments) {
