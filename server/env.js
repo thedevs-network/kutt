@@ -20,8 +20,10 @@ if (process.env.JWT_SECRET === "") {
   delete process.env.JWT_SECRET;
 }
 
-// if NODE_ENV is not already set, set it based on --production argument
-process.env.NODE_ENV ??= process.argv.includes("--production") ? "production" : "development";
+// if is started with the --production argument, then set NODE_ENV to production
+if (process.argv.includes("--production")) {
+  process.env.NODE_ENV = "production";
+}
 
 const env = cleanEnv(process.env, {
   PORT: num({ default: 3000 }),
