@@ -1,5 +1,6 @@
 require("dotenv").config();
 const { cleanEnv, num, str, bool } = require("envalid");
+const { readFileSync } = require("node:fs");
 
 const supportedDBClients = [
   "pg",
@@ -25,7 +26,7 @@ if (process.argv.includes("--production")) {
   process.env.NODE_ENV = "production";
 }
 
-const env = cleanEnv(process.env, {
+const spec = {
   PORT: num({ default: 3000 }),
   SITE_NAME: str({ example: "Kutt", default: "Kutt" }),
   DEFAULT_DOMAIN: str({ example: "kutt.it", default: "localhost:3000" }),
@@ -64,6 +65,18 @@ const env = cleanEnv(process.env, {
   REPORT_EMAIL: str({ default: "" }),
   CONTACT_EMAIL: str({ default: "" }),
   NODE_APP_INSTANCE: num({ default: 0 }),
-});
+};
+
+for (const key in spec) {
+  const file_key = key + '_FILE';
+  if (!(file_key in process.env)) continue;
+  try {
+    process.env[key] = readFileSync(process.env[file_key], 'utf8').trim();
+  } catch {
+    // on error, env_FILE just doesn't get applied.
+  }
+}
+
+const env = cleanEnv(process.env, spec);
 
 module.exports = env;
