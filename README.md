@@ -78,18 +78,6 @@ Various docker-compose configurations are available. Use `docker compose -f <fil
 
 Official Kutt Docker image is available on [Docker Hub](https://hub.docker.com/r/kutt/kutt).
 
-## Kubernetes
-
-There is a Helm Chart that can be used to install Kutt on a Kubernetes Cluster:
-
-```sh
-helm repo add christianhuth https://charts.christianhuth.de
-helm repo update
-helm install my-release christianhuth/kutt
-```
-
-For more information check the documentation available on [ArtifactHub](https://artifacthub.io/packages/helm/christianhuth/kutt).
-
 ## API
 
 [View API documentation →](https://docs.kutt.it)
