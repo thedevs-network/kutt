@@ -310,7 +310,7 @@ function beautifyOsName(name) {
 }
 
 
-// create operation systems chart
+// create operating systems chart
 function createOsChart() {
   const canvases = document.querySelectorAll("canvas.os");
   if (!canvases || !canvases.length) return;
