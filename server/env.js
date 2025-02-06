@@ -68,10 +68,10 @@ const spec = {
 };
 
 for (const key in spec) {
-  const file_key = key + '_FILE';
+  const file_key = key + "_FILE";
   if (!(file_key in process.env)) continue;
   try {
-    process.env[key] = readFileSync(process.env[file_key], 'utf8').trim();
+    process.env[key] = readFileSync(process.env[file_key], "utf8").trim();
   } catch {
     // on error, env_FILE just doesn't get applied.
   }
