@@ -86,7 +86,9 @@ Official Kutt Docker image is available on [Docker Hub](https://hub.docker.com/r
 
 The app is configured via environment variables. You can pass environment variables directly or create a `.env` file. View [`.example.env`](./.example.env) file for the list of configurations.
 
-All variables are optional except `JWT_SECRET` which is required on production.
+All variables are optional except `JWT_SECRET` which is required on production. 
+
+You can use files for each of the variables by appending `_FILE` to the name of the variable. Example: `JWT_SECRET_FILE=/path/to/secret_file`.
 
 | Variable | Description | Default | Example |
 | -------- | ----------- | ------- | ------- |
