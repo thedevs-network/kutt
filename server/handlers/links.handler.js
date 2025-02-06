@@ -504,6 +504,23 @@ async function redirect(req, res, next) {
 
   // 6. If link is protected, redirect to password page
   if (link.password) {
+    if ('authorization' in req.headers) {
+      const auth = req.headers.authorization;
+      const firstSpace = auth.indexOf(' ');
+      if (firstSpace !== -1) {
+        const method = auth.slice(0, firstSpace);
+        const payload = auth.slice(firstSpace + 1);
+        if (method === 'Basic') {
+          const decoded = Buffer.from(payload, 'base64').toString('utf8');
+          const colon = decoded.indexOf(':');
+          if (colon !== -1) {
+            const password = decoded.slice(colon + 1);
+            const matches = await bcrypt.compare(password, link.password);
+            if (matches) return res.redirect(link.target);
+          }
+        }
+      }
+    }
     res.render("protected", {
       title: "Protected short link",
       id: link.uuid
