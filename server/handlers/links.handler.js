@@ -6,6 +6,7 @@ const URL = require("node:url");
 const dns = require("node:dns");
 
 const validators = require("./validators.handler");
+const visitCounter = require('./visit_counter.handler');
 const map = require("../utils/map.json");
 const transporter = require("../mail");
 const query = require("../queries");
@@ -545,15 +546,15 @@ async function redirectProtected(req, res) {
   }
 
   // 4. Create visit
-  if (link.user_id) {
-    queue.visit.add({
-      userAgent: req.headers["user-agent"],
-      ip: req.ip,
-      country: req.get("cf-ipcountry"),
-      referrer: req.get("Referrer"),
-      link
-    });
-  }
+// 4. Create visit
+if (link.user_id && !isBot) {
+  await visitCounter.increment(link.id, {
+    userAgent: req.headers["user-agent"],
+    ip: req.ip,
+    country: req.get("cf-ipcountry"),
+    referrer: req.get("Referrer")
+  });
+}
 
   // 5. Send target
   if (req.isHTML) {
