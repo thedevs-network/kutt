@@ -65,6 +65,10 @@ const spec = {
   REPORT_EMAIL: str({ default: "" }),
   CONTACT_EMAIL: str({ default: "" }),
   NODE_APP_INSTANCE: num({ default: 0 }),
+  CACHE_TTL: num({ default: 24 * 60 * 60 }),
+  FLUSH_INTERVAL: num({ default: 60 * 1000 }),
+  BATCH_SIZE: num({ default: 100 }),
+  RETENTION_DAYS: num({ default: 30 }),
 };
 
 for (const key in spec) {
