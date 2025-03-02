@@ -411,30 +411,445 @@ function feedMapData(period) {
   }
 }
 
-// handle map tooltip hover
-function mapTooltipHoverOver() {
-  const tooltip = document.querySelector("#map-tooltip");
-  if (!tooltip) return;
-  if (!event.target.dataset.id) return mapTooltipHoverOut();
-  if (!tooltip.classList.contains("active")) {
-    tooltip.classList.add("visible");
+const mapInteractions = {
+  MIN_SCALE: 1,
+  MAX_SCALE: 14,
+  ZOOM_IN_FACTOR: 1.2,
+  ZOOM_OUT_FACTOR: 0.8,
+  DOUBLE_CLICK_DELAY: 300,
+  
+  svg: null,
+  g: null,
+  ctm: null,
+  mapBounds: null,
+  
+  lastHoveredPath: null,
+
+  dragging: false,
+  dragStart: { x: 0, y: 0 },
+  startCTM: null,
+  
+  pinching: false,
+  initialPinchDistance: 0,
+  pinchStartCTM: null,
+  
+  init: function() {
+    this.svg = document.querySelector("svg.map");
+    if (!this.svg) {
+      console.error("SVG map not found!");
+      return;
+    }
+        
+    const svgParent = this.svg.parentElement;
+    if (svgParent) {
+      svgParent.style.position = "relative";
+    }
+    
+    this.g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    while (this.svg.firstChild) {
+      this.g.appendChild(this.svg.firstChild);
+    }
+    this.svg.appendChild(this.g);
+    
+    const viewBox = this.svg.viewBox.baseVal;
+    this.mapBounds = {
+      x: viewBox.x,
+      y: viewBox.y,
+      width: viewBox.width,
+      height: viewBox.height
+    };
+    
+    this.ctm = this.svg.createSVGMatrix();
+    this.addEventListeners();
+  },
+
+  mapTooltip: function() {
+    return document.querySelector("#map-tooltip");
+  },
+
+  map: function() {
+    return document.querySelector("svg.map");
+  },
+
+  tooltipHoverOut: function() {
+    const svg = this.map();
+    const tooltip = this.mapTooltip()
+    if (!tooltip || !svg) return;
+    
+    if (window.matchMedia("(pointer: coarse)").matches && this.dragging) return;
+
+    tooltip.classList.remove("visible");
+    if (this.lastHoveredPath) {
+      this.lastHoveredPath.classList.remove("active");
+      this.lastHoveredPath = null;
+    }
+  },
+
+  tooltipHoverOver: function(event) {
+    if (!event || !event.target) {
+      if (this.lastHoveredPath) {
+        const br = this.lastHoveredPath.getBoundingClientRect();
+        event = {
+          clientX: br.left + br.width / 2,
+          clientY: br.top + br.height / 2,
+          target: this.lastHoveredPath
+        };
+      } else {
+        console.warn("tooltipHoverOver: event.target undefined");
+        return;
+      }
+    }
+    
+    const tooltip = this.mapTooltip();
+    if (!tooltip) return;
+    
+    const target = event.target;
+    if (!target.dataset.id) {
+      this.tooltipHoverOut();
+      return;
+    }
+    
+    if (this.lastHoveredPath !== target) {
+      if (this.lastHoveredPath) {
+        this.lastHoveredPath.classList.remove("active");
+      }
+      this.lastHoveredPath = target;
+    }
+    
+    tooltip.dataset.currentId = target.dataset.id;
+    if (!tooltip.classList.contains("visible")) {
+      tooltip.classList.add("visible");
+    }
+    tooltip.dataset.tooltip = `${target.getAttribute("aria-label")}: ${target.dataset.views || 0}`;
+    
+    const container = this.map();
+    const containerRect = container.getBoundingClientRect();
+    
+    const bbox = target.getBBox();
+    let centerPoint = container.createSVGPoint();
+    centerPoint.x = bbox.x + bbox.width / 2;
+    centerPoint.y = bbox.y + bbox.height / 2;
+    
+    const ctm = target.getScreenCTM();
+    if (!ctm) {
+      console.warn("tooltipHoverOver: getScreenCTM() is null");
+      return;
+    }
+    const centerScreen = centerPoint.matrixTransform(ctm);
+    
+    let localX = centerScreen.x - containerRect.left;
+    let localY = centerScreen.y - containerRect.top;
+    
+    tooltip.style.position = "absolute";
+    tooltip.style.pointerEvents = "none";
+    
+    const tWidth = tooltip.offsetWidth;
+    const tHeight = tooltip.offsetHeight;
+    
+    let posX = localX - tWidth / 2;
+    let posY = localY - tHeight / 2;
+    
+    const leftMargin = 30;
+    const rightMargin = 30;
+    const topMargin = 30;
+    const bottomMargin = 30;
+    
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(value, max));
+    }
+    
+    posX = clamp(posX, leftMargin, container.clientWidth - tWidth - rightMargin);
+    posY = clamp(posY, topMargin, container.clientHeight - tHeight - bottomMargin);
+    
+    tooltip.style.transform = `translate(${posX}px, ${posY}px)`;
+    
+    target.classList.add("active");
+  },
+   
+  setCTM: function(matrix) {
+    this.g.setAttribute("transform", 
+      `matrix(${matrix.a} ${matrix.b} ${matrix.c} ${matrix.d} ${matrix.e} ${matrix.f})`
+    );
+    this.ctm = matrix;
+  },
+
+  applyBounding: function(matrix) {
+    const scaleX = matrix.a;
+    const scaleY = matrix.d;
+    const scaledWidth = this.mapBounds.width * scaleX;
+    const scaledHeight = this.mapBounds.height * scaleY;
+    const containerW = this.svg.clientWidth;
+    const containerH = this.svg.clientHeight;
+    let tx = matrix.e;
+    let ty = matrix.f;
+    
+    if (scaledWidth > containerW) {
+      const minX = containerW - scaledWidth;
+      if (tx < minX) tx = minX;
+      if (tx > 200) tx = 200;
+    }
+
+    if (scaledHeight > containerH) {
+      const minY = containerH - scaledHeight;
+      if (ty < minY) ty = minY;
+      if (ty > 200) ty = 200;
+    }
+    
+    return matrix.translate((tx - matrix.e) / scaleX, (ty - matrix.f) / scaleY);
+  },
+
+  zoomToPoint: function(eventClientX, eventClientY, factor) {
+    const p = this.svg.createSVGPoint();
+    p.x = eventClientX;
+    p.y = eventClientY;
+    
+    const invMatrix = this.g.getScreenCTM().inverse();
+    const loc = p.matrixTransform(invMatrix);
+    
+    const currentScale = this.ctm.a;
+    let targetScale = currentScale * factor;
+    if (targetScale < this.MIN_SCALE) targetScale = this.MIN_SCALE;
+    if (targetScale > this.MAX_SCALE) targetScale = this.MAX_SCALE;
+    const scaleDelta = targetScale / currentScale;
+    
+    const translateTo = this.svg.createSVGMatrix().translate(loc.x, loc.y);
+    const scaleMat = this.svg.createSVGMatrix().scale(scaleDelta);
+    const translateBack = this.svg.createSVGMatrix().translate(-loc.x, -loc.y);
+    
+    let rawCTM = this.ctm
+      .multiply(translateTo)
+      .multiply(scaleMat)
+      .multiply(translateBack);
+      
+    let boundedCTM = this.applyBounding(rawCTM);
+    
+    if (factor > 1 &&
+        Math.abs(boundedCTM.e - this.ctm.e) < 0.001 &&
+        Math.abs(boundedCTM.f - this.ctm.f) < 0.001) {
+      this.setCTM(rawCTM);
+    } else {
+      this.setCTM(boundedCTM);
+    }
+  },
+
+  zoomAtCenter: function(factor) {
+    const rect = this.svg.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    this.zoomToPoint(centerX, centerY, factor);
+  },
+
+  createZoomButton: function(className, ariaLabel, svgHTML) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "button " + className;
+    button.setAttribute("aria-haspopup", "false");
+    button.setAttribute("aria-label", ariaLabel);
+    button.innerHTML = svgHTML;
+    button.style.marginBottom = "10px";
+    button.style.padding = "0 8px";
+    return button;
+  },
+
+  startDrag: function(event) {
+    if (event.touches && event.touches.length > 1) return;
+    this.dragging = true;
+    this.svg.style.cursor = "grabbing";
+    this.dragStart.x = event.touches ? event.touches[0].clientX : event.clientX;
+    this.dragStart.y = event.touches ? event.touches[0].clientY : event.clientY;
+    this.startCTM = this.ctm;
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+  },
+
+  moveDrag: function(event) {
+    if (!this.dragging) return;
+    if (event.touches && event.touches.length > 1) return;
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+    const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+    const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+    const dx = clientX - this.dragStart.x;
+    const dy = clientY - this.dragStart.y;
+    const scaleX = this.startCTM.a;
+    const scaleY = this.startCTM.d;
+    let newCTM = this.startCTM.multiply(
+      this.svg.createSVGMatrix().translate(dx / scaleX, dy / scaleY)
+    );
+    newCTM = this.applyBounding(newCTM);
+    this.setCTM(newCTM);
+  },
+
+  endDrag: function() {
+    this.dragging = false;
+    this.svg.style.cursor = "default";
+  },
+
+  startPinch: function(event) {
+    if (event.touches.length === 2) {
+      this.pinching = true;
+      const touch1 = event.touches[0];
+      const touch2 = event.touches[1];
+      const dx = touch2.clientX - touch1.clientX;
+      const dy = touch2.clientY - touch1.clientY;
+      this.initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
+      this.pinchStartCTM = this.ctm;
+      event.preventDefault();
+    }
+  },
+
+  movePinch: function(event) {
+    if (!this.pinching || event.touches.length !== 2) return;
+    event.preventDefault();
+    const touch1 = event.touches[0];
+    const touch2 = event.touches[1];
+    const dx = touch2.clientX - touch1.clientX;
+    const dy = touch2.clientY - touch1.clientY;
+    const currentDistance = Math.sqrt(dx * dx + dy * dy);
+    let scaleFactor = currentDistance / this.initialPinchDistance;
+    const currentScale = this.pinchStartCTM.a;
+    let targetScale = currentScale * scaleFactor;
+    if (targetScale < this.MIN_SCALE) targetScale = this.MIN_SCALE;
+    if (targetScale > this.MAX_SCALE) targetScale = this.MAX_SCALE;
+    scaleFactor = targetScale / currentScale;
+    
+    const midX = (touch1.clientX + touch2.clientX) / 2;
+    const midY = (touch1.clientY + touch2.clientY) / 2;
+    
+    const p = this.svg.createSVGPoint();
+    p.x = midX;
+    p.y = midY;
+    const invMatrix = this.g.getScreenCTM().inverse();
+    const loc = p.matrixTransform(invMatrix);
+    
+    const translateTo = this.svg.createSVGMatrix().translate(loc.x, loc.y);
+    const scaleMat = this.svg.createSVGMatrix().scale(scaleFactor);
+    const translateBack = this.svg.createSVGMatrix().translate(-loc.x, -loc.y);
+    
+    let newCTM = this.pinchStartCTM
+      .multiply(translateTo)
+      .multiply(scaleMat)
+      .multiply(translateBack);
+    newCTM = this.applyBounding(newCTM);
+    this.setCTM(newCTM);
+  },
+
+  endPinch: function(event) {
+    if (event.touches.length < 2) {
+      this.pinching = false;
+    }
+  },
+  
+  updateTooltipRAF: function(event) {
+    if (!mapInteractions.tooltipUpdateScheduled) {
+      mapInteractions.tooltipUpdateScheduled = true;
+      window.requestAnimationFrame(() => {
+        this.tooltipHoverOver(event);
+        mapInteractions.tooltipUpdateScheduled = false;
+      });
+    }
+  },
+
+  addEventListeners: function() {
+    let lastLeftClickTime = 0;
+    let lastRightClickTime = 0;
+
+    const updateTooltip = () => {
+      if (this.lastHoveredPath) {
+        this.updateTooltipRAF({ target: this.lastHoveredPath });
+      }
+    };
+
+    this.svg.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      const zoomDirection = event.deltaY < 0 ? this.ZOOM_IN_FACTOR : 1 / this.ZOOM_IN_FACTOR;
+      this.zoomToPoint(event.clientX, event.clientY, zoomDirection);
+      updateTooltip()
+    }, { passive: false });
+
+    this.svg.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+    });
+
+    this.svg.addEventListener("mousedown", (event) => {
+      event.preventDefault();
+      const now = Date.now();
+
+      if (event.button === 0) {
+        if (now - lastLeftClickTime < this.DOUBLE_CLICK_DELAY) {
+          this.zoomToPoint(event.clientX, event.clientY, this.ZOOM_IN_FACTOR);
+        }
+        lastLeftClickTime = now;
+        this.startDrag(event);
+      }
+      else if (event.button === 2) {
+        if (now - lastRightClickTime < this.DOUBLE_CLICK_DELAY) {
+          this.zoomToPoint(event.clientX, event.clientY, this.ZOOM_OUT_FACTOR);
+        }
+        lastRightClickTime = now;
+      }
+    }, { passive: false });
+
+    this.svg.addEventListener("mouseup", this.endDrag.bind(this));
+    this.svg.addEventListener("mouseleave", this.endDrag.bind(this));
+
+    this.svg.addEventListener("mousemove", (event) => {
+      if (!mapInteractions.isTicking) {
+        window.requestAnimationFrame(() => {
+          this.moveDrag(event);
+          mapInteractions.isTicking = false;
+        });
+        mapInteractions.isTicking = true;
+      }
+    });
+
+    this.svg.addEventListener("touchstart", (event) => {
+      if (event.cancelable) event.preventDefault();
+      if (event.touches.length === 2) {
+        this.startPinch(event);
+      } else if (event.touches.length === 1) {
+        this.startDrag(event);
+      }
+    }, { passive: false });
+
+    this.svg.addEventListener("touchmove", (event) => {
+      if (event.touches.length === 2) {
+        this.movePinch(event);
+      } else if (event.touches.length === 1) {
+        this.moveDrag(event);
+        updateTooltip();
+      }
+    }, { passive: false });
+
+    this.svg.addEventListener("touchend", (event) => {
+      if (event.touches.length < 2) {
+        this.endPinch(event);
+        this.endDrag(event);
+        updateTooltip();
+      }
+    });
+
+    this.bindZoomControls(updateTooltip);
+  },
+
+  bindZoomControls: function(updateTooltip) {
+    const zoomInButton = document.getElementById("zoomInButton");
+    const zoomOutButton = document.getElementById("zoomOutButton");
+  
+    if (zoomInButton && zoomOutButton) {
+      zoomInButton.addEventListener("click", () => {
+        this.zoomAtCenter(this.ZOOM_IN_FACTOR)
+        updateTooltip()
+      });
+      zoomOutButton.addEventListener("click", () => {
+        this.zoomAtCenter(this.ZOOM_OUT_FACTOR)
+        updateTooltip()
+      });
+    }
   }
-  tooltip.dataset.tooltip = `${event.target.ariaLabel}: ${event.target.dataset.views || 0}`;
-  const rect = event.target.getBoundingClientRect();
-  tooltip.style.top = rect.top + (rect.height / 2) + "px";
-  tooltip.style.left = rect.left + (rect.width / 2) + "px";
-  event.target.classList.add("active");
-}
-function mapTooltipHoverOut() {
-  const tooltip = document.querySelector("#map-tooltip");
-  const map = document.querySelector("svg.map");
-  const paths = map.querySelectorAll("path");
-  if (!tooltip || !map) return;
-  tooltip.classList.remove("visible");
-  for (let i = 0; i < paths.length; ++i) {
-    paths[i].classList.remove("active");
-  }
-}
+};
 
 // create stats charts
 function createCharts() {
@@ -447,4 +862,5 @@ function createCharts() {
   createReferrersChart();
   createOsChart();
   feedMapData();
+  mapInteractions.init();
 }

@@ -71,15 +71,27 @@
             data-week="{{json stats.lastWeek.stats.country}}"
             data-month="{{json stats.lastMonth.stats.country}}"
             data-year="{{json stats.lastYear.stats.country}}"
-            onmouseout="mapTooltipHoverOut()"
-            onmousemove="mapTooltipHoverOver(event)"
-            onpointerdown="mapTooltipHoverOver(event)"
-            onpointerup="mapTooltipHoverOut()"
+            onmouseout="mapInteractions.tooltipHoverOut();"
+            onmousemove="mapInteractions.updateTooltipRAF(event);"
+            onpointerdown="mapInteractions.updateTooltipRAF(event);"
+            onpointerup="mapInteractions.tooltipHoverOut();"
           >
             {{#each map.layers}}
               <path data-id="{{id}}" aria-label="{{name}}" d="{{d}}"></path>
             {{/each}}
           </svg>
+          <div class="zoom-control_group" id="zoomControls" style="position: absolute; top: 60%; right: 10px; transform: translateY(-50%); z-index: 1000;">
+            <button id="zoomInButton" class="button zoom-control_zoom-in" style="margin-bottom: 10px; padding: 0px 8px; opacity: 0.95;" aria-label="Zoom In">
+              <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M11 5.992c0-.537.448-.992 1-.992.556 0 1 .444 1 .992V11h5.008c.537 0 .992.448.992 1 0 .556-.444 1-.992 1H13v5.008c0 .537-.448.992-1 .992-.556 0-1-.444-1-.992V13H5.992C5.455 13 5 12.552 5 12c0-.556.444-1 .992-1H11V5.992z" fill="currentColor"></path>
+              </svg>
+            </button>
+            <button id="zoomOutButton" class="button zoom-control_zoom-out" style="margin-bottom: 10px; padding: 0px 8px; opacity: 0.95;" aria-label="Zoom Out">
+              <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 12a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1z" fill="currentColor"></path>
+              </svg>
+            </button>
+          </div>
         </div>
         <div>
           <h2>Operation systems.</h2>
