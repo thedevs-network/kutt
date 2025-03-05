@@ -15,12 +15,12 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 
 RUN mkdir -p /var/lib/kutt
 
-# copy the rest of source files into the image
-COPY . .
-
 # install curl for healthcheck
 RUN apk add --no-cache curl
 RUN curl --version
+
+# copy the rest of source files into the image
+COPY . .
 
 # expose the port that the app listens on
 EXPOSE 3000
