@@ -116,6 +116,10 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `REDIS_PORT` | Redis port | `6379` | `6379` |
 | `REDIS_PASSWORD` | Redis passowrd | - | `mypassword` |
 | `REDIS_DB` | Redis database number, between 0 and 15. | `0` | `1` |
+| `REDIS_TLS_ENABLED` | Enable transit encryption | `false` | `true` |
+| `REDIS_TLS_CA` | CA certificate in PEM format
+| `REDIS_TLS_CLIENT_CERT` | Client certificate in PEM format
+| `REDIS_TLS_CLIENT_KEY` | Client key in PEM format
 | `SERVER_IP_ADDRESS` | The IP address shown to the user on the setting's page. It's only for display purposes and has no other use. | - | `1.2.3.4` |
 | `SERVER_CNAME_ADDRESS` | The subdomain shown to the user on the setting's page. It's only for display purposes and has no other use. | - | `custom.yoursite.com` |
 | `CUSTOM_DOMAIN_USE_HTTPS` | Use https for links with custom domain. It's on you to generate SSL certificates for those domains manually—at least on this version for now. | `false` | `true` |
