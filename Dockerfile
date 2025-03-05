@@ -18,6 +18,10 @@ RUN mkdir -p /var/lib/kutt
 # copy the rest of source files into the image
 COPY . .
 
+# install curl for healthcheck
+RUN apk add --no-cache curl
+RUN curl --version
+
 # expose the port that the app listens on
 EXPOSE 3000
 
