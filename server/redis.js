@@ -5,12 +5,20 @@ const env = require("./env");
 let client;
 
 if (env.REDIS_ENABLED) {
-  client = new Redis({
+  let params = {
     host: env.REDIS_HOST,
     port: env.REDIS_PORT,
     db: env.REDIS_DB,
     ...(env.REDIS_PASSWORD && { password: env.REDIS_PASSWORD })
-  });
+  };
+  if (env.REDIS_TLS_ENABLED) {
+    params.tls = {
+      ca: env.REDIS_TLS_CA,
+      cert: env.REDIS_TLS_CERT,
+      key: env.REDIS_TLS_KEY,
+    };
+  }
+  client = new Redis(params);
 }
 
 const key = {
