@@ -1,47 +1,14 @@
+@import "_variables.css";
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 @font-face {
   font-family: 'Nunito';
   font-style: normal;
   font-weight: 200 1000;
   src: url(/fonts/nunito-variable.woff2) format('woff2');
-}
-
-:root {
-  --bg-color: hsl(206, 12%, 95%);
-  --text-color: hsl(200, 35%, 25%);
-  --color-primary: hsl(207, 90%, 54%);
-  --outline-color: hsl(188, 100%, 54%);
-  --button-bg: linear-gradient(to right, #e0e0e0, #bdbdbd);
-  --button-bg-box-shadow-color: rgba(160, 160, 160, 0.5);
-  --button-bg-primary: linear-gradient(to right, hsl(207, 90%, 61%), hsl(218, 100%, 58%));
-  --button-bg-primary-box-shadow-color: hsla(207, 90%, 61%, 0.5);
-  --button-bg-secondary: linear-gradient(to right, hsl(262, 47%, 55%), hsl(265, 100%, 46%));
-  --button-bg-secondary-box-shadow-color: hsla(258, 58%, 42%, 0.5);
-  --button-bg-danger: linear-gradient(to right, hsl(0, 84%, 58%), hsl(0, 78%, 50%));
-  --button-bg-danger-box-shadow-color: hsla(0, 58%, 42%, 0.5);
-  --button-bg-success: linear-gradient(to right, hsl(130, 58%, 45%), hsl(130, 67%, 45%));
-  --button-bg-success-box-shadow-color: hsla(128, 80%, 48%, 0.5);
-  --button-action-shadow-color: hsla(200, 15%, 60%, 0.12);
-  --underline-color: hsl(200, 35%, 65%);
-  --secondary-text-color: hsl(200, 14%, 60%);
-  --send-icon-hover-color: hsl(262, 52%, 47%);
-  --send-spinner-icon-color: hsl(200, 15%, 70%);
-  --success-icon-color: hsl(144, 40%, 57%);
-  --error-icon-color: hsl(0, 86%, 63%);
-  --copy-icon-color: hsl(144, 40%, 57%);
-  --copy-icon-bg-color: hsl(144, 100%, 96%);
-  --copy-icon-shadow-color: hsla(200, 15%, 60%, 0.12);
-  --focus-outline-color: hsla(207, 90%, 61%, 0.5);
-  --checkbox-bg-color: hsl(262, 47%, 63%);
-  --input-shadow-color: hsla(200, 15%, 70%, 0.2);
-  --input-hover-shadow-color: hsla(200, 15%, 70%, 0.4);
-  --input-label-color: hsl(200, 35%, 25%);
-  --table-bg-color: hsl(200, 12%, 95%);
-  --table-shadow-color: hsla(200, 20%, 70%, 0.3);
-  --table-tr-border-color: hsl(200, 14%, 94%);
-  --table-tr-hover-bg-color: hsl(200, 14%, 98%);
-  --table-head-tr-border-color: hsl(200, 14%, 90%);
-  --table-status-gray-bg-color: hsl(200, 12%, 95%);
-  --keyframe-slidey-offset: 0;
 }
 
 /* ANIMATIONS */
@@ -151,7 +118,7 @@ button {
   text-align: center;
   line-height: 1;
   word-break: keep-all;
-  color: #444;
+  color: var(--button-text-color);
   border: none;
   border-radius: 100px;
   transition: all 0.4s ease-out;
@@ -337,7 +304,7 @@ button.nav {
   border-radius: 4px;
   box-shadow: 0 0px 10px rgba(100, 100, 100, 0.1);
   background: none;
-  background-color: white;
+  background-color: var(--button-nav-bg);
   transition: all 0.2s ease-in-out;
   font-size: 12px;
   cursor: pointer;
@@ -618,7 +585,8 @@ table {
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: white;
+  background-color: var(--table-bg-color);
+  border: 1px solid var(--table-border-color);
   border-radius: 12px;
   box-shadow: 0 6px 15px var(--table-shadow-color);
   text-align: center;
@@ -772,7 +740,7 @@ table .tab a:not(.active):hover {
   align-items: center;
   text-align: center;
   padding: 3rem 2rem;
-  background-color: white;
+  background-color: var(--dialog-bg-color);
   border-radius: 8px;
   --keyframe-slidey-offset: -30px;
   animation: slidey 0.2s ease-in-out;

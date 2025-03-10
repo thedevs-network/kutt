@@ -243,3 +243,6 @@ Pull requests are welcome. Open a discussion for feedback, requesting features, 
 
 Special thanks to [Thomas](https://github.com/trgwii) and [Muthu](https://github.com/MKRhere). Logo design by [Muthu](https://github.com/MKRhere).
 
+## Dark Mode Support
+Kutt automatically switches between light/dark themes based on your system preference.  
+To customize colors, override CSS variables in `static/css/styles.css`.

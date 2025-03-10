@@ -1,0 +1,105 @@
+:root {
+    --bg-color: hsl(206, 12%, 95%);
+    --text-color: hsl(200, 35%, 25%);
+    --color-primary: hsl(207, 90%, 54%);
+    --outline-color: hsl(188, 100%, 54%);
+    --button-bg: linear-gradient(to right, #e0e0e0, #bdbdbd);
+    --button-bg-box-shadow-color: rgba(160, 160, 160, 0.5);
+    --button-bg-primary: linear-gradient(to right, hsl(207, 90%, 61%), hsl(218, 100%, 58%));
+    --button-bg-primary-box-shadow-color: hsla(207, 90%, 61%, 0.5);
+    --button-bg-secondary: linear-gradient(to right, hsl(262, 47%, 55%), hsl(265, 100%, 46%));
+    --button-bg-secondary-box-shadow-color: hsla(258, 58%, 42%, 0.5);
+    --button-bg-danger: linear-gradient(to right, hsl(0, 84%, 58%), hsl(0, 78%, 50%));
+    --button-bg-danger-box-shadow-color: hsla(0, 58%, 42%, 0.5);
+    --button-bg-success: linear-gradient(to right, hsl(130, 58%, 45%), hsl(130, 67%, 45%));
+    --button-bg-success-box-shadow-color: hsla(128, 80%, 48%, 0.5);
+    --button-action-shadow-color: hsla(200, 15%, 60%, 0.12);
+    --underline-color: hsl(200, 35%, 65%);
+    --secondary-text-color: hsl(200, 14%, 60%);
+    --send-icon-hover-color: hsl(262, 52%, 47%);
+    --send-spinner-icon-color: hsl(200, 15%, 70%);
+    --success-icon-color: hsl(144, 40%, 57%);
+    --error-icon-color: hsl(0, 86%, 63%);
+    --copy-icon-color: hsl(144, 40%, 57%);
+    --copy-icon-bg-color: hsl(144, 100%, 96%);
+    --copy-icon-shadow-color: hsla(200, 15%, 60%, 0.12);
+    --focus-outline-color: hsla(207, 90%, 61%, 0.5);
+    --checkbox-bg-color: hsl(262, 47%, 63%);
+    --input-shadow-color: hsla(200, 15%, 70%, 0.2);
+    --input-hover-shadow-color: hsla(200, 15%, 70%, 0.4);
+    --input-label-color: hsl(200, 35%, 25%);
+    --table-bg-color: hsl(200, 12%, 95%);
+    --table-shadow-color: hsla(200, 20%, 70%, 0.3);
+    --table-tr-border-color: hsl(200, 14%, 94%);
+    --table-tr-hover-bg-color: hsl(200, 14%, 98%);
+    --table-head-tr-border-color: hsl(200, 14%, 90%);
+    --table-status-gray-bg-color: hsl(200, 12%, 95%);
+    --keyframe-slidey-offset: 0;
+  }
+
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+    :root {
+      --bg-color: #101827;
+      --text-color: #f8fafc;
+      --color-primary: hsl(207, 90%, 61%);
+      --outline-color: hsl(207, 90%, 54%);
+      --button-bg: linear-gradient(to right, #2d3748, #4a5568);
+      --button-bg-box-shadow-color: rgba(45, 55, 72, 0.5);
+      --button-bg-primary: linear-gradient(to right, hsl(207, 90%, 48%), hsl(218, 90%, 40%));
+      --button-bg-primary-box-shadow-color: hsla(207, 90%, 48%, 0.5);
+      --button-bg-secondary: linear-gradient(to right, hsl(262, 47%, 45%), hsl(265, 100%, 40%));
+      --button-bg-secondary-box-shadow-color: hsla(258, 58%, 32%, 0.5);
+      --button-bg-danger: linear-gradient(to right, hsl(0, 84%, 48%), hsl(0, 78%, 40%));
+      --button-bg-danger-box-shadow-color: hsla(0, 58%, 32%, 0.5);
+      --button-bg-success: linear-gradient(to right, hsl(130, 58%, 35%), hsl(130, 67%, 35%));
+      --button-bg-success-box-shadow-color: hsla(128, 80%, 38%, 0.5);
+      --button-action-shadow-color: hsla(200, 15%, 30%, 0.12);
+      --underline-color: hsl(200, 35%, 40%);
+      --secondary-text-color: hsl(200, 14%, 50%);
+      --send-icon-hover-color: hsl(262, 52%, 37%);
+      --send-spinner-icon-color: hsl(200, 15%, 50%);
+      --success-icon-color: hsl(144, 40%, 47%);
+      --error-icon-color: hsl(0, 86%, 53%);
+      --copy-icon-color: hsl(144, 40%, 47%);
+      --copy-icon-bg-color: hsl(144, 100%, 86%);
+      --copy-icon-shadow-color: hsla(200, 15%, 30%, 0.12);
+      --focus-outline-color: hsla(207, 90%, 48%, 0.5);
+      --checkbox-bg-color: hsl(262, 47%, 53%);
+      --input-shadow-color: hsla(219.13, 41.82%, 10.78%, 1);
+      --input-hover-shadow-color: hsla(200, 15%, 50%, 0.4);
+      --input-label-color: #f8fafc;
+      --table-bg-color: #1F2937;
+      --table-shadow-color: hsla(200, 20%, 40%, 0.3);
+      --table-tr-border-color: #374151;
+      --table-tr-hover-bg-color: #27303f;
+      --table-tr-bg-color: #27303f;
+      --table-head-tr-border-color: #2d3748;
+      --table-status-gray-bg-color: #1F2937;
+      --stats-bg: #19212d;
+      --hr-color: hsl(217.25, 85.85%, 58.43%);
+      --button-bg-color: hsl(217.25, 85.85%, 58.43%);
+      --button-bg-hover-color: hsl(217.25, 85.85%, 50%);
+      --button-text-color: #ffffff;
+    }
+
+    /* Fix inconsistent input field styles */
+    input[type="text"], 
+    input[type="email"], 
+    input[type="password"] {
+      background-color: rgb(38, 47, 62);
+      border: 1px solid #374151;
+      color: var(--text-color);
+      padding: 8px;
+      border-radius: 5px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    input[type="text"]:focus, 
+    input[type="email"]:focus, 
+    input[type="password"]:focus {
+      border-color: var(--outline-color);
+      box-shadow: 0 0 8px var(--input-hover-shadow-color);
+      outline: none;
+    }
+}
