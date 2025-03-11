@@ -72,8 +72,8 @@
             data-month="{{json stats.lastMonth.stats.country}}"
             data-year="{{json stats.lastYear.stats.country}}"
             onmouseout="mapInteractions.tooltipHoverOut();"
-            onmousemove="mapInteractions.updateTooltipRAF(event);"
-            onpointerdown="mapInteractions.updateTooltipRAF(event);"
+            onmousemove="mapInteractions.tooltipHoverOver(event);"
+            onpointerdown="mapInteractions.tooltipHoverOver(event);"
             onpointerup="mapInteractions.tooltipHoverOut();"
           >
             {{#each map.layers}}

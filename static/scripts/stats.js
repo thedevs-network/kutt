@@ -411,11 +411,14 @@ function feedMapData(period) {
   }
 }
 
+//Add zoom map v0.4
 const mapInteractions = {
   MIN_SCALE: 1,
   MAX_SCALE: 14,
   ZOOM_IN_FACTOR: 1.2,
   ZOOM_OUT_FACTOR: 0.8,
+  FLY_SPEED: 1.25,
+
   DOUBLE_CLICK_DELAY: 300,
   
   svg: null,
@@ -434,10 +437,18 @@ const mapInteractions = {
   pinchStartCTM: null,
   
   init: function() {
+    this.isMobile = window.matchMedia("(pointer: coarse)").matches;
     this.svg = document.querySelector("svg.map");
     if (!this.svg) {
       console.error("SVG map not found!");
       return;
+    }
+    
+    this.mapTooltip = document.querySelector("#map-tooltip");
+    if (this.mapTooltip) {
+        this.mapTooltip.style.position = "absolute";
+        this.mapTooltip.style.pointerEvents = "none";
+        this.mapTooltip.style.transition = "transform 0.15s ease-out";
     }
         
     const svgParent = this.svg.parentElement;
@@ -446,6 +457,7 @@ const mapInteractions = {
     }
     
     this.g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
     while (this.svg.firstChild) {
       this.g.appendChild(this.svg.firstChild);
     }
@@ -462,22 +474,13 @@ const mapInteractions = {
     this.ctm = this.svg.createSVGMatrix();
     this.addEventListeners();
   },
-
-  mapTooltip: function() {
-    return document.querySelector("#map-tooltip");
-  },
-
-  map: function() {
-    return document.querySelector("svg.map");
-  },
-
+  
   tooltipHoverOut: function() {
-    const svg = this.map();
-    const tooltip = this.mapTooltip()
+    const svg = this.svg;
+    const tooltip = this.mapTooltip;
     if (!tooltip || !svg) return;
+    if (this.isMobile && this.dragging) return;
     
-    if (window.matchMedia("(pointer: coarse)").matches && this.dragging) return;
-
     tooltip.classList.remove("visible");
     if (this.lastHoveredPath) {
       this.lastHoveredPath.classList.remove("active");
@@ -486,152 +489,138 @@ const mapInteractions = {
   },
 
   tooltipHoverOver: function(event) {
-    if (!event || !event.target) {
-      if (this.lastHoveredPath) {
-        const br = this.lastHoveredPath.getBoundingClientRect();
-        event = {
-          clientX: br.left + br.width / 2,
-          clientY: br.top + br.height / 2,
-          target: this.lastHoveredPath
-        };
-      } else {
-        console.warn("tooltipHoverOver: event.target undefined");
-        return;
-      }
+    const margins = { left: 30, right: 30, top: 30, bottom: 30 };
+    const pos_threshold = 5;
+    
+    let target = event?.target ?? this.lastHoveredPath;
+    
+    if (!target) {
+      console.warn("tooltipHoverOver: target undefined");
+      return;
     }
+
+    if (!event?.target) {
+      const br = target.getBoundingClientRect();
+      event = {
+        clientX: br.left + br.width / 2,
+        clientY: br.top + br.height / 2,
+        target
+      };
+    }
+
+    const { mapTooltip: tooltip, svg: container } = this;
     
-    const tooltip = this.mapTooltip();
-    if (!tooltip) return;
-    
-    const target = event.target;
-    if (!target.dataset.id) {
+    if (!target.dataset?.id) {
       this.tooltipHoverOut();
       return;
     }
-    
+
     if (this.lastHoveredPath !== target) {
-      if (this.lastHoveredPath) {
-        this.lastHoveredPath.classList.remove("active");
-      }
+      this.lastHoveredPath?.classList?.remove("active");
+      target.classList.add("active");
       this.lastHoveredPath = target;
     }
+
+    const ariaLabel = target.getAttribute("aria-label");
+    const views = target.dataset.views || 0;
     
     tooltip.dataset.currentId = target.dataset.id;
-    if (!tooltip.classList.contains("visible")) {
-      tooltip.classList.add("visible");
-    }
-    tooltip.dataset.tooltip = `${target.getAttribute("aria-label")}: ${target.dataset.views || 0}`;
-    
-    const container = this.map();
+    tooltip.dataset.tooltip = `${ariaLabel}: ${views}`;
+    tooltip.classList.add("visible");
+
     const containerRect = container.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
     
-    const bbox = target.getBBox();
-    let centerPoint = container.createSVGPoint();
-    centerPoint.x = bbox.x + bbox.width / 2;
-    centerPoint.y = bbox.y + bbox.height / 2;
-    
-    const ctm = target.getScreenCTM();
-    if (!ctm) {
-      console.warn("tooltipHoverOver: getScreenCTM() is null");
-      return;
-    }
-    const centerScreen = centerPoint.matrixTransform(ctm);
-    
-    let localX = centerScreen.x - containerRect.left;
-    let localY = centerScreen.y - containerRect.top;
-    
-    tooltip.style.position = "absolute";
-    tooltip.style.pointerEvents = "none";
+    const centerX = targetRect.left + targetRect.width / 2 - containerRect.left;
+    const centerY = targetRect.top + targetRect.height / 2 - containerRect.top;
     
     const tWidth = tooltip.offsetWidth;
     const tHeight = tooltip.offsetHeight;
     
-    let posX = localX - tWidth / 2;
-    let posY = localY - tHeight / 2;
+    let posX = Math.max(margins.left, 
+      Math.min(centerX - tWidth / 2, 
+        container.clientWidth - tWidth - margins.right));
     
-    const leftMargin = 30;
-    const rightMargin = 30;
-    const topMargin = 30;
-    const bottomMargin = 30;
-    
-    function clamp(value, min, max) {
-      return Math.max(min, Math.min(value, max));
+    let posY = Math.max(margins.top, 
+      Math.min(centerY - tHeight / 2, 
+        container.clientHeight - tHeight - margins.bottom));
+
+    const shouldUpdate = !this.lastPos || 
+      Math.abs(posX - this.lastPos.x) > pos_threshold || 
+      Math.abs(posY - this.lastPos.y) > pos_threshold;
+
+    if (shouldUpdate) {
+      tooltip.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
+      this.lastPos = { x: posX, y: posY };
     }
-    
-    posX = clamp(posX, leftMargin, container.clientWidth - tWidth - rightMargin);
-    posY = clamp(posY, topMargin, container.clientHeight - tHeight - bottomMargin);
-    
-    tooltip.style.transform = `translate(${posX}px, ${posY}px)`;
-    
-    target.classList.add("active");
   },
-   
+
   setCTM: function(matrix) {
-    this.g.setAttribute("transform", 
-      `matrix(${matrix.a} ${matrix.b} ${matrix.c} ${matrix.d} ${matrix.e} ${matrix.f})`
-    );
+    this.g.style.transform = `matrix(${matrix.a}, ${matrix.b}, ${matrix.c}, ${matrix.d}, ${matrix.e}, ${matrix.f})`;
     this.ctm = matrix;
   },
 
-  applyBounding: function(matrix) {
-    const scaleX = matrix.a;
-    const scaleY = matrix.d;
-    const scaledWidth = this.mapBounds.width * scaleX;
-    const scaledHeight = this.mapBounds.height * scaleY;
-    const containerW = this.svg.clientWidth;
-    const containerH = this.svg.clientHeight;
-    let tx = matrix.e;
-    let ty = matrix.f;
+  applyBounding: function(matrix) {    
+    const {a: scaleX, d: scaleY, e: tx, f: ty} = matrix;
+    const {width: mapW, height: mapH} = this.mapBounds;
+    const [containerW, containerH] = this._cachedContainerSize || [0, 0];
     
-    if (scaledWidth > containerW) {
-      const minX = containerW - scaledWidth;
-      if (tx < minX) tx = minX;
-      if (tx > 200) tx = 200;
-    }
-
-    if (scaledHeight > containerH) {
-      const minY = containerH - scaledHeight;
-      if (ty < minY) ty = minY;
-      if (ty > 200) ty = 200;
+    if (!this._cachedContainerSize || this._containerSizeChanged) {
+        this._cachedContainerSize = [this.svg.clientWidth, this.svg.clientHeight];
+        this._containerSizeChanged = false;
     }
     
-    return matrix.translate((tx - matrix.e) / scaleX, (ty - matrix.f) / scaleY);
-  },
+    const scaledW = mapW * scaleX;
+    const scaledH = mapH * scaleY;
+    const maxOffset = this.isMobile ? 150 : 200;
+    
+    const clampAxis = (scaledDim, containerDim, currentPos) => {
+        if (scaledDim > containerDim) {
+            const min = containerDim - scaledDim;
+            return Math.min(maxOffset, Math.max(min, currentPos));
+        }
+        return (containerDim - scaledDim) / 2;
+    };
+    
+    const newX = clampAxis(scaledW, containerW, tx);
+    const newY = clampAxis(scaledH, containerH, ty);
+    
+    const dx = (newX - tx) / scaleX || 0;
+    const dy = (newY - ty) / scaleY || 0;
+    
+    return matrix.translate(dx, dy);
+   },
 
   zoomToPoint: function(eventClientX, eventClientY, factor) {
-    const p = this.svg.createSVGPoint();
+    if (!this._tempPoint) this._tempPoint = this.svg.createSVGPoint();
+    const p = this._tempPoint;
     p.x = eventClientX;
     p.y = eventClientY;
     
     const invMatrix = this.g.getScreenCTM().inverse();
-    const loc = p.matrixTransform(invMatrix);
+    const centerScreen = p.matrixTransform(invMatrix);
     
     const currentScale = this.ctm.a;
-    let targetScale = currentScale * factor;
-    if (targetScale < this.MIN_SCALE) targetScale = this.MIN_SCALE;
-    if (targetScale > this.MAX_SCALE) targetScale = this.MAX_SCALE;
+    const targetScale = Math.max(this.MIN_SCALE, Math.min(this.MAX_SCALE, currentScale * factor));
     const scaleDelta = targetScale / currentScale;
     
-    const translateTo = this.svg.createSVGMatrix().translate(loc.x, loc.y);
-    const scaleMat = this.svg.createSVGMatrix().scale(scaleDelta);
-    const translateBack = this.svg.createSVGMatrix().translate(-loc.x, -loc.y);
+    const deltaMatrix = this.svg.createSVGMatrix();
+    deltaMatrix.a = deltaMatrix.d = scaleDelta;
+    deltaMatrix.e = centerScreen.x * (1 - scaleDelta);
+    deltaMatrix.f = centerScreen.y * (1 - scaleDelta);
     
-    let rawCTM = this.ctm
-      .multiply(translateTo)
-      .multiply(scaleMat)
-      .multiply(translateBack);
-      
-    let boundedCTM = this.applyBounding(rawCTM);
+    const rawCTM = this.ctm.multiply(deltaMatrix);
+    const boundedCTM = this.applyBounding(rawCTM);
     
     if (factor > 1 &&
-        Math.abs(boundedCTM.e - this.ctm.e) < 0.001 &&
-        Math.abs(boundedCTM.f - this.ctm.f) < 0.001) {
+        Math.abs(boundedCTM.e - this.ctm.e) < 1e-3 &&
+        Math.abs(boundedCTM.f - this.ctm.f) < 1e-3) {
       this.setCTM(rawCTM);
     } else {
       this.setCTM(boundedCTM);
     }
   },
-
+  
   zoomAtCenter: function(factor) {
     const rect = this.svg.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -658,6 +647,8 @@ const mapInteractions = {
     this.dragStart.x = event.touches ? event.touches[0].clientX : event.clientX;
     this.dragStart.y = event.touches ? event.touches[0].clientY : event.clientY;
     this.startCTM = this.ctm;
+    this.mapTooltip.style.willChange = "transform";
+    this.g.style.willChange = "transform";
     if (event.cancelable) {
       event.preventDefault();
     }
@@ -665,26 +656,31 @@ const mapInteractions = {
 
   moveDrag: function(event) {
     if (!this.dragging) return;
-    if (event.touches && event.touches.length > 1) return;
-    if (event.cancelable) {
-      event.preventDefault();
-    }
-    const clientX = event.touches ? event.touches[0].clientX : event.clientX;
-    const clientY = event.touches ? event.touches[0].clientY : event.clientY;
-    const dx = clientX - this.dragStart.x;
-    const dy = clientY - this.dragStart.y;
-    const scaleX = this.startCTM.a;
-    const scaleY = this.startCTM.d;
-    let newCTM = this.startCTM.multiply(
-      this.svg.createSVGMatrix().translate(dx / scaleX, dy / scaleY)
+    
+    const isTouchEvent = !!event.touches;
+    if (isTouchEvent && event.touches.length > 1) return;
+    if (event.cancelable) event.preventDefault();
+    
+    const { clientX, clientY } = isTouchEvent ? event.touches[0] : event;
+    
+    const { a: scaleX, d: scaleY } = this.startCTM;
+    const invScaleX = 1 / scaleX;
+    const invScaleY = 1 / scaleY;
+    
+    const flySpeed = this.isMobile ? this.FLY_SPEED + 1.5 : this.FLY_SPEED;
+    const dx = (clientX - this.dragStart.x) * flySpeed * invScaleX;
+    const dy = (clientY - this.dragStart.y) * flySpeed * invScaleY;
+    
+    this.setCTM(
+        this.applyBounding(this.startCTM.translate(dx, dy))
     );
-    newCTM = this.applyBounding(newCTM);
-    this.setCTM(newCTM);
   },
-
+  
   endDrag: function() {
     this.dragging = false;
     this.svg.style.cursor = "default";
+    this.mapTooltip.style.willChange = "";
+    this.g.style.willChange = "";
   },
 
   startPinch: function(event) {
@@ -696,138 +692,147 @@ const mapInteractions = {
       const dy = touch2.clientY - touch1.clientY;
       this.initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
       this.pinchStartCTM = this.ctm;
+      this.mapTooltip.style.willChange = "transform";
+      this.g.style.willChange = "transform";
       event.preventDefault();
     }
   },
-
+ 
   movePinch: function(event) {
     if (!this.pinching || event.touches.length !== 2) return;
-    event.preventDefault();
-    const touch1 = event.touches[0];
-    const touch2 = event.touches[1];
+    
+    const [touch1, touch2] = event.touches;
     const dx = touch2.clientX - touch1.clientX;
     const dy = touch2.clientY - touch1.clientY;
-    const currentDistance = Math.sqrt(dx * dx + dy * dy);
-    let scaleFactor = currentDistance / this.initialPinchDistance;
-    const currentScale = this.pinchStartCTM.a;
-    let targetScale = currentScale * scaleFactor;
-    if (targetScale < this.MIN_SCALE) targetScale = this.MIN_SCALE;
-    if (targetScale > this.MAX_SCALE) targetScale = this.MAX_SCALE;
-    scaleFactor = targetScale / currentScale;
+    const currentDistance = Math.hypot(dx, dy);
     
-    const midX = (touch1.clientX + touch2.clientX) / 2;
-    const midY = (touch1.clientY + touch2.clientY) / 2;
+    const initialScale = this.pinchStartCTM.a;
+    const targetScale = Math.min(Math.max(
+        this.MIN_SCALE, 
+        initialScale * (currentDistance / this.initialPinchDistance)
+    ), this.MAX_SCALE);
+    const scaleDelta = targetScale / this.ctm.a;
     
-    const p = this.svg.createSVGPoint();
-    p.x = midX;
-    p.y = midY;
-    const invMatrix = this.g.getScreenCTM().inverse();
-    const loc = p.matrixTransform(invMatrix);
+    if (!this._tempMidPoint) this._tempMidPoint = this.svg.createSVGPoint();
+    const midPoint = this._tempMidPoint;
+    midPoint.x = (touch1.clientX + touch2.clientX) * 0.5;
+    midPoint.y = (touch1.clientY + touch2.clientY) * 0.5;
     
-    const translateTo = this.svg.createSVGMatrix().translate(loc.x, loc.y);
-    const scaleMat = this.svg.createSVGMatrix().scale(scaleFactor);
-    const translateBack = this.svg.createSVGMatrix().translate(-loc.x, -loc.y);
+    const center = midPoint.matrixTransform(this.g.getScreenCTM().inverse());
+    const deltaMatrix = this.svg.createSVGMatrix();
+    deltaMatrix.a = deltaMatrix.d = scaleDelta;
+    deltaMatrix.e = center.x * (1 - scaleDelta);
+    deltaMatrix.f = center.y * (1 - scaleDelta);
     
-    let newCTM = this.pinchStartCTM
-      .multiply(translateTo)
-      .multiply(scaleMat)
-      .multiply(translateBack);
-    newCTM = this.applyBounding(newCTM);
+    const newCTM = this.applyBounding(this.ctm.multiply(deltaMatrix));
     this.setCTM(newCTM);
-  },
-
-  endPinch: function(event) {
-    if (event.touches.length < 2) {
-      this.pinching = false;
-    }
+    
+    this.initialPinchDistance = currentDistance;
+    this.pinchStartCTM = newCTM;
   },
   
-  updateTooltipRAF: function(event) {
-    if (!mapInteractions.tooltipUpdateScheduled) {
-      mapInteractions.tooltipUpdateScheduled = true;
-      window.requestAnimationFrame(() => {
-        this.tooltipHoverOver(event);
-        mapInteractions.tooltipUpdateScheduled = false;
-      });
+  
+  endPinch: function(event) {
+    if (event.touches.length < 2) {
+        this.pinching = false;
     }
   },
 
   addEventListeners: function() {
-    let lastLeftClickTime = 0;
-    let lastRightClickTime = 0;
-
     const updateTooltip = () => {
       if (this.lastHoveredPath) {
-        this.updateTooltipRAF({ target: this.lastHoveredPath });
+        this.tooltipHoverOver({ target: this.lastHoveredPath });
       }
     };
 
-    this.svg.addEventListener("wheel", (event) => {
-      event.preventDefault();
-      const zoomDirection = event.deltaY < 0 ? this.ZOOM_IN_FACTOR : 1 / this.ZOOM_IN_FACTOR;
-      this.zoomToPoint(event.clientX, event.clientY, zoomDirection);
-      updateTooltip()
-    }, { passive: false });
+    window.addEventListener('resize', () => {
+      this.isMobile = window.matchMedia("(pointer: coarse)").matches;
+    })
 
     this.svg.addEventListener("contextmenu", (event) => {
       event.preventDefault();
     });
 
+    this.svg.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      const zoomDirection = event.deltaY < 0 ? this.ZOOM_IN_FACTOR : 1 / this.ZOOM_IN_FACTOR;
+      this.zoomToPoint(event.clientX, event.clientY, zoomDirection);
+
+      if (this.dragging) {
+        this.startCTM = this.ctm;
+        this.dragStart.x = event.clientX;
+        this.dragStart.y = event.clientY;
+      }
+      updateTooltip();
+    }, { passive: false });
+    
     this.svg.addEventListener("mousedown", (event) => {
       event.preventDefault();
       const now = Date.now();
-
+    
       if (event.button === 0) {
-        if (now - lastLeftClickTime < this.DOUBLE_CLICK_DELAY) {
+        if (now - this.lastClickTime < this.DOUBLE_CLICK_DELAY) {
           this.zoomToPoint(event.clientX, event.clientY, this.ZOOM_IN_FACTOR);
+          this.lastClickTime = 0;
+          return;
         }
-        lastLeftClickTime = now;
         this.startDrag(event);
+        this.lastClickTime = now;
       }
       else if (event.button === 2) {
-        if (now - lastRightClickTime < this.DOUBLE_CLICK_DELAY) {
+        if (now - this.lastClickTime < this.DOUBLE_CLICK_DELAY) {
           this.zoomToPoint(event.clientX, event.clientY, this.ZOOM_OUT_FACTOR);
+          this.lastClickTime = 0;
+          return;
         }
-        lastRightClickTime = now;
+        this.lastClickTime = now;
       }
     }, { passive: false });
 
-    this.svg.addEventListener("mouseup", this.endDrag.bind(this));
-    this.svg.addEventListener("mouseleave", this.endDrag.bind(this));
+    const throttleRAF = (callback) => {
+      return (event) => {
+        if (!this.isTicking) {
+          window.requestAnimationFrame(() => {
+            callback(event);
+            this.isTicking = false;
+          });
+          this.isTicking = true;
+        }
+      };
+    };
 
-    this.svg.addEventListener("mousemove", (event) => {
-      if (!mapInteractions.isTicking) {
-        window.requestAnimationFrame(() => {
-          this.moveDrag(event);
-          mapInteractions.isTicking = false;
-        });
-        mapInteractions.isTicking = true;
-      }
+    const handleMouseMove = throttleRAF((event) => {
+      this.moveDrag(event);
     });
 
-    this.svg.addEventListener("touchstart", (event) => {
+    const handleTouchMove = throttleRAF((event) => {
+      if (event.touches.length === 2) {
+        this.movePinch(event);
+      } else if (event.touches.length === 1) {
+        this.moveDrag(event);
+      }
+      updateTooltip();
+    });
+
+    const handleTouchStart = (event) => {
       if (event.cancelable) event.preventDefault();
       if (event.touches.length === 2) {
         this.startPinch(event);
       } else if (event.touches.length === 1) {
         this.startDrag(event);
       }
-    }, { passive: false });
+    };
 
-    this.svg.addEventListener("touchmove", (event) => {
-      if (event.touches.length === 2) {
-        this.movePinch(event);
-      } else if (event.touches.length === 1) {
-        this.moveDrag(event);
-        updateTooltip();
-      }
-    }, { passive: false });
+    this.svg.addEventListener("mousemove", handleMouseMove);
+    this.svg.addEventListener("mouseup", this.endDrag.bind(this));
+    this.svg.addEventListener("mouseleave", this.endDrag.bind(this));
 
+    this.svg.addEventListener("touchstart", handleTouchStart, { passive: false });
+    this.svg.addEventListener("touchmove", handleTouchMove, { passive: false });
     this.svg.addEventListener("touchend", (event) => {
       if (event.touches.length < 2) {
         this.endPinch(event);
         this.endDrag(event);
-        updateTooltip();
       }
     });
 
