@@ -8,8 +8,8 @@
       by&nbsp;
       {{~#if user_id~}}
         <a 
-          aria-label="View user" 
-          data-tooltip="View user" 
+          aria-label="{{t "table.tooltip.viewUser"}}" 
+          data-tooltip="{{t "table.tooltip.viewUser"}}"
           hx-get="/api/users/admin"
           hx-target="closest table"
           hx-swap="outerHTML" 
@@ -24,8 +24,8 @@
         {{else}}
           &nbsp;(
           <a 
-            aria-label="View domains" 
-            data-tooltip="View domains" 
+            aria-label="{{t "table.tooltip.viewDomains"}}"
+            data-tooltip="{{t "table.tooltip.viewDomains"}}"
             hx-get="/api/domains/admin"
             hx-target="closest table"
             hx-swap="outerHTML" 
@@ -38,8 +38,8 @@
         {{/ifEquals}}
       {{~else~}}
         <a 
-          aria-label="View system domains" 
-          data-tooltip="View system domains" 
+          aria-label="{{t "table.tooltip.viewSystemDomains"}}"
+          data-tooltip="{{t "table.tooltip.viewSystemDomains"}}"
           hx-get="/api/domains/admin"
           hx-target="closest table"
           hx-swap="outerHTML" 
@@ -59,7 +59,7 @@
         {{homepage}}
       </a>
     {{else}}
-      No homepage
+      {{t "table.admin.noHomepage"}}
     {{/if}}
   </td>
   <td class="domains-created-at">
@@ -70,8 +70,8 @@
       {{links_count}}
     {{else}}
       <a
-        data-tooltip="View links"
-        aria-label="View links"
+        data-tooltip="{{t "table.tooltip.viewLinks"}}"
+        aria-label="{{t "table.tooltip.viewLinks"}}"
         hx-get="/api/links/admin"
         hx-target="closest table"
         hx-swap="outerHTML" 

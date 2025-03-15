@@ -1,11 +1,11 @@
 <td class="actions">
   {{#if password}}
-    <button class="action password" disabled="true" data-tooltip="Password protected">
+    <button class="action password" disabled="true" data-tooltip="{{t "table.tooltip.passwordProtected"}}">
       {{> icons/key}}
     </button>
   {{/if}}
   {{#if banned}}
-    <button class="action banned" disabled="true" data-tooltip="Banned">
+    <button class="action banned" disabled="true" data-tooltip="{{t "table.tooltip.banned"}}">
       {{> icons/stop}}
     </button>
   {{/if}}

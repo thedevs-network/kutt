@@ -9,7 +9,7 @@
   {{else}}
     <div class="inputs-wrapper">
       <label>
-        URL containing malware/scam:
+        {{t "account.urlContainingMalwareOrScam"}}
         <input 
           type="text" 
           id="link" 
@@ -22,7 +22,7 @@
       </label>
       <button type="submit" class="primary">
         <span>{{> icons/spinner}}</span>
-        Send report
+        {{t "account.sendReport"}}
       </button>
     </div>
     {{#if error}}<p class="error">{{error}}</p>{{/if}}

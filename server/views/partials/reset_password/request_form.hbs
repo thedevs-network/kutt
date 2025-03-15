@@ -10,7 +10,7 @@
   {{else}}
     <div class="inputs-wrapper">
       <label>
-        Email address:
+        {{t "login.emailAddress"}}
         <input 
           id="reset-password-email" 
           name="email" 
@@ -23,7 +23,7 @@
       </label>
       <button type="submit" class="primary">
         <span>{{> icons/spinner}}</span>
-        Reset password
+        {{t "account.resetPassword"}}
       </button>
     </div>
     {{#if error}}<p class="error">{{error}}</p>{{/if}}

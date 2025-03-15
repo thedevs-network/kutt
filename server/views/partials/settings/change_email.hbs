@@ -1,8 +1,8 @@
 <section id="change-email-wrapper">
   <h2>
-    Change email
+    {{t "settings.changeEmail"}}
   </h2>
-  <p>Enter your password and a new email address to change your email address.</p>
+  <p>{{t "settings.changeEmailDesc" }}</p>
   <form 
     id="change-email"
     hx-post="/api/auth/change-email"
@@ -12,18 +12,18 @@
   >
     <div class="inputs">
       <label class="{{#if errors.password}}error{{/if}}">
-        Passwod:
+        {{t "settings.changeEmailOptionPassword"}}
         <input 
           id="password-for-change-email" 
           name="password" 
           type="password" 
-          placeholder="Password..."
+          placeholder="{{t "settings.changeEmailOptionPasswordPlaceholder"}}"
           hx-preserve="true"
         />
         {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
       </label>
       <label class="{{#if errors.email}}error{{/if}}">
-        New email address:
+        {{t "settings.changeEmailOptionEmail"}}
         <input 
           id="email-for-change-email" 
           name="email" 
@@ -37,7 +37,7 @@
     <button type="submit" class="primary">
       <span>{{> icons/reload}}</span>
       <span>{{> icons/spinner}}</span>
-      Update
+      {{t "backbone.update"}}
     </button>
     {{#if error}}
       {{#unless errors}}

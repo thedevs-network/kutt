@@ -3,10 +3,10 @@
     {{> icons/check}}
   </div>
   <p>
-    Your link <b>"{{link}}"</b> has been deleted.
+    {{t "table.actions.deleteSuccessMsg" link=link}}
   </p>
   <div class="buttons">
-    <button type="button" hx-on:click="closeDialog()">Close</button>
+    <button type="button" hx-on:click="closeDialog()">{{t "backbone.close"}}</button>
   </div>
 </div>
 

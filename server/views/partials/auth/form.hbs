@@ -1,23 +1,23 @@
 <form id="login-signup" hx-post="/api/auth/login" hx-swap="outerHTML">
   <label class="{{#if errors.email}}error{{/if}}">
-    Email address:
+    {{t "login.emailAddress"}}
     <input
       name="email"
       id="email"
       type="email"
       autofocus="true"
-      placeholder="Email address..."
+      placeholder="{{t "login.emailAddressPlaceholder"}}"
       hx-preserve="true"
     />
     {{#if errors.email}}<p class="error">{{errors.email}}</p>{{/if}}
   </label>
   <label class="{{#if errors.password}}error{{/if}}">
-    Password:
+    {{t "login.password"}}
     <input
       name="password"
       id="password"
       type="password"
-      placeholder="Password..."
+      placeholder="{{t "login.passwordPlaceholder"}}"
       hx-preserve="true"
     />
     {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
@@ -29,7 +29,7 @@
     >
       <span>{{> icons/login}}</span>
       <span>{{> icons/spinner}}</span>
-      Log in
+      {{t "login.login"}}
     </button>
     {{#unless disallow_registration}}
       {{#if mail_enabled}}
@@ -47,13 +47,13 @@
         >
             <span>{{> icons/new_user}}</span>
             <span>{{> icons/spinner}}</span>
-            Sign up
+            {{t "login.signUp"}}
         </button>
       {{/if}}
     {{/unless}}
   </div>
   {{#if mail_enabled}}
-    <a class="forgot-password" href="/reset-password" title="Reset password">Forgot your password?</a>
+    <a class="forgot-password" href="/reset-password" title="{{t "login.forgotPasswordAria"}}">{{t "login.forgotPassword"}}</a>
   {{/if}}
   {{#unless errors}}
     {{#if error}}

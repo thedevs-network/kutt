@@ -1,5 +1,5 @@
 <div class="content admin-create">
-  <h2>Add domain</h2>
+  <h2>{{t "table.admin.createDomain"}}</h2>
   <form
     id="add-domain-form"
     hx-post="/api/domains/admin" 
@@ -8,23 +8,23 @@
     hx-indicator="closest .content"
   >
     <label class="{{#if errors.address}}error{{/if}}">
-      Address:
+      {{t "table.admin.createDomainOptionAddress"}}
       <input
         name="address"
         id="add-domain-address"
         type="text"
-        placeholder="Address..."
+        placeholder="{{t "table.admin.createDomainOptionAddressPlaceholder"}}"
         hx-preserve="true"
       />
       {{#if errors.address}}<p class="error">{{errors.address}}</p>{{/if}}
     </label>
     <label class="{{#if errors.homepage}}error{{/if}}">
-      Homepage (optional):
+      {{t "table.admin.createDomainOptionHomepage"}}
       <input
         name="homepage"
         id="add-domain-homepage"
         type="text"
-        placeholder="Homepage address.."
+        placeholder="{{t "table.admin.createDomainOptionHomepagePlaceholder"}}"
         hx-preserve="true"
       />
       {{#if errors.homepage}}<p class="error">{{errors.homepage}}</p>{{/if}}
@@ -37,13 +37,13 @@
         onchange="canSendVerificationEmail();" 
         hx-preserve="true"
       />
-      Banned
+      {{t "table.admin.banned"}}
     </label>
     <div class="buttons">
-      <button type="button" hx-on:click="closeDialog()">Cancel</button>
+      <button type="button" hx-on:click="closeDialog()">{{t "backbone.cancel"}}</button>
       <button type="submit" class="primary">
         <span>{{> icons/plus}}</span>
-        Add
+        {{t "backbone.create"}}
       </button>
       {{> icons/spinner}}
     </div>

@@ -1,11 +1,10 @@
 <div class="content">
-  <h2>Delete user?</h2>
+  <h2>{{t "table.admin.deleteUserDialogTitle"}}</h2>
   <p>
-    Are you sure do you want to delete the user &quot;<b>{{email}}</b>&quot;?<br/>
-    <b>All their data including their links</b> will be deleted.
+    {{{t "table.admin.deleteUserDialogMsg" email=email}}}
   </p>
   <div class="buttons">
-    <button type="button" hx-on:click="closeDialog()">Cancel</button>
+    <button type="button" hx-on:click="closeDialog()">{{t "backbone.cancel"}}</button>
     <button 
       type="button"
       class="danger confirm" 
@@ -18,7 +17,7 @@
       hx-select-oob="#dialog-error"
     >
       <span>{{> icons/trash}}</span>
-      Delete
+      {{t "backbone.delete"}}
     </button>
     {{> icons/spinner}}
   </div>

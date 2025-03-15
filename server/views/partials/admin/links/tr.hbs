@@ -7,8 +7,8 @@
       by&nbsp;
       {{~#if user_id~}}
         <a 
-          aria-label="View user" 
-          data-tooltip="View user" 
+          aria-label="{{t "table.tooltip.viewUser"}}" 
+          data-tooltip="{{t "table.tooltip.viewUser"}}" 
           hx-get="/api/users/admin"
           hx-target="closest table"
           hx-swap="outerHTML" 
@@ -23,8 +23,8 @@
         {{else}}
           &nbsp;(
           <a 
-            aria-label="View links by this user" 
-            data-tooltip="View links by this user" 
+            aria-label="{{t "table.tooltip.viewLinksByUser"}}" 
+            data-tooltip="{{t "table.tooltip.viewLinksByUser"}}" 
             hx-get="/api/links/admin"
             hx-target="closest table"
             hx-swap="outerHTML" 
@@ -32,13 +32,13 @@
             hx-indicator="closest table"
             hx-vals='{"user":"{{email}}"}'
           >
-            view links
+            {{t "table.admin.viewLinksByUser"}}
           </a>)
         {{/ifEquals}}
       {{~else~}}
-        <a 
-          aria-label="View anonymous links" 
-          data-tooltip="View anonymous links" 
+        <a
+          aria-label="{{t "table.tooltip.viewAnonymousLinks"}}"
+          data-tooltip="{{t "table.tooltip.viewAnonymousLinks"}}"
           hx-get="/api/links/admin"
           hx-target="closest table"
           hx-swap="outerHTML" 
@@ -46,7 +46,7 @@
           hx-indicator="closest table"
           hx-vals='{"anonymous":"true"}'
         >
-          Anonymous
+          {{t "table.admin.anonymous"}}
         </a>
       {{~/if~}}
       &nbsp;{{~#if description~}}· {{description}}{{~/if}}
@@ -56,7 +56,7 @@
     {{relative_created_at}}
     {{#if relative_expire_in}}
       <p class="description">
-        Expires in {{relative_expire_in}}
+        {{t "table.expireIn" time=relative_expire_in}}
       </p>
     {{/if}}
   </td>
@@ -64,7 +64,7 @@
     <div class="short-link-wrapper">
       <div class="clipboard small">
         <button 
-          aria-label="Copy" 
+          aria-label="{{t "backbone.copy"}}" 
           hx-on:click="handleShortURLCopyLink(this);"
           data-url="{{link.url}}"
         >
@@ -76,8 +76,8 @@
     </div>
     <p class="description">
       <a 
-        aria-label="View links by this domain" 
-        data-tooltip="View links by this domain" 
+        aria-label="{{t "table.tooltip.viewLinksByDomain"}}"
+        data-tooltip="{{t "table.tooltip.viewLinksByDomain"}}" 
         hx-get="/api/links/admin"
         hx-target="closest table"
         hx-swap="outerHTML" 

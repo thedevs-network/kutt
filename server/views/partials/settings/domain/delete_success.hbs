@@ -3,10 +3,10 @@
     {{> icons/check}}
   </div>
   <p>
-    Your domain <b>"{{address}}"</b> has been deleted.
+    {{{t "table.admin.deleteDomainSuccessMsg" domain=address}}}
   </p>
   <div class="buttons">
-    <button type="button" hx-on:click="closeDialog()">Close</button>
+    <button type="button" hx-on:click="closeDialog()">{{t "backbone.close"}}</button>
   </div>
 </div>
 {{> settings/domain/table}}

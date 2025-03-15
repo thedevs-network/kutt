@@ -3,10 +3,10 @@
     {{> icons/check}}
   </div>
   <p>
-    The domain <b>"{{address}}"</b> has been created successfully.
+    {{{t "table.admin.createDomainSucessMsg" domain=address}}}
   </p>
   <div class="buttons">
-    <button type="button" hx-on:click="closeDialog()">Close</button>
+    <button type="button" hx-on:click="closeDialog()">{{t "backbone.close"}}</button>
   </div>
 </div>
 
