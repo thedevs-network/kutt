@@ -1,7 +1,7 @@
 {{> header}}
 <section id="settings" class="section-container">
   <h1 class="settings-welcome">
-    Welcome, <span>{{user.email}}</span>.
+    {{t 'welcome.welcomeUser'}}<span>{{user.email}}</span>.
   </h1>
   <hr />
   {{> settings/domain/index}}

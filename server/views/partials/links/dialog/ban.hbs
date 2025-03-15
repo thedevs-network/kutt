@@ -1,28 +1,28 @@
 <div class="content">
-  <h2>Ban link?</h2>
+  <h2>{{t "table.actions.banDialogTitle"}}</h2>
   <p>
-    Are you sure do you want to ban the link &quot;<b>{{link}}</b>&quot;?
+    {{{t "table.actions.banDialogMsg" link=link}}}
   </p>
   <div class="ban-checklist">
     <label class="checkbox">
       <input id="user" name="user" type="checkbox" />
-      User
+      {{t "table.actions.banUser"}}
     </label>
     <label class="checkbox">
       <input id="userLinks" name="userLinks" type="checkbox" />
-      User links
+      {{t "table.actions.banUserLinks"}}
     </label>
     <label class="checkbox">
       <input id="host" name="host" type="checkbox" />
-      Host
+      {{t "table.actions.banHost"}}
     </label>
     <label class="checkbox">
       <input id="domain" name="domain" type="checkbox" />
-      Domain
+      {{t "table.actions.banDomain"}}
     </label>
   </div>
   <div class="buttons">
-    <button type="button" hx-on:click="closeDialog()">Cancel</button>
+    <button type="button" hx-on:click="closeDialog()">{{t "backbone.cancel"}}</button>
     <button 
       type="button"
       class="danger confirm" 
@@ -38,7 +38,7 @@
       <span class="stop">
         {{> icons/stop}}
       </span>
-      Ban
+      {{t "table.actions.ban"}}
     </button>
     {{> icons/spinner}}
   </div>

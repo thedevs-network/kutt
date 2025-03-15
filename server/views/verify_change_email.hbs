@@ -2,17 +2,17 @@
 <section id="verify-change-email" class="section-container verify-page">
   {{#if token_verified}}
     <h2 hx-get="/" hx-trigger="load delay:1s" hx-target="body" hx-push-url="/">
-      Email address is verified. Redirecting to homepage...
+      {{t "welcome.emailVerifiedAndRedirect"}}
     </h2>
   {{else}}
     <h2>
       {{> icons/x}}
-      Couldn't verify the email address. Please try again.
+      {{t "welcome.emailNotVerifiedAndTryAgain"}}
     </h2>
     {{#if user}}
-      <a href="/settings" title="Settings">Settings →</a>
+      <a href="/settings" title="{{t "header.settingsAria"}}">{{t "header.settings"}} →</a>
     {{else}}
-      <a href="/login" title="Log in or sign up">Log in / sign up →</a>
+      <a href="/login" title="{{t "header.loginOrSignupAria"}}">{{t "header.loginOrSignup"}} →</a>
     {{/if}}
   {{/if}}
 </section>

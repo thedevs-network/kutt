@@ -27,7 +27,7 @@
     "bcryptjs": "2.4.3",
     "better-sqlite3": "11.8.1",
     "bull": "4.16.5",
-    "cookie-parser": "1.4.7",
+    "cookie-parser": "^1.4.7",
     "cors": "2.8.5",
     "date-fns": "2.30.0",
     "dotenv": "16.4.7",
@@ -38,6 +38,7 @@
     "geoip-lite": "1.4.10",
     "hbs": "4.2.0",
     "helmet": "7.1.0",
+    "i18n": "^0.15.1",
     "ioredis": "5.4.2",
     "isbot": "5.1.19",
     "jsonwebtoken": "9.0.2",
@@ -53,6 +54,7 @@
     "pg": "8.13.1",
     "pg-query-stream": "4.7.1",
     "rate-limit-redis": "4.2.0",
+    "sqlite3": "^5.1.7",
     "useragent": "2.3.0"
   },
   "devDependencies": {
