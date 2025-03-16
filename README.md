@@ -43,7 +43,7 @@
 
 ## Donations and sponsors
 
-Support the development of Kutt by making a donation or becoming an sponsor.
+Support the development of Kutt by making a donation or becoming a sponsor.
 
 [Donate or sponsor →](https://btcpay.kutt.it/apps/L9Gc7PrnLykeRHkhsH2jHivBeEh/crowdfund)
 
