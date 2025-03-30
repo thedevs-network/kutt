@@ -10,6 +10,7 @@
     "migrate:make": "knex migrate:make",
     "docs:build": "cd docs/api && node generate && cd ../..",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "jest"
   },
   "repository": {
@@ -59,6 +60,7 @@
     "useragent": "2.3.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.23.0",
     "@types/bcryptjs": "2.4.2",
     "@types/cookie-parser": "1.4.3",
     "@types/cors": "2.8.12",
@@ -70,6 +72,8 @@
     "@types/node": "18.11.9",
     "@types/nodemailer": "6.4.6",
     "@types/pg": "8.11.10",
+    "eslint": "^9.23.0",
+    "globals": "^16.0.0",
     "jest": "^29.7.0",
     "redoc": "2.2.0",
     "ts-jest": "^29.3.0"
