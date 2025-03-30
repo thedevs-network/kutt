@@ -575,11 +575,11 @@ const mapInteractions = {
     const maxOffset = this.isMobile ? 150 : 200;
     
     const clampAxis = (scaledDim, containerDim, currentPos) => {
-        if (scaledDim > containerDim) {
-            const min = containerDim - scaledDim;
-            return Math.min(maxOffset, Math.max(min, currentPos));
-        }
-        return (containerDim - scaledDim) / 2;
+      if (scaledDim > containerDim) {
+        const min = containerDim - scaledDim;
+        return Math.min(maxOffset, Math.max(min, currentPos));
+      }
+      return (containerDim - scaledDim) / 2;
     };
     
     const newX = clampAxis(scaledW, containerW, tx);
@@ -626,18 +626,6 @@ const mapInteractions = {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     this.zoomToPoint(centerX, centerY, factor);
-  },
-
-  createZoomButton: function(className, ariaLabel, svgHTML) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "button " + className;
-    button.setAttribute("aria-haspopup", "false");
-    button.setAttribute("aria-label", ariaLabel);
-    button.innerHTML = svgHTML;
-    button.style.marginBottom = "10px";
-    button.style.padding = "0 8px";
-    return button;
   },
 
   startDrag: function(event) {
@@ -708,17 +696,16 @@ const mapInteractions = {
     
     const initialScale = this.pinchStartCTM.a;
     const targetScale = Math.min(Math.max(
-        this.MIN_SCALE, 
-        initialScale * (currentDistance / this.initialPinchDistance)
+      this.MIN_SCALE, 
+      initialScale * (currentDistance / this.initialPinchDistance)
     ), this.MAX_SCALE);
     const scaleDelta = targetScale / this.ctm.a;
     
-    if (!this._tempMidPoint) this._tempMidPoint = this.svg.createSVGPoint();
-    const midPoint = this._tempMidPoint;
-    midPoint.x = (touch1.clientX + touch2.clientX) * 0.5;
-    midPoint.y = (touch1.clientY + touch2.clientY) * 0.5;
+    this._tempMidPoint ??= this.svg.createSVGPoint();
+    this._tempMidPoint.x = (touch1.clientX + touch2.clientX) * 0.5;
+    this._tempMidPoint.y = (touch1.clientY + touch2.clientY) * 0.5;
     
-    const center = midPoint.matrixTransform(this.g.getScreenCTM().inverse());
+    const center = this._tempMidPoint.matrixTransform(this.g.getScreenCTM().inverse());
     const deltaMatrix = this.svg.createSVGMatrix();
     deltaMatrix.a = deltaMatrix.d = scaleDelta;
     deltaMatrix.e = center.x * (1 - scaleDelta);
@@ -747,7 +734,8 @@ const mapInteractions = {
 
     window.addEventListener('resize', () => {
       this.isMobile = window.matchMedia("(pointer: coarse)").matches;
-    })
+      this._containerSizeChanged = true;
+    });
 
     this.svg.addEventListener("contextmenu", (event) => {
       event.preventDefault();
@@ -760,8 +748,10 @@ const mapInteractions = {
 
       if (this.dragging) {
         this.startCTM = this.ctm;
-        this.dragStart.x = event.clientX;
-        this.dragStart.y = event.clientY;
+        this.dragStart = {
+          x: event.clientX,
+          y: event.clientY
+        };
       }
       updateTooltip();
     }, { passive: false });
