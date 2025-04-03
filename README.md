@@ -49,13 +49,13 @@ Support the development of Kutt by making a donation or becoming an sponsor.
 
 ## Setup
 
-The only prerequisite is [Node.js](https://nodejs.org/) (version 20 or above). The default database is SQLite. You can optionally install Posrgres or MySQL/MariaDB for the database or Redis for the cache. 
+The only prerequisite is [Node.js](https://nodejs.org/) (version 20 or above). The default database is SQLite. You can optionally install PostgreSQL or MySQL/MariaDB for the database or Redis for the cache. 
 
 When you first start the app, you're prompted to create an admin account.
 
 1. Clone this repository or [download the latest zip](https://github.com/thedevs-network/kutt/releases)
 2. Install dependencies: `npm install`
-3. Intialize database: `npm run migrate`
+3. Initialize database: `npm run migrate`
 5. Start the app for development `npm run dev` or production `npm start`
 
 ## Docker
@@ -70,11 +70,11 @@ Various docker-compose configurations are available. Use `docker compose -f <fil
 
 - [`docker-compose.yml`](./docker-compose.yml): Default Kutt setup. Uses SQLite for the database.
 - [`docker-compose.sqlite-redis.yml`](./docker-compose.sqlite-redis.yml): Starts Kutt with SQLite and Redis.
-  - Required envrionment variable: `REDIS_ENABLED`
+  - Required environment variable: `REDIS_ENABLED`
 - [`docker-compose.postgres.yml`](./docker-compose.postgres.yml): Starts Kutt with Postgres and Redis.
-  - Required envrionment variables: `REDIS_ENABLED`, `DB_PASSWORD`, `DB_NAME`, `DB_USER`
+  - Required environment variables: `REDIS_ENABLED`, `DB_PASSWORD`, `DB_NAME`, `DB_USER`
 - [`docker-compose.mariadb.yml`](./docker-compose.mariadb.yml): Starts Kutt with MariaDB and Redis.
-  - Required envrionment variables: `REDIS_ENABLED`, `DB_PASSWORD`, `DB_NAME`, `DB_USER`, `DB_PORT`
+  - Required environment variables: `REDIS_ENABLED`, `DB_PASSWORD`, `DB_NAME`, `DB_USER`, `DB_PORT`
 
 Official Kutt Docker image is available on [Docker Hub](https://hub.docker.com/r/kutt/kutt).
 
@@ -114,12 +114,12 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `REDIS_ENABLED` | Whether to use Redis for cache | `false` | `true` |
 | `REDIS_HOST` | Redis connection host | `127.0.0.1` | `your-redis-host.com` |
 | `REDIS_PORT` | Redis port | `6379` | `6379` |
-| `REDIS_PASSWORD` | Redis passowrd | - | `mypassword` |
+| `REDIS_PASSWORD` | Redis password | - | `mypassword` |
 | `REDIS_DB` | Redis database number, between 0 and 15. | `0` | `1` |
 | `SERVER_IP_ADDRESS` | The IP address shown to the user on the setting's page. It's only for display purposes and has no other use. | - | `1.2.3.4` |
 | `SERVER_CNAME_ADDRESS` | The subdomain shown to the user on the setting's page. It's only for display purposes and has no other use. | - | `custom.yoursite.com` |
 | `CUSTOM_DOMAIN_USE_HTTPS` | Use https for links with custom domain. It's on you to generate SSL certificates for those domains manually—at least on this version for now. | `false` | `true` |
-| `ENABLE_RATE_LIMIT` | Enable rate limitting for some API routes. If Redis is enabled uses Redis, otherwise, uses memory. | `false` | `true` |
+| `ENABLE_RATE_LIMIT` | Enable rate limiting for some API routes. If Redis is enabled uses Redis, otherwise, uses memory. | `false` | `true` |
 | `MAIL_ENABLED` | Enable emails, which are used for signup, verifying or changing email address, resetting password, and sending reports. If is disabled, all these functionalities will be disabled too. | `false` | `true` | 
 | `MAIL_HOST` | Email server host | - | `your-mail-server.com` |
 | `MAIL_PORT` | Email server port | `587` | `465` (SSL) | 
