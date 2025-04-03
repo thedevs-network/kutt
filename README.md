@@ -49,7 +49,7 @@ Support the development of Kutt by making a donation or becoming an sponsor.
 
 ## Setup
 
-The only prerequisite is [Node.js](https://nodejs.org/) (version 20 or above). The default database is SQLite. You can optionally install PostgreSQL or MySQL/MariaDB for the database or Redis for the cache. 
+The only prerequisite is [Node.js](https://nodejs.org/) (version 20 or above). The default database is SQLite. You can optionally install Postgres or MySQL/MariaDB for the database or Redis for the cache. 
 
 When you first start the app, you're prompted to create an admin account.
 
