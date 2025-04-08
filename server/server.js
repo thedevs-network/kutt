@@ -35,7 +35,33 @@ if (env.TRUST_PROXY) {
   app.set("trust proxy", true);
 }
 
-app.use(helmet({ contentSecurityPolicy: false }));
+// Configure Helmet with a CSP that allows HTMX to work
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      connectSrc: ["'self'", "https:"],
+      fontSrc: ["'self'", "data:"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+      sandbox: ["allow-forms", "allow-scripts", "allow-same-origin"],
+      reportUri: "/api/report-violation",
+      workerSrc: ["'self'", "blob:"],
+      childSrc: ["'self'"],
+      formAction: ["'self'"],
+      frameAncestors: ["'none'"],
+      baseUri: ["'self'"],
+      manifestSrc: ["'self'"]
+    }
+  },
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
