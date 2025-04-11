@@ -11,12 +11,17 @@
 <div class="stats">
   <h2>
     <span class="label">Stats for:</span>
-    <a href="{{link.link.url}}" title="Short link">
+    <a href="{{link.link.url}}" title="Short link" target="_blank" rel="noopener">
       {{link.link.link}}
     </a>
   </h2>
   <div class="stats-body">
-    <p>Target: <span> <a>{{link.target}}</a></span></p>
+    <p>
+      <strong>Target:</strong>
+      <a href="{{link.target}}" target="_blank" rel="noopener">
+        {{link.target}}
+      </a>
+    </p>
   </div>
 </div>
 </div>
