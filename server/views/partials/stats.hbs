@@ -8,15 +8,18 @@
     </div>
   </div>
 {{else}}
-  <div class="stats-info">
-    <h2>
-      Stats for:
-      <a href="{{link.link.url}}" title="Short link">
-        {{link.link.link}}
-      </a>
-    </h2>
-    <p>{{link.target}}</p>
+<div class="stats">
+  <h2>
+    <span class="label">Stats for:</span>
+    <a href="{{link.link.url}}" title="Short link">
+      {{link.link.link}}
+    </a>
+  </h2>
+  <div class="stats-body">
+    <p>Target: <span> <a>{{link.target}}</a></span></p>
   </div>
+</div>
+</div>
   <main id="stats">
     <div class="stats-head">
       <p>

@@ -1852,17 +1852,27 @@ form#delete-account.htmx-request .spinner { display: block; }
   margin-right: 0.5rem;
 }
 
-.stats-info {
-  width: 100%;
+.stats {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  flex-direction: column;
+  max-width: 700px;
+  width: 100%;
 }
+.stats h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2b2b2b;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.stats .label {white-space: nowrap;}
 
-.stats-info h2 { font-weight: 300; font-size: 24px; }
-.stats-info p { font-size: 14px; }
-.stats-info h2,
-.stats-info p { margin: 0 }
+.stats-body {font-size: 1.05rem;color: #444;}
+
+.stats-body span {font-weight: 500;}
 
 #stats {
   width: 100%;
@@ -1877,8 +1887,7 @@ form#delete-account.htmx-request .spinner { display: block; }
 }
 
 .stats-head {
-  width: 100%;
-  display: flex;
+  width: 100%; display: flex;
   align-items: center;
   background-color: var(--table-bg-color);
   justify-content: space-between;
