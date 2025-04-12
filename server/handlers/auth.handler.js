@@ -16,9 +16,10 @@ const CustomError = utils.CustomError;
 function authenticate(type, error, isStrict, redirect) {
   return function auth(req, res, next) {
     if (req.user) return next();
-    
+
     passport.authenticate(type, (err, user, info) => {
       if (err) return next(err);
+      if (type === 'oidc' && info instanceof Error) return next(info);
 
       if (
         req.isHTML &&
@@ -80,6 +81,7 @@ const jwtPage = authenticate("jwt", "Unauthorized.", true, "page");
 const jwtLoose = authenticate("jwt", "Unauthorized.", false, "header");
 const jwtLoosePage = authenticate("jwt", "Unauthorized.", false, "page");
 const apikey = authenticate("localapikey", "API key is not correct.", false, null);
+const oidc = authenticate("oidc", "Unauthorized", false, "page");
 
 function admin(req, res, next) {
   if (req.user.admin) return next();
@@ -388,6 +390,7 @@ module.exports = {
   local,
   login,
   newPassword,
+  oidc,
   resetPassword,
   signup,
   verify,

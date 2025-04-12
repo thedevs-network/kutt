@@ -26,6 +26,12 @@ router.get(
 );
 
 router.get(
+  "/login/oidc", 
+  asyncHandler(auth.oidc),
+  asyncHandler(auth.login)
+);
+
+router.get(
   "/logout", 
   asyncHandler(renders.logout)
 );

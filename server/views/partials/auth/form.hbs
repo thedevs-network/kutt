@@ -55,6 +55,9 @@
   {{#if mail_enabled}}
     <a class="forgot-password" href="/reset-password" title="Reset password">Forgot your password?</a>
   {{/if}}
+  {{#if oidc_enabled}}
+    <a class="" href="/login/oidc" title="Login with OIDC">Login with OIDC</a>
+  {{/if}}
   {{#unless errors}}
     {{#if error}}
       <p class="error">{{error}}</p>

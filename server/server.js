@@ -3,6 +3,7 @@ const env = require("./env");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const express = require("express");
+const session = require("cookie-session");
 const helmet = require("helmet");
 const path = require("node:path");
 const hbs = require("hbs");
@@ -39,6 +40,10 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  keys: [env.JWT_SECRET],
+  maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
+}));
 
 // serve static
 app.use("/images", express.static("custom/images"));
