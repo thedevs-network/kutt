@@ -95,6 +95,19 @@
           <option value="true" {{#ifEquals query.has_domain 'true'}}selected{{/ifEquals}}>With domain</option>
           <option value="false" {{#ifEquals query.has_domain 'false'}}selected{{/ifEquals}}>No domain</option>
         </select>
+      <select 
+  id="sort_by"
+  name="sort_by"
+  class="table-input ban"
+  hx-on:change="resetTableNav()"
+>
+  <option value="" selected>sort...</option>
+  <option value="views_desc">Views ↓</option>
+  <option value="views_asc">Views ↑</option>
+  <option value="created_desc">Newest</option>
+  <option value="created_asc">Oldest</option>
+</select>
+
         <input id="total" name="total" type="hidden" value="{{total}}" />
         <input id="limit" name="limit" type="hidden" value="10" />
         <input id="skip" name="skip" type="hidden" value="0" />

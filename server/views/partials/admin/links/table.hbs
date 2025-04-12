@@ -15,9 +15,14 @@
     input changed delay:500ms from:[name='search'],
     input changed delay:500ms from:[name='user'],
     input changed delay:500ms from:[name='domain'],
+        input changed delay:500ms from:[name='sort_by'],
+
     input changed from:[name='banned'],
     input changed from:[name='anonymous'],
     input changed from:[name='has_domain'],
+    input changed from:[name='sort_by'],
+
+
   "
   hx-on:htmx:after-on-load="updateLinksNav();"
   hx-on:htmx:after-settle="onSearchInputLoad();"

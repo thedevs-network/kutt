@@ -56,25 +56,32 @@ async function getAdmin(req, res) {
   const banned = utils.parseBooleanQuery(req.query.banned);
   const anonymous = utils.parseBooleanQuery(req.query.anonymous);
   const has_domain = utils.parseBooleanQuery(req.query.has_domain);
-  
+  const sortBy = req.query.sort_by; 
   const match = {
     ...(banned !== undefined && { banned }),
     ...(anonymous !== undefined && { user_id: [anonymous ? "is" : "is not", null] }),
     ...(has_domain !== undefined && { domain_id: [has_domain ? "is not" : "is", null] }),
   };
-  
-  // if domain is equal to the defualt domain,
-  // it means admins is looking for links with the defualt domain (no custom user domain)
+
   if (domain === env.DEFAULT_DOMAIN) {
     domain = undefined;
     match.domain_id = null;
   }
-  
-  const [data, total] = await Promise.all([
+
+  let [data, total] = await Promise.all([
     query.link.getAdmin(match, { limit, search, user, domain, skip }),
-    query.link.totalAdmin(match, { search, user, domain })
+    query.link.totalAdmin(match, { search, user, domain }),
   ]);
 
+  if (sortBy === "views_desc") {
+    data = data.sort((a, b) => parseInt(a.visit_count) - parseInt(b.visit_count)); 
+  } else if (sortBy === "views_asc") {
+    data = data.sort((a, b) => parseInt(b.visit_count) - parseInt(a.visit_count)); 
+  } else if (sortBy === "created_desc") {
+    data = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); 
+  } else if (sortBy === "created_asc") {
+    data = data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)); 
+  }
   const links = data.map(utils.sanitize.link_admin);
 
   if (req.isHTML) {
@@ -84,7 +91,7 @@ async function getAdmin(req, res) {
       limit,
       skip,
       links,
-    })
+    });
     return;
   }
 
@@ -94,7 +101,7 @@ async function getAdmin(req, res) {
     skip,
     data: links,
   });
-};
+}
 
 async function create(req, res) {
   const { reuse, password, customurl, description, target, fetched_domain, expire_in } = req.body;
