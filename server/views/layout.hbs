@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <link rel="icon" sizes="196x196" href="/images/favicon-196x196.png" />
   <link rel="icon" sizes="32x32" href="/images/favicon-32x32.png" />
   <link rel="icon" sizes="16x16" href="/images/favicon-16x16.png" />
@@ -21,14 +24,16 @@
   <meta name="twitter:title" content="{{site_name}}" />
   <meta name="twitter:description" content="Free & Open Source Modern URL Shortener" />
   <meta name="twitter:image" content="https://{{default_domain}}/images/card.png" />
-  <meta name="description" content="{{site_name}} is a free and open source URL shortener with custom domains and stats." />
+  <meta name="description"
+    content="{{site_name}} is a free and open source URL shortener with custom domains and stats." />
   <title>{{site_name}} | {{title}}</title>
   <link rel="stylesheet" href="/css/styles.css">
   {{#each custom_styles}}
-    <link rel="stylesheet" href="/css/{{this}}">
+  <link rel="stylesheet" href="/css/{{this}}">
   {{/each}}
   {{{block "stylesheets"}}}
 </head>
+
 <body>
   <div class="main-wrapper">
     {{{body}}}
@@ -39,4 +44,5 @@
   <script src="/libs/qrcode.min.js"></script>
   <script src="/scripts/main.js"></script>
 </body>
+
 </html>
