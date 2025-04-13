@@ -52,11 +52,13 @@
       {{/if}}
     {{/unless}}
   </div>
+  {{#if oidc_enabled}}
+  <div class="buttons-wrapper">
+    <a class="button secondary full" href="/login/oidc" title="Login with OIDC">Login with OIDC</a>
+  </div>
+  {{/if}}
   {{#if mail_enabled}}
     <a class="forgot-password" href="/reset-password" title="Reset password">Forgot your password?</a>
-  {{/if}}
-  {{#if oidc_enabled}}
-    <a class="" href="/login/oidc" title="Login with OIDC">Login with OIDC</a>
   {{/if}}
   {{#unless errors}}
     {{#if error}}
