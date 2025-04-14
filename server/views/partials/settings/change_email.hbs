@@ -3,34 +3,18 @@
     Change email
   </h2>
   <p>Enter your password and a new email address to change your email address.</p>
-  <form 
-    id="change-email"
-    hx-post="/api/auth/change-email"
-    hx-select="form"
-    hx-swap="outerHTML"
-    hx-sync="this:abort"
-  >
+  <form id="change-email" hx-post="/api/auth/change-email" hx-select="form" hx-swap="outerHTML" hx-sync="this:abort">
     <div class="inputs">
       <label class="{{#if errors.password}}error{{/if}}">
-        Passwod:
-        <input 
-          id="password-for-change-email" 
-          name="password" 
-          type="password" 
-          placeholder="Password..."
-          hx-preserve="true"
-        />
+        Password:
+        <input id="password-for-change-email" name="password" type="password" placeholder="Password..."
+          hx-preserve="true" />
         {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
       </label>
       <label class="{{#if errors.email}}error{{/if}}">
         New email address:
-        <input 
-          id="email-for-change-email" 
-          name="email" 
-          type="email" 
-          placeholder="john@example.com"
-          hx-preserve="true"
-        />
+        <input id="email-for-change-email" name="email" type="email" placeholder="john@example.com"
+          hx-preserve="true" />
         {{#if errors.email}}<p class="error">{{errors.email}}</p>{{/if}}
       </label>
     </div>
@@ -40,11 +24,11 @@
       Update
     </button>
     {{#if error}}
-      {{#unless errors}}
-        <p class="error">{{error}}</p>
-      {{/unless}}
+    {{#unless errors}}
+    <p class="error">{{error}}</p>
+    {{/unless}}
     {{else if success}}
-      <p class="success">{{success}}</p>
+    <p class="success">{{success}}</p>
     {{/if}}
   </form>
 </section>
