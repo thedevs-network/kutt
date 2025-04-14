@@ -1,4 +1,5 @@
 <form id="login-signup" hx-post="/api/auth/login" hx-swap="outerHTML">
+  {{#unless disallow_form_login}}
   <label class="{{#if errors.email}}error{{/if}}">
     Email address:
     <input
@@ -52,9 +53,17 @@
       {{/if}}
     {{/unless}}
   </div>
+  {{/unless}}
+  {{#if oidc_enabled}}
+  <div class="buttons-wrapper">
+    <a class="button secondary full" href="/login/oidc" title="Login with OIDC">Login with OIDC</a>
+  </div>
+  {{/if}}
+  {{#unless disallow_form_login}}
   {{#if mail_enabled}}
     <a class="forgot-password" href="/reset-password" title="Reset password">Forgot your password?</a>
   {{/if}}
+  {{/unless}}
   {{#unless errors}}
     {{#if error}}
       <p class="error">{{error}}</p>
