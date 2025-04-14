@@ -1,31 +1,36 @@
 <td class="actions">
   {{#if password}}
-    <button class="action password" disabled="true" data-tooltip="Password protected">
+    <button class="action password" disabled="true" title="Password Protected" data-tooltip="Password protected">
       {{> icons/key}}
     </button>
   {{/if}}
+  
   {{#if banned}}
-    <button class="action banned" disabled="true" data-tooltip="Banned">
+    <button class="action banned" disabled="true" title="Banned" data-tooltip="Banned">
       {{> icons/stop}}
     </button>
   {{/if}}
+
   <a
     class="button action stats"
     href="/stats?id={{id}}"
-    title="Stats"
-    class="action stats"
+    title="View Stats"
   >
     {{> icons/chart}}
   </a>
+
   <button
     class="action qrcode"
+    title="Generate QR Code"
     hx-on:click="handleQRCode(this, 'admin-table-dialog')"
     data-url="{{link.url}}"
   >
     {{> icons/qrcode}}
   </button>
+
   <button 
     class="action edit"
+    title="Edit Link"
     hx-trigger="click queue:none"
     hx-ext="path-params"
     hx-get="/admin/link/edit/{id}" 
@@ -46,9 +51,11 @@
   >
     {{> icons/pencil}}
   </button>
+
   {{#unless banned}}
     <button 
       class="action ban" 
+      title="Ban Link"
       hx-on:click='openDialog("admin-table-dialog")' 
       hx-get="/confirm-link-ban" 
       hx-target="#admin-table-dialog .content-wrapper" 
@@ -58,8 +65,10 @@
       {{> icons/stop}}
     </button>
   {{/unless}}
+
   <button 
     class="action delete" 
+    title="Delete Link"
     hx-on:click='openDialog("admin-table-dialog")' 
     hx-get="/confirm-link-delete" 
     hx-target="#admin-table-dialog .content-wrapper" 
