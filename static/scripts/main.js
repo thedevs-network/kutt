@@ -89,17 +89,38 @@ function handleQRCode(element, id) {
   const dialog = document.getElementById(id);
   const dialogContent = dialog.querySelector(".content-wrapper");
   if (!dialogContent) return;
+
   openDialog(id, "qrcode");
   dialogContent.textContent = "";
+
   const qrcode = new QRCode(dialogContent, {
     text: element.dataset.url,
     width: 200,
     height: 200,
-    colorDark : "#000000",
-    colorLight : "#ffffff",
-    correctLevel : QRCode.CorrectLevel.H
-  });   
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
+
+  setTimeout(() => {
+    const canvas = dialogContent.querySelector('canvas');
+    if (canvas) {
+      const downloadLink = document.createElement("a");
+      downloadLink.href = canvas.toDataURL("image/svg");
+      downloadLink.download = "qr-code.svg";
+      downloadLink.textContent = "Download QR Code";
+      downloadLink.className = "download-qr-btn";
+
+      downloadLink.style.display = "inline-block";
+      downloadLink.style.marginTop = "1rem";
+      downloadLink.style.color = "#007bff";
+      downloadLink.style.cursor = "pointer";
+
+      dialogContent.appendChild(downloadLink);
+    }
+  }, 300);
 }
+
 
 // copy the link to clipboard
 function handleCopyLink(element) {
