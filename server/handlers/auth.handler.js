@@ -28,11 +28,11 @@ function authenticate(type, error, isStrict, redirect) {
         (user && user.banned))
       ) {
         if (redirect === "page") {
-          res.redirect("/logout");
+          res.redirect(utils.getPath('/logout'));
           return;
         }
         if (redirect === "header") {
-          res.setHeader("HX-Redirect", "/logout");
+          res.setHeader("HX-Redirect", utils.getPath('/logout'));
           res.send("NOT_AUTHENTICATED");
           return;
         }
@@ -357,7 +357,7 @@ function featureAccess(features, redirect) {
     for (let i = 0; i < features.length; ++i) {
       if (!features[i]) {
         if (redirect) {
-          return res.redirect("/");
+          return res.redirect(utils.getPath("/"));
         } else {
           throw new CustomError("Request is not allowed.", 400);
         }

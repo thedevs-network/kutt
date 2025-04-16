@@ -1,4 +1,4 @@
-<form id="login-signup" hx-post="/api/auth/login" hx-swap="outerHTML">
+<form id="login-signup" hx-post="./api/auth/login" hx-swap="outerHTML">
   <label class="{{#if errors.email}}error{{/if}}">
     Email address:
     <input
@@ -36,7 +36,7 @@
         <button 
           type="button"
           class="secondary signup" 
-          hx-post="/api/auth/signup" 
+          hx-post="./api/auth/signup" 
           hx-target="#login-signup" 
           hx-trigger="click" 
           hx-indicator="#login-signup" 
@@ -53,7 +53,7 @@
     {{/unless}}
   </div>
   {{#if mail_enabled}}
-    <a class="forgot-password" href="/reset-password" title="Reset password">Forgot your password?</a>
+    <a class="forgot-password" href="./reset-password" title="Reset password">Forgot your password?</a>
   {{/if}}
   {{#unless errors}}
     {{#if error}}

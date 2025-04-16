@@ -35,14 +35,17 @@ if (env.MAIL_ENABLED) {
   resetEmailTemplate = fs
     .readFileSync(resetEmailTemplatePath, { encoding: "utf-8" })
     .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+    .replace(/{{base_path}}/gm, env.BASE_PATH)
     .replace(/{{site_name}}/gm, env.SITE_NAME);
   verifyEmailTemplate = fs
     .readFileSync(verifyEmailTemplatePath, { encoding: "utf-8" })
     .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+    .replace(/{{base_path}}/gm, env.BASE_PATH)
     .replace(/{{site_name}}/gm, env.SITE_NAME);
   changeEmailTemplate = fs
     .readFileSync(changeEmailTemplatePath, { encoding: "utf-8" })
     .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+    .replace(/{{base_path}}/gm, env.BASE_PATH)
     .replace(/{{site_name}}/gm, env.SITE_NAME);
 }
 
