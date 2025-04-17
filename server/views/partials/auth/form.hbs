@@ -1,4 +1,7 @@
-<form id="login-signup" hx-post="/api/auth/login" hx-swap="outerHTML">
+<form id="login-signup" hx-post="/api/auth/create-admin" hx-swap="outerHTML">
+  <h2 class="admin-form-title">
+    Create an Admin account first:
+  </h2>
   <label class="{{#if errors.email}}error{{/if}}">
     Email address:
     <input
@@ -11,7 +14,7 @@
     />
     {{#if errors.email}}<p class="error">{{errors.email}}</p>{{/if}}
   </label>
-  <label class="{{#if errors.password}}error{{/if}}">
+  <label class="{{#if errors.password}}error{{/if}}" style="position: relative;">
     Password:
     <input
       name="password"
@@ -19,45 +22,35 @@
       type="password"
       placeholder="Password..."
       hx-preserve="true"
+      style="padding-right: 30px;"
     />
-    {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
-  </label>
-  <div class="buttons-wrapper">
-    <button 
-      type="submit" 
-      class="primary login {{#if disallow_registration}}full{{else}}{{#unless mail_enabled}}full{{/unless}}{{/if}}"
+    <span 
+      onclick="togglePassword()"
+      style="position: absolute; right: 20px; top: 65%; transform: translateY(-50%); cursor: pointer;"
+      title="Show/Hide Password"
     >
-      <span>{{> icons/login}}</span>
-      <span>{{> icons/spinner}}</span>
-      Log in
-    </button>
-    {{#unless disallow_registration}}
-      {{#if mail_enabled}}
-        <button 
-          type="button"
-          class="secondary signup" 
-          hx-post="/api/auth/signup" 
-          hx-target="#login-signup" 
-          hx-trigger="click" 
-          hx-indicator="#login-signup" 
-          hx-swap="outerHTML"
-          hx-sync="closest form"
-          hx-on:htmx:before-request="htmx.addClass('#login-signup', 'signup')"
-          hx-on:htmx:after-request="htmx.removeClass('#login-signup', 'signup')"
-        >
-            <span>{{> icons/new_user}}</span>
-            <span>{{> icons/spinner}}</span>
-            Sign up
-        </button>
+            &#128065;  
+
+    </span>
+    {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
+    </label>
+    <div class="buttons-wrapper admin-form">
+      <button type="submit" class="secondary full">
+        <span>{{> icons/new_user}}</span>
+        <span>{{> icons/spinner}}</span>
+        Create admin account
+      </button>
+    </div>
+    {{#unless errors}}
+      {{#if error}}
+        <p class="error">{{error}}</p>
       {{/if}}
     {{/unless}}
-  </div>
-  {{#if mail_enabled}}
-    <a class="forgot-password" href="/reset-password" title="Reset password">Forgot your password?</a>
-  {{/if}}
-  {{#unless errors}}
-    {{#if error}}
-      <p class="error">{{error}}</p>
-    {{/if}}
-  {{/unless}}
-</form>
+  </form>
+
+  <script>
+    function togglePassword() {
+      const input = document.getElementById("password");
+      input.type = input.type === "password" ? "text" : "password";
+  }
+  </script>
