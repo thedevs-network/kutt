@@ -1,6 +1,6 @@
 <form
   id="report-form"
-  hx-post="/api/links/{id}/protected"
+  hx-post="{{base_path}}/api/links/{id}/protected"
   hx-sync="this:abort"
   hx-ext="path-params"
   hx-vals='{"id":"{{id}}"}'
