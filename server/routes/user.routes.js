@@ -70,4 +70,15 @@ router.post(
   asyncHandler(user.ban)
 );
 
+router.post(
+  "/admin/unban/:id",
+  locals.viewTemplate("partials/admin/dialog/unban_user"),
+  asyncHandler(auth.apikey),
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin),
+  validators.unbanUser,
+  asyncHandler(helpers.verify),
+  asyncHandler(user.unban)
+);
+
 module.exports = router;

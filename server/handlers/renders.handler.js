@@ -304,6 +304,21 @@ async function linkEditAdmin(req, res) {
   });
 }
 
+async function confirmUserUnban(req, res) {
+  const user = await query.user.find({ id: req.query.id });
+  if (!user) {
+    return res.render("partials/admin/dialog/message", {
+      layout: false,
+      message: "Could not find the user."
+    });
+  }
+  res.render("partials/admin/dialog/unban_user", {
+    layout: false,
+    email: user.email,
+    id: user.id
+  });
+}
+
 module.exports = {
   addDomainAdmin,
   addDomainForm,
@@ -316,6 +331,7 @@ module.exports = {
   confirmLinkDelete,
   confirmUserBan,
   confirmUserDelete,
+  confirmUserUnban,
   createAdmin,
   createUser,
   getReportEmail,

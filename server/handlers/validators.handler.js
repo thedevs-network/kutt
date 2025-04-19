@@ -533,6 +533,27 @@ async function bannedHost(domain) {
   }
 };
 
+const unbanUser = [
+  param("id", "ID is invalid.")
+    .exists({
+      checkFalsy: true,
+      checkNull: true
+    })
+    .isNumeric(),
+  body("links", '"links" should be a boolean.')
+    .optional({
+      nullable: true
+    })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean(),
+  body("domains", '"domains" should be a boolean.')
+    .optional({
+      nullable: true
+    })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean()
+];
+
 module.exports = {
   addDomain,
   addDomainAdmin,
@@ -561,4 +582,5 @@ module.exports = {
   resetPassword,
   signup,
   signupEmailTaken,
+  unbanUser,
 }

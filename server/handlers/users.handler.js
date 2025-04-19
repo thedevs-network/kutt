@@ -175,6 +175,58 @@ async function create(req, res) {
   return res.status(201).send({ message: "The user has been created successfully." });
 }
 
+async function unban(req, res) {
+  const { id } = req.params;
+
+  const update = {
+    banned_by_id: null,
+    banned: false
+  };
+
+  // 1. check if user exists
+  const user = await query.user.find({ id });
+
+  if (!user) {
+    throw new CustomError("No user has been found.", 400);
+  }
+
+  if (!user.banned) {
+    throw new CustomError("User is not banned.", 400);
+  }
+
+  const tasks = [];
+
+  // 2. unban user
+  tasks.push(query.user.update({ id }, update));
+  
+  // 3. unban user links
+  if (req.body.links) {
+    tasks.push(query.link.update({ user_id: id }, update));
+  }
+  
+  // 4. unban user domains
+  if (req.body.domains) {
+    tasks.push(query.domain.update({ user_id: id }, update));
+  }
+
+  // 5. wait for all tasks to finish
+  await Promise.all(tasks).catch((err) => {
+    throw new CustomError("Couldn't unban entries.");
+  });
+
+  // 6. send response
+  if (req.isHTML) {
+    res.setHeader("HX-Reswap", "outerHTML");
+    res.setHeader("HX-Trigger", "reloadMainTable");
+    res.render("partials/admin/dialog/unban_user_success", {
+      email: user.email,
+    });
+    return;
+  }
+
+  return res.status(200).send({ message: "Unbanned user successfully." });
+}
+
 module.exports = {
   ban,
   create,
@@ -182,4 +234,5 @@ module.exports = {
   getAdmin,
   remove,
   removeByAdmin,
+  unban
 }

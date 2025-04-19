@@ -150,6 +150,14 @@ router.get(
 );
 
 router.get(
+  "/confirm-user-unban", 
+  locals.noLayout,
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin), 
+  asyncHandler(renders.confirmUserUnban)
+);
+
+router.get(
   "/create-user", 
   locals.noLayout,
   asyncHandler(auth.jwt),
