@@ -237,6 +237,13 @@ Download Kutt's extension for web browsers via below links.
 | BASH            | [url-shortener](https://git.tim-peters.org/Tim/url-shortener)                     | Simple BASH script with GUI                          |
 | Kubernetes/Helm | [ArtifactHub](https://artifacthub.io/packages/helm/christianhuth/kutt)            | A Helm Chart to install Kutt on a Kubernetes cluster |
 
+## 🛠️ Troubleshooting & FAQ
+
+**Q: I get a database error when starting the app.**  
+A: Make sure you've run `npm run migrate`, and your environment variables for the database are correct.
+
+**Q: How do I reset my admin password?**  
+A: If you're using SQLite, you can delete the `db/data` file to reset everything. For Postgres or MySQL, you can manually remove the user row from the database.
 ## Contributing
 
 Pull requests are welcome. Open a discussion for feedback, requesting features, or discussing ideas.
