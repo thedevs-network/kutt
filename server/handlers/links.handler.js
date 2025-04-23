@@ -56,6 +56,8 @@ async function getAdmin(req, res) {
   const banned = utils.parseBooleanQuery(req.query.banned);
   const anonymous = utils.parseBooleanQuery(req.query.anonymous);
   const has_domain = utils.parseBooleanQuery(req.query.has_domain);
+  const sort = req.query.sort || "id";
+  const direction = req.query.direction === "asc" ? "asc" : "desc";
   
   const match = {
     ...(banned !== undefined && { banned }),
@@ -63,15 +65,13 @@ async function getAdmin(req, res) {
     ...(has_domain !== undefined && { domain_id: [has_domain ? "is not" : "is", null] }),
   };
   
-  // if domain is equal to the defualt domain,
-  // it means admins is looking for links with the defualt domain (no custom user domain)
   if (domain === env.DEFAULT_DOMAIN) {
     domain = undefined;
     match.domain_id = null;
   }
   
   const [data, total] = await Promise.all([
-    query.link.getAdmin(match, { limit, search, user, domain, skip }),
+    query.link.getAdmin(match, { limit, search, user, domain, skip, sort, direction }),
     query.link.totalAdmin(match, { search, user, domain })
   ]);
 
@@ -84,6 +84,9 @@ async function getAdmin(req, res) {
       limit,
       skip,
       links,
+      query: req.query,
+      sort,
+      direction
     })
     return;
   }
@@ -95,7 +98,6 @@ async function getAdmin(req, res) {
     data: links,
   });
 };
-
 async function create(req, res) {
   const { reuse, password, customurl, description, target, fetched_domain, expire_in } = req.body;
   const domain_id = fetched_domain ? fetched_domain.id : null;

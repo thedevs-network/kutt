@@ -391,6 +391,13 @@ if (customCSSExists) {
 function getCustomCSSFileNames() {
   return custom_css_file_names;
 }
+hbs.registerHelper('eq', function(a, b) {
+  return a === b;
+});
+
+hbs.registerHelper('and', function(a, b) {
+  return a && b;
+});
 
 module.exports = {
   addProtocol,

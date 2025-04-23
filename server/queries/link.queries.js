@@ -140,9 +140,13 @@ async function getAdmin(match, params) {
     query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
   });
 
-  query
-    .orderBy("links.id", "desc")
-    .offset(params.skip)
+  let sortField = params?.sort || "id";
+  let sortDirection = params?.direction === "asc" ? "asc" : "desc";
+  const allowedFields = ["visit_count", "created_at"];
+  if (!allowedFields.includes(sortField)) sortField = "created_at";
+  query.orderBy(`links.${sortField}`, sortDirection);
+
+  query.offset(params.skip)
     .limit(params.limit)
   
   if (params?.user) {

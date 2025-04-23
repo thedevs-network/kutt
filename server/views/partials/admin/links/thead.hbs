@@ -96,7 +96,7 @@
           <option value="false" {{#ifEquals query.has_domain 'false'}}selected{{/ifEquals}}>No domain</option>
         </select>
         <input id="total" name="total" type="hidden" value="{{total}}" />
-        <input id="limit" name="limit" type="hidden" value="10" />
+        <input id="limit" name="limit" type="hidden" value="{{query.limit}}" />
         <input id="skip" name="skip" type="hidden" value="0" />
       </div>
     </th>
@@ -104,9 +104,31 @@
   </tr>
   <tr>
     <th class="original-url">Original URL</th>
-    <th class="created-at">Created at</th>
+    <th class="created-at"
+        hx-get="/api/links/admin"
+        hx-include=".links-controls"
+        hx-params="not total"
+        hx-trigger="click"
+        hx-target="closest table"
+        hx-push-url="false"
+        hx-vals='{"sort": "created_at", "direction": "{{#if (eq sort "created_at")}}{{#if (eq direction "asc")}}desc{{else}}asc{{/if}}{{else}}asc{{/if}}"}'
+        style="cursor:pointer; user-select:none;">
+      Created at
+      {{#if (eq sort "created_at")}}<span>{{#if (eq direction "asc")}}▲{{else}}▼{{/if}}</span>{{/if}}
+    </th>
     <th class="short-link">Short link</th>
-    <th class="views">Views</th>
+    <th class="views"
+        hx-get="/api/links/admin"
+        hx-include=".links-controls"
+        hx-params="not total"
+        hx-trigger="click"
+        hx-target="closest table"
+        hx-push-url="false"
+        hx-vals='{"sort": "visit_count", "direction": "{{#if (eq sort "visit_count")}}{{#if (eq direction "asc")}}desc{{else}}asc{{/if}}{{else}}asc{{/if}}"}'
+        style="cursor:pointer; user-select:none;">
+      Views
+      {{#if (eq sort "visit_count")}}<span>{{#if (eq direction "asc")}}▲{{else}}▼{{/if}}</span>{{/if}}
+    </th>
     <th class="actions"></th>
   </tr>
 </thead>
