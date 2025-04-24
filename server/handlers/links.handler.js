@@ -217,7 +217,8 @@ async function edit(req, res) {
         domain_id
       }),
     target && validators.bannedDomain(targetDomain),
-    target && validators.bannedHost(targetDomain)
+    target && validators.bannedHost(targetDomain),
+    domain_id && query.domain.find({ id: domain_id })
   ]);
 
   // Check if custom link already exists
@@ -241,16 +242,17 @@ async function edit(req, res) {
     }
   );
 
+  const updatedLinkWithDomain = { ...updatedLink, ...(domain_id && { domain: tasks[3].address }) };
+
   if (req.isHTML) {
     res.render("partials/links/edit", {
       swap_oob: true,
       success: "Link has been updated.",
-      ...utils.sanitize.link_html({ ...updatedLink }),
+      ...utils.sanitize.link_html(updatedLinkWithDomain),
     });
     return;
   }
-
-  return res.status(200).send(utils.sanitize.link({ ...updatedLink }));
+  return res.status(200).send(utils.sanitize.link(updatedLinkWithDomain));
 };
 
 async function editAdmin(req, res) {
