@@ -42,6 +42,11 @@ function normalizeMatch(match) {
     delete newMatch.user_id;
   }
 
+  if (newMatch.id) {
+    newMatch["links.id"] = newMatch.id;
+    delete newMatch.id;
+  }
+
   if (newMatch.uuid) {
     newMatch["links.uuid"] = newMatch.uuid;
     delete newMatch.uuid;
@@ -273,8 +278,11 @@ async function update(match, update) {
     .where(match)
     .update({ ...update, updated_at: utils.dateToUTC(new Date()) });
 
-  const updated_links = await knex("links").select('*').where(match);
-
+  const updated_links = await knex("links")
+    .select(selectable)
+    .where(normalizeMatch(match))
+    .leftJoin("domains", "links.domain_id", "domains.id");
+    
   if (env.REDIS_ENABLED) {
     links.forEach(redis.remove.link);
     updated_links.forEach(redis.remove.link);
