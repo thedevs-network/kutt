@@ -16,3 +16,4 @@ db/*
 !db/.gitkeep
 .history/**
 **.bak
+tags
