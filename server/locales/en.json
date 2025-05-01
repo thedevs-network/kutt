@@ -22,10 +22,10 @@
 		"termsOfServiceAria": "Terms of Service"
 	},
 	"title": {
+		"404": "404 - Page not found",
 		"loginOrSignup": "Log in or Sign up",
 		"homepage": "Free modern URL shortener",
 		"logout": "Log out",
-		"404": "404 - Page not found",
 		"settings": "Settings",
 		"admin": "Admin",
 		"stats": "Statistics",
@@ -59,7 +59,8 @@
 		"login": "Log in",
 		"signup": "Sign up",
 		"forgotPassword": "Forgot your password?",
-		"forgotPasswordAria": "Reset password"
+		"forgotPasswordAria": "Reset password",
+		"signUp": "login.signUp"
 	},
 	"welcome": {
 		"welcomeAndRedirect": "Welcome. Redirecting to homepage...",
@@ -306,7 +307,7 @@
 		"paragraph_5": "{{site_name}} may revise these terms of service for its website at any time without notice. By using this website you are agreeing to be bound by the then current version of these terms of service."
 	},
 	"timeAgo": {
-		"ago":" ago",
+		"ago": " ago",
 		"second": "second",
 		"seconds": "seconds",
 		"minute": "minute",

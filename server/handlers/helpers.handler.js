@@ -1,12 +1,12 @@
 const { RedisStore: RateLimitRedisStore } = require("rate-limit-redis");
 const { rateLimit: expressRateLimit } = require("express-rate-limit");
 const { validationResult } = require("express-validator");
+const i18n = require("i18n");
 
 const { CustomError } = require("../utils");
 const query = require("../queries");
 const redis = require("../redis");
 const env = require("../env");
-const i18n = require("i18n");
 
 function error(error, req, res, _next) {
   if (!(error instanceof CustomError)) {

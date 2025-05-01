@@ -1,7 +1,8 @@
+const i18n = require("i18n");
+
 const query = require("../queries");
 const utils = require("../utils");
 const env = require("../env");
-const i18n = require("i18n");
 
 /** 
 *
