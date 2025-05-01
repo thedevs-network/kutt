@@ -21,15 +21,6 @@
   </div>
   <nav>
     <ul>
-      <li class="dropdown">
-        <select id="language-select" class="form-select" style="max-width:130px" onchange="changeLanguage(this.value)">
-          {{#each formattedLocales}}
-            <option value="{{this.code}}" {{#ifEquals ../currentLocale this.code}}selected{{/ifEquals}}>
-              {{this.name}}
-            </option>
-          {{/each}}
-        </select>
-      </li>
       {{#unless user}}
         <li>
           <a class="button primary" href="/login" title="{{t 'header.loginOrSignupAria'}}">

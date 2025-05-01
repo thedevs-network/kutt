@@ -9,7 +9,7 @@
             name="search" 
             type="text" 
             placeholder="{{t "table.admin.searchLinkPlaceholder"}}" 
-            class="table-input search admin" 
+            class="flat in-table search admin" 
             hx-on:input="onSearchChange(event)" 
             hx-on:keyup="resetTableNav()"
             value="{{query.search}}"
@@ -29,7 +29,7 @@
             name="domain" 
             type="text" 
             placeholder="{{t "table.admin.searchDomainPlaceholder"}}" 
-            class="table-input search admin" 
+            class="flat in-table search admin" 
             hx-on:input="onSearchChange(event)" 
             hx-on:keyup="resetTableNav()"
             value="{{query.domain}}"
@@ -49,7 +49,7 @@
             name="user" 
             type="text" 
             placeholder="{{t "table.admin.searchUserPlaceholder"}}" 
-            class="table-input search admin" 
+            class="flat in-table search admin" 
             hx-on:input="onSearchChange(event)" 
             hx-on:keyup="resetTableNav()"
             value="{{query.user}}"
@@ -68,7 +68,7 @@
         <select 
           id="links-select-banned"
           name="banned"
-          class="table-input ban"
+          class="flat in-table ban"
           hx-on:change="resetTableNav()"
         >
           <option value="" selected>{{t "table.admin.filterBannedPlaceholder"}}</option>
@@ -78,7 +78,7 @@
         <select 
           id="links-select-anonymous"
           name="anonymous"
-          class="table-input anonymous"
+          class="flat in-table anonymous"
           hx-on:change="resetTableNav()"
         >
           <option value="">{{t "table.admin.filterAnonymousPlaceholder"}}</option>
@@ -88,7 +88,7 @@
         <select 
           id="links-select-anonymous"
           name="has_domain"
-          class="table-input has_domain"
+          class="flat in-table has_domain"
           hx-on:change="resetTableNav()"
         >
           <option value="">{{t "table.admin.filterDomainPlaceholder"}}</option>

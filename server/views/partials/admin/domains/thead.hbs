@@ -9,7 +9,7 @@
             name="search" 
             type="text" 
             placeholder="{{t "table.admin.searchDomainPlaceholder"}}" 
-            class="table-input search admin" 
+            class="flat in-table search admin" 
             hx-on:input="onSearchChange(event)" 
             hx-on:keyup="resetTableNav()"
             value="{{query.search}}"
@@ -29,7 +29,7 @@
             name="user" 
             type="text" 
             placeholder="{{t "table.admin.searchUserPlaceholder"}}" 
-            class="table-input search admin" 
+            class="flat in-table search admin" 
             hx-on:input="onSearchChange(event)" 
             hx-on:keyup="resetTableNav()"
             value="{{query.user}}"
@@ -43,19 +43,19 @@
             {{> icons/x}}
           </button>
         </div>
-        <select id="domains-select-banned" name="banned" class="table-input ban" hx-on:change="resetTableNav()">
+        <select id="domains-select-banned" name="banned" class="flat in-table ban" hx-on:change="resetTableNav()">
           <option value="" selected>{{t "table.admin.filterBannedPlaceholder"}}</option>
           <option value="true">{{t "table.admin.filterBanned"}}</option>
           <option value="false">{{t "table.admin.filterNotBanned"}}</option>
         </select>
       </div>
       <div>
-        <select id="domains-select-links" name="links" class="table-input links" hx-on:change="resetTableNav()">
+        <select id="domains-select-links" name="links" class="flat in-table links" hx-on:change="resetTableNav()">
           <option value="" selected>{{t "table.admin.filterLinksPlaceholder"}}</option>
           <option value="true" {{#ifEquals query.links 'true'}}selected{{/ifEquals}}>{{t "table.admin.filterWithLinks"}}</option>
           <option value="false" {{#ifEquals query.links 'true'}}selected{{/ifEquals}}>{{t "table.admin.filterWithoutLinks"}}</option>
         </select>
-        <select id="domains-select-owner" name="owner" class="table-input owner" hx-on:change="resetTableNav()">
+        <select id="domains-select-owner" name="owner" class="flat in-table owner" hx-on:change="resetTableNav()">
           <option value="" selected>{{t "table.admin.filterOwnerPlaceholder"}}</option>
           <option value="true" {{#ifEquals query.owner 'true'}}selected{{/ifEquals}}>{{t "table.admin.filterWithOwner"}}</option>
           <option value="false" {{#ifEquals query.owner 'true'}}selected{{/ifEquals}}>{{t "table.admin.filterWithoutOwner"}}</option>

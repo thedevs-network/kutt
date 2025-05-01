@@ -1,4 +1,11 @@
 <footer>
+  <select id="language-select" class="flat language form-select" style="max-width:130px" onchange="changeLanguage(this.value)">
+    {{#each formattedLocales}}
+      <option value="{{this.code}}" {{#ifEquals ../currentLocale this.code}}selected{{/ifEquals}}>
+        {{this.name}}
+      </option>
+    {{/each}}
+  </select>
   <p>
     {{t 'footer.poweredBy'}} <a href="https://github.com/thedevs-network/kutt" title="{{t 'footer.theDevsAria'}}" target="_blank" rel="noopener noreferrer">Kutt</a> <span>|</span> 
     <a href="/terms" title="{{t 'footer.termsOfServiceAria'}}">{{t 'footer.termsOfService'}}</a>
