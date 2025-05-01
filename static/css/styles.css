@@ -1716,6 +1716,7 @@ footer {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 1rem;
 }
 
 footer p {
@@ -1738,10 +1739,6 @@ footer button.link .spinner {
 }
 
 footer button.link.htmx-request .spinner { display: inline; }
-
-#language-select {
-  margin-left: 0.5rem;
-}
 
 /* SETTINGS */
 
