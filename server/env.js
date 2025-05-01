@@ -66,6 +66,7 @@ const spec = {
   CONTACT_EMAIL: str({ default: "" }),
   NODE_APP_INSTANCE: num({ default: 0 }),
   BASE_PATH: str({ default: "" }),
+  SHORT_URLS_INCLUDE_PATH: bool({ default: false }),
 };
 
 for (const key in spec) {

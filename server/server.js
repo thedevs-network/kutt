@@ -72,8 +72,8 @@ router.use("/", routes.render);
 router.use("/api/v2", routes.api);
 router.use("/api", routes.api);
 
-// redirect the short link to the target
-router.get("/:id", asyncHandler(links.redirect));
+// redirect the short link to the target (using BASE_PATH if specified)
+(env.SHORT_URLS_INCLUDE_PATH ? router : app).get("/:id", asyncHandler(links.redirect));
 
 // finally, 404 pages that don't exist
 router.get("*", renders.notFound);
