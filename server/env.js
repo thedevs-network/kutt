@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { cleanEnv, num, str, bool } = require("envalid");
+const { cleanEnv, num, str, bool, makeValidator } = require("envalid");
 const { readFileSync } = require("node:fs");
 
 const supportedDBClients = [
@@ -26,12 +26,34 @@ if (process.argv.includes("--production")) {
   process.env.NODE_ENV = "production";
 }
 
+// custom locales validator
+const allowedLocales = ["en", "zh_CN","zh_TW"];
+const localesValidator = makeValidator(function (locales) {
+  if (typeof locales !== "string") return "en";
+  return locales
+    .split(",")
+    .map(l => l.trim().toLowerCase())
+    .map(function (locale) {
+      const index = allowedLocales.findIndex(l => l.toLowerCase() === locale);
+      if (index !== -1) {
+        return allowedLocales[index];
+      } else {
+        throw new Error(
+          `Locale is not supported: ${locale}.` +
+          `Available locales: ${allowedLocales.join(", ")}`
+        );
+      }
+    })
+    .join(",");
+});
+
 const spec = {
   PORT: num({ default: 3000 }),
   SITE_NAME: str({ example: "Kutt", default: "Kutt" }),
   DEFAULT_DOMAIN: str({ example: "kutt.it", default: "localhost:3000" }),
   LINK_LENGTH: num({ default: 6 }),
   LINK_CUSTOM_ALPHABET: str({ default: "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789" }),
+  LOCALES: localesValidator({ default: "en" }),
   TRUST_PROXY: bool({ default: true }),
   DB_CLIENT: str({ choices: supportedDBClients, default: "better-sqlite3" }),
   DB_FILENAME: str({ default: "db/data" }),
