@@ -74,7 +74,18 @@ function addProtocol(url) {
 
 function getShortURL(address, domain) {
   const protocol = (env.CUSTOM_DOMAIN_USE_HTTPS || !domain) && !env.isDev ? "https://" : "http://";
-  const link = `${domain || env.DEFAULT_DOMAIN}/${address}`;
+  const linkDomain = domain || env.DEFAULT_DOMAIN;
+  let path = '';
+
+  if (env.BASE_PATH) {
+    if (linkDomain === env.DEFAULT_DOMAIN) {
+      path = env.BASE_PATH;
+    } else if (env.SHORT_URLS_INCLUDE_PATH) {
+      path = env.BASE_PATH;
+    }
+  }
+
+  const link = `${linkDomain}${path}/${address}`;
   const url = `${protocol}${link}`;
   return { address, link, url };
 }
@@ -184,6 +195,10 @@ const preservedURLs = [
   "libs",
   "pricing"
 ];
+
+function getPath(path) {
+  return `${env.BASE_PATH}${path}`;
+}
 
 function parseBooleanQuery(query) {
   if (query === "true" || query === true) return true;
@@ -410,6 +425,7 @@ module.exports = {
   parseDatetime,
   parseTimestamps,
   preservedURLs,
+  getPath,
   registerHandlebarsHelpers,
   removeWww,
   sanitize,
