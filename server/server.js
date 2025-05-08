@@ -32,7 +32,7 @@ require("./passport");
 const app = express();
 
 i18n.configure({
-  locales: ['en', 'es'], // Languages supported
+  locales: ['en', 'it'], // Languages supported
   directory: path.join(__dirname, '../locales'), // Your locales folder
   defaultLocale: 'en',
   queryParameter: 'lang',
