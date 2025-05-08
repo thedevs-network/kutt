@@ -30,22 +30,22 @@
       {{/unless}}
       {{#if user}}
         <li>
-          <a class="button primary" href="/settings" title="Settings">
+          <a class="button primary" href="/settings" title="{{__ "settings"}}">
             <span>{{> icons/cog}}</span>
-            Settings
+            {{__ "settings"}}
           </a>
         </li>
         {{#if isAdmin}}
           <li>
-            <a class="button secondary" href="/admin" title="Admin">
+            <a class="button secondary" href="/admin" title="{{__ "admin"}}">
               <span>{{> icons/shield}}</span>
-              Admin
+              {{__ "admin"}}
             </a>
           </li>
         {{/if}}
         <li>
-          <a class="nav" href="/logout" title="Log out">
-            Log out
+          <a class="nav" href="/logout" title="{{__ 'logout'}}">
+            {{__ 'logout'}}
           </a>
         </li>
       {{/if}}
