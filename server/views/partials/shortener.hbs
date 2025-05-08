@@ -21,7 +21,7 @@
       </h1>
     {{/if}}
     {{#unless link}}
-        <h1>Cut your links <span>shorter</span>.</h1>
+        <h1>{{__ "title"}}</span>.</h1>
     {{/unless}}
   </div>
   <form 
@@ -37,7 +37,7 @@
         id="target"
         name="target"
         type="text"
-        placeholder="Paste your long URL"
+        placeholder="{{__ "pasteLongUrl"}}"
         aria-label="target"
         autofocus="true"
         data-lpignore="true"
@@ -61,12 +61,12 @@
         hx-on:change="htmx.toggleClass('#advanced-options', 'hidden')"
         {{#if show_advanced}}checked="true"{{/if}}
       />
-      Show advanced options
+      {{__ "showAdvancedOptions"}}
     </label>
     <section id="advanced-options" class="{{#unless show_advanced}}hidden{{/unless}}">
       <div class="advanced-input-wrapper">
         <label class="{{#if errors.domain}}error{{/if}}">
-          Domain:
+          {{__ "domain"}}:
           <select 
             id="domain" 
             name="domain" 
@@ -90,19 +90,19 @@
             type="text" 
             id="customurl" 
             name="customurl" 
-            placeholder="Custom address..." 
+            placeholder="{{__ "customAddress"}}" 
             hx-preserve="true"
             autocomplete="off" 
           />
           {{#if errors.customurl}}<p class="error">{{errors.customurl}}</p>{{/if}}
         </label>
         <label class="{{#if errors.password}}error{{/if}}">
-          Password:
+          {{__ "password"}}
           <input 
             type="password" 
             id="password" 
             name="password" 
-            placeholder="Password..." 
+            placeholder="{{__ "password1"}}" 
             hx-preserve="true" 
             autocomplete="off" 
           />
@@ -111,23 +111,23 @@
       </div>
       <div class="advanced-input-wrapper">
         <label class="expire-in {{#if errors.expire_in}}error{{/if}}">
-          Expire in:
+          {{__ "expireIn"}}
           <input 
             type="text" 
             id="expire_in" 
             name="expire_in" 
-            placeholder="2 minutes/hours/days" 
+            placeholder="2 {{__ "minutes"}}/{{__ "hours"}}/{{__ "days"}}" 
             hx-preserve="true" 
           />
           {{#if errors.expire_in}}<p class="error">{{errors.expire_in}}</p>{{/if}}
         </label>
         <label class="description {{#if errors.description}}error{{/if}}">
-          Description:
+          {{__ "description"}}
           <input 
             type="text" 
             id="description" 
             name="description" 
-            placeholder="Description..." 
+            placeholder="{{__ "description1"}}" 
             hx-preserve="true" 
           />
           {{#if errors.description}}<p class="error">{{errors.description}}</p>{{/if}}

@@ -1,0 +1,28 @@
+{
+    "title": "Acortador de URLs",
+    "cutLinksShorter": "Acorta tus enlaces",
+    "logout": "Cerrar sesión",
+    "admin": "Administrador",
+    "settings": "Configuraciones",
+    "pasteLongUrl": "Pega tu URL larga",
+    "showAdvancedOptions": "Mostrar opciones avanzadas",
+    "recentShortenedLinks": "Enlaces acortados recientemente.",
+    "originalUrl": "URL original",
+    "createdAt": "Creado el",
+    "shortLink": "Enlace corto",
+    "views": "Vistas",
+    "noLinks": "Sin enlaces",
+    "loadingLinks": "Cargando enlaces...",
+    "domain": "Dominio",
+    "customAddress": "Dirección personalizada...",
+    "password": "Contraseña",
+    "password1": "Contraseña...",
+    "expireIn": "Expira en",
+    "minutes": "minutos",
+    "hours": "horas",
+    "days": "días",
+    "description": "Descripción",
+    "description1": "Descripción...",
+    "search": "Buscar..."
+  }
+  

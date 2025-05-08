@@ -1,5 +1,7 @@
 const env = require("./env");
 
+const i18n = require("i18n");
+
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const express = require("express");
@@ -29,6 +31,20 @@ require("./passport");
 // create express app
 const app = express();
 
+i18n.configure({
+  locales: ['en', 'es'], // Languages supported
+  directory: path.join(__dirname, '../locales'), // Your locales folder
+  defaultLocale: 'en',
+  queryParameter: 'lang',
+  autoReload: true,
+  updateFiles: false
+});
+
+app.use(i18n.init);
+app.use((req, res, next) => {
+  res.locals.__ = res.__; // This exposes i18n __ to all templates
+  next();
+});
 // this tells the express app that it's running behind a proxy server
 // and thus it should get the IP address from the proxy server
 if (env.TRUST_PROXY) {
@@ -56,6 +72,9 @@ app.set("views", [
   path.join(__dirname, "../custom/views"),
   path.join(__dirname, "views"),
 ]);
+hbs.registerHelper('__', function () {
+  return i18n.__.apply(this, arguments);
+});
 utils.registerHandlebarsHelpers();
 
 // if is custom domain, redirect to the set homepage
