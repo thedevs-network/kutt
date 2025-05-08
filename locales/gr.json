@@ -1,0 +1,28 @@
+{
+    "title": "URL-Kürzer",
+    "cutLinksShorter": "Verkürze deine Links",
+    "logout": "Abmelden",
+    "admin": "Administrator",
+    "settings": "Einstellungen",
+    "pasteLongUrl": "Füge deine lange URL ein",
+    "showAdvancedOptions": "Erweiterte Optionen anzeigen",
+    "recentShortenedLinks": "Kürzlich verkürzte Links.",
+    "originalUrl": "Original-URL",
+    "createdAt": "Erstellt am",
+    "shortLink": "Kurzer Link",
+    "views": "Aufrufe",
+    "noLinks": "Keine Links",
+    "loadingLinks": "Links werden geladen...",
+    "domain": "Domain",
+    "customAddress": "Benutzerdefinierte Adresse...",
+    "password": "Passwort",
+    "password1": "Passwort...",
+    "expireIn": "Läuft ab in",
+    "minutes": "Minuten",
+    "hours": "Stunden",
+    "days": "Tage",
+    "description": "Beschreibung",
+    "description1": "Beschreibung...",
+    "search": "Suchen..."
+  }
+  
