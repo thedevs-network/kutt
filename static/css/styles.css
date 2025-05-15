@@ -2,7 +2,7 @@
   font-family: 'Nunito';
   font-style: normal;
   font-weight: 200 1000;
-  src: url(/fonts/nunito-variable.woff2) format('woff2');
+  src: url(../fonts/nunito-variable.woff2) format('woff2');
 }
 
 :root {

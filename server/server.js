@@ -1,4 +1,5 @@
 const env = require("./env");
+const { Router } = require("express");
 
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
@@ -40,10 +41,13 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const router = Router();
+
 // serve static
-app.use("/images", express.static("custom/images"));
-app.use("/css", express.static("custom/css", { extensions: ["css"] }));
-app.use(express.static("static"));
+router.use("/images", express.static("custom/images"));
+router.use("/css", express.static("custom/css", { extensions: ["css"] }));
+router.use(express.static("static"));
+router.use(express.static("static"));
 
 app.use(passport.initialize());
 app.use(locals.isHTML);
@@ -59,21 +63,23 @@ app.set("views", [
 utils.registerHandlebarsHelpers();
 
 // if is custom domain, redirect to the set homepage
-app.use(asyncHandler(links.redirectCustomDomainHomepage));
+router.use(asyncHandler(links.redirectCustomDomainHomepage));
 
 // render html pages
-app.use("/", routes.render);
+router.use("/", routes.render);
 
 // handle api requests
-app.use("/api/v2", routes.api);
-app.use("/api", routes.api);
+router.use("/api/v2", routes.api);
+router.use("/api", routes.api);
 
-// finally, redirect the short link to the target
-app.get("/:id", asyncHandler(links.redirect));
+// redirect the short link to the target (using BASE_PATH if specified)
+(env.SHORT_URLS_INCLUDE_PATH ? router : app).get("/:id", asyncHandler(links.redirect));
 
-// 404 pages that don't exist
-app.get("*", renders.notFound);
+// finally, 404 pages that don't exist
+router.get("*", renders.notFound);
 
+// configure to run on the specified base path
+app.use(env.BASE_PATH, router);
 // handle errors coming from above routes
 app.use(helpers.error);
   

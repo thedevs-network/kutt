@@ -2,7 +2,7 @@
 <section
   id="stats-section"
   class="section-container"
-  hx-get="/api/links/{id}/stats"
+  hx-get="./api/links/{id}/stats"
   hx-swap="innerHTML"
   hx-trigger="load once"
   hx-vals='js:{ id: getQueryParams().id || "" }' 
@@ -20,6 +20,6 @@
 </section>
 {{> footer}}
 {{#extend "scripts"}}
-  <script src="/libs/chart.min.js"></script>
-  <script src="/scripts/stats.js"></script>
+  <script src="./libs/chart.min.js"></script>
+  <script src="./scripts/stats.js"></script>
 {{/extend}}

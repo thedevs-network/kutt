@@ -10,7 +10,7 @@ const env = require("../env");
 
 async function homepage(req, res) {
   if (env.DISALLOW_ANONYMOUS_LINKS && !req.user) {
-    res.redirect("/login");
+    res.redirect(utils.getPath("/login"));
     return;
   }
   res.render("homepage", {
@@ -20,7 +20,7 @@ async function homepage(req, res) {
 
 async function login(req, res) {
   if (req.user) {
-    res.redirect("/");
+    res.redirect(utils.getPath("/"));
     return;
   }
   
@@ -39,7 +39,7 @@ function logout(req, res) {
 async function createAdmin(req, res) {
   const isThereAUser = await query.user.findAny();
   if (isThereAUser) {
-    res.redirect("/login");
+    res.redirect(utils.getPath("/login"));
     return;
   }
   res.render("create_admin", {
@@ -79,7 +79,7 @@ async function banned(req, res) {
 
 async function report(req, res) {
   if (!env.REPORT_EMAIL) {
-    res.redirect("/");
+    res.redirect(utils.getPath("/"));
     return;
   }
   res.render("report", {

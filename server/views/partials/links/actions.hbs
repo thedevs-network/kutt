@@ -11,7 +11,7 @@
   {{/if}}
   <a
     class="button action stats"
-    href="/stats?id={{id}}"
+    href="./stats?id={{id}}"
     title="Stats"
     class="action stats"
   >
@@ -28,7 +28,7 @@
     class="action edit"
     hx-trigger="click queue:none"
     hx-ext="path-params"
-    hx-get="/link/edit/{id}" 
+    hx-get="./link/edit/{id}" 
     hx-vals='{"id":"{{id}}"}'
     hx-swap="beforeend"
     hx-target="next tr.edit"
@@ -49,7 +49,7 @@
   <button 
     class="action delete" 
     hx-on:click='openDialog("link-dialog")' 
-    hx-get="/confirm-link-delete" 
+    hx-get="./confirm-link-delete" 
     hx-target="#link-dialog .content-wrapper" 
     hx-indicator="#link-dialog" 
     hx-vals='{"id":"{{id}}"}'

@@ -96,6 +96,8 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `PORT` |  The port to start the app on | `3000` | `8888` |
 | `SITE_NAME` |  Name of the website | `Kutt` | `Your Site` |
 | `DEFAULT_DOMAIN` |  The domain address that this app runs on | `localhost:3000` | `yoursite.com` |
+| `BASE_PATH` | The path the service will run on | `/` | `/url-shortener` |
+| `SHORT_URLS_INCLUDE_PATH` | Whether the shortened links will use the base path. If this value is false and BASE_PATH is specified, your proxy will need to route to the BASE_PATH of the service. | `false` | `true` |
 | `LINK_LENGTH` | The length of of shortened address | `6` | `5` |
 | `LINK_CUSTOM_ALPHABET` | Alphabet used to generate custom addresses. Default value omits o, O, 0, i, I, l, 1, and j to avoid confusion when reading the URL. | (abcd..789) | `abcABC^&*()@` |
 | `DISALLOW_REGISTRATION` | Disable registration. Note that if `MAIL_ENABLED` is set to false, then the registration would still be disabled since it relies on emails to sign up users. | `true` | `false` |

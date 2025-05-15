@@ -5,14 +5,14 @@
   <p>Enter your password and a new email address to change your email address.</p>
   <form 
     id="change-email"
-    hx-post="/api/auth/change-email"
+    hx-post="./api/auth/change-email"
     hx-select="form"
     hx-swap="outerHTML"
     hx-sync="this:abort"
   >
     <div class="inputs">
       <label class="{{#if errors.password}}error{{/if}}">
-        Passwod:
+        Password:
         <input 
           id="password-for-change-email" 
           name="password" 
