@@ -129,7 +129,7 @@ async function create(req, res) {
   if (tasks[1]) {
     const error = "Custom URL is already in use.";
     res.locals.errors = { customurl: error };
-    throw new CustomError(error);
+    throw new CustomError(error, 409, utils.sanitize.link(tasks[1]));
   }
 
   // Create new link
