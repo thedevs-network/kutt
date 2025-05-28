@@ -10,68 +10,56 @@ services:
       DB_FILENAME: "/var/lib/kutt/data.sqlite"
       DISALLOW_REGISTRATION: "false"
       OIDC_ENABLED: "true"
-      OIDC_ISSUER: http://7f000101.nip.io:8080
-      OIDC_CLIENT_ID: mock-client-id
-      OIDC_CLIENT_SECRET: some-client-Secret
+      OIDC_ISSUER: http://7f000001.nip.io:5556/dex
+      OIDC_CLIENT_ID: example-app
+      OIDC_CLIENT_SECRET: ZXhhbXBsZS1hcHAtc2VjcmV0
       OIDC_SCOPE: openid profile email
       OIDC_APP_URL: http://localhost:3000
     ports:
       - 3000:3000
     links:
-      - oidc-server-mock:7f000101.nip.io
-  oidc-server-mock:
-    container_name: oidc-server-mock
-    image: ghcr.io/soluto/oidc-server-mock:0.11.0
+      - oidc-server:7f000001.nip.io
+
+  oidc-server:
+    image: dexidp/dex:v2.43.1-alpine
     ports:
-      - 8080:8080
-    domainname: 7f000101.nip.io
-    environment:
-      SERVER_OPTIONS_INLINE: |
-        {
-          "AccessTokenJwtType": "JWT",
-          "Discovery": {
-            "ShowKeySet": true
-          },
-          "Authentication": {
-            "CookieSameSiteMode": "Lax",
-            "CheckSessionCookieSameSiteMode": "Lax"
-          }
-        }
-      CLIENTS_CONFIGURATION_INLINE: |
-        [
-          {
-            "ClientId": "mock-client-id",
-            "ClientSecrets": ["some-client-Secret"],
-            "Description": "Mock OIDC",
-            "AllowedGrantTypes": ["authorization_code"],
-            "AllowAccessTokensViaBrowser": true,
-            "RedirectUris": ["http://localhost:3000/*"],
-            "AllowedScopes": ["openid", "profile", "email"],
-            "IdentityTokenLifetime": 3600,
-            "AccessTokenLifetime": 3600
-          }
-        ]
-      USERS_CONFIGURATION_INLINE: |
-        [
-          {
-            "SubjectId":"1",
-            "Username":"user01",
-            "Password":"pwd",
-            "Claims": [
-              { "Type": "name", "Value": "User 01", "ValueType": "string" },
-              { "Type": "email", "Value": "user01@example.localhost", "ValueType": "string" }
-            ],
-          },
-          {
-            "SubjectId":"2",
-            "Username":"user02",
-            "Password":"pwd",
-            "Claims": [
-              { "Type": "name", "Value": "User 02", "ValueType": "string" },
-              { "Type": "email", "Value": "user02@example.localhost", "ValueType": "string" }
-            ],
-          }
-        ]
+      - 5556:5556
+    domainname: 7f000001.nip.io
+    configs:
+      - source: config.yaml
+        target: /etc/dex/config.docker.yaml
+configs:
+  config.yaml:
+    content: |
+      issuer: http://7f000001.nip.io:5556/dex
+      storage:
+        type: sqlite3
+        config:
+          file: /var/dex/dex.db
+      web:
+        http: 0.0.0.0:5556
+      staticClients:
+        - id: example-app
+          redirectURIs:
+            - 'http://localhost:3000/login/oidc'
+          name: 'Example App'
+          secret: ZXhhbXBsZS1hcHAtc2VjcmV0
+      connectors:
+        - type: mockCallback
+          id: mock
+          name: Example
+      enablePasswordDB: true
+      staticPasswords:
+      - email: "user01@example.localhost"
+        # bcrypt hash of the string "password": $(echo password | htpasswd -BinC 10 admin | cut -d: -f2)
+        hash: "$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W"
+        username: "user01"
+        userID: "08a8684b-db88-4b73-90a9-3cd1661f5466"
+      - email: "user02@example.localhost"
+        hash: "$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W"
+        username: "user02"
+        userID: "a4588bda-8303-458e-965e-b9ae039ef7b7"
+
 volumes:
   db_data_sqlite:
   custom:
