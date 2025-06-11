@@ -3,21 +3,21 @@
   hx-post="/api/links/report"
   hx-sync="this:abort"
   hx-swap="outerHTML"
-> 
+>
   {{#if message}}
     <p class="success">{{message}}</p>
   {{else}}
     <div class="inputs-wrapper">
       <label>
         URL containing malware/scam:
-        <input 
-          type="text" 
-          id="link" 
-          name="link" 
-          placeholder="{{default_domain}}/example"
+        <input
+          type="text"
+          id="link"
+          name="link"
+          placeholder="{{admin_domain}}/example"
           hx-preserve="true"
           class="{{#if errors.link}}error{{/if}}"
-          required 
+          required
         />
       </label>
       <button type="submit" class="primary">

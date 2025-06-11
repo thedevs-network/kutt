@@ -78,23 +78,29 @@ const createLink = [
     .withMessage("Expire time should be more than 1 minute.")
     .customSanitizer(value => utils.dateToUTC(addMilliseconds(new Date(), value))),
   body("domain")
-    .optional({ nullable: true, checkFalsy: true })
-    .customSanitizer(value => value === env.DEFAULT_DOMAIN ? null : value)
-    .custom(checkUser)
-    .withMessage("Only users can use this field.")
-    .isString()
-    .withMessage("Domain should be string.")
-    .customSanitizer(value => value.toLowerCase())
-    .custom(async (address, { req }) => {
-      const domain = await query.domain.find({
-        address,
-        user_id: req.user.id
-      });
-      req.body.fetched_domain = domain || null;
+  .optional({ nullable: true, checkFalsy: true })
+  .customSanitizer(value => value === env.DEFAULT_DOMAIN ? null : value)
+  .custom(checkUser)
+  .withMessage("Only users can use this field.")
+  .isString()
+  .withMessage("Domain should be string.")
+  .customSanitizer(value => value && value.toLowerCase())
+  .custom(async (address, { req }) => {
+    let domain;
+    if (!address) {
+      domain = await query.domain.find({ address: env.DEFAULT_DOMAIN.toLowerCase() });
+    } else {
+      domain = await query.domain.find({ address });
+    }
 
-      if (!domain) return Promise.reject();
-    })
-    .withMessage("You can't use this domain.")
+    if (domain && domain.user_id && domain.user_id !== req.user.id) {
+      return Promise.reject();
+    }
+
+    req.body.fetched_domain = domain || null;
+    if (!domain) return Promise.reject();
+  })
+  .withMessage("You can't use this domain.")
 ];
 
 const editLink = [
@@ -350,7 +356,7 @@ const createUser = [
     .isEmail()
     .custom(async (value, { req }) => {
       const user = await query.user.find({ email: value });
-      if (user) 
+      if (user)
         return Promise.reject();
     })
     .withMessage("User already exists."),
@@ -552,7 +558,7 @@ module.exports = {
   deleteUserByAdmin,
   editLink,
   getStats,
-  login, 
+  login,
   newPassword,
   redirectProtected,
   removeDomain,
