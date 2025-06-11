@@ -22,6 +22,7 @@ function viewTemplate(template) {
 
 function config(req, res, next) {
   res.locals.default_domain = env.DEFAULT_DOMAIN;
+  res.locals.admin_domain = utils.getAdminDomain();
   res.locals.site_name = env.SITE_NAME;
   res.locals.contact_email = env.CONTACT_EMAIL;
   res.locals.server_ip_address = env.SERVER_IP_ADDRESS;
@@ -30,13 +31,30 @@ function config(req, res, next) {
   res.locals.mail_enabled = env.MAIL_ENABLED;
   res.locals.report_email = env.REPORT_EMAIL;
   res.locals.custom_styles = utils.getCustomCSSFileNames();
+  res.locals.other_global_domains = utils.getGlobalDomains();
   next();
 }
 
 async function user(req, res, next) {
   const user = req.user;
+  let userDomains = [];
+  if (user) {
+    userDomains = await query.domain.get({ user_id: user.id });
+    userDomains = userDomains.map(utils.sanitize.domain);
+  }
+
+  const defaultDomain = env.DEFAULT_DOMAIN;
+  const globalDomains = utils.getGlobalDomains().filter(d => d !== defaultDomain);
+  const userDomainAddresses = userDomains.map(d => d.address);
+
+  const filteredUserDomains = userDomains.filter(
+    d => d.address !== defaultDomain && !globalDomains.includes(d.address)
+  );
+
+  res.locals.default_domain = defaultDomain;
+  res.locals.other_global_domains = globalDomains;
+  res.locals.user_domains = filteredUserDomains;
   res.locals.user = user;
-  res.locals.domains = user && (await query.domain.get({ user_id: user.id })).map(utils.sanitize.domain);
   next();
 }
 
