@@ -69,6 +69,7 @@ function i18nHandler(req, res, next) {
   i18n.setLocale(locale);
   res.locals.currentLocale = locale;
   res.locals.formattedLocales = localesList;
+  console.log(i18n.getLocales());
 
   if (!req.cookies.lang || req.cookies.lang !== locale) {
     res.cookie("lang", locale, {

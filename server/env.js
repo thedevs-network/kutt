@@ -53,7 +53,7 @@ const spec = {
   DEFAULT_DOMAIN: str({ example: "kutt.it", default: "localhost:3000" }),
   LINK_LENGTH: num({ default: 6 }),
   LINK_CUSTOM_ALPHABET: str({ default: "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789" }),
-  LOCALES: localesValidator({ default: "en" }),
+  LOCALES: localesValidator({ default: "en,zh_CN,zh_TW" }),
   TRUST_PROXY: bool({ default: true }),
   DB_CLIENT: str({ choices: supportedDBClients, default: "better-sqlite3" }),
   DB_FILENAME: str({ default: "db/data" }),

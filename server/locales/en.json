@@ -46,7 +46,8 @@
 		"confirmDomainBanMessage": "Could not find the domain.",
 		"confirmDomainDeleteAdminMessage": "Could not find the domain.",
 		"reportEmailMessage": "Report email address is unavailable.",
-		"supportEmailMessage": "Support email address is unavailable."
+		"supportEmailMessage": "Support email address is unavailable.",
+		"createAdmin": "Create Admin account"
 	},
 	"login": {
 		"createAdminAccountMsg": "Create an Admin account first:",
