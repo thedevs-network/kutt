@@ -1,18 +1,18 @@
 <div class="content">
-  <h2>Delete domain?</h2>
+  <h2>{{t "table.admin.deleteDomainDialogTitle"}}</h2>
   <p>
-    Are you sure do you want to delete the domain &quot;<b>{{address}}</b>&quot;?<br/>
+    {{{t "table.admin.deleteDomainDialogMsg" domain=address}}}
   </p>
   {{#if hasLink}}
     <div class="delete-domain-checklist">
       <label class="checkbox">
         <input id="delete-domain-links" name="links" type="checkbox" />
-        Delete all links too
+        {{t "table.admin.deleteAllDomainLinksToo"}}
       </label>
     </div>
   {{/if }}
   <div class="buttons">
-    <button type="button" hx-on:click="closeDialog()">Cancel</button>
+    <button type="button" hx-on:click="closeDialog()">{{t "backbone.cancel"}}</button>
     <button 
       type="button"
       class="danger confirm" 
@@ -28,7 +28,7 @@
       hx-select-oob="#dialog-error"
     >
       <span>{{> icons/trash}}</span>
-      Delete
+      {{t "backbone.delete"}}
     </button>
     {{> icons/spinner}}
   </div>

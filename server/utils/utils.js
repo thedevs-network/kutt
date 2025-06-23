@@ -10,6 +10,7 @@ const { ROLES } = require("../consts");
 const knexUtils = require("./knex");
 const knex = require("../knex");
 const env = require("../env");
+const i18n = require("i18n");
 
 const nanoid = customAlphabet(env.LINK_CUSTOM_ALPHABET, env.LINK_LENGTH);
 
@@ -227,7 +228,7 @@ function getTimeAgo(dateString) {
   const secondsAgo = Math.round((Date.now() - Number(date)) / 1000);
 
   if (secondsAgo < MINUTE) {
-    return `${secondsAgo} second${secondsAgo !== 1 ? "s" : ""} ago`;
+    return `${secondsAgo} ${i18n.__('timeAgo.' + (secondsAgo !== 1 ? 'seconds' : 'second'))} ${i18n.__('timeAgo.ago')}`;
   }
 
   let divisor;
@@ -248,7 +249,7 @@ function getTimeAgo(dateString) {
   }
 
   const count = Math.floor(secondsAgo / divisor);
-  return `${count} ${unit}${count > 1 ? "s" : ""} ago`;
+  return `${count} ${i18n.__('timeAgo.' + (count > 1 ? unit + 's' : unit))}${i18n.__('timeAgo.ago')}`;
 }
 
 
@@ -358,6 +359,11 @@ function registerHandlebarsHelpers() {
       }
       block.push(context.fn(this));
   });
+
+  hbs.registerHelper('t', function(str, options) {
+    return (i18n != undefined ? i18n.__(str, options.hash) : str);
+  });
+  
 
   hbs.registerHelper("block", function(name) {
       const val = (blocks[name] || []).join("\n");

@@ -1,7 +1,7 @@
 <thead>
   <tr class="controls links-controls">
     <th class="search">
-      <input class="table-input search" id="search" name="search" type="text" placeholder="Search..." hx-on:keyup="resetTableNav()" />
+      <input class="flat in-table search" id="search" name="search" type="text" placeholder="{{t "table.searchPlaceholder"}}" hx-on:keyup="resetTableNav()" />
       <input id="total" name="total" type="hidden" value="{{total}}" />
       <input id="limit" name="limit" type="hidden" value="10" />
       <input id="skip" name="skip" type="hidden" value="0" />
@@ -9,10 +9,10 @@
     {{> links/nav}}
   </tr>
   <tr>
-    <th class="original-url">Original URL</th>
-    <th class="created-at">Created at</th>
-    <th class="short-link">Short link</th>
-    <th class="views">Views</th>
+    <th class="original-url">{{t "table.headerOriginalUrl"}}</th>
+    <th class="created-at">{{t "table.headerCreatedAt"}}</th>
+    <th class="short-link">{{t "table.headerShortLink"}}</th>
+    <th class="views">{{t "table.headerViews"}}</th>
     <th class="actions"></th>
   </tr>
 </thead>

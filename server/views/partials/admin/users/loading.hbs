@@ -2,14 +2,14 @@
   {{#ifEquals users.length 0}}
     <tr class="no-data">
       <td>
-        No users.
+        {{t "table.admin.noUsers"}}
       </td>
     </tr>
   {{else}}
     <tr class="loading-placeholder">
       <td>
         {{> icons/spinner}}
-        Loading users...
+        {{t "table.admin.loadingUsers"}}
       </td>
     </tr>
   {{/ifEquals}}

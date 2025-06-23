@@ -38,6 +38,7 @@
     "geoip-lite": "1.4.10",
     "hbs": "4.2.0",
     "helmet": "7.1.0",
+    "i18n": "0.15.1",
     "ioredis": "5.4.2",
     "isbot": "5.1.19",
     "jsonwebtoken": "9.0.2",

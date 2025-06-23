@@ -12,12 +12,12 @@
     >
       <div>
         <label class="{{#if errors.target}}error{{/if}}">
-          Target:
+          {{t "table.actions.editTarget"}}
           <input 
             id="edit-target-{{id}}"
             name="target" 
             type="text" 
-            placeholder="Target..." 
+            placeholder="{{t "table.actions.editTargetPlaceholder"}}" 
             required="true"
             value="{{target}}"
             hx-preserve="true"
@@ -30,7 +30,7 @@
             id="edit-address-{{id}}"
             name="address" 
             type="text" 
-            placeholder="Custom URL..." 
+            placeholder="{{t "home.customAddressPlaceholder"}}" 
             required="true"
             value="{{address}}"
             hx-preserve="true"
@@ -38,12 +38,12 @@
           {{#if errors.address}}<p class="error">{{errors.address}}</p>{{/if}}
         </label>
         <label class="{{#if errors.password}}error{{/if}}">
-          Password:
+          {{t "table.actions.editPassword"}}
           <input 
             id="edit-password-{{id}}"
             name="password" 
             type="password" 
-            placeholder="Password..." 
+            placeholder="{{t "home.passwordPlaceholder"}}" 
             value="{{#if password}}••••••••{{/if}}"
             hx-preserve="true"
           />
@@ -52,24 +52,24 @@
       </div>
       <div>
         <label class="{{#if errors.description}}error{{/if}}">
-          Description:
+          {{t "table.actions.editDescription"}}
           <input 
             id="edit-description-{{id}}"
             name="description" 
             type="text" 
-            placeholder="Description..." 
+            placeholder="{{t "home.descriptionPlaceholder"}}" 
             value="{{description}}"
             hx-preserve="true"
           />
           {{#if errors.description}}<p class="error">{{errors.description}}</p>{{/if}}
         </label>
         <label class="{{#if errors.expire_in}}error{{/if}}">
-          Expire in:
+          {{t "table.actions.editExpireIn"}}
           <input 
             id="edit-expire_in-{{id}}"
             name="expire_in" 
             type="text" 
-            placeholder="2 minutes/hours/days"
+            placeholder="{{t "table.actions.editExpireInPlaceholder"}}"
             value="{{relative_expire_in}}"
             hx-preserve="true"
           />
@@ -86,7 +86,7 @@
             tr.removeChild(tr.querySelector('.content'));
           "
         >
-          Close
+          {{t "backbone.close"}}
         </button>
         <button type="submit" class="primary">
           <span class="reload">
@@ -95,7 +95,7 @@
           <span class="loader">
             {{> icons/spinner}}
           </span>
-          Update
+          {{t "backbone.update"}}
         </button>
       </div>
       <div class="response">
@@ -112,6 +112,6 @@
       </template>
     </form>
   {{else}}
-    <p class="no-data">No link was found.</p>
+    <p class="no-data">{{t "table.actions.noLinkFound"}}</p>
   {{/if}}
 </td>

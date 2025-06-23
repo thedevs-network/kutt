@@ -3,10 +3,10 @@
     {{> icons/check}}
   </div>
   <p>
-    The link <b>"{{link}}"</b> is banned.
+    {{t "table.actions.banSuccessMsg" link=link}}
   </p>
   <div class="buttons">
-    <button type="button" hx-on:click="closeDialog()">Close</button>
+    <button type="button" hx-on:click="closeDialog()">{{t "backbone.close"}}</button>
   </div>
 </div>
 

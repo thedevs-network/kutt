@@ -1,11 +1,9 @@
 <section id="apikey-wrapper">
   <h2>API</h2>
   <p>
-    In additional to this website, you can use the API to create, delete and
-    get shortened URLs. If you're not familiar with API, don't generate the key. 
-    DO NOT share this key on the client side of your website. 
-    <a href="https://docs.kutt.it" title="API Docs" target="_blank">
-      Read API docs.
+    {{{t "settings.APIDocsDesc"}}}
+    <a href="https://docs.kutt.it" title="{{t "settings.readAPIDocsAria"}}" target="_blank">
+      {{t "settings.readAPIDocs"}}
     </a>
   </p>
   <div id="apikey">
@@ -13,7 +11,7 @@
       <div class="clipboard small">
         <button 
           type="button"
-          aria-label="Copy" 
+          aria-label="{{t "backbone.copy"}}" 
           hx-on:click="handleShortURLCopyLink(this);" 
           data-url="{{user.apikey}}"
         >
@@ -41,7 +39,7 @@
     <button type="submit" class="secondary">
       <span>{{> icons/zap}}</span>
       <span>{{> icons/spinner}}</span>
-      {{#if user.apikey}}Reg{{else}}G{{/if}}enerate key
+      {{#if user.apikey}}{{t "settings.regenerateKey"}}{{else}}{{t "settings.generateKey"}}{{/if}}
     </button>
   </form>
 </section>

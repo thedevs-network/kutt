@@ -1,6 +1,6 @@
 <header>
   <div class="logo-wrapper">
-    <a class="logo nav" href="/" title="Homepage">
+    <a class="logo nav" href="/" title="{{t 'header.homepageAria'}}">
       <img src="/images/logo.png" alt="kutt" width="18" height="24" />
       {{site_name}}
     </a>
@@ -12,8 +12,8 @@
       </li>
       {{#if report_email}}
         <li>
-          <a class="nav" href="/report" title="Report abuse">
-            Report
+          <a class="nav" href="/report" title="{{t 'header.reportAbuseAria'}}">
+            {{t 'header.reportAbuse'}}
           </a>
         </li>
       {{/if}}
@@ -23,29 +23,29 @@
     <ul>
       {{#unless user}}
         <li>
-          <a class="button primary" href="/login" title="Log in or sign up">
-            Log in / Sign up
+          <a class="button primary" href="/login" title="{{t 'header.loginOrSignupAria'}}">
+            {{t 'header.loginOrSignup'}}
           </a>
         </li>
       {{/unless}}
       {{#if user}}
         <li>
-          <a class="button primary" href="/settings" title="Settings">
+          <a class="button primary" href="/settings" title="{{t 'header.settingsAria'}}">
             <span>{{> icons/cog}}</span>
-            Settings
+            {{t 'header.settings'}}
           </a>
         </li>
         {{#if isAdmin}}
           <li>
-            <a class="button secondary" href="/admin" title="Admin">
+            <a class="button secondary" href="/admin" title="{{t 'header.adminAria'}}">
               <span>{{> icons/shield}}</span>
-              Admin
+              {{t 'header.admin'}}
             </a>
           </li>
         {{/if}}
         <li>
-          <a class="nav" href="/logout" title="Log out">
-            Log out
+          <a class="nav" href="/logout" title="{{t 'header.logout'}}">
+            {{t 'header.logout'}}
           </a>
         </li>
       {{/if}}

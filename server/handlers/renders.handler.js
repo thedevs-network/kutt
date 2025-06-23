@@ -1,3 +1,5 @@
+const i18n = require("i18n");
+
 const query = require("../queries");
 const utils = require("../utils");
 const env = require("../env");
@@ -14,7 +16,7 @@ async function homepage(req, res) {
     return;
   }
   res.render("homepage", {
-    title: "Free modern URL shortener",
+    title: i18n.__("title.homepage"),
   });
 }
 
@@ -25,14 +27,14 @@ async function login(req, res) {
   }
   
   res.render("login", {
-    title: "Log in or sign up"
+    title: i18n.__("title.loginOrSignup")
   });
 }
 
 function logout(req, res) {
   utils.deleteCurrentToken(res);
   res.render("logout", {
-    title: "Logging out.."
+    title: i18n.__("title.logout")
   });
 }
 
@@ -43,37 +45,37 @@ async function createAdmin(req, res) {
     return;
   }
   res.render("create_admin", {
-    title: "Create admin account"
+    title: i18n.__("title.createAdmin")
   });
 }
 
 function notFound(req, res) {
   res.render("404", {
-    title: "404 - Not found"
+    title: i18n.__("title.404")
   });
 }
 
 function settings(req, res) {
   res.render("settings", {
-    title: "Settings"
+    title: i18n.__("title.settings")
   });
 }
 
 function admin(req, res) {
   res.render("admin", {
-    title: "Admin"
+    title: i18n.__("title.admin")
   });
 }
 
 function stats(req, res) {
   res.render("stats", {
-    title: "Stats"
+    title: i18n.__("title.stats")
   });
 }
 
 async function banned(req, res) {
   res.render("banned", {
-    title: "Banned link",
+    title: i18n.__("title.bannedLink")
   });
 }
 
@@ -83,13 +85,13 @@ async function report(req, res) {
     return;
   }
   res.render("report", {
-    title: "Report abuse",
+    title: i18n.__("title.reportAbuse")
   });
 }
 
 async function resetPassword(req, res) {
   res.render("reset_password", {
-    title: "Reset password",
+    title: i18n.__("title.resetPassword")
   });
 }
 
@@ -110,26 +112,26 @@ async function resetPasswordSetNewPassword(req, res) {
 
   
   res.render("reset_password_set_new_password", {
-    title: "Reset password",
+    title: i18n.__("title.resetPassword"),
     ...(res.locals.token_verified && { reset_password_token }),
   });
 }
 
 async function verifyChangeEmail(req, res) {
   res.render("verify_change_email", {
-    title: "Verifying email",
+    title: i18n.__("title.verifyChangeEmail")
   });
 }
 
 async function verify(req, res) {
   res.render("verify", {
-    title: "Verify",
+    title: i18n.__("title.verify")
   });
 }
 
 async function terms(req, res) {
   res.render("terms", {
-    title: "Terms of Service",
+    title: i18n.__("title.termsOfService")
   });
 }
 
@@ -147,7 +149,7 @@ async function confirmLinkDelete(req, res) {
   if (!link) {
     return res.render("partials/links/dialog/message", {
       layout: false,
-      message: "Could not find the link."
+      message: i18n.__("message.confirmLinkDeleteMessage")
     });
   }
   res.render("partials/links/dialog/delete", {
@@ -164,7 +166,7 @@ async function confirmLinkBan(req, res) {
   });
   if (!link) {
     return res.render("partials/links/dialog/message", {
-      message: "Could not find the link."
+      message: i18n.__("message.confirmLinkBanMessage")
     });
   }
   res.render("partials/links/dialog/ban", {
@@ -178,7 +180,7 @@ async function confirmUserDelete(req, res) {
   if (!user) {
     return res.render("partials/admin/dialog/message", {
       layout: false,
-      message: "Could not find the user."
+      message: i18n.__("message.confirmUserDeleteMessage")
     });
   }
   res.render("partials/admin/dialog/delete_user", {
@@ -193,7 +195,7 @@ async function confirmUserBan(req, res) {
   if (!user) {
     return res.render("partials/admin/dialog/message", {
       layout: false,
-      message: "Could not find the user."
+      message: i18n.__("message.confirmUserBanMessage")
     });
   }
   res.render("partials/admin/dialog/ban_user", {
@@ -225,7 +227,7 @@ async function confirmDomainDelete(req, res) {
     user_id: req.user.id
   });
   if (!domain) {
-    throw new utils.CustomError("Could not find the domain.", 400);
+    throw new utils.CustomError(i18n.__("message.confirmDomainDeleteMessage"), 400);
   }
   res.render("partials/settings/domain/delete", {
     ...utils.sanitize.domain(domain)
@@ -237,7 +239,7 @@ async function confirmDomainBan(req, res) {
     id: req.query.id
   });
   if (!domain) {
-    throw new utils.CustomError("Could not find the domain.", 400);
+    throw new utils.CustomError(i18n.__("message.confirmDomainBanMessage"), 400);
   }
   const hasUser = !!domain.user_id;
   const hasLink = await query.link.find({ domain_id: domain.id });
@@ -254,7 +256,7 @@ async function confirmDomainDeleteAdmin(req, res) {
     id: req.query.id
   });
   if (!domain) {
-    throw new utils.CustomError("Could not find the domain.", 400);
+    throw new utils.CustomError(i18n.__("message.confirmDomainDeleteAdminMessage"), 400);
   }
   const hasLink = await query.link.find({ domain_id: domain.id });
   res.render("partials/admin/dialog/delete_domain", {
@@ -266,7 +268,7 @@ async function confirmDomainDeleteAdmin(req, res) {
 
 async function getReportEmail(req, res) {
   if (!env.REPORT_EMAIL) {
-    throw new utils.CustomError("No report email is available.", 400);
+    throw new utils.CustomError(i18n.__("message.reportEmailMessage"), 400);
   }
   res.render("partials/report/email", {
     report_email_address: env.REPORT_EMAIL.replace("@", "[at]")
@@ -275,7 +277,7 @@ async function getReportEmail(req, res) {
 
 async function getSupportEmail(req, res) {
   if (!env.CONTACT_EMAIL) {
-    throw new utils.CustomError("No support email is available.", 400);
+    throw new utils.CustomError(i18n.__("message.supportEmailMessage"), 400);
   }
   await utils.sleep(500);
   res.render("partials/support_email", {

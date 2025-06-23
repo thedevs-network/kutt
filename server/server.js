@@ -3,8 +3,8 @@ const env = require("./env");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const express = require("express");
-const helmet = require("helmet");
 const path = require("node:path");
+const helmet = require("helmet");
 const hbs = require("hbs");
 
 const helpers = require("./handlers/helpers.handler");
@@ -14,7 +14,7 @@ const locals = require("./handlers/locals.handler");
 const links = require("./handlers/links.handler");
 const routes = require("./routes");
 const utils = require("./utils");
-
+const i18n = require("./i18n");
 
 // run the cron jobs
 // the app might be running in cluster mode (multiple instances) so run the cron job only on one cluster (the first one)
@@ -50,7 +50,6 @@ app.use(locals.isHTML);
 app.use(locals.config);
 
 // template engine / serve html
-
 app.set("view engine", "hbs");
 app.set("views", [
   path.join(__dirname, "../custom/views"),
@@ -60,6 +59,9 @@ utils.registerHandlebarsHelpers();
 
 // if is custom domain, redirect to the set homepage
 app.use(asyncHandler(links.redirectCustomDomainHomepage));
+
+// handle selecting locale
+app.use(i18n);
 
 // render html pages
 app.use("/", routes.render);
@@ -76,7 +78,7 @@ app.get("*", renders.notFound);
 
 // handle errors coming from above routes
 app.use(helpers.error);
-  
+
 app.listen(env.PORT, () => {
   console.log(`> Ready on http://localhost:${env.PORT}`);
 });

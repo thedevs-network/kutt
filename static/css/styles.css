@@ -556,21 +556,32 @@ input[type="checkbox"]:checked:after {
   transform: translate(-50%, -50%) scale(1);
 }
 
-input.table-input,
-select.table-input {
-  width: auto;
+input.flat,
+select.flat {
+  width: 120px;
   height: 32px;
+  padding: 0 1rem;
   font-size: 13px;
-  padding: 0 1.5rem;
   border-radius: 3px;
   border-bottom-width: 2px;
+  background-position: right 0.9em top 50%, 0 0;
 }
 
-select.table-input {
+select.flat.in-table {
+  padding: 0 1.5rem;
   width: 150px;
+  background-position: right 1.2em top 50%, 0 0;
 }
 
-input.table-input::placeholder {
+select.language {
+  width: 100px;
+  height: 26px;
+  font-size: 12px;
+  padding: 0 0.75rem;
+  background-position: right 0.6em top 50%, 0 0;
+}
+
+input.flat::placeholder {
   font-size: 13px;
 }
 
@@ -1703,8 +1714,15 @@ input.search.admin {
 footer {
   width: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+footer p {
+  display: block;
   padding: 1rem 0;
+  margin-top: 0;
   font-size: 13px;
   text-align: center;
 }
@@ -2227,11 +2245,11 @@ svg.map path.active { stroke: hsl(261, 46%, 50%); stroke-width: 1.5; }
   table .tab a { padding: 0.3rem 0.9rem; }
   #main-table-wrapper th.category-total p { font-size: 13px; }
   #main-table-wrapper table thead tr.controls.with-filters { align-items: flex-start; }
-  #main-table-wrapper table th select, input.table-input { height: 28px; font-size: 12px; padding: 0 1rem; }
+  #main-table-wrapper table th select, input.flat { height: 28px; font-size: 12px; padding: 0 1rem; }
   #main-table-wrapper table th select { background-position: right 0.7em top 50%, 0 0; }
   .search-input-wrapper button { padding: 2px; margin-right: 0.15rem; }
   #main-table-wrapper table th input.search.admin { max-width: 150px; padding: 0 1.5rem 0 1rem; }
-  #main-table-wrapper table th select.table-input { max-width: 120px; }
+  #main-table-wrapper table th select.flat.in-table { max-width: 120px; }
   #main-table-wrapper table th button.table { height: 28px; }
   #main-table-wrapper table th input::placeholder { font-size: 12px; }
   #main-table-wrapper table tr.controls .checkbox { font-size: 13px; }
@@ -2252,7 +2270,7 @@ svg.map path.active { stroke: hsl(261, 46%, 50%); stroke-width: 1.5; }
   #main-table-wrapper table tr.edit form .response p { margin: 1rem 0 0; }
   .dialog .ban-checklist label { margin: 0.5rem 1rem 0.5rem 0; }
 
-  footer { padding: 0.75rem 0; font-size: 12px; }
+  footer p { padding: 0.75rem 0; font-size: 12px; }
   footer button.link { font-size: 12px; }
 
   h1.settings-welcome { font-size: 18px; }

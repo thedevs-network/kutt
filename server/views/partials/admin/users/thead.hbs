@@ -8,8 +8,8 @@
             id="search" 
             name="search" 
             type="text" 
-            placeholder="Search user..." 
-            class="table-input search admin" 
+            placeholder="{{t "table.admin.searchUserPlaceholder"}}" 
+            class="flat in-table search admin" 
             hx-on:input="onSearchChange(event)" 
             hx-on:keyup="resetTableNav()"
             value="{{query.search}}"
@@ -23,32 +23,32 @@
             {{> icons/x}}
           </button>
         </div>
-        <select  id="users-select-verified" name="verified" class="table-input verification" hx-on:change="resetTableNav()">
-          <option value="">Verification...</option>
-          <option value="true" {{#ifEquals query.verified 'true'}}selected{{/ifEquals}}>Verified</option>
-          <option value="false" {{#ifEquals query.verified 'false'}}selected{{/ifEquals}}>Not verified</option>
+        <select  id="users-select-verified" name="verified" class="flat in-table verification" hx-on:change="resetTableNav()">
+          <option value="">{{t "table.admin.filterVerificationPlaceholder"}}</option>
+          <option value="true" {{#ifEquals query.verified 'true'}}selected{{/ifEquals}}>{{t "table.admin.filterVerified"}}</option>
+          <option value="false" {{#ifEquals query.verified 'false'}}selected{{/ifEquals}}>{{t "table.admin.filterNotVerified"}}</option>
         </select>
-        <select id="users-select-banned" name="banned" class="table-input ban" hx-on:change="resetTableNav()">
-          <option value="" selected>Banned...</option>
-          <option value="true">Banned</option>
-          <option value="false">Not banned</option>
+        <select id="users-select-banned" name="banned" class="flat in-table ban" hx-on:change="resetTableNav()">
+          <option value="" selected>{{t "table.admin.filterBannedPlaceholder"}}</option>
+          <option value="true">{{t "table.admin.filterBanned"}}</option>
+          <option value="false">{{t "table.admin.filterNotBanned"}}</option>
         </select>
-        <select id="users-select-role" name="role" class="table-input role" hx-on:change="resetTableNav()">
-          <option value="">Role...</option>
-          <option value="USER" {{#ifEquals query.role 'USER'}}selected{{/ifEquals}}>User</option>
-          <option value="ADMIN" {{#ifEquals query.role 'ADMIN'}}selected{{/ifEquals}}>Admin</option>
+        <select id="users-select-role" name="role" class="flat in-table role" hx-on:change="resetTableNav()">
+          <option value="">{{t "table.admin.filterRolePlaceholder"}}</option>
+          <option value="USER" {{#ifEquals query.role 'USER'}}selected{{/ifEquals}}>{{t "table.admin.filterUser"}}</option>
+          <option value="ADMIN" {{#ifEquals query.role 'ADMIN'}}selected{{/ifEquals}}>{{t "table.admin.filterAdmin"}}</option>
         </select>
       </div>
       <div>
-        <select id="users-select-domain" name="domains" class="table-input domains" hx-on:change="resetTableNav()">
-          <option value="">Domain...</option>
-          <option value="true" {{#ifEquals query.domains 'true'}}selected{{/ifEquals}}>With domains</option>
-          <option value="false" {{#ifEquals query.domains 'false'}}selected{{/ifEquals}}>No domains</option>
+        <select id="users-select-domain" name="domains" class="flat in-table domains" hx-on:change="resetTableNav()">
+          <option value="">{{t "table.admin.filterDomainPlaceholder"}}</option>
+          <option value="true" {{#ifEquals query.domains 'true'}}selected{{/ifEquals}}>{{t "table.admin.filterWithDomain"}}</option>
+          <option value="false" {{#ifEquals query.domains 'false'}}selected{{/ifEquals}}>{{t "table.admin.filterWithoutDomain"}}</option>
         </select>
-        <select id="users-select-links" name="links" class="table-input links" hx-on:change="resetTableNav()">
-          <option value="" selected>Links...</option>
-          <option value="true" {{#ifEquals query.links 'true'}}selected{{/ifEquals}}>With links</option>
-          <option value="false" {{#ifEquals query.links 'true'}}selected{{/ifEquals}}>No links</option>
+        <select id="users-select-links" name="links" class="flat in-table links" hx-on:change="resetTableNav()">
+          <option value="" selected>{{t "table.admin.filterLinksPlaceholder"}}</option>
+          <option value="true" {{#ifEquals query.links 'true'}}selected{{/ifEquals}}>{{t "table.admin.filterWithLinks"}}</option>
+          <option value="false" {{#ifEquals query.links 'true'}}selected{{/ifEquals}}>{{t "table.admin.filterWithoutLinks"}}</option>
         </select>
         <input id="total" name="total" type="hidden" value="{{total}}" />
         <input id="limit" name="limit" type="hidden" value="10" />
@@ -61,19 +61,19 @@
           hx-indicator="#admin-table-dialog"
         >
           <span>{{> icons/new_user}}</span>
-          Create user
+          {{t "table.admin.createUser"}}
         </button>
       </div>
     </th>
     {{> admin/table_nav}}
   </tr>
   <tr>
-    <th class="users-id">ID</th>
-    <th class="users-email">Email</th>
-    <th class="users-created-at">Created at</th>
-    <th class="users-verified">Verified</th>
-    <th class="users-role">Role</th>
-    <th class="users-links-count">Total links</th>
+    <th class="users-id">{{t "table.admin.headerID"}}</th>
+    <th class="users-email">{{t "table.admin.headerEmail"}}</th>
+    <th class="users-created-at">{{t "table.admin.headerCreatedAt"}}</th>
+    <th class="users-verified">{{t "table.admin.headerVerified"}}</th>
+    <th class="users-role">{{t "table.admin.headerRole"}}</th>
+    <th class="users-links-count">{{t "table.admin.headerTotalLinks"}}</th>
     <th class="users-actions"></th>
   </tr>
 </thead>

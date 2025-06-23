@@ -13,14 +13,14 @@
     {{relative_created_at}}
     {{#if relative_expire_in}}
       <p class="description">
-        Expires in {{relative_expire_in}}
+        {{t "table.expireIn" time=relative_expire_in}}
       </p>
     {{/if}}
   </td>
   <td class="short-link right-fade">
     <div class="clipboard small">
       <button 
-        aria-label="Copy" 
+        aria-label="{{t "backbone.copy"}}" 
         hx-on:click="handleShortURLCopyLink(this);"
         data-url="{{link.url}}"
       >

@@ -1,16 +1,25 @@
 <footer>
+  <form action="" method="get" hx-get hx-target="body" hx-trigger="change select">
+    <select id="language-select" name="lang" class="flat language form-select" style="max-width:130px">
+      {{#each formattedLocales}}
+        <option value="{{code}}" {{#ifEquals currentLocale code}}selected{{/ifEquals}}>
+          {{name}}
+        </option>
+      {{/each}}
+    </select>
+  </form>
   <p>
-    Powered by <a href="https://github.com/thedevs-network/kutt" title="The Devs" target="_blank" rel="noopener noreferrer">Kutt</a> <span>|</span> 
-    <a href="/terms" title="Terms of Service">Terms of Service</a>
-    {{#if report_email}} 
+    {{t 'footer.poweredBy'}} <a href="https://github.com/thedevs-network/kutt" title="{{t 'footer.theDevsAria'}}" target="_blank" rel="noopener noreferrer">Kutt</a> <span>|</span> 
+    <a href="/terms" title="{{t 'footer.termsOfServiceAria'}}">{{t 'footer.termsOfService'}}</a>
+    {{#if report_email}}
      <span>|</span>
-     <a href="/report" title="Report abuse">Report Abuse</a>
+     <a href="/report" title="{{t 'header.reportAbuseAria'}}">{{t 'header.reportAbuse'}}</a>
     {{/if}}
     {{#if contact_email}}
       <span>|</span> 
       <button class="link" hx-get="/get-support-email" hx-swap="outerHTML">
         <span>{{> icons/spinner}}</span>
-        Contact us
+        {{t 'footer.contactUs'}}
       </button>
     {{/if}}
   </p>

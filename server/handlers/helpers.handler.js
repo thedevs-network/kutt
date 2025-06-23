@@ -1,6 +1,7 @@
 const { RedisStore: RateLimitRedisStore } = require("rate-limit-redis");
 const { rateLimit: expressRateLimit } = require("express-rate-limit");
 const { validationResult } = require("express-validator");
+const i18n = require("i18n");
 
 const { CustomError } = require("../utils");
 const query = require("../queries");
@@ -14,7 +15,7 @@ function error(error, req, res, _next) {
     console.error(error.message);
   }
 
-  const message = error instanceof CustomError ? error.message : "An error occurred.";
+  const message = error instanceof CustomError ? error.message : i18n.__("backbone.errorMsg");
   const statusCode = error.statusCode ?? 500;
 
   if (req.isHTML && req.viewTemplate) {
@@ -25,7 +26,7 @@ function error(error, req, res, _next) {
 
   if (req.isHTML) {
     res.render("error", {
-      message: "An error occurred. Please try again later."
+      message: i18n.__("backbone.errorAndTryAgainMsg"),
     });
     return;
   }
