@@ -23,8 +23,8 @@
     {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
   </label>
   <div class="buttons-wrapper">
-    <button 
-      type="submit" 
+    <button
+      type="submit"
       class="primary login {{#if disallow_registration}}full{{else}}{{#unless mail_enabled}}full{{/unless}}{{/if}}"
     >
       <span>{{> icons/login}}</span>
@@ -33,13 +33,13 @@
     </button>
     {{#unless disallow_registration}}
       {{#if mail_enabled}}
-        <button 
+        <button
           type="button"
-          class="secondary signup" 
-          hx-post="/api/auth/signup" 
-          hx-target="#login-signup" 
-          hx-trigger="click" 
-          hx-indicator="#login-signup" 
+          class="secondary signup"
+          hx-post="/api/auth/signup"
+          hx-target="#login-signup"
+          hx-trigger="click"
+          hx-indicator="#login-signup"
           hx-swap="outerHTML"
           hx-sync="closest form"
           hx-on:htmx:before-request="htmx.addClass('#login-signup', 'signup')"

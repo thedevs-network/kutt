@@ -17,7 +17,7 @@ if (env.REDIS_ENABLED) {
   visit.clean(5000, "completed");
   visit.process(6, path.resolve(__dirname, "visit.js"));
   visit.on("completed", job => job.remove());
-  
+
   // TODO: handler error
   // visit.on("error", function (error) {
   //   console.log("error");
@@ -33,8 +33,6 @@ if (env.REDIS_ENABLED) {
   }
 }
 
-
-
-module.exports = { 
+module.exports = {
   visit,
 }

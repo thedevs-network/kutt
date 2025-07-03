@@ -5,21 +5,21 @@
   hx-ext="path-params"
   hx-vals='{"id":"{{id}}"}'
   hx-swap="outerHTML"
-> 
+>
   {{#if message}}
     <p class="success">{{message}}</p>
   {{else}}
     <div class="inputs-wrapper">
       <label>
         Password:
-        <input 
-          type="password" 
-          id="protected-link-password" 
-          name="password" 
+        <input
+          type="password"
+          id="protected-link-password"
+          name="password"
           placeholder="Password..."
           hx-preserve="true"
           class="{{#if errors.link}}error{{/if}}"
-          required 
+          required
         />
       </label>
       <button type="submit" class="primary">

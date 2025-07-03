@@ -1,4 +1,4 @@
-const useragent = require("useragent");
+const UAParser = require("ua-parser-js");
 const geoip = require("geoip-lite");
 const URL = require("node:url");
 
@@ -8,32 +8,34 @@ const query = require("../queries");
 const browsersList = ["IE", "Firefox", "Chrome", "Opera", "Safari", "Edge"];
 const osList = ["Windows", "Mac OS", "Linux", "Android", "iOS"];
 
-function filterInBrowser(agent) {
+function filterInBrowser(browserName) {
   return function(item) {
-    return agent.family.toLowerCase().includes(item.toLocaleLowerCase());
+    return browserName.toLowerCase().includes(item.toLowerCase());
   }
 }
 
-function filterInOs(agent) {
+function filterInOs(osName) {
   return function(item) {
-    return agent.os.family.toLowerCase().includes(item.toLocaleLowerCase());
+    return osName.toLowerCase().includes(item.toLowerCase());
   }
 }
 
 module.exports = function({ data }) {
   const tasks = [];
-  
+
   tasks.push(query.link.incrementVisit({ id:  data.link.id }));
-  
+
   // the following line is for backward compatibility
   // used to send the whole header to get the user agent
   const userAgent = data.userAgent || data.headers?.["user-agent"];
-  const agent = useragent.parse(userAgent);
-  const [browser = "Other"] = browsersList.filter(filterInBrowser(agent));
-  const [os = "Other"] = osList.filter(filterInOs(agent));
+  const parser = new UAParser(userAgent);
+  const result = parser.getResult();
+
+  const [browser = "Other"] = browsersList.filter(filterInBrowser(result.browser.name || ""));
+  const [os = "Other"] = osList.filter(filterInOs(result.os.name || ""));
   const referrer =
   data.referrer && removeWww(URL.parse(data.referrer).hostname);
-  
+
   const country = data.country || geoip.lookup(data.ip)?.country;
 
   tasks.push(

@@ -11,9 +11,9 @@ async function up(knex) {
   await knex.schema.alterTable("users", function(table) {
     table.unique("apikey");
   });
-  
+
   // IF NOT EXISTS is not available on MySQL So if you're
-  // using MySQL you should make sure you don't have these indexes already 
+  // using MySQL you should make sure you don't have these indexes already
   const ifNotExists = isMySQL ? "" : "IF NOT EXISTS";
 
   // create them separately because one string with break lines didn't work on MySQL
@@ -51,6 +51,6 @@ async function down(knex) {
 };
 
 module.exports = {
-  up, 
+  up,
   down,
 }

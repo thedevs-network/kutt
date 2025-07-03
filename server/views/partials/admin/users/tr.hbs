@@ -7,11 +7,11 @@
     <p class="description">
       {{#if domains}}
         <a
-          aria-label="View domains" 
-          data-tooltip="View domains" 
+          aria-label="View domains"
+          data-tooltip="View domains"
           hx-get="/api/domains/admin"
           hx-target="closest table"
-          hx-swap="outerHTML" 
+          hx-swap="outerHTML"
           hx-sync="this:replace"
           hx-indicator="closest table"
           hx-vals='{"user":"{{email}}"}'
@@ -50,7 +50,7 @@
         aria-label="View links"
         hx-get="/api/links/admin"
         hx-target="closest table"
-        hx-swap="outerHTML" 
+        hx-swap="outerHTML"
         hx-sync="this:replace"
         hx-vals='{"user":"{{email}}"}'
         hx-indicator="closest table"

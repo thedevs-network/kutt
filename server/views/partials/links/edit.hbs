@@ -1,10 +1,10 @@
 <td class="content">
   {{#if id}}
-    <form 
+    <form
       id="edit-form-{{id}}"
       hx-patch="/api/links/{id}"
       hx-ext="path-params"
-      hx-vals='{"id":"{{id}}"}' 
+      hx-vals='{"id":"{{id}}"}'
       hx-select="form"
       hx-swap="outerHTML"
       hx-sync="this:replace"
@@ -13,11 +13,11 @@
       <div>
         <label class="{{#if errors.target}}error{{/if}}">
           Target:
-          <input 
+          <input
             id="edit-target-{{id}}"
-            name="target" 
-            type="text" 
-            placeholder="Target..." 
+            name="target"
+            type="text"
+            placeholder="Target..."
             required="true"
             value="{{target}}"
             hx-preserve="true"
@@ -26,11 +26,11 @@
         </label>
         <label class="{{#if errors.address}}error{{/if}}">
           <span id="edit-link-domain-{{id}}" hx-preserve="true">{{domain}}/</span>
-          <input 
+          <input
             id="edit-address-{{id}}"
-            name="address" 
-            type="text" 
-            placeholder="Custom URL..." 
+            name="address"
+            type="text"
+            placeholder="Custom URL..."
             required="true"
             value="{{address}}"
             hx-preserve="true"
@@ -39,11 +39,11 @@
         </label>
         <label class="{{#if errors.password}}error{{/if}}">
           Password:
-          <input 
+          <input
             id="edit-password-{{id}}"
-            name="password" 
-            type="password" 
-            placeholder="Password..." 
+            name="password"
+            type="password"
+            placeholder="Password..."
             value="{{#if password}}••••••••{{/if}}"
             hx-preserve="true"
           />
@@ -53,11 +53,11 @@
       <div>
         <label class="{{#if errors.description}}error{{/if}}">
           Description:
-          <input 
+          <input
             id="edit-description-{{id}}"
-            name="description" 
-            type="text" 
-            placeholder="Description..." 
+            name="description"
+            type="text"
+            placeholder="Description..."
             value="{{description}}"
             hx-preserve="true"
           />
@@ -65,10 +65,10 @@
         </label>
         <label class="{{#if errors.expire_in}}error{{/if}}">
           Expire in:
-          <input 
+          <input
             id="edit-expire_in-{{id}}"
-            name="expire_in" 
-            type="text" 
+            name="expire_in"
+            type="text"
             placeholder="2 minutes/hours/days"
             value="{{relative_expire_in}}"
             hx-preserve="true"
@@ -77,7 +77,7 @@
         </label>
       </div>
       <div>
-        <button 
+        <button
           type="button"
           onclick="
             const tr = closest('tr');

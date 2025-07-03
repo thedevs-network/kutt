@@ -4,20 +4,20 @@
     <th class="filters">
       <div>
         <div class="search-input-wrapper">
-          <input 
-            id="search" 
-            name="search" 
-            type="text" 
-            placeholder="Search user..." 
-            class="table-input search admin" 
-            hx-on:input="onSearchChange(event)" 
+          <input
+            id="search"
+            name="search"
+            type="text"
+            placeholder="Search user..."
+            class="table-input search admin"
+            hx-on:input="onSearchChange(event)"
             hx-on:keyup="resetTableNav()"
             value="{{query.search}}"
           />
-          <button 
-            type="button" 
-            aria-label="Clear search" 
-            class="clear" 
+          <button
+            type="button"
+            aria-label="Clear search"
+            class="clear"
             onclick="clearSeachInput(event)"
           >
             {{> icons/x}}
@@ -53,11 +53,11 @@
         <input id="total" name="total" type="hidden" value="{{total}}" />
         <input id="limit" name="limit" type="hidden" value="10" />
         <input id="skip" name="skip" type="hidden" value="0" />
-        <button 
+        <button
           class="table primary"
-          hx-on:click='openDialog("admin-table-dialog")' 
-          hx-get="/create-user" 
-          hx-target="#admin-table-dialog .content-wrapper" 
+          hx-on:click='openDialog("admin-table-dialog")'
+          hx-get="/create-user"
+          hx-target="#admin-table-dialog .content-wrapper"
           hx-indicator="#admin-table-dialog"
         >
           <span>{{> icons/new_user}}</span>

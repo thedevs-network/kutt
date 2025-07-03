@@ -26,7 +26,7 @@ const verifyEmailTemplatePath = path.join(__dirname, "template-verify.html");
 const changeEmailTemplatePath = path.join(__dirname,"template-change-email.html");
 
 
-let resetEmailTemplate, 
+let resetEmailTemplate,
     verifyEmailTemplate,
     changeEmailTemplate;
 
@@ -74,7 +74,7 @@ async function changeEmail(user) {
   if (!env.MAIL_ENABLED) {
     throw new Error("Attempting to send change email token but email is not enabled.");
   };
-  
+
   const mail = await transporter.sendMail({
     from: env.MAIL_FROM || env.MAIL_USER,
     to: user.change_email_address,
@@ -88,7 +88,7 @@ async function changeEmail(user) {
       .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
       .replace(/{{site_name}}/gm, env.SITE_NAME)
   });
-  
+
   if (!mail.accepted.length) {
     throw new CustomError("Couldn't send verification email. Try again later.");
   }

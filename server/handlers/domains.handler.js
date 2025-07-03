@@ -1,5 +1,3 @@
-const { Handler } = require("express");
-
 const { CustomError, sanitize } = require("../utils");
 const query = require("../queries");
 const redis = require("../redis");
@@ -23,7 +21,7 @@ async function add(req, res) {
     });
     return;
   }
-  
+
   return res.status(200).send(sanitize.domain(domain));
 };
 
@@ -44,7 +42,7 @@ async function addAdmin(req, res) {
     });
     return;
   }
-  
+
   return res.status(200).send({ message: "The domain has been added successfully." });
 };
 
@@ -57,7 +55,7 @@ async function remove(req, res) {
   if (!domain) {
     throw new CustomError("Could not delete the domain.", 400);
   }
-  
+
   const [updatedDomain] = await query.domain.update(
     { id: domain.id },
     { user_id: null }
@@ -97,7 +95,7 @@ async function removeAdmin(req, res) {
   if (links) {
     await query.link.batchRemove({ domain_id: id });
   }
-  
+
   await query.domain.remove(domain);
 
   if (req.isHTML) {
@@ -174,17 +172,17 @@ async function ban(req, res) {
 
   // 2. ban domain
   tasks.push(query.domain.update({ id }, update));
-  
+
   // 3. ban user
   if (req.body.user && domain.user_id) {
     tasks.push(query.user.update({ id: domain.user_id }, update));
   }
-  
+
   // 4. ban links
   if (req.body.links) {
     tasks.push(query.link.update({ domain_id: id }, update));
   }
-  
+
   // 5. wait for all tasks to finish
   await Promise.all(tasks).catch((err) => {
     throw new CustomError("Couldn't ban entries.");

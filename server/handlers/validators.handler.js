@@ -552,7 +552,7 @@ module.exports = {
   deleteUserByAdmin,
   editLink,
   getStats,
-  login, 
+  login,
   newPassword,
   redirectProtected,
   removeDomain,

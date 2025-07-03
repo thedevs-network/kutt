@@ -41,7 +41,7 @@ function verify(req, res, next) {
 
   const errors = result.array();
   const error = errors[0].msg;
-  
+
   res.locals.errors = {};
   errors.forEach(e => {
     if (res.locals.errors[e.param]) return;
@@ -91,14 +91,14 @@ function rateLimit(params) {
       return next();
     }
   }
-  
+
   let store = undefined;
   if (env.REDIS_ENABLED) {
     store = new RateLimitRedisStore({
       sendCommand: (...args) => redis.client.call(...args),
     })
   }
-  
+
   return expressRateLimit({
     windowMs: params.window * 1000,
     validate: { trustProxy: false },

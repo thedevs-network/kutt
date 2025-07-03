@@ -2,7 +2,7 @@ const query = require("../queries");
 const utils = require("../utils");
 const env = require("../env");
 
-/** 
+/**
 *
 * PAGES
 *
@@ -23,7 +23,7 @@ async function login(req, res) {
     res.redirect("/");
     return;
   }
-  
+
   res.render("login", {
     title: "Log in or sign up"
   });
@@ -95,7 +95,7 @@ async function resetPassword(req, res) {
 
 async function resetPasswordSetNewPassword(req, res) {
   const reset_password_token = req.params.resetPasswordToken;
-  
+
   if (reset_password_token) {
     const user = await query.user.find(
       {
@@ -108,7 +108,6 @@ async function resetPasswordSetNewPassword(req, res) {
     }
   }
 
-  
   res.render("reset_password_set_new_password", {
     title: "Reset password",
     ...(res.locals.token_verified && { reset_password_token }),

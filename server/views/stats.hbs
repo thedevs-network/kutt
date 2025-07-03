@@ -5,7 +5,7 @@
   hx-get="/api/links/{id}/stats"
   hx-swap="innerHTML"
   hx-trigger="load once"
-  hx-vals='js:{ id: getQueryParams().id || "" }' 
+  hx-vals='js:{ id: getQueryParams().id || "" }'
   hx-ext="path-params"
   hx-on::after-swap="
     trimText('.stats-info p', 80);

@@ -28,7 +28,7 @@ async function remove(req, res) {
     });
     return;
   }
-  
+
   return res.status(200).send("OK");
 };
 
@@ -46,7 +46,7 @@ async function removeByAdmin(req, res) {
       return res.status(400).send({ message });
     }
   }
-  
+
   await query.user.remove(user);
 
   if (req.isHTML) {
@@ -57,7 +57,7 @@ async function removeByAdmin(req, res) {
     });
     return;
   }
-  
+
   return res.status(200).send({ message: "User has been deleted successfully." });
 };
 
@@ -82,7 +82,7 @@ async function getAdmin(req, res) {
   ]);
 
   const users = data.map(utils.sanitize.user_admin);
-    
+
   if (req.isHTML) {
     res.render("partials/admin/users/table", {
       total,
@@ -125,12 +125,12 @@ async function ban(req, res) {
 
   // 2. ban user
   tasks.push(query.user.update({ id }, update));
-  
+
   // 3. ban user links
   if (req.body.links) {
     tasks.push(query.link.update({ user_id: id }, update));
   }
-  
+
   // 4. ban user domains
   if (req.body.domains) {
     tasks.push(query.domain.update({ user_id: id }, update));

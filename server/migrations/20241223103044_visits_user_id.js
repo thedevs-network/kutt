@@ -23,13 +23,13 @@ async function up(knex) {
 
   const count_number = parseInt(count);
   if (Number.isNaN(count_number) || count_number === 0) return;
-    
+
   if (count_number < 1_000_000) {
     const last_visit = await knex("visits").orderBy("id", "desc").first();
 
     const size = 100_000;
     const loops = Math.floor(last_visit.id / size) + 1;
-    
+
     await Promise.all(
       new Array(loops).fill(null).map((_, i) => {
         return knex("visits")
@@ -46,7 +46,7 @@ async function up(knex) {
       "Skipped adding user_id to visits due to high volume of visits and the potential risk of locking the database.\n" + 
       "Please refer to Kutt's migration guide for more information."
     );
-  } 
+  }
 };
 
 /**
@@ -56,6 +56,6 @@ async function up(knex) {
 async function down(knex) {};
 
 module.exports = {
-  up, 
+  up,
   down,
 }
