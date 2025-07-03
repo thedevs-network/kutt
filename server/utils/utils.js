@@ -1,5 +1,5 @@
 const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears, format } = require("date-fns");
-const { customAlphabet } = require("nanoid");
+const { randomBytes } = require("node:crypto");
 const JWT = require("jsonwebtoken");
 const path = require("node:path");
 const fs = require("node:fs");
@@ -11,7 +11,16 @@ const knexUtils = require("./knex");
 const knex = require("../knex");
 const env = require("../env");
 
-const nanoid = customAlphabet(env.LINK_CUSTOM_ALPHABET, env.LINK_LENGTH);
+// Custom alphabet ID generator using crypto.randomBytes
+function generateCustomId() {
+  const bytes = randomBytes(env.LINK_LENGTH * 2); // Generate extra bytes for better distribution
+  let result = '';
+  for (let i = 0; i < env.LINK_LENGTH; i++) {
+    const randomIndex = bytes[i] % env.LINK_CUSTOM_ALPHABET.length;
+    result += env.LINK_CUSTOM_ALPHABET[randomIndex];
+  }
+  return result;
+}
 
 class CustomError extends Error {
   constructor(message, statusCode, data) {
@@ -59,7 +68,7 @@ function deleteCurrentToken(res) {
 }
 
 async function generateId(query, domain_id) {
-  const address = nanoid();
+  const address = generateCustomId();
   const link = await query.link.find({ address, domain_id });
   if (link) {
     return generateId(query, domain_id)

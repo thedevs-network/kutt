@@ -68,10 +68,10 @@ app.use("/", routes.render);
 app.use("/api/v2", routes.api);
 app.use("/api", routes.api);
 
-// finally, redirect the short link to the target
+// redirect the short link to the target
 app.get("/:id", asyncHandler(links.redirect));
 
-// 404 pages that don't exist
+// 404 pages that don't exist (must be last)
 app.get("*", renders.notFound);
 
 // handle errors coming from above routes

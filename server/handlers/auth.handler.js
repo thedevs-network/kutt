@@ -1,7 +1,6 @@
 const { differenceInDays, addMinutes } = require("date-fns");
-const { nanoid } = require("nanoid");
-const passport = require("passport");
 const { randomUUID } = require("node:crypto");
+const passport = require("passport");
 const bcrypt = require("bcryptjs");
 
 const { ROLES } = require("../consts");
@@ -201,7 +200,7 @@ async function changePassword(req, res) {
 }
 
 async function generateApiKey(req, res) {
-  const apikey = nanoid(40);
+  const apikey = randomUUID();
 
   if (env.REDIS_ENABLED) {
     redis.remove.user(req.user);
