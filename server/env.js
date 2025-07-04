@@ -30,6 +30,7 @@ const spec = {
   PORT: num({ default: 3000 }),
   SITE_NAME: str({ example: "Kutt", default: "Kutt" }),
   DEFAULT_DOMAIN: str({ example: "kutt.it", default: "localhost:3000" }),
+  ADDITIONAL_DOMAINS: str({ default: [] }),
   LINK_LENGTH: num({ default: 6 }),
   LINK_CUSTOM_ALPHABET: str({ default: "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789" }),
   TRUST_PROXY: bool({ default: true }),
@@ -64,6 +65,7 @@ const spec = {
   ENABLE_RATE_LIMIT: bool({ default: false }),
   REPORT_EMAIL: str({ default: "" }),
   CONTACT_EMAIL: str({ default: "" }),
+  GIT_URL: str({ default: "https://github.com/thedevs-network/kutt" }),
   NODE_APP_INSTANCE: num({ default: 0 }),
 };
 
@@ -79,4 +81,16 @@ for (const key in spec) {
 
 const env = cleanEnv(process.env, spec);
 
-module.exports = env;
+// Export a parsed array as a separate property
+const additionalDomains =
+  typeof env.ADDITIONAL_DOMAINS === "string"
+    ? env.ADDITIONAL_DOMAINS
+        .split(",")
+        .map(domain => domain.trim())
+        .filter(domain => domain.length > 0)
+    : [];
+
+module.exports = {
+  ...env,
+  ADDITIONAL_DOMAINS_ARRAY: additionalDomains,
+};

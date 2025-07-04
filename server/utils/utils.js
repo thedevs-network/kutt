@@ -1,4 +1,4 @@
-const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears, format } = require("date-fns");
+const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, format } = require("date-fns");
 const { randomBytes } = require("node:crypto");
 const JWT = require("jsonwebtoken");
 const path = require("node:path");
@@ -96,7 +96,7 @@ function statsObjectToArray(obj) {
         value: obj[key][name]
       }))
       .sort((a, b) => b.value - a.value);
-  
+
   return {
     browser: objToArr("browser"),
     os: objToArr("os"),
@@ -274,6 +274,11 @@ const sanitize = {
   }),
   link: link => {
     const timestamps = parseTimestamps(link);
+
+    // Priority logic: domain_id (user's own domain) takes precedence over domain_name (additional domains)
+    // If domain_id exists, use the joined domain address, otherwise use domain_name
+    const domain = link.domain || link.domain_name;
+
     return {
       ...link,
       ...timestamps,
@@ -284,11 +289,16 @@ const sanitize = {
       banned: !!link.banned,
       id: link.uuid,
       password: !!link.password,
-      link: getShortURL(link.address, link.domain).url,
+      link: getShortURL(link.address, domain).url,
     }
   },
   link_html: link => {
     const timestamps = parseTimestamps(link);
+
+    // Priority logic: domain_id (user's own domain) takes precedence over domain_name (additional domains)
+    // If domain_id exists, use the joined domain address, otherwise use domain_name
+    const domain = link.domain || link.domain_name;
+
     return {
       ...link,
       ...timestamps,
@@ -302,21 +312,26 @@ const sanitize = {
       relative_expire_in: link.expire_in && ms(differenceInMilliseconds(parseDatetime(link.expire_in), new Date()), { long: true }),
       password: !!link.password,
       visit_count: link.visit_count.toLocaleString("en-US"),
-      link: getShortURL(link.address, link.domain),
+      link: getShortURL(link.address, domain),
     }
   },
   link_admin: link => {
     const timestamps = parseTimestamps(link);
+
+    // Priority logic: domain_id (user's own domain) takes precedence over domain_name (additional domains)
+    // If domain_id exists, use the joined domain address, otherwise use domain_name
+    const domain = link.domain || link.domain_name;
+
     return {
       ...link,
       ...timestamps,
-      domain: link.domain || env.DEFAULT_DOMAIN,
+      domain: domain || env.DEFAULT_DOMAIN,
       id: link.uuid,
       relative_created_at: getTimeAgo(timestamps.created_at),
       relative_expire_in: link.expire_in && ms(differenceInMilliseconds(parseDatetime(link.expire_in), new Date()), { long: true }),
       password: !!link.password,
       visit_count: link.visit_count.toLocaleString("en-US"),
-      link: getShortURL(link.address, link.domain)
+      link: getShortURL(link.address, domain)
     }
   },
   user_admin: user => {
@@ -401,6 +416,28 @@ function getCustomCSSFileNames() {
   return custom_css_file_names;
 }
 
+// Get all additional domains configured via environment
+function getAdditionalDomains() {
+  if (!env.ADDITIONAL_DOMAINS_ARRAY || !Array.isArray(env.ADDITIONAL_DOMAINS_ARRAY)) {
+    return [];
+  }
+
+  return env.ADDITIONAL_DOMAINS_ARRAY
+    .filter(domain => domain && domain.trim().length > 0)
+    .sort();
+}
+
+// Get all available domains (default + additional)
+function getAllAvailableDomains() {
+  const domains = [env.DEFAULT_DOMAIN];
+
+  if (env.ADDITIONAL_DOMAINS_ARRAY && Array.isArray(env.ADDITIONAL_DOMAINS_ARRAY)) {
+    domains.push(...env.ADDITIONAL_DOMAINS_ARRAY.filter(domain => domain && domain.trim().length > 0));
+  }
+
+  return domains;
+}
+
 module.exports = {
   addProtocol,
   customAddressRegex,
@@ -427,5 +464,7 @@ module.exports = {
   sleep,
   statsObjectToArray,
   urlRegex,
+  getAdditionalDomains,
+  getAllAvailableDomains,
   ...knexUtils,
 }

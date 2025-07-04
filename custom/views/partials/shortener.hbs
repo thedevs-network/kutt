@@ -21,7 +21,7 @@
       </h1>
     {{/if}}
     {{#unless link}}
-        <h1>Cut your links <span>shorter</span>.</h1>
+        <h1><span>Shorten</span> PayTo, IPFS, and more 🔗</h1>
     {{/unless}}
   </div>
   <form
@@ -37,12 +37,11 @@
         id="target"
         name="target"
         type="text"
-        placeholder="Paste your long URL"
+        placeholder="Paste any link payto:// ipfs:// or other…"
         aria-label="target"
         autofocus="true"
         data-lpignore="true"
         hx-preserve="true"
-        hx-on:input="filterDomainsByTarget(this.value)"
       />
       <button class="submit">
         {{> icons/send}}
@@ -91,7 +90,7 @@
             type="text"
             id="customurl"
             name="customurl"
-            placeholder="Custom address..."
+            placeholder="Custom address…"
             hx-preserve="true"
             autocomplete="off"
           />
@@ -103,7 +102,7 @@
             type="password"
             id="password"
             name="password"
-            placeholder="Password..."
+            placeholder="Password…"
             hx-preserve="true"
             autocomplete="off"
           />
@@ -128,7 +127,7 @@
             type="text"
             id="description"
             name="description"
-            placeholder="Description..."
+            placeholder="Description…"
             hx-preserve="true"
           />
           {{#if errors.description}}<p class="error">{{errors.description}}</p>{{/if}}

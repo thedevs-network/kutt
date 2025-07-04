@@ -13,6 +13,7 @@ const selectable = [
   "links.banned",
   "links.created_at",
   "links.domain_id",
+  "links.domain_name",
   "links.updated_at",
   "links.password",
   "links.description",
@@ -211,6 +212,7 @@ async function create(params) {
     {
       password: encryptedPassword,
       domain_id: params.domain_id || null,
+      domain_name: params.domain_name || null,
       user_id: params.user_id || null,
       address: params.address,
       description: params.description || null,

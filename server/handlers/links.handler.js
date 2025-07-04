@@ -98,7 +98,25 @@ async function getAdmin(req, res) {
 
 async function create(req, res) {
   const { reuse, password, customurl, description, target, fetched_domain, expire_in } = req.body;
-  const domain_id = fetched_domain ? fetched_domain.id : null;
+
+  // Handle virtual domains (additional domains from environment)
+  const isVirtualDomain = fetched_domain && typeof fetched_domain.id === 'string' && fetched_domain.id.startsWith('env-');
+
+  // Priority logic: domain_id (user's own domain) takes precedence over domain_name (additional domains)
+  let domain_id = null;
+  let domain_name = null;
+
+  if (fetched_domain) {
+    if (typeof fetched_domain.id === 'number') {
+      // User's own domain from database - use domain_id
+      domain_id = fetched_domain.id;
+      domain_name = null;
+    } else if (isVirtualDomain) {
+      // Additional domain from environment - use domain_name
+      domain_id = null;
+      domain_name = fetched_domain.address;
+    }
+  }
 
   const targetDomain = utils.removeWww(URL.parse(target).hostname);
 
@@ -134,16 +152,19 @@ async function create(req, res) {
 
   // Create new link
   const address = customurl || tasks[2];
+
   const link = await query.link.create({
     password,
     address,
     domain_id,
+    domain_name,
     description,
     target,
     expire_in,
     user_id: req.user && req.user.id
   });
 
+  // Set the domain address for the response
   link.domain = fetched_domain?.address;
 
   if (req.isHTML) {
@@ -465,17 +486,43 @@ async function redirect(req, res, next) {
 
   // 1. If custom domain, get domain info
   const host = utils.removeWww(req.headers.host);
-  const domain =
-    host !== env.DEFAULT_DOMAIN
-      ? await query.domain.find({ address: host })
-      : null;
+  let domain = null;
+
+  if (host !== env.DEFAULT_DOMAIN) {
+    // Check database domains first
+    domain = await query.domain.find({ address: host });
+
+    // If not found in database, check additional domains from environment
+    if (!domain) {
+      const additionalDomains = utils.getAdditionalDomains();
+      if (additionalDomains.includes(host)) {
+        domain = {
+          address: host,
+          homepage: `https://${host}`,
+          id: `env-${host}`
+        };
+      }
+    }
+  }
 
   // 2. Get link
   const address = req.params.id.replace("+", "");
-  const link = await query.link.find({
-    address,
-    domain_id: domain ? domain.id : null
-  });
+  let link = null;
+
+  if (domain && domain.id.startsWith('env-')) {
+    // For additional domains, search for links with domain_name matching the current domain
+    link = await query.link.find({
+      address,
+      domain_id: null,
+      domain_name: domain.address
+    });
+  } else {
+    // For regular domains, use normal lookup
+    link = await query.link.find({
+      address,
+      domain_id: domain ? domain.id : null
+    });
+  }
 
   // 3. When no link, if has domain redirect to domain's homepage
   // otherwise redirect to 404
@@ -597,7 +644,20 @@ async function redirectCustomDomainHomepage(req, res, next) {
     path === "/" ||
     utils.preservedURLs.includes(pathName)
   ) {
-    const domain = await query.domain.find({ address: host });
+    // Check database domains first
+    let domain = await query.domain.find({ address: host });
+
+    // If not found in database, check additional domains from environment
+    if (!domain) {
+      const additionalDomains = utils.getAdditionalDomains();
+      if (additionalDomains.includes(host)) {
+        domain = {
+          address: host,
+          homepage: `https://${host}`
+        };
+      }
+    }
+
     if (domain?.homepage) {
       res.redirect(302, domain.homepage);
       return;

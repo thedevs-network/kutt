@@ -360,3 +360,35 @@ htmx.defineExtension("preload", {
     })
   }
 })
+
+// filter domains based on target URL for shortener form
+async function filterDomainsByTarget(targetValue) {
+  if (!targetValue) {
+    // If no target, show all domains
+    document.querySelectorAll('#domain option').forEach(option => {
+      option.style.display = '';
+    });
+    return;
+  }
+
+  // Since ALIASES functionality was removed, show all domains
+  document.querySelectorAll('#domain option').forEach(option => {
+    option.style.display = '';
+  });
+}
+
+// validate target URL for link editing
+async function validateTargetForEdit(linkId, targetValue) {
+  if (!targetValue) return;
+
+  // Since ALIASES functionality was removed, no validation needed
+  const targetInput = document.getElementById(`edit-target-${linkId}`);
+  if (!targetInput) return;
+
+  // Remove any existing error state
+  targetInput.classList.remove('error');
+  const errorElement = targetInput.parentNode.querySelector('.error');
+  if (errorElement) {
+    errorElement.remove();
+  }
+}

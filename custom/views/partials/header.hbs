@@ -1,21 +1,23 @@
 <header>
   <div class="logo-wrapper">
     <a class="logo nav" href="/" title="Homepage">
-      <img src="/images/logo.png" alt="{{site_name}}" style="max-width: 48px" />
-      {{site_name}}
+      <img src="/images/logo.png" alt="432.sk" style="max-width: 48px" />
     </a>
     <ul class="logo-links">
+      <li>
+        <a class="nav" href="/">
+          Shorten
+        </a>
+      </li>
+      <li>
+        <a class="nav" href="https://payto.money" title="Generate PayTo" target="_blank" rel="noopener">
+          Generate PayTo
+        </a>
+      </li>
       {{#if git_url}}
         <li>
           <a class="nav" href="{{git_url}}" target="_blank" rel="noopener noreferrer" title="Git">
             Git
-          </a>
-        </li>
-      {{/if}}
-      {{#if report_email}}
-        <li>
-          <a class="nav" href="/report" title="Report abuse">
-            Report
           </a>
         </li>
       {{/if}}

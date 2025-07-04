@@ -17,26 +17,35 @@
             id="edit-target-{{id}}"
             name="target"
             type="text"
-            placeholder="Target..."
+            placeholder="Target…"
             required="true"
             value="{{target}}"
             hx-preserve="true"
           />
           {{#if errors.target}}<p class="error">{{errors.target}}</p>{{/if}}
         </label>
-        <label class="{{#if errors.address}}error{{/if}}">
-          <span id="edit-link-domain-{{id}}" hx-preserve="true">{{domain}}/</span>
+        <div class="form-group">
+          <label for="address">
+            {{#if domain_name}}
+              {{domain_name}}
+            {{else if domain}}
+              {{domain}}
+            {{else}}
+              {{default_domain}}
+            {{/if}}/
+          </label>
           <input
-            id="edit-address-{{id}}"
-            name="address"
             type="text"
-            placeholder="Custom URL..."
-            required="true"
+            class="form-control"
+            id="address"
+            name="address"
             value="{{address}}"
-            hx-preserve="true"
-          />
-          {{#if errors.address}}<p class="error">{{errors.address}}</p>{{/if}}
-        </label>
+            placeholder="Short link…"
+            autocomplete="off"
+            maxlength="{{max_length}}"
+            required
+          >
+        </div>
         <label class="{{#if errors.password}}error{{/if}}">
           Password:
           <input

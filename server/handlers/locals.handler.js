@@ -29,6 +29,7 @@ function config(req, res, next) {
   res.locals.disallow_registration = env.DISALLOW_REGISTRATION;
   res.locals.mail_enabled = env.MAIL_ENABLED;
   res.locals.report_email = env.REPORT_EMAIL;
+  res.locals.git_url = env.GIT_URL;
   res.locals.custom_styles = utils.getCustomCSSFileNames();
   next();
 }
