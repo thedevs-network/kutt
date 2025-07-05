@@ -5,6 +5,13 @@
       {{site_name}}
     </a>
     <ul class="logo-links">
+      {{#if git_url}}
+        <li>
+          <a class="nav" href="{{git_url}}" target="_blank" rel="noopener" title="Git">
+            Git
+          </a>
+        </li>
+      {{/if}}
     </ul>
   </div>
   <nav>

@@ -72,7 +72,7 @@ app.use("/api", routes.api);
 app.get("/:id", asyncHandler(links.redirect));
 
 // 404 pages that don't exist (must be last)
-app.get("*", renders.notFound);
+app.use(renders.notFound);
 
 // handle errors coming from above routes
 app.use(helpers.error);
