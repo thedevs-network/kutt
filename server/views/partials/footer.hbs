@@ -1,13 +1,17 @@
 <footer>
   <p>
-    Powered by <a href="https://github.com/thedevs-network/kutt" title="The Devs" target="_blank" rel="noopener noreferrer">Kutt</a> <span>|</span> 
+    Powered by <a href="https://github.com/thedevs-network/kutt" title="The Devs" target="_blank" rel="noopener">Kutt</a><span class="footer-separator">|</span>
     <a href="/terms" title="Terms of Service">Terms of Service</a>
     {{#if report_email}}
-     <span>|</span>
-     <a href="/report" title="Report abuse">Report Abuse</a>
+      <span class="footer-separator">|</span>
+      <a href="/report" title="Report abuse">Report Abuse</a>
+    {{/if}}
+    {{#if git_url}}
+      <span class="footer-separator">|</span>
+      <a href="{{git_url}}" title="Git" target="_blank" rel="noopener">Git</a>
     {{/if}}
     {{#if contact_email}}
-      <span>|</span>
+      <span class="footer-separator">|</span>
       <button class="link" hx-get="/get-support-email" hx-swap="outerHTML">
         <span>{{> icons/spinner}}</span>
         Contact us
@@ -15,3 +19,8 @@
     {{/if}}
   </p>
 </footer>
+<style>
+  .footer-separator {
+    margin: 0 0.5em;
+  }
+</style>

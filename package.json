@@ -1,6 +1,6 @@
 {
   "name": "kutt",
-  "version": "3.2.3",
+  "version": "3.3.0",
   "description": "Modern URL shortener.",
   "main": "./server/server.js",
   "scripts": {
@@ -32,7 +32,7 @@
     "date-fns": "4.1.0",
     "dotenv": "17.0.1",
     "envalid": "8.0.0",
-    "express": "^4.21.2",
+    "express": "^5.1.0",
     "express-rate-limit": "7.5.1",
     "express-validator": "7.2.1",
     "geoip-lite": "1.4.10",

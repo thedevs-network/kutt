@@ -1,6 +1,6 @@
 <form
   id="report-form"
-  hx-post="/api/links/{id}/protected"
+  hx-post="/api/links/{{id}}/protected"
   hx-sync="this:abort"
   hx-ext="path-params"
   hx-vals='{"id":"{{id}}"}'
@@ -25,7 +25,7 @@
       <button type="submit" class="primary">
         <span>{{> icons/spinner}}</span>
         <span>{{> icons/key}}</span>
-        Unlock & Go
+        Unlock &amp; Go
       </button>
     </div>
     {{#if error}}<p class="error">{{error}}</p>{{/if}}

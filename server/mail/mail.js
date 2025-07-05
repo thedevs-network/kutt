@@ -126,7 +126,7 @@ async function sendReportEmail(link) {
   const mail = await transporter.sendMail({
     from: env.MAIL_FROM || env.MAIL_USER,
     to: env.REPORT_EMAIL,
-    subject: "[REPORT]",
+    subject: "[REPORT] " + env.SITE_NAME,
     text: link,
     html: link
   });

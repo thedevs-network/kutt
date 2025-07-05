@@ -2,7 +2,7 @@
   {{#if id}}
     <form
       id="edit-form-{{id}}"
-      hx-patch="/api/links/admin/{id}"
+      hx-patch="/api/links/admin/{{id}}"
       hx-ext="path-params"
       hx-vals='{"id":"{{id}}"}'
       hx-select="form"

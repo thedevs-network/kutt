@@ -2,7 +2,7 @@
 <section
   id="stats-section"
   class="section-container"
-  hx-get="/api/links/{id}/stats"
+  hx-get="/api/links/{{id}}/stats"
   hx-swap="innerHTML"
   hx-trigger="load once"
   hx-vals='js:{ id: getQueryParams().id || "" }'
