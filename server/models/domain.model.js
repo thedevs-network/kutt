@@ -31,7 +31,7 @@ async function createDomainTable(knex) {
         .notNullable()
         .defaultTo(knex.fn.uuid());
       table.timestamps(false, true);
-      
+
     });
   }
 }

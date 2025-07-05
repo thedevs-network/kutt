@@ -1,4 +1,4 @@
-<form 
+<form
   id="add-domain"
   hx-post="/api/domains"
   hx-sync="this:abort"
@@ -11,25 +11,25 @@
   <div class="inputs">
     <label class="{{#if errors.address}}error{{/if}}">
       Address:
-      <input 
-        id="address" 
-        name="address" 
-        type="text" 
-        placeholder="yoursite.com" 
-        required="true" 
-        hx-preserve="true" 
+      <input
+        id="address"
+        name="address"
+        type="text"
+        placeholder="yoursite.com"
+        required="true"
+        hx-preserve="true"
 
       />
       {{#if errors.address}}<p class="error">{{errors.address}}</p>{{/if}}
     </label>
     <label class="{{#if errors.homepage}}error{{/if}}">
       Homepage (Optional):
-      <input 
-        id="homepage" 
-        name="homepage" 
-        placeholder="Homepage URL" 
-        type="text" 
-        hx-preserve="true" 
+      <input
+        id="homepage"
+        name="homepage"
+        placeholder="Homepage URL"
+        type="text"
+        hx-preserve="true"
 
       />
       {{#if errors.homepage}}<p class="error">{{errors.homepage}}</p>{{/if}}

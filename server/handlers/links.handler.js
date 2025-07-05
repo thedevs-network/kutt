@@ -56,20 +56,20 @@ async function getAdmin(req, res) {
   const banned = utils.parseBooleanQuery(req.query.banned);
   const anonymous = utils.parseBooleanQuery(req.query.anonymous);
   const has_domain = utils.parseBooleanQuery(req.query.has_domain);
-  
+
   const match = {
     ...(banned !== undefined && { banned }),
     ...(anonymous !== undefined && { user_id: [anonymous ? "is" : "is not", null] }),
     ...(has_domain !== undefined && { domain_id: [has_domain ? "is not" : "is", null] }),
   };
-  
+
   // if domain is equal to the defualt domain,
   // it means admins is looking for links with the defualt domain (no custom user domain)
   if (domain === env.DEFAULT_DOMAIN) {
     domain = undefined;
     match.domain_id = null;
   }
-  
+
   const [data, total] = await Promise.all([
     query.link.getAdmin(match, { limit, search, user, domain, skip }),
     query.link.totalAdmin(match, { search, user, domain })
@@ -98,10 +98,28 @@ async function getAdmin(req, res) {
 
 async function create(req, res) {
   const { reuse, password, customurl, description, target, fetched_domain, expire_in } = req.body;
-  const domain_id = fetched_domain ? fetched_domain.id : null;
-  
+
+  // Handle virtual domains (additional domains from environment)
+  const isVirtualDomain = fetched_domain && typeof fetched_domain.id === 'string' && fetched_domain.id.startsWith('env-');
+
+  // Priority logic: domain_id (user's own domain) takes precedence over domain_name (additional domains)
+  let domain_id = null;
+  let domain_name = null;
+
+  if (fetched_domain) {
+    if (typeof fetched_domain.id === 'number') {
+      // User's own domain from database - use domain_id
+      domain_id = fetched_domain.id;
+      domain_name = null;
+    } else if (isVirtualDomain) {
+      // Additional domain from environment - use domain_name
+      domain_id = null;
+      domain_name = fetched_domain.address;
+    }
+  }
+
   const targetDomain = utils.removeWww(URL.parse(target).hostname);
-  
+
   const tasks = await Promise.all([
     reuse &&
       query.link.find({
@@ -118,13 +136,13 @@ async function create(req, res) {
     validators.bannedDomain(targetDomain),
     validators.bannedHost(targetDomain)
   ]);
-  
+
   // if "reuse" is true, try to return
   // the existent URL without creating one
   if (tasks[0]) {
     return res.json(utils.sanitize.link(tasks[0]));
   }
-  
+
   // Check if custom link already exists
   if (tasks[1]) {
     const error = "Custom URL is already in use.";
@@ -134,27 +152,30 @@ async function create(req, res) {
 
   // Create new link
   const address = customurl || tasks[2];
+
   const link = await query.link.create({
     password,
     address,
     domain_id,
+    domain_name,
     description,
     target,
     expire_in,
     user_id: req.user && req.user.id
   });
 
+  // Set the domain address for the response
   link.domain = fetched_domain?.address;
-  
+
   if (req.isHTML) {
     res.setHeader("HX-Trigger", "reloadMainTable");
     const shortURL = utils.getShortURL(link.address, link.domain);
     return res.render("partials/shortener", {
-      link: shortURL.link, 
+      link: shortURL.link,
       url: shortURL.url,
     });
   }
-  
+
   return res
     .status(201)
     .send(utils.sanitize.link({ ...link }));
@@ -172,14 +193,14 @@ async function edit(req, res) {
 
   let isChanged = false;
   [
-    [req.body.address, "address"], 
-    [req.body.target, "target"], 
-    [req.body.description, "description"], 
-    [req.body.expire_in, "expire_in"], 
+    [req.body.address, "address"],
+    [req.body.target, "target"],
+    [req.body.description, "description"],
+    [req.body.expire_in, "expire_in"],
     [req.body.password, "password"]
   ].forEach(([value, name]) => {
     if (!value) {
-      if (name === "password" && link.password) 
+      if (name === "password" && link.password)
         req.body.password = null;
       else {
         delete req.body[name];
@@ -206,7 +227,7 @@ async function edit(req, res) {
   }
 
   const { address, target, description, expire_in, password } = req.body;
-  
+
   const targetDomain = target && utils.removeWww(URL.parse(target).hostname);
   const domain_id = link.domain_id || null;
 
@@ -265,14 +286,14 @@ async function editAdmin(req, res) {
 
   let isChanged = false;
   [
-    [req.body.address, "address"], 
-    [req.body.target, "target"], 
-    [req.body.description, "description"], 
-    [req.body.expire_in, "expire_in"], 
+    [req.body.address, "address"],
+    [req.body.target, "target"],
+    [req.body.description, "description"],
+    [req.body.expire_in, "expire_in"],
     [req.body.password, "password"]
   ].forEach(([value, name]) => {
     if (!value) {
-      if (name === "password" && link.password) 
+      if (name === "password" && link.password)
         req.body.password = null;
       else {
         delete req.body[name];
@@ -299,7 +320,7 @@ async function editAdmin(req, res) {
   }
 
   const { address, target, description, expire_in, password } = req.body;
-  
+
   const targetDomain = target && utils.removeWww(URL.parse(target).hostname);
   const domain_id = link.domain_id || null;
 
@@ -382,7 +403,7 @@ async function report(req, res) {
     });
     return;
   }
-  
+
   return res
     .status(200)
     .send({ message: "Thanks for the report, we'll take actions shortly." });
@@ -465,17 +486,43 @@ async function redirect(req, res, next) {
 
   // 1. If custom domain, get domain info
   const host = utils.removeWww(req.headers.host);
-  const domain =
-    host !== env.DEFAULT_DOMAIN
-      ? await query.domain.find({ address: host })
-      : null;
+  let domain = null;
+
+  if (host !== env.DEFAULT_DOMAIN) {
+    // Check database domains first
+    domain = await query.domain.find({ address: host });
+
+    // If not found in database, check additional domains from environment
+    if (!domain) {
+      const additionalDomains = utils.getAdditionalDomains();
+      if (additionalDomains.includes(host)) {
+        domain = {
+          address: host,
+          homepage: `https://${host}`,
+          id: `env-${host}`
+        };
+      }
+    }
+  }
 
   // 2. Get link
   const address = req.params.id.replace("+", "");
-  const link = await query.link.find({
-    address,
-    domain_id: domain ? domain.id : null
-  });
+  let link = null;
+
+  if (domain && domain.id.startsWith('env-')) {
+    // For additional domains, search for links with domain_name matching the current domain
+    link = await query.link.find({
+      address,
+      domain_id: null,
+      domain_name: domain.address
+    });
+  } else {
+    // For regular domains, use normal lookup
+    link = await query.link.find({
+      address,
+      domain_id: domain ? domain.id : null
+    });
+  }
 
   // 3. When no link, if has domain redirect to domain's homepage
   // otherwise redirect to 404
@@ -492,7 +539,7 @@ async function redirect(req, res, next) {
   const isRequestingInfo = /.*\+$/gi.test(req.params.id);
   if (isRequestingInfo && !link.password) {
     if (req.isHTML) {
-      res.render("url_info", { 
+      res.render("url_info", {
         title: "Short link information",
         target: link.target,
         link: utils.getShortURL(link.address, link.domain).link
@@ -597,7 +644,20 @@ async function redirectCustomDomainHomepage(req, res, next) {
     path === "/" ||
     utils.preservedURLs.includes(pathName)
   ) {
-    const domain = await query.domain.find({ address: host });
+    // Check database domains first
+    let domain = await query.domain.find({ address: host });
+
+    // If not found in database, check additional domains from environment
+    if (!domain) {
+      const additionalDomains = utils.getAdditionalDomains();
+      if (additionalDomains.includes(host)) {
+        domain = {
+          address: host,
+          homepage: `https://${host}`
+        };
+      }
+    }
+
     if (domain?.homepage) {
       res.redirect(302, domain.homepage);
       return;

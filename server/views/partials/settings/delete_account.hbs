@@ -3,7 +3,7 @@
     Delete account
   </h2>
   <p>Delete your account from {{default_domain}}.</p>
-  <form 
+  <form
     id="delete-account"
     hx-post="/api/users/delete"
     hx-select="form"
@@ -17,10 +17,10 @@
       <div class="inputs">
         <label class="{{#if errors.password}}error{{/if}}">
           Password:
-          <input 
-            id="password-for-delete-account" 
-            name="password" 
-            type="password" 
+          <input
+            id="password-for-delete-account"
+            name="password"
+            type="password"
             placeholder="Password..."
             hx-preserve="true"
           />

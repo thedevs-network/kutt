@@ -4,21 +4,21 @@
   hx-post="/api/auth/reset-password"
   hx-sync="this:abort"
   hx-swap="outerHTML"
-> 
+>
   {{#if message}}
     <p class="success">{{message}}</p>
   {{else}}
     <div class="inputs-wrapper">
       <label>
         Email address:
-        <input 
-          id="reset-password-email" 
-          name="email" 
-          type="email" 
+        <input
+          id="reset-password-email"
+          name="email"
+          type="email"
           placeholder="Email address..."
           hx-preserve="true"
           class="{{#if errors.email}}error{{/if}}"
-          required 
+          required
         />
       </label>
       <button type="submit" class="primary">

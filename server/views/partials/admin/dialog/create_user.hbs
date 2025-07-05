@@ -2,9 +2,9 @@
   <h2>Create user</h2>
   <form
     id="create-user-form"
-    hx-post="/api/users/admin" 
-    hx-target="closest .content" 
-    hx-swap="outerHTML" 
+    hx-post="/api/users/admin"
+    hx-target="closest .content"
+    hx-swap="outerHTML"
     hx-indicator="closest .content"
   >
     <label class="{{#if errors.email}}error{{/if}}">
@@ -39,22 +39,22 @@
     </label>
     <div class="checkbox-wrapper">
       <label class="checkbox">
-        <input 
-          id="create-user-verified" 
-          name="verified" 
+        <input
+          id="create-user-verified"
+          name="verified"
           type="checkbox"
-          onchange="canSendVerificationEmail();" 
+          onchange="canSendVerificationEmail();"
           hx-preserve="true"
           checked
         />
         Verified
       </label>
       <label class="checkbox">
-        <input 
-          id="create-user-banned" 
+        <input
+          id="create-user-banned"
           name="banned"
           type="checkbox"
-          onchange="canSendVerificationEmail();" 
+          onchange="canSendVerificationEmail();"
           hx-preserve="true"
         />
         Banned

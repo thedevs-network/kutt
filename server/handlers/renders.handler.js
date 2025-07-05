@@ -2,7 +2,7 @@ const query = require("../queries");
 const utils = require("../utils");
 const env = require("../env");
 
-/** 
+/**
 *
 * PAGES
 *
@@ -13,8 +13,28 @@ async function homepage(req, res) {
     res.redirect("/login");
     return;
   }
+
+  const domains = req.user ? await query.domain.get({ user_id: req.user.id }) : [];
+
+  // Add additional domains from environment
+  const additionalDomains = utils.getAdditionalDomains();
+  const allDomains = [
+    ...domains,
+    ...additionalDomains.map(address => ({
+      address,
+      id: `env-${address}`,
+      homepage: `https://${address}`,
+      banned: false,
+      created_at: new Date(),
+      updated_at: new Date()
+    }))
+  ];
+
   res.render("homepage", {
     title: "Free modern URL shortener",
+    domains: allDomains.map(utils.sanitize.domain),
+    default_domain: env.DEFAULT_DOMAIN,
+    show_advanced: req.query.show_advanced === "true"
   });
 }
 
@@ -23,7 +43,7 @@ async function login(req, res) {
     res.redirect("/");
     return;
   }
-  
+
   res.render("login", {
     title: "Log in or sign up"
   });
@@ -95,7 +115,7 @@ async function resetPassword(req, res) {
 
 async function resetPasswordSetNewPassword(req, res) {
   const reset_password_token = req.params.resetPasswordToken;
-  
+
   if (reset_password_token) {
     const user = await query.user.find(
       {
@@ -108,7 +128,6 @@ async function resetPasswordSetNewPassword(req, res) {
     }
   }
 
-  
   res.render("reset_password_set_new_password", {
     title: "Reset password",
     ...(res.locals.token_verified && { reset_password_token }),
@@ -290,7 +309,7 @@ async function linkEdit(req, res) {
   });
   res.render("partials/links/edit", {
     ...(link && utils.sanitize.link_html(link)),
-    domain: link.domain || env.DEFAULT_DOMAIN,
+    domain: link.domain || env.DEFAULT_DOMAIN
   });
 }
 

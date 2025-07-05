@@ -20,19 +20,19 @@ async function find(match) {
   });
 
   const user = await query.first();
-  
+
   if (user && env.REDIS_ENABLED) {
     if (match.id) {
       const idKey = redis.key.user(user.id);
       redis.client.set(idKey, JSON.stringify(user), "EX", 60 * 15);
     }
-  
+
     if (match.apikey) {
       const apikeyKey = redis.key.user(user.apikey);
       redis.client.set(apikeyKey, JSON.stringify(user), "EX", 60 * 15);
     }
   }
-  
+
   return user;
 }
 
@@ -45,7 +45,7 @@ async function add(params, user) {
     verification_token: randomUUID(),
     verification_expires: utils.dateToUTC(addMinutes(new Date(), 60))
   };
-  
+
   if (user) {
     await knex("users")
       .where("id", user.id)
@@ -53,11 +53,11 @@ async function add(params, user) {
   } else {
     await knex("users").insert(data);
   }
-  
+
   if (env.REDIS_ENABLED) {
     redis.remove.user(user);
   }
-  
+
   return {
     ...user,
     ...data
@@ -73,14 +73,14 @@ async function update(match, update, methods) {
 
     const user = await query.select("id").first();
     if (!user) return {};
-    
+
     const updateQuery = trx("users").where("id", user.id);
     if (methods?.increments) {
       methods.increments.forEach(columnName => {
         updateQuery.increment(columnName);
       });
     }
-    
+
     await updateQuery.update({ ...update, updated_at: utils.dateToUTC(new Date()) });
     const updated_user = await trx("users").where("id", user.id).first();
 
@@ -97,11 +97,11 @@ async function update(match, update, methods) {
 
 async function remove(user) {
   const deletedUser = await knex("users").where("id", user.id).delete();
-  
+
   if (env.REDIS_ENABLED) {
     redis.remove.user(user);
   }
-  
+
   return !!deletedUser;
 }
 
@@ -140,7 +140,7 @@ async function getAdmin(match, params) {
     .groupBy(1)
     .groupBy("l.links_count")
     .groupBy("d.domains");
-  
+
   if (params?.search) {
     const id = parseInt(params?.search);
     if (Number.isNaN(id)) {
@@ -157,7 +157,7 @@ async function getAdmin(match, params) {
   if (params?.links !== undefined) {
     query.andWhere("links_count", params?.links ? "is not" : "is", null);
   }
-  
+
   query.leftJoin(
     knex("domains")
     .select("user_id", knex.isMySQL

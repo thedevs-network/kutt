@@ -4,60 +4,60 @@
     <th class="filters">
       <div>
         <div class="search-input-wrapper">
-          <input 
-            id="search" 
-            name="search" 
-            type="text" 
-            placeholder="Search link..." 
-            class="table-input search admin" 
-            hx-on:input="onSearchChange(event)" 
+          <input
+            id="search"
+            name="search"
+            type="text"
+            placeholder="Search link..."
+            class="table-input search admin"
+            hx-on:input="onSearchChange(event)"
             hx-on:keyup="resetTableNav()"
             value="{{query.search}}"
           />
-          <button 
-            type="button" 
-            aria-label="Clear search" 
-            class="clear" 
+          <button
+            type="button"
+            aria-label="Clear search"
+            class="clear"
             onclick="clearSeachInput(event)"
           >
             {{> icons/x}}
           </button>
         </div>
         <div class="search-input-wrapper">
-          <input 
-            id="search_domain" 
-            name="domain" 
-            type="text" 
-            placeholder="Search domain..." 
-            class="table-input search admin" 
-            hx-on:input="onSearchChange(event)" 
+          <input
+            id="search_domain"
+            name="domain"
+            type="text"
+            placeholder="Search domain..."
+            class="table-input search admin"
+            hx-on:input="onSearchChange(event)"
             hx-on:keyup="resetTableNav()"
             value="{{query.domain}}"
           />
-          <button 
-            type="button" 
-            aria-label="Clear user search" 
-            class="clear" 
+          <button
+            type="button"
+            aria-label="Clear user search"
+            class="clear"
             onclick="clearSeachInput(event)"
           >
             {{> icons/x}}
           </button>
         </div>
         <div class="search-input-wrapper">
-          <input 
-            id="search_user" 
-            name="user" 
-            type="text" 
-            placeholder="Search user..." 
-            class="table-input search admin" 
-            hx-on:input="onSearchChange(event)" 
+          <input
+            id="search_user"
+            name="user"
+            type="text"
+            placeholder="Search user..."
+            class="table-input search admin"
+            hx-on:input="onSearchChange(event)"
             hx-on:keyup="resetTableNav()"
             value="{{query.user}}"
           />
-          <button 
-            type="button" 
-            aria-label="Clear user search" 
-            class="clear" 
+          <button
+            type="button"
+            aria-label="Clear user search"
+            class="clear"
             onclick="clearSeachInput(event)"
           >
             {{> icons/x}}
@@ -65,7 +65,7 @@
         </div>
       </div>
       <div>
-        <select 
+        <select
           id="links-select-banned"
           name="banned"
           class="table-input ban"
@@ -75,7 +75,7 @@
           <option value="true">Banned</option>
           <option value="false">Not banned</option>
         </select>
-        <select 
+        <select
           id="links-select-anonymous"
           name="anonymous"
           class="table-input anonymous"
@@ -85,7 +85,7 @@
           <option value="true" {{#ifEquals query.anonymous 'true'}}selected{{/ifEquals}}>Anonymous</option>
           <option value="false" {{#ifEquals query.anonymous 'false'}}selected{{/ifEquals}}>User</option>
         </select>
-        <select 
+        <select
           id="links-select-anonymous"
           name="has_domain"
           class="table-input has_domain"

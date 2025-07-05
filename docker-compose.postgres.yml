@@ -26,7 +26,7 @@ services:
       - db_data_pg:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ${DB_NAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD} 
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     expose:
       - 5432
     healthcheck:

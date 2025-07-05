@@ -8,7 +8,7 @@ const isMySQL = env.DB_CLIENT === "mysql" || env.DB_CLIENT === "mysql2";
  */
 async function up(knex) {
   // IF NOT EXISTS is not available on MySQL So if you're
-  // using MySQL you should make sure you don't have these indexes already 
+  // using MySQL you should make sure you don't have these indexes already
   const ifNotExists = isMySQL ? "" : "IF NOT EXISTS";
 
   await knex.raw(`
@@ -27,6 +27,6 @@ async function down(knex) {
 };
 
 module.exports = {
-  up, 
+  up,
   down,
 }

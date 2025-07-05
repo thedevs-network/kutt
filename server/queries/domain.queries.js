@@ -62,12 +62,12 @@ async function add(params) {
 
 async function update(match, update) {
   // if the domains' adddress is changed,
-  // make sure to delete the original domains from cache 
+  // make sure to delete the original domains from cache
   let domains = []
   if (env.REDIS_ENABLED && update.address) {
     domains = await knex("domains").select("*").where(match);
   }
-  
+
   await knex("domains")
     .where(match)
     .update({ ...update, updated_at: utils.dateToUTC(new Date()) });
@@ -176,7 +176,7 @@ async function totalAdmin(match, params) {
   Object.entries(normalizeMatch(match)).forEach(([key, value]) => {
     query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
   });
-  
+
   if (params?.user) {
     const id = parseInt(params?.user);
     if (Number.isNaN(id)) {
@@ -212,11 +212,11 @@ async function totalAdmin(match, params) {
 
 async function remove(domain) {
   const deletedDomain = await knex("domains").where("id", domain.id).delete();
-  
+
   if (env.REDIS_ENABLED) {
     redis.remove.domain(domain);
   }
-  
+
   return !!deletedDomain;
 }
 

@@ -3,7 +3,7 @@
     Change email
   </h2>
   <p>Enter your password and a new email address to change your email address.</p>
-  <form 
+  <form
     id="change-email"
     hx-post="/api/auth/change-email"
     hx-select="form"
@@ -13,10 +13,10 @@
     <div class="inputs">
       <label class="{{#if errors.password}}error{{/if}}">
         Passwod:
-        <input 
-          id="password-for-change-email" 
-          name="password" 
-          type="password" 
+        <input
+          id="password-for-change-email"
+          name="password"
+          type="password"
           placeholder="Password..."
           hx-preserve="true"
         />
@@ -24,10 +24,10 @@
       </label>
       <label class="{{#if errors.email}}error{{/if}}">
         New email address:
-        <input 
-          id="email-for-change-email" 
-          name="email" 
-          type="email" 
+        <input
+          id="email-for-change-email"
+          name="email"
+          type="email"
           placeholder="john@example.com"
           hx-preserve="true"
         />

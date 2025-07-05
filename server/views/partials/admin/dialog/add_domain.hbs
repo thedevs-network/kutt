@@ -2,9 +2,9 @@
   <h2>Add domain</h2>
   <form
     id="add-domain-form"
-    hx-post="/api/domains/admin" 
-    hx-target="closest .content" 
-    hx-swap="outerHTML" 
+    hx-post="/api/domains/admin"
+    hx-target="closest .content"
+    hx-swap="outerHTML"
     hx-indicator="closest .content"
   >
     <label class="{{#if errors.address}}error{{/if}}">
@@ -30,11 +30,11 @@
       {{#if errors.homepage}}<p class="error">{{errors.homepage}}</p>{{/if}}
     </label>
     <label class="checkbox">
-      <input 
-        id="add-domain-banned" 
+      <input
+        id="add-domain-banned"
         name="banned"
         type="checkbox"
-        onchange="canSendVerificationEmail();" 
+        onchange="canSendVerificationEmail();"
         hx-preserve="true"
       />
       Banned

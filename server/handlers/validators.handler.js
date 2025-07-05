@@ -80,21 +80,74 @@ const createLink = [
   body("domain")
     .optional({ nullable: true, checkFalsy: true })
     .customSanitizer(value => value === env.DEFAULT_DOMAIN ? null : value)
-    .custom(checkUser)
-    .withMessage("Only users can use this field.")
     .isString()
     .withMessage("Domain should be string.")
     .customSanitizer(value => value.toLowerCase())
     .custom(async (address, { req }) => {
+      // Allow additional domains for all users (including anonymous)
+      const additionalDomains = utils.getAdditionalDomains();
+      const isAdditionalDomain = additionalDomains.includes(address);
+
+      if (isAdditionalDomain) {
+        // For additional domains, create a virtual domain object
+        req.body.fetched_domain = {
+          id: `env-${address}`,
+          address: address,
+          homepage: `https://${address}`,
+          banned: false,
+          user_id: null
+        };
+        return true;
+      }
+
+      // For database domains, require authentication
+      if (!req.user) {
+        return Promise.reject();
+      }
+
+      // Check user-owned domains in database
       const domain = await query.domain.find({
         address,
         user_id: req.user.id
       });
-      req.body.fetched_domain = domain || null;
 
-      if (!domain) return Promise.reject();
+      if (domain) {
+        req.body.fetched_domain = domain;
+        return true;
+      }
+
+      return Promise.reject();
     })
-    .withMessage("You can't use this domain.")
+    .withMessage("You can't use this domain."),
+  body("domain_name")
+    .optional({ nullable: true, checkFalsy: true })
+    .custom((value, { req }) => {
+      // Users cannot set domain_name directly - it's system-controlled
+      if (value) {
+        return Promise.reject();
+      }
+      return true;
+    })
+    .withMessage("You cannot set domain_name directly."),
+  body("domain_id")
+    .optional({ nullable: true, checkFalsy: true })
+    .custom(async (value, { req }) => {
+      // Only authenticated users can set domain_id
+      if (!req.user) {
+        return Promise.reject();
+      }
+
+      // If domain_id is provided, ensure it belongs to the user
+      if (value) {
+        const domain = await query.domain.find({ id: value });
+        if (!domain || domain.user_id !== req.user.id) {
+          return Promise.reject();
+        }
+      }
+
+      return true;
+    })
+    .withMessage("You can only use your own domains.")
 ];
 
 const editLink = [
@@ -552,7 +605,7 @@ module.exports = {
   deleteUserByAdmin,
   editLink,
   getStats,
-  login, 
+  login,
   newPassword,
   redirectProtected,
   removeDomain,

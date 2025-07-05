@@ -1,7 +1,6 @@
 const { differenceInDays, addMinutes } = require("date-fns");
-const { nanoid } = require("nanoid");
-const passport = require("passport");
 const { randomUUID } = require("node:crypto");
+const passport = require("passport");
 const bcrypt = require("bcryptjs");
 
 const { ROLES } = require("../consts");
@@ -16,7 +15,7 @@ const CustomError = utils.CustomError;
 function authenticate(type, error, isStrict, redirect) {
   return function auth(req, res, next) {
     if (req.user) return next();
-    
+
     passport.authenticate(type, (err, user, info) => {
       if (err) return next(err);
 
@@ -37,7 +36,7 @@ function authenticate(type, error, isStrict, redirect) {
           return;
         }
       }
-      
+
       if (!user && isStrict) {
         throw new CustomError(error, 401);
       }
@@ -89,19 +88,19 @@ function admin(req, res, next) {
 async function signup(req, res) {
   const salt = await bcrypt.genSalt(12);
   const password = await bcrypt.hash(req.body.password, salt);
-  
+
   const user = await query.user.add(
     { email: req.body.email, password },
     req.user
   );
-  
+
   await mail.verification(user);
 
   if (req.isHTML) {
     res.render("partials/auth/verify");
     return;
   }
-  
+
   return res.status(201).send({ message: "A verification email has been sent." });
 }
 
@@ -110,15 +109,15 @@ async function createAdminUser(req, res) {
   if (isThereAUser) {
     throw new CustomError("Can not create the admin user because a user already exists.", 400);
   }
-  
+
   const salt = await bcrypt.genSalt(12);
   const password = await bcrypt.hash(req.body.password, salt);
 
   const user = await query.user.add({
-    email: req.body.email, 
-    password, 
-    role: ROLES.ADMIN, 
-    verified: true 
+    email: req.body.email,
+    password,
+    role: ROLES.ADMIN,
+    verified: true
   });
 
   const token = utils.signToken(user);
@@ -128,7 +127,7 @@ async function createAdminUser(req, res) {
     res.render("partials/auth/welcome");
     return;
   }
-  
+
   return res.status(201).send({ token });
 }
 
@@ -140,7 +139,7 @@ function login(req, res) {
     res.render("partials/auth/welcome");
     return;
   }
-  
+
   return res.status(200).send({ token });
 }
 
@@ -158,7 +157,7 @@ async function verify(req, res, next) {
       verification_expires: null
     }
   );
-  
+
   if (user) {
     const token = utils.signToken(user);
     utils.deleteCurrentToken(res);
@@ -166,7 +165,7 @@ async function verify(req, res, next) {
     res.locals.token_verified = true;
     req.cookies.token = token;
   }
-  
+
   return next();
 }
 
@@ -180,9 +179,9 @@ async function changePassword(req, res) {
 
   const salt = await bcrypt.genSalt(12);
   const newpassword = await bcrypt.hash(req.body.newpassword, salt);
-  
+
   const user = await query.user.update({ id: req.user.id }, { password: newpassword });
-  
+
   if (!user) {
     throw new CustomError("Couldn't change the password. Try again later.");
   }
@@ -194,21 +193,21 @@ async function changePassword(req, res) {
     });
     return;
   }
-  
+
   return res
     .status(200)
     .send({ message: "Your password has been changed successfully." });
 }
 
 async function generateApiKey(req, res) {
-  const apikey = nanoid(40);
-  
+  const apikey = randomUUID();
+
   if (env.REDIS_ENABLED) {
     redis.remove.user(req.user);
   }
-  
+
   const user = await query.user.update({ id: req.user.id }, { apikey });
-  
+
   if (!user) {
     throw new CustomError("Couldn't generate API key. Please try again later.");
   }
@@ -219,7 +218,7 @@ async function generateApiKey(req, res) {
     });
     return;
   }
-  
+
   return res.status(201).send({ apikey });
 }
 
@@ -244,7 +243,7 @@ async function resetPassword(req, res) {
     });
     return;
   }
-  
+
   return res.status(200).send({
     message: "If email address exists, a reset password email has been sent."
   });
@@ -255,14 +254,14 @@ async function newPassword(req, res) {
 
   const salt = await bcrypt.genSalt(12);
   const password = await bcrypt.hash(req.body.new_password, salt);
-  
+
   const user = await query.user.update(
     {
       reset_password_token,
       reset_password_expires: [">", utils.dateToUTC(new Date())]
     },
-    { 
-      reset_password_expires: null, 
+    {
+      reset_password_expires: null,
       reset_password_token: null,
       password,
     }
@@ -277,23 +276,23 @@ async function newPassword(req, res) {
 
 async function changeEmailRequest(req, res) {
   const { email, password } = req.body;
-  
+
   const isMatch = await bcrypt.compare(password, req.user.password);
-  
+
   if (!isMatch) {
     const error = "Password is not correct.";
     res.locals.errors = { password: error };
     throw new CustomError(error, 401);
   }
-  
+
   const user = await query.user.find({ email });
-  
+
   if (user) {
     const error = "Can't use this email address.";
     res.locals.errors = { email: error };
     throw new CustomError(error, 400);
   }
-  
+
   const updatedUser = await query.user.update(
     { id: req.user.id },
     {
@@ -302,13 +301,13 @@ async function changeEmailRequest(req, res) {
       change_email_expires: utils.dateToUTC(addMinutes(new Date(), 30))
     }
   );
-  
+
   if (updatedUser) {
     await mail.changeEmail({ ...updatedUser, email });
   }
 
   const message = "A verification link has been sent to the requested email address."
-  
+
   if (req.isHTML) {
     res.setHeader("HX-Trigger-After-Swap", "resetChangeEmailForm");
     res.render("partials/settings/change_email", {
@@ -316,21 +315,21 @@ async function changeEmailRequest(req, res) {
     });
     return;
   }
-  
+
   return res.status(200).send({ message });
 }
 
 async function changeEmail(req, res, next) {
   const changeEmailToken = req.params.changeEmailToken;
-  
+
   if (changeEmailToken) {
     const foundUser = await query.user.find({
       change_email_token: changeEmailToken,
       change_email_expires: [">", utils.dateToUTC(new Date())]
     });
-  
+
     if (!foundUser) return next();
-  
+
     const user = await query.user.update(
       { id: foundUser.id },
       {
@@ -340,7 +339,7 @@ async function changeEmail(req, res, next) {
         email: foundUser.change_email_address
       }
     );
-  
+
     if (user) {
       const token = utils.signToken(user);
       utils.deleteCurrentToken(res);
@@ -361,7 +360,7 @@ function featureAccess(features, redirect) {
         } else {
           throw new CustomError("Request is not allowed.", 400);
         }
-      } 
+      }
     }
     next();
   }

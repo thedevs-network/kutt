@@ -20,6 +20,7 @@ async function createLinkTable(knex) {
         .unsigned()
         .references("id")
         .inTable("domains");
+      table.string("domain_name");
       table.string("password");
       table.dateTime("expire_in");
       table.string("target", 2040).notNullable();
@@ -51,6 +52,13 @@ async function createLinkTable(knex) {
         .uuid("uuid")
         .notNullable()
         .defaultTo(knex.fn.uuid());
+    });
+  }
+
+  const hasDomainName = await knex.schema.hasColumn("links", "domain_name");
+  if (!hasDomainName) {
+    await knex.schema.alterTable("links", table => {
+      table.string("domain_name").nullable();
     });
   }
 }

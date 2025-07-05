@@ -31,7 +31,7 @@ async function add(params) {
       .where("created_at_hours", "=", truncatedNow)
       .forUpdate()
       .first();
-      
+
     if (visit) {
       const countries = typeof visit.countries === "string" ? JSON.parse(visit.countries) : visit.countries;
       const referrers = typeof visit.referrers === "string" ? JSON.parse(visit.referrers) : visit.referrers;

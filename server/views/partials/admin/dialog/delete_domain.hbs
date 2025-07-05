@@ -13,14 +13,14 @@
   {{/if }}
   <div class="buttons">
     <button type="button" hx-on:click="closeDialog()">Cancel</button>
-    <button 
+    <button
       type="button"
-      class="danger confirm" 
-      hx-delete="/api/domains/admin/{id}" 
-      hx-ext="path-params" 
-      hx-vals='{"id":"{{id}}"}' 
-      hx-target="closest .content" 
-      hx-swap="none" 
+      class="danger confirm"
+      hx-delete="/api/domains/admin/{{id}}"
+      hx-ext="path-params"
+      hx-vals='{"id":"{{id}}"}'
+      hx-target="closest .content"
+      hx-swap="none"
       {{#if hasLink}}
         hx-include=".delete-domain-checklist"
       {{/if}}
