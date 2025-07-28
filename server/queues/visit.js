@@ -10,13 +10,13 @@ const osList = ["Windows", "Mac OS", "Linux", "Android", "iOS"];
 
 function filterInBrowser(agent) {
   return function(item) {
-    return agent.family.toLowerCase().includes(item.toLocaleLowerCase());
+    return agent.family.toLowerCase().includes(item.toLowerCase());
   }
 }
 
 function filterInOs(agent) {
   return function(item) {
-    return agent.os.family.toLowerCase().includes(item.toLocaleLowerCase());
+    return agent.os.family.toLowerCase().includes(item.toLowerCase());
   }
 }
 
