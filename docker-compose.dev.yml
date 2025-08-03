@@ -12,7 +12,7 @@ services:
       sh -c "
         echo '⏳ Waiting for Postgres...';
         until nc -z db 5432; do sleep 2; done;
-        echo '🚀 Starting Kutt in dev mode...';
+          echo '🚀 Starting Kutt in dev mode...';
         npm run dev
       "
     depends_on:

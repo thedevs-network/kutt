@@ -22,4 +22,4 @@ COPY . .
 EXPOSE 3000
 
 # intialize database and run the app
-CMD npm run migrate && npm start
+# CMD npm run migrate && npm start

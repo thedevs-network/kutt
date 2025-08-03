@@ -1,0 +1,33 @@
+header {
+  width: 100%;
+  height: 4rem;
+  padding: 0.5rem;
+  margin: 0;
+  background-color: silver;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+header > h1 {
+  margin: 8px 0 0.8rem;
+  font-size: 1.2em;
+  font-weight: normal;
+  color: black;
+  display: flex;
+}
+
+header > h1 > a[href] {
+  align-content: center;
+  min-height: 3rem;
+  background: url("/images/ems-logo.svg") no-repeat;
+  background-size: 2.8rem;
+  padding-inline-start: 3.6rem;
+  text-decoration: none;
+  color: black;
+}
+
+a.button.action, button.action {
+  padding: 5px;
+  width: 2rem;
+  height: 2rem;
+  box-shadow: 0 2px 1px var(--button-action-shadow-color);
+}
