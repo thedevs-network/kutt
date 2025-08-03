@@ -98,7 +98,7 @@ function handleQRCode(element, id) {
     colorDark : "#000000",
     colorLight : "#ffffff",
     correctLevel : QRCode.CorrectLevel.H
-  });   
+  });
 }
 
 // copy the link to clipboard
@@ -243,8 +243,10 @@ function clearSeachInput(event) {
 function onSearchInputLoad() {
   const linkSearchInput = document.getElementById("search");
   if (!linkSearchInput) return;
-  const linkClearButton = linkSearchInput.parentElement.querySelector("button.clear")
-  linkClearButton.style.display = linkSearchInput.value.length > 0 ? "block" : "none";
+  const linkClearButton = linkSearchInput.parentElement.querySelector("button.clear");
+  if (linkClearButton) {
+    linkClearButton.style.display  = linkSearchInput.value.length > 0 ? "block" : "none";
+  }
 
   const userSearchInput = document.getElementById("search_user");
   if (!userSearchInput) return;
