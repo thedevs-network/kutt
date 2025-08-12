@@ -1,0 +1,7 @@
+{
+  email me@eugenemakerspace.com
+}
+
+localhost {
+  reverse_proxy server:3000
+}

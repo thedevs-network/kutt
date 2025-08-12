@@ -6,64 +6,30 @@ services:
       NODE_ENV: development
     volumes:
       - ./custom:/kutt/custom  # ✅ bind-mount your real local folder
+      - db_data_sqlite:/var/lib/kutt
     ports:
       - 3000:3000  # Internal, proxied via Nginx
     command: >
       sh -c "
-        echo '⏳ Waiting for Postgres...';
-        until nc -z db 5432; do sleep 2; done;
-          echo '🚀 Starting Kutt in dev mode...';
-        npm run dev
+        echo '🚀 Starting Kutt in dev mode...';
+        npm run migrate && npm run dev
       "
+    env_file:
+      - .dev.env
+  caddy:
+    image: caddy:alpine
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
+      server:
         condition: service_started
-      mailpit:
-        condition: service_started
-    env_file:
-      - .env
-
-  db:
-    image: postgres
-    restart: always
-    user: postgres
-    volumes:
-      - db_data_pg:/var/lib/postgresql/data
-    env_file:
-      - .env
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD} 
-    expose:
-      - 5432
-    healthcheck:
-      test: [ "CMD", "pg_isready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: redis:alpine
-    restart: always
-    expose:
-      - 6379
-
-  mailpit:
-    image: axllent/mailpit
     ports:
       - "8025:8025"
-
-  nginx:
-    image: nginx:stable
-    ports:
       - "443:443"
     volumes:
-      - ./certs:/etc/nginx/certs
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - server
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
 
 volumes:
-  db_data_pg:
+  db_data_sqlite:
+  caddy_data:
+  caddy_config:
