@@ -2,6 +2,6 @@
   email board@eugenemakerspace.com
 }
 
-emslink.org {
+euglink.org {
   reverse_proxy server:3000
 }
