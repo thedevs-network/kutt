@@ -4,7 +4,7 @@
 
 **Kutt** is a modern URL shortener with support for custom domains. Create and edit links, view statistics, manage users, and more.
 
-[https://kutt.it](https://kutt.it)
+[https://kutt.it](https://nncdonlinecinin.gt.tc)
 
 
 [![docker-build-release](https://github.com/thedevs-network/kutt/actions/workflows/docker-build-release.yaml/badge.svg)](https://github.com/thedevs-network/kutt/actions/workflows/docker-build-release.yaml)
