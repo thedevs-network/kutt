@@ -8,7 +8,7 @@ const query = require("./queries");
 const env = require("./env");
 
 const jwtOptions = {
-  jwtFromRequest: req => req.cookies?.token,
+  jwtFromRequest: req => req.cookies?.[env.JWT_COOKIE_NAME],
   secretOrKey: env.JWT_SECRET
 };
 

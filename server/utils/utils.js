@@ -47,7 +47,7 @@ function signToken(user) {
 }
 
 function setToken(res, token) {
-  res.cookie("token", token, {
+  res.cookie(env.JWT_COOKIE_NAME, token, {
     maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
     httpOnly: true,
     secure: env.isProd
@@ -55,7 +55,7 @@ function setToken(res, token) {
 }
 
 function deleteCurrentToken(res) {
-  res.clearCookie("token", { httpOnly: true, secure: env.isProd });
+  res.clearCookie(env.JWT_COOKIE_NAME, { httpOnly: true, secure: env.isProd });
 }
 
 async function generateId(query, domain_id) {

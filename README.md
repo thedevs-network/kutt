@@ -93,6 +93,7 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | Variable | Description | Default | Example |
 | -------- | ----------- | ------- | ------- |
 | `JWT_SECRET` | This is used to sign authentication tokens. Use a **long** **random** string. | - | - |
+| `JWT_COOKIE_NAME` | The name of the cookie the JWT is stored in | `token` | `auth` |
 | `PORT` |  The port to start the app on | `3000` | `8888` |
 | `SITE_NAME` |  Name of the website | `Kutt` | `Your Site` |
 | `DEFAULT_DOMAIN` |  The domain address that this app runs on | `localhost:3000` | `yoursite.com` |

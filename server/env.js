@@ -54,6 +54,7 @@ const spec = {
   SERVER_CNAME_ADDRESS: str({ default: "" }),
   CUSTOM_DOMAIN_USE_HTTPS: bool({ default: false }),
   JWT_SECRET: str({ devDefault: "securekey" }),
+  JWT_COOKIE_NAME: str({ default: "token" }),
   MAIL_ENABLED: bool({ default: false }),
   MAIL_HOST: str({ default: "" }),
   MAIL_PORT: num({ default: 587 }),
