@@ -50,12 +50,19 @@ function setToken(res, token) {
   res.cookie(env.JWT_COOKIE_NAME, token, {
     maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
     httpOnly: true,
-    secure: env.isProd
+    secure: env.isProd,
+    domain: env.JWT_COOKIE_DOMAIN,
+    sameSite: env.JWT_COOKIE_SAMESITE
   });
 }
 
 function deleteCurrentToken(res) {
-  res.clearCookie(env.JWT_COOKIE_NAME, { httpOnly: true, secure: env.isProd });
+  res.clearCookie(env.JWT_COOKIE_NAME, {
+    httpOnly: true,
+    secure: env.isProd,
+    domain: env.JWT_COOKIE_DOMAIN,
+    sameSite: env.JWT_COOKIE_SAMESITE
+  });
 }
 
 async function generateId(query, domain_id) {

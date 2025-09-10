@@ -94,6 +94,8 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | -------- | ----------- | ------- | ------- |
 | `JWT_SECRET` | This is used to sign authentication tokens. Use a **long** **random** string. | - | - |
 | `JWT_COOKIE_NAME` | The name of the cookie the JWT is stored in | `token` | `auth` |
+| `JWT_COOKIE_DOMAIN` | Domain name for the JWT cookie. Defaults to the domain name of the app | - | `yoursite.com` |
+| `JWT_COOKIE_SAMESITE` | Value of the SameSite cookie attribute. Valid options are an empty string, `lax`, `strict` and `none` | - | `strict` |
 | `PORT` |  The port to start the app on | `3000` | `8888` |
 | `SITE_NAME` |  Name of the website | `Kutt` | `Your Site` |
 | `DEFAULT_DOMAIN` |  The domain address that this app runs on | `localhost:3000` | `yoursite.com` |
