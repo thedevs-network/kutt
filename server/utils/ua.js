@@ -12,6 +12,8 @@ function normaliseOSName(name = "") {
 
 function normaliseUA(ua = "") {
   const parsed = new UAParser(ua).getResult();
+  console.log('Parsed OS:', parsed.os); 
+  console.log('Parsed Browser:', parsed.browser);
   const browserName = parsed.browser?.name || "";
   const osName = parsed.os?.name || "";
 
