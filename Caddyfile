@@ -5,3 +5,7 @@
 euglink.org {
   reverse_proxy server:3000
 }
+
+www.euglink.org {
+  redir https://euglink.org{uri}
+}

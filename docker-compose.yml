@@ -18,6 +18,7 @@ services:
       - .env
   caddy:
     image: caddy:alpine
+    restart: unless-stopped
     depends_on:
       server:
         condition: service_started
