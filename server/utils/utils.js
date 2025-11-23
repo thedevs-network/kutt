@@ -1,5 +1,6 @@
 const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears, format } = require("date-fns");
 const { customAlphabet } = require("nanoid");
+const crypto = require("node:crypto");
 const JWT = require("jsonwebtoken");
 const path = require("node:path");
 const fs = require("node:fs");
@@ -56,6 +57,12 @@ function setToken(res, token) {
 
 function deleteCurrentToken(res) {
   res.clearCookie("token", { httpOnly: true, secure: env.isProd });
+}
+
+function generateRandomPassword() {
+  // 24-64 characters.
+  const length = Math.floor(Math.random() * 41 ) + 24;
+  return [...crypto.randomBytes(length)].map(byte => String.fromCharCode((byte % 93) + 33)).join("");
 }
 
 async function generateId(query, domain_id) {
@@ -400,6 +407,7 @@ module.exports = {
   dateToUTC,
   deleteCurrentToken,
   generateId,
+  generateRandomPassword,
   getCustomCSSFileNames,
   getDifferenceFunction,
   getInitStats,

@@ -3,10 +3,10 @@ const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const { Strategy: LocalStrategy } = require("passport-local");
 const passport = require("passport");
 const bcrypt = require("bcryptjs");
-const crypto = require('crypto');
 
 const query = require("./queries");
 const env = require("./env");
+const utils = require("./utils")
 
 const jwtOptions = {
   jwtFromRequest: req => req.cookies?.token,
@@ -116,7 +116,7 @@ if (env.OIDC_ENABLED) {
             // New user.
             // Generate a random password which is not supposed to be used directly.
             const salt = await bcrypt.genSalt(12);
-            const password = generateRandomPassword();
+            const password = utils.generateRandomPassword();
             const newUser = await query.user.add({
               email,
               password,
@@ -137,11 +137,4 @@ if (env.OIDC_ENABLED) {
   }
 
   enableOIDC();
-}
-
-
-function generateRandomPassword() {
-  // 24-64 characters.
-  const length = Math.floor(Math.random()*41)+24;
-  return [...crypto.randomBytes(length)].map(byte => String.fromCharCode((byte % 93)+33)).join('');
 }
