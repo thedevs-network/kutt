@@ -33,6 +33,7 @@
   - Easy setup with no build step
   - Supporting various databases (SQLite, Postgres, MySQL)
   - Ability to disable registration and anonymous links
+  - OpenID Connect (OIDC) login
 - Custom domain support
 - Set custom URLs, password, description, and expiration time for links
 - View, edit, delete and manage your links
@@ -99,6 +100,7 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `LINK_LENGTH` | The length of of shortened address | `6` | `5` |
 | `LINK_CUSTOM_ALPHABET` | Alphabet used to generate custom addresses. Default value omits o, O, 0, i, I, l, 1, and j to avoid confusion when reading the URL. | (abcd..789) | `abcABC^&*()@` |
 | `DISALLOW_REGISTRATION` | Disable registration. Note that if `MAIL_ENABLED` is set to false, then the registration would still be disabled since it relies on emails to sign up users. | `true` | `false` |
+| `DISALLOW_LOGIN_FORM` | Disable login with email and password. Only makes sense if OIDC is enabled. | `false` | `true` |
 | `DISALLOW_ANONYMOUS_LINKS` | Disable anonymous link creation | `true` | `false` |
 | `TRUST_PROXY` | If the app is running behind a proxy server like NGINX or Cloudflare and that it should get the IP address from that proxy server. If you're not using a proxy server then set this to false, otherwise users can override their IP address. | `true` | `false` |
 | `DB_CLIENT` |  Which database client to use. Supported clients: `pg` or `pg-native` for Postgres, `mysql2` for MySQL or MariaDB, `sqlite3` and `better-sqlite3` for SQLite. NOTE: `pg-native` and `sqlite3` are not installed by default, use `npm` to install them before use. | `better-sqlite3` | `pg` |
@@ -127,6 +129,12 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `MAIL_PASSWORD` | Email server password for the user | - | `mypassword` | 
 | `MAIL_FROM` | Email address to send the user from | - | `example@yoursite.com` | 
 | `MAIL_SECURE` | Whether use SSL for the email server connection | `false` | `true` | 
+| `OIDC_ENABLED` | Enable OpenID Connect | `false` | `true` | 
+| `OIDC_ISSUER` | OIDC issuer URL | - | `https://example.com/some/path` | 
+| `OIDC_CLIENT_ID` | OIDC client id | - | `example-app` | 
+| `OIDC_CLIENT_SECRET` | OIDC client secret | - | `some-secret` | 
+| `OIDC_SCOPE` | OIDC Scope | - | `openid profile email` | 
+| `OIDC_EMAIL_CLAIM` | Name of the field to get user's email from | `email` | `userEmail` | 
 | `REPORT_EMAIL` | The email address that will receive submitted reports | - | `example@yoursite.com` | 
 | `CONTACT_EMAIL` | The support email address to show on the app | - | `example@yoursite.com` | 
 
