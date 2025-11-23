@@ -75,13 +75,13 @@ function authenticate(type, error, isStrict, redirect) {
   }
 }
 
-const local = authenticate("local", "Login credentials are wrong.", true, null);
+const local = !env.DISALLOW_LOGIN_FORM && authenticate("local", "Login credentials are wrong.", true, null);
 const jwt = authenticate("jwt", "Unauthorized.", true, "header");
 const jwtPage = authenticate("jwt", "Unauthorized.", true, "page");
 const jwtLoose = authenticate("jwt", "Unauthorized.", false, "header");
 const jwtLoosePage = authenticate("jwt", "Unauthorized.", false, "page");
 const apikey = authenticate("localapikey", "API key is not correct.", false, null);
-const oidc = authenticate("oidc", "Unauthorized", false, "page");
+const oidc = env.OIDC_ENABLED && authenticate("oidc", "Unauthorized", false, "page");
 
 function admin(req, res, next) {
   if (req.user.admin) return next();
