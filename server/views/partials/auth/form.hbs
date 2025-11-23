@@ -56,7 +56,10 @@
   {{/unless}}
   {{#if oidc_enabled}}
     <div class="buttons-wrapper">
-      <a class="button secondary full" href="/login/oidc" title="Login with OIDC">Login with OIDC</a>
+      <a class="button secondary full" href="/login/oidc" title="Login with OIDC">
+        <span>{{> icons/key}}</span>
+        Login with OIDC
+      </a>
     </div>
   {{/if}}
   {{#unless disallow_login_form}}
