@@ -28,6 +28,7 @@ router.get(
 router.get(
   "/login/oidc", 
   locals.viewTemplate("login"),
+  asyncHandler(auth.jwtLoosePage),
   asyncHandler(auth.oidc),
   asyncHandler(auth.login)
 );
