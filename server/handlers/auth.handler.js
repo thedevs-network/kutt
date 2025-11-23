@@ -18,8 +18,14 @@ function authenticate(type, error, isStrict, redirect) {
     if (req.user) return next();
 
     passport.authenticate(type, (err, user, info) => {
+      if (
+        (err || info instanceof Error) &&
+        type === "oidc"
+      ) {
+        return next(new CustomError("OIDC authentication failed.", 401));
+      };
+
       if (err) return next(err);
-      if (type === "oidc" && info instanceof Error) return next(info);
 
       if (
         req.isHTML &&

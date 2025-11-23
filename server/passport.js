@@ -98,7 +98,7 @@ if (env.OIDC_ENABLED) {
       "oidc",
       new OIDCStrategy(
         {
-          client: client,
+          client,
           params: {
             scope: env.OIDC_SCOPE,
             prompt: "login"
