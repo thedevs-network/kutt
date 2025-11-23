@@ -19,7 +19,7 @@ function authenticate(type, error, isStrict, redirect) {
 
     passport.authenticate(type, (err, user, info) => {
       if (err) return next(err);
-      if (type === 'oidc' && info instanceof Error) return next(info);
+      if (type === "oidc" && info instanceof Error) return next(info);
 
       if (
         req.isHTML &&
@@ -81,7 +81,7 @@ const jwtPage = authenticate("jwt", "Unauthorized.", true, "page");
 const jwtLoose = authenticate("jwt", "Unauthorized.", false, "header");
 const jwtLoosePage = authenticate("jwt", "Unauthorized.", false, "page");
 const apikey = authenticate("localapikey", "API key is not correct.", false, null);
-const oidc = env.OIDC_ENABLED && authenticate("oidc", "Unauthorized", false, "page");
+const oidc = env.OIDC_ENABLED && authenticate("oidc", "Unauthorized", true, "page");
 
 function admin(req, res, next) {
   if (req.user.admin) return next();
