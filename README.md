@@ -133,7 +133,7 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `OIDC_ISSUER` | OIDC issuer URL | - | `https://example.com/some/path` | 
 | `OIDC_CLIENT_ID` | OIDC client id | - | `example-app` | 
 | `OIDC_CLIENT_SECRET` | OIDC client secret | - | `some-secret` | 
-| `OIDC_SCOPE` | OIDC Scope | - | `openid profile email` | 
+| `OIDC_SCOPE` | OIDC Scope | `openid profile email` | `openid email` | 
 | `OIDC_EMAIL_CLAIM` | Name of the field to get user's email from | `email` | `userEmail` | 
 | `REPORT_EMAIL` | The email address that will receive submitted reports | - | `example@yoursite.com` | 
 | `CONTACT_EMAIL` | The support email address to show on the app | - | `example@yoursite.com` | 
