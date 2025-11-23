@@ -121,12 +121,12 @@ if (env.OIDC_ENABLED) {
               email,
               password,
             });
-            const updatedUsers = await query.user.update(newUser, {
+            const updatedUser = await query.user.update(newUser, {
               verified: true,
               verification_token: null,
               verification_expires: null,
             });
-            return done(null, updatedUsers[0]);
+            return done(null, updatedUser);
   
           } catch (err) {
             return done(err);
