@@ -79,6 +79,11 @@ function addProtocol(url) {
   return hasProtocol ? url : "http://" + url;
 }
 
+function getSiteURL() {
+  const protocol = !env.isDev ? "https://" : "http://";
+  return `${protocol}${env.DEFAULT_DOMAIN}`;
+}
+
 function getShortURL(address, domain) {
   const protocol = (env.CUSTOM_DOMAIN_USE_HTTPS || !domain) && !env.isDev ? "https://" : "http://";
   const link = `${domain || env.DEFAULT_DOMAIN}/${address}`;
@@ -411,6 +416,7 @@ module.exports = {
   getCustomCSSFileNames,
   getDifferenceFunction,
   getInitStats,
+  getSiteURL,
   getShortURL,
   getStatsPeriods,
   isAdmin,

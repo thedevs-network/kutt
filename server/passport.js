@@ -76,7 +76,7 @@ passport.use(
 
 if (env.OIDC_ENABLED) {
   async function enableOIDC() {
-    const requiredKeys = ["OIDC_ISSUER", "OIDC_CLIENT_ID", "OIDC_CLIENT_SECRET", "OIDC_SCOPE", "OIDC_EMAIL_CLAIM", "OIDC_APP_URL"];
+    const requiredKeys = ["OIDC_ISSUER", "OIDC_CLIENT_ID", "OIDC_CLIENT_SECRET", "OIDC_SCOPE", "OIDC_EMAIL_CLAIM"];
     requiredKeys.forEach((key) => {
       if (!env[key]) {
         throw new Error(`Missing required env ${key}`);
@@ -90,7 +90,7 @@ if (env.OIDC_ENABLED) {
     const client = new issuer.Client({
       client_id: env.OIDC_CLIENT_ID,
       client_secret: env.OIDC_CLIENT_SECRET,
-      redirect_uris: [`${env.OIDC_APP_URL}/login/oidc`],
+      redirect_uris: [utils.getSiteURL() + "/login/oidc"],
       response_types: ["code"]
     });
   
