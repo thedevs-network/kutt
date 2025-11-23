@@ -40,10 +40,15 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(session({
-  keys: [env.JWT_SECRET],
-  maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
-}));
+
+// use cookie sessions only when OIDC is enabled
+// because only OIDC is using it
+if (env.OIDC_ENABLED) {
+  app.use(session({
+    keys: [env.JWT_SECRET],
+    maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
+  }));
+}
 
 // serve static
 app.use("/images", express.static("custom/images"));
