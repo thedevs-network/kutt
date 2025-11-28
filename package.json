@@ -8,7 +8,8 @@
     "start": "node server/server.js --production",
     "migrate": "knex migrate:latest",
     "migrate:make": "knex migrate:make",
-    "docs:build": "cd docs/api && node generate && cd ../.."
+    "docs:build": "cd docs/api && node generate && cd ../..",
+    "test": "vitest --run"
   },
   "repository": {
     "type": "git",
@@ -68,6 +69,8 @@
     "@types/node": "18.11.9",
     "@types/nodemailer": "6.4.6",
     "@types/pg": "8.11.10",
-    "redoc": "2.2.0"
+    "fast-check": "^4.3.0",
+    "redoc": "2.2.0",
+    "vitest": "^4.0.14"
   }
 }

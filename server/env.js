@@ -50,6 +50,7 @@ const spec = {
   REDIS_DB: num({ default: 0 }),
   DISALLOW_ANONYMOUS_LINKS: bool({ default: true }),
   DISALLOW_REGISTRATION: bool({ default: true }),
+  REGISTRATION_ALLOWED_DOMAINS: str({ default: "" }),
   DISALLOW_LOGIN_FORM: bool({ default: false }),
   SERVER_IP_ADDRESS: str({ default: "" }),
   SERVER_CNAME_ADDRESS: str({ default: "" }),

@@ -337,6 +337,16 @@ const banDomain = [
     .isBoolean()
 ];
 
+/**
+ * Validator for admin user creation endpoint.
+ * 
+ * NOTE: This validator intentionally does NOT include domain restriction checks.
+ * Admin user creation bypasses the REGISTRATION_ALLOWED_DOMAINS setting to allow
+ * administrators to create users with any email domain. This is by design to ensure
+ * admins have full control over user management regardless of registration policies.
+ * 
+ * For regular user signup with domain restrictions, see the 'signup' validator.
+ */
 const createUser = [
   body("password", "Password is not valid.")
     .exists({ checkFalsy: true, checkNull: true })
@@ -392,6 +402,18 @@ const signup = [
     .isLength({ min: 0, max: 255 })
     .withMessage("Email length must be max 255.")
     .isEmail()
+    .custom(async (value, { req }) => {
+      // Only check if registration is enabled and domains are configured
+      if (env.DISALLOW_REGISTRATION) return true;
+      
+      const allowedDomains = utils.parseAllowedDomains(env.REGISTRATION_ALLOWED_DOMAINS);
+      if (allowedDomains.length === 0) return true;
+      
+      if (!utils.isEmailDomainAllowed(value, allowedDomains)) {
+        return Promise.reject();
+      }
+    })
+    .withMessage("Registration is restricted to specific email domains.")
 ];
 
 const signupEmailTaken = [
