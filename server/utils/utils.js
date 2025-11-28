@@ -404,6 +404,88 @@ function getCustomCSSFileNames() {
   return custom_css_file_names;
 }
 
+/**
+ * Extracts the domain portion from an email address.
+ * @param {string} email - Email address to parse
+ * @returns {string | null} The domain in lowercase, or null if invalid
+ */
+function extractEmailDomain(email) {
+  if (!email || typeof email !== "string") {
+    return null;
+  }
+  
+  const trimmedEmail = email.trim();
+  if (trimmedEmail === "") {
+    return null;
+  }
+  
+  // Find the rightmost @ symbol
+  const lastAtIndex = trimmedEmail.lastIndexOf("@");
+  if (lastAtIndex === -1) {
+    return null;
+  }
+  
+  const domain = trimmedEmail.substring(lastAtIndex + 1);
+  return domain.toLowerCase();
+}
+
+/**
+ * Parses the comma-separated domain configuration string.
+ * @param {string} domainsString - Comma-separated domain list
+ * @returns {string[]} Array of normalized domain strings
+ */
+function parseAllowedDomains(domainsString) {
+  if (!domainsString || typeof domainsString !== "string") {
+    return [];
+  }
+  
+  const trimmedString = domainsString.trim();
+  if (trimmedString === "") {
+    return [];
+  }
+  
+  // Basic domain validation regex (simplified)
+  const domainRegex = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$/i;
+  
+  const domains = trimmedString
+    .split(",")
+    .map(domain => domain.trim().toLowerCase())
+    .filter(domain => {
+      if (domain === "") {
+        return false;
+      }
+      if (!domainRegex.test(domain)) {
+        console.warn(`Invalid domain format in REGISTRATION_ALLOWED_DOMAINS: "${domain}"`);
+        return false;
+      }
+      return true;
+    });
+  
+  return domains;
+}
+
+/**
+ * Checks if an email's domain is in the allowed list.
+ * @param {string} email - Email address to validate
+ * @param {string[]} allowedDomains - Array of allowed domains
+ * @returns {boolean} True if allowed or no restrictions, false otherwise
+ */
+function isEmailDomainAllowed(email, allowedDomains) {
+  // If no restrictions configured, allow all
+  if (!allowedDomains || allowedDomains.length === 0) {
+    return true;
+  }
+  
+  // Extract domain from email
+  const domain = extractEmailDomain(email);
+  if (!domain) {
+    return false;
+  }
+  
+  // Check if domain is in the whitelist
+  return allowedDomains.includes(domain);
+}
+
 module.exports = {
   addProtocol,
   customAddressRegex,
@@ -411,6 +493,7 @@ module.exports = {
   CustomError,
   dateToUTC,
   deleteCurrentToken,
+  extractEmailDomain,
   generateId,
   generateRandomPassword,
   getCustomCSSFileNames,
@@ -420,7 +503,9 @@ module.exports = {
   getShortURL,
   getStatsPeriods,
   isAdmin,
+  isEmailDomainAllowed,
   parseBooleanQuery,
+  parseAllowedDomains,
   parseDatetime,
   parseTimestamps,
   preservedURLs,

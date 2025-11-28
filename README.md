@@ -100,6 +100,7 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `LINK_LENGTH` | The length of of shortened address | `6` | `5` |
 | `LINK_CUSTOM_ALPHABET` | Alphabet used to generate custom addresses. Default value omits o, O, 0, i, I, l, 1, and j to avoid confusion when reading the URL. | (abcd..789) | `abcABC^&*()@` |
 | `DISALLOW_REGISTRATION` | Disable registration. Note that if `MAIL_ENABLED` is set to false, then the registration would still be disabled since it relies on emails to sign up users. | `true` | `false` |
+| `REGISTRATION_ALLOWED_DOMAINS` | Restrict registration and email changes to specific domains. Comma-separated list of allowed email domains. Leave empty to allow all domains. | - | `company.com,example.org` |
 | `DISALLOW_LOGIN_FORM` | Disable login with email and password. Only makes sense if OIDC is enabled. | `false` | `true` |
 | `DISALLOW_ANONYMOUS_LINKS` | Disable anonymous link creation | `true` | `false` |
 | `TRUST_PROXY` | If the app is running behind a proxy server like NGINX or Cloudflare and that it should get the IP address from that proxy server. If you're not using a proxy server then set this to false, otherwise users can override their IP address. | `true` | `false` |
