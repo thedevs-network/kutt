@@ -480,6 +480,16 @@ const changeEmail = [
     .isLength({ min: 1, max: 255 })
     .withMessage("Email length must be max 255.")
     .isEmail()
+    .custom(async (value, { req }) => {
+      // Only check if domains are configured
+      const allowedDomains = utils.parseAllowedDomains(env.REGISTRATION_ALLOWED_DOMAINS);
+      if (allowedDomains.length === 0) return true;
+      
+      if (!utils.isEmailDomainAllowed(value, allowedDomains)) {
+        return Promise.reject();
+      }
+    })
+    .withMessage("Email change is restricted to specific email domains.")
 ];
 
 const resetPassword = [
