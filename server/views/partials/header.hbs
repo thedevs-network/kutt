@@ -22,11 +22,13 @@
   <nav>
     <ul>
       {{#unless user}}
-        <li>
-          <a class="button primary" href="/login" title="Log in or sign up">
-            Log in / Sign up
-          </a>
-        </li>
+        {{#unless login_disabled}}
+          <li>
+            <a class="button primary" href="/login" title="Log in or sign up">
+              Log in / Sign up
+            </a>
+          </li>
+        {{/unless}}
       {{/unless}}
       {{#if user}}
         <li>

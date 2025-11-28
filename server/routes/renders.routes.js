@@ -26,6 +26,15 @@ router.get(
 );
 
 router.get(
+  "/login/oidc", 
+  locals.viewTemplate("login"),
+  auth.featureAccess([env.OIDC_ENABLED]),
+  asyncHandler(auth.jwtLoosePage),
+  asyncHandler(auth.oidc),
+  asyncHandler(auth.login)
+);
+
+router.get(
   "/logout", 
   asyncHandler(renders.logout)
 );
