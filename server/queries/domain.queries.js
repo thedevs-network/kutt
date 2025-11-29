@@ -61,7 +61,7 @@ async function add(params) {
 }
 
 async function update(match, update) {
-  // if the domains' adddress is changed,
+  // if the domains' address is changed,
   // make sure to delete the original domains from cache 
   let domains = []
   if (env.REDIS_ENABLED && update.address) {
@@ -134,10 +134,22 @@ async function getAdmin(match, params) {
     .offset(params.skip)
     .limit(params.limit)
     .fromRaw("domains")
-    .orderBy("domains.id", "desc")
     .groupBy(1)
     .groupBy("l.links_count")
     .groupBy("users.email");
+
+  // Handle sorting
+  const sortBy = params.sortBy || "created_at";
+  const sortOrder = params.sortOrder || "desc";
+  
+  if (sortBy === "created_at") {
+    query.orderBy("domains.created_at", sortOrder);
+  } else if (sortBy === "links_count") {
+    query.orderBy("l.links_count", sortOrder);
+  } else {
+    // Default fallback
+    query.orderBy("domains.id", "desc");
+  }
 
   if (params?.user) {
     const id = parseInt(params?.user);

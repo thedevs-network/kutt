@@ -5,14 +5,22 @@
       <input id="total" name="total" type="hidden" value="{{total}}" />
       <input id="limit" name="limit" type="hidden" value="10" />
       <input id="skip" name="skip" type="hidden" value="0" />
+      <input id="sortBy" name="sortBy" type="hidden" value="{{#if query.sortBy}}{{query.sortBy}}{{else}}created_at{{/if}}" />
+      <input id="sortOrder" name="sortOrder" type="hidden" value="{{#if query.sortOrder}}{{query.sortOrder}}{{else}}desc{{/if}}" />
     </th>
     {{> links/nav}}
   </tr>
   <tr>
     <th class="original-url">Original URL</th>
-    <th class="created-at">Created at</th>
+    <th class="created-at sortable" onclick="sortBy('created_at')">
+      Created at
+      <span class="sort-indicator"></span>
+    </th>
     <th class="short-link">Short link</th>
-    <th class="views">Views</th>
+    <th class="views sortable" onclick="sortBy('visit_count')">
+      Views
+      <span class="sort-indicator"></span>
+    </th>
     <th class="actions"></th>
   </tr>
 </thead>

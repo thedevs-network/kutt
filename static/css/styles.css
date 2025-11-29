@@ -1675,6 +1675,30 @@ table .short-link-wrapper { display: flex; align-items: center; }
 #main-table-wrapper th.category-total p { margin: 0; font-size: 15px; font-weight: normal }
 #main-table-wrapper th.category-tab { flex: 2 2 auto; justify-content: flex-end; }
 
+/* SORTABLE COLUMNS */
+
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.sortable:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.sort-indicator {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+#main-table-wrapper table thead .views,
+#main-table-wrapper table thead .users-links-count,
+#main-table-wrapper table thead .domains-links-count {
+  justify-content: initial;
+}
+
 /* ADMIN */
 
 table .search-input-wrapper {
