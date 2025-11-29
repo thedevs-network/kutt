@@ -126,7 +126,25 @@ module.exports = {
                 }
               }
             }
-          }
+          },
+          "409": {
+            description: "Custom URL is already in use",
+            content: {
+              "application/json": {
+                schema: {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                    },
+                    "data": {
+                      $ref: "#/components/schemas/Link"
+                    }
+                  }
+                }
+              }
+            }
+          },
         },
         security: [
           {
