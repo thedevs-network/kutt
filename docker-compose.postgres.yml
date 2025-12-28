@@ -19,13 +19,13 @@ services:
       redis:
         condition: service_started
   postgres:
-    image: postgres
+    image: postgres:15
     restart: always
-    user: ${DB_USER}
     volumes:
       - db_data_pg:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD} 
     expose:
       - 5432
