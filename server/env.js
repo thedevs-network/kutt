@@ -5,8 +5,6 @@ const { readFileSync } = require("node:fs");
 const supportedDBClients = [
   "pg",
   "pg-native",
-  "sqlite3",
-  "better-sqlite3",
   "mysql",
   "mysql2"
 ];
@@ -33,7 +31,7 @@ const spec = {
   LINK_LENGTH: num({ default: 6 }),
   LINK_CUSTOM_ALPHABET: str({ default: "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789" }),
   TRUST_PROXY: bool({ default: true }),
-  DB_CLIENT: str({ choices: supportedDBClients, default: "better-sqlite3" }),
+  DB_CLIENT: str({ choices: supportedDBClients, default: "pg" }),
   DB_FILENAME: str({ default: "db/data" }),
   DB_HOST: str({ default: "localhost" }),
   DB_PORT: num({ default: 5432 }),

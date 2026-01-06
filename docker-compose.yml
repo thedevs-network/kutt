@@ -4,6 +4,8 @@ services:
       context: .
     volumes:
       - custom:/kutt/custom
+    env_file:
+      - .env
     environment:
         DB_CLIENT: pg
         DB_HOST: postgres
@@ -19,11 +21,11 @@ services:
       redis:
         condition: service_started
   postgres:
-    image: postgres
+    image: postgres:15-alpine
     restart: always
     user: ${DB_USER}
     volumes:
-      - db_data_pg:/var/lib/postgresql/data
+      - db_data_pg_v2:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD} 
@@ -40,5 +42,5 @@ services:
     expose:
       - 6379
 volumes:
-  db_data_pg:
+  db_data_pg_v2:
   custom:

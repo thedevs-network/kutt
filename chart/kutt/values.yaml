@@ -8,7 +8,7 @@ app:
     pullPolicy: Always
   service:
     port: 3000
-  service_url: "https://kutt.it"
+  service_url: "https://kutt.cloutfit.com.ar"
   resources:
     limits:
       cpu: 500m
@@ -32,4 +32,4 @@ app:
 ingress:
   enabled: false
   hosts:
-    - kutt.local
+    - kutt.cloutfit.com.ar
