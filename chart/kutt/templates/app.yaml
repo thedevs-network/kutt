@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+    component: {{ .Release.Name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "3" # Higher numbers are processed later
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      component: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        component: {{ .Release.Name }}
+    spec:
+      imagePullSecrets:
+        - name: gcp-artifact-cloutfit-images-secret
+      containers:
+        - name: {{ .Release.Name }}
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.service.port }}
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          env:
+            - name: ENVIRONMENT
+              value: {{ .Values.environment }}
+            - name: SERVICE_NAME
+              value: {{ .Release.Name }}
+            - name: DEFAULT_DOMAIN
+              value: {{ .Values.app.config.default_domain | quote }}
+            - name: DB_HOST
+              value: {{ .Values.app.config.db_host | quote }}
+            - name: DB_PORT
+              value: {{ .Values.app.config.db_port | quote }}
+            - name: DB_NAME
+              value: {{ .Values.app.config.db_name | quote }}
+            - name: DB_USER
+              value: {{ .Values.app.config.db_user | quote }}
+            - name: DB_PASSWORD
+              value: {{ .Values.app.config.db_password | quote }}
+            - name: REDIS_HOST
+              value: {{ .Values.app.config.redis_host | quote }}
+            - name: REDIS_PORT
+              value: {{ .Values.app.config.redis_port | quote }}
+            - name: JWT_SECRET
+              value: {{ .Values.app.config.jwt_secret | quote }}
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.app.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ .Release.Name }}
+    component: {{ .Release.Name }}

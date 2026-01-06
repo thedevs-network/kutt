@@ -1,0 +1,35 @@
+environment: staging
+
+app:
+  replicaCount: 1
+  image:
+    repository: kutt/kutt
+    tag: latest
+    pullPolicy: Always
+  service:
+    port: 3000
+  service_url: "https://kutt.it"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  # Kutt specific config
+  config:
+    db_host: "postgres"
+    db_port: "5432"
+    db_name: "kutt"
+    db_user: "user"
+    db_password: "password"
+    redis_host: "redis"
+    redis_port: "6379"
+    default_domain: "localhost:3000"
+    jwt_secret: "secure-secret"
+    
+ingress:
+  enabled: false
+  hosts:
+    - kutt.local

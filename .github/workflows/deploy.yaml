@@ -1,0 +1,94 @@
+# Copyright 2025 Cloutfit.
+#
+# This file is part of Cloutfit's private codebase and is confidential.
+# Unauthorized copying, distribution, or modification of this file,
+# via any medium, is strictly prohibited.
+#
+# For internal use only.
+
+name: Package and Push Kutt service
+
+on:
+  push:
+    branches:
+      # The workflow runs when changes are pushed to this branch.
+      # Default: main
+      #
+      # To fix a production issue for a specific tag, create a branch
+      # starting with "fixtag-".
+      # Example: fixtag-33 → fixes release tag v0.0.33
+      #
+      # Steps:
+      #   1. git fetch --tags && git checkout -b fixtag-33 v0.0.33
+      #   2. Replace "main" below with "fixtag-33"
+      #   3. Apply your fixes and commit the changes
+      #   4. git push origin fixtag-33
+      #
+      # You can also use a feature branch to build custom charts or images.
+      # Contact the DevOps team for assistance on creating a deployment branch.
+      #
+      # Full documentation:
+      # https://www.notion.so/Deployment-Workflow-Guide-2892131bbcb680e1b5e2cdc05eaa65c2
+      - main # main, fixtag-*, or a feature branch (see note above)
+
+env:
+  PROJECT_ID: app-main-442411
+  REGION: us-central1
+  CHARTS_REPOSITORY: us-central1-docker.pkg.dev/app-main-442411/cloutfit/charts
+  CHART_BASENAME: kutt
+  CHART_DIR: chart/kutt
+
+jobs:
+  create-tag-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Generate dynamic variables
+      - name: Generate dynamic vars
+        id: vars
+        uses: cloutfit/github-actions/.github/actions/generate-dynamic-vars@main
+        with:
+          chart-dir: ${{ env.CHART_DIR }}
+          chart-basename: ${{ env.CHART_BASENAME }}
+
+      # Update files and Commit changes
+      - name: Update files and Commit changes
+        uses: cloutfit/github-actions/.github/actions/update-files-and-commit@main
+        with:
+          chart-name: ${{ steps.vars.outputs.CHART_NAME }}
+          chart-version: ${{ steps.vars.outputs.CHART_VERSION }}
+          chart-suffix: ${{ steps.vars.outputs.CHART_SUFFIX }}
+          chart-dir: ${{ env.CHART_DIR }}
+          branch-name: ${{ github.ref_name }}
+
+      # Authenticate using the JSON key
+      - name: Authenticate to Google Cloud
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GOOGLE_CLOUD_SERVICE_ACCOUNT_KEY }}"
+
+      # Build and Push the Helm Chart
+      - name: Build and Push Helm Chart
+        uses: cloutfit/github-actions/.github/actions/build-and-push-helm-chart@main
+        with:
+          chart-dir: ${{ env.CHART_DIR }}
+          chart-basename: ${{ env.CHART_BASENAME }}
+          charts-repository: ${{ env.CHARTS_REPOSITORY }}
+          google-cloud-service-account-key: ${{ secrets.GOOGLE_CLOUD_SERVICE_ACCOUNT_KEY }}
+
+      # Notify Slack on Success/Failure
+      - name: Notify on Success
+        uses: cloutfit/github-actions/.github/actions/notify-slack@main
+        with:
+          status: ${{ job.status }}
+          chart-name: ${{ steps.vars.outputs.CHART_NAME }}
+          chart-version: ${{ steps.vars.outputs.CHART_VERSION }}
+          slack-token: ${{ secrets.SLACK_TOKEN }}
+          slack-channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
