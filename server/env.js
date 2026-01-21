@@ -68,6 +68,8 @@ const spec = {
   OIDC_CLIENT_SECRET: str({ default: "" }),
   OIDC_SCOPE: str({ default: "openid profile email" }),
   OIDC_EMAIL_CLAIM: str({ default: "email" }),
+  OIDC_ROLE_CLAIM: str({ default: "roles" }),
+  OIDC_ADMIN_GROUP: str({ default: "" }),
   ENABLE_RATE_LIMIT: bool({ default: false }),
   REPORT_EMAIL: str({ default: "" }),
   CONTACT_EMAIL: str({ default: "" }),

@@ -10,7 +10,7 @@ const env = require("../env");
 function error(error, req, res, _next) {
   if (!(error instanceof CustomError)) {
     console.error(error);
-  } else if (env.isDev) {
+  } else if (process.env.NODE_ENV !== 'production') {
     console.error(error.message);
   }
 
