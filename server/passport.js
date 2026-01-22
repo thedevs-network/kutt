@@ -113,9 +113,18 @@ if (env.OIDC_ENABLED) {
             const email = userinfo[env.OIDC_EMAIL_CLAIM];
             
             // Check if user should be admin based on OIDC claims
+            // Claims can be in either the ID token or userinfo, check both
             let shouldBeAdmin = false;
             if (env.OIDC_ADMIN_GROUP) {
-              const roleClaim = userinfo[env.OIDC_ROLE_CLAIM];
+              const claims = tokenset.claims();
+              const roleClaim = claims[env.OIDC_ROLE_CLAIM] || userinfo[env.OIDC_ROLE_CLAIM];
+              if (process.env.NODE_ENV !== 'production') {
+                console.log('OIDC admin check:', {
+                  roleClaim,
+                  expectedGroup: env.OIDC_ADMIN_GROUP,
+                  email
+                });
+              }
               if (roleClaim) {
                 // Handle both array and string claim values
                 const roles = Array.isArray(roleClaim) ? roleClaim : [roleClaim];
