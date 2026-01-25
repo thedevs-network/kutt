@@ -101,7 +101,7 @@ if (env.OIDC_ENABLED) {
           client,
           params: {
             scope: env.OIDC_SCOPE,
-            prompt: "login"
+            ...(env.OIDC_PROMPT ? { prompt: env.OIDC_PROMPT } : {})
           },
           passReqToCallback: true
         },
