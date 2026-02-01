@@ -22,7 +22,7 @@ async function createLinkTable(knex) {
         .inTable("domains");
       table.string("password");
       table.dateTime("expire_in");
-      table.string("target", 2097152).notNullable();
+      table.string("target", 2040).notNullable();
       table
         .integer("user_id")
         .unsigned();
