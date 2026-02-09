@@ -1031,14 +1031,16 @@ form#login-signup .buttons-wrapper {
   margin-bottom: 1.5rem;
 }
 
-form#login-signup .buttons-wrapper button {
+form#login-signup .buttons-wrapper button,
+form#login-signup .buttons-wrapper a.button {
   height: 56px;
   flex: 0 0 48%;
   padding: 0 1rem 2px;
   margin: 0;
 }
 
-form#login-signup .buttons-wrapper button.full { flex-basis: 100%; }
+form#login-signup .buttons-wrapper button.full,
+form#login-signup .buttons-wrapper a.button { flex-basis: 100%; }
 
 form#login-signup a.forgot-password {
   align-self: flex-start;
