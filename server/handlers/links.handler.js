@@ -19,11 +19,8 @@ const dnsLookup = promisify(dns.lookup);
 async function get(req, res) {
   const { limit, skip } = req.context;
   const search = req.query.search;
-  const userId = req.user.id;
 
-  const match = {
-    user_id: userId
-  };
+  const match = {};
 
   const [data, total] = await Promise.all([
     query.link.get(match, { limit, search, skip }),
