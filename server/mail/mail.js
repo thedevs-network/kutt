@@ -3,7 +3,8 @@ const path = require("node:path");
 const fs = require("node:fs");
 
 const { resetMailText, verifyMailText, changeEmailText } = require("./text");
-const { CustomError } = require("../utils");
+const utils = require("../utils");
+const { CustomError } = utils;
 const env = require("../env");
 
 const mailConfig = {
@@ -26,7 +27,7 @@ const verifyEmailTemplatePath = path.join(__dirname, "template-verify.html");
 const changeEmailTemplatePath = path.join(__dirname,"template-change-email.html");
 
 
-let resetEmailTemplate, 
+let resetEmailTemplate,
     verifyEmailTemplate,
     changeEmailTemplate;
 
@@ -34,15 +35,15 @@ let resetEmailTemplate,
 if (env.MAIL_ENABLED) {
   resetEmailTemplate = fs
     .readFileSync(resetEmailTemplatePath, { encoding: "utf-8" })
-    .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+    .replace(/{{domain}}/gm, utils.getAdminDomain())
     .replace(/{{site_name}}/gm, env.SITE_NAME);
   verifyEmailTemplate = fs
     .readFileSync(verifyEmailTemplatePath, { encoding: "utf-8" })
-    .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+    .replace(/{{domain}}/gm, utils.getAdminDomain())
     .replace(/{{site_name}}/gm, env.SITE_NAME);
   changeEmailTemplate = fs
     .readFileSync(changeEmailTemplatePath, { encoding: "utf-8" })
-    .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+    .replace(/{{domain}}/gm, utils.getAdminDomain())
     .replace(/{{site_name}}/gm, env.SITE_NAME);
 }
 
@@ -57,11 +58,11 @@ async function verification(user) {
     subject: "Verify your account",
     text: verifyMailText
       .replace(/{{verification}}/gim, user.verification_token)
-      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+      .replace(/{{domain}}/gm, utils.getAdminDomain())
       .replace(/{{site_name}}/gm, env.SITE_NAME),
     html: verifyEmailTemplate
       .replace(/{{verification}}/gim, user.verification_token)
-      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+      .replace(/{{domain}}/gm, utils.getAdminDomain())
       .replace(/{{site_name}}/gm, env.SITE_NAME)
   });
 
@@ -74,21 +75,21 @@ async function changeEmail(user) {
   if (!env.MAIL_ENABLED) {
     throw new Error("Attempting to send change email token but email is not enabled.");
   };
-  
+
   const mail = await transporter.sendMail({
     from: env.MAIL_FROM || env.MAIL_USER,
     to: user.change_email_address,
     subject: "Verify your new email address",
     text: changeEmailText
       .replace(/{{verification}}/gim, user.change_email_token)
-      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+      .replace(/{{domain}}/gm, utils.getAdminDomain())
       .replace(/{{site_name}}/gm, env.SITE_NAME),
     html: changeEmailTemplate
       .replace(/{{verification}}/gim, user.change_email_token)
-      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+      .replace(/{{domain}}/gm, utils.getAdminDomain())
       .replace(/{{site_name}}/gm, env.SITE_NAME)
   });
-  
+
   if (!mail.accepted.length) {
     throw new CustomError("Couldn't send verification email. Try again later.");
   }
@@ -105,10 +106,10 @@ async function resetPasswordToken(user) {
     subject: "Reset your password",
     text: resetMailText
       .replace(/{{resetpassword}}/gm, user.reset_password_token)
-      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN),
+      .replace(/{{domain}}/gm, utils.getAdminDomain()),
     html: resetEmailTemplate
       .replace(/{{resetpassword}}/gm, user.reset_password_token)
-      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
+      .replace(/{{domain}}/gm, utils.getAdminDomain())
   });
 
   if (!mail.accepted.length) {

@@ -5,25 +5,51 @@
     </button>
   {{/if}}
   {{#unless banned}}
-    <button 
-      class="action ban" 
-      hx-on:click='openDialog("admin-table-dialog")' 
-      hx-get="/confirm-domain-ban" 
-      hx-target="#admin-table-dialog .content-wrapper" 
-      hx-indicator="#admin-table-dialog" 
+    {{#unless is_protected}}
+      <button
+        class="action ban"
+        hx-on:click='openDialog("admin-table-dialog")'
+        hx-get="/confirm-domain-ban"
+        hx-target="#admin-table-dialog .content-wrapper"
+        hx-indicator="#admin-table-dialog"
+        hx-vals='{"id":"{{id}}"}'
+      >
+        {{> icons/stop}}
+      </button>
+    {{/unless}}
+  {{/unless}}
+  <button
+    class="action edit"
+    hx-trigger="click queue:none"
+    hx-get="/admin/domain/edit/{id}"
+    hx-ext="path-params"
+    hx-vals='{"id":"{{id}}"}'
+    hx-swap="beforeend"
+    hx-target="next tr.edit"
+    hx-indicator="next tr.edit"
+    hx-sync="this:drop"
+    hx-on::before-request="
+      const tr = event.detail.target;
+      tr.classList.add('show');
+      if (tr.querySelector('.content')) {
+        event.preventDefault();
+        tr.classList.remove('show');
+        tr.removeChild(tr.querySelector('.content'));
+      }
+    "
+  >
+    {{> icons/pencil}}
+  </button>
+  {{#unless is_protected}}
+    <button
+      class="action delete"
+      hx-on:click='openDialog("admin-table-dialog")'
+      hx-get="/confirm-domain-delete-admin"
+      hx-target="#admin-table-dialog .content-wrapper"
+      hx-indicator="#admin-table-dialog"
       hx-vals='{"id":"{{id}}"}'
     >
-      {{> icons/stop}}
+      {{> icons/trash}}
     </button>
   {{/unless}}
-  <button 
-    class="action delete" 
-    hx-on:click='openDialog("admin-table-dialog")' 
-    hx-get="/confirm-domain-delete-admin" 
-    hx-target="#admin-table-dialog .content-wrapper" 
-    hx-indicator="#admin-table-dialog" 
-    hx-vals='{"id":"{{id}}"}'
-  >
-    {{> icons/trash}}
-  </button>
 </td>

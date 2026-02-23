@@ -1,0 +1,75 @@
+<td class="content">
+  {{#if id}}
+    <form
+      id="edit-domain-form-{{id}}"
+      hx-patch="/api/domains/admin/{id}"
+      hx-ext="path-params"
+      hx-vals='{"id":"{{id}}"}'
+      hx-select="form"
+      hx-swap="outerHTML"
+      hx-sync="this:replace"
+      class="{{class}}"
+    >
+      <div>
+        <label class="{{#if errors.homepage}}error{{/if}}">
+          Homepage:
+          <input
+            id="edit-homepage-{{id}}"
+            name="homepage"
+            type="text"
+            placeholder="https://example.com"
+            value="{{homepage}}"
+            hx-preserve="true"
+          />
+          {{#if errors.homepage}}<p class="error">{{errors.homepage}}</p>{{/if}}
+        </label>
+      </div>
+      {{#unless is_default}}
+        {{#unless is_admin}}
+          <label class="checkbox">
+            <input
+              id="edit-is-global-{{id}}"
+              name="is_global"
+              type="checkbox"
+              {{#if is_global}}checked{{/if}}
+            />
+            Global
+          </label>
+        {{/unless}}
+      {{/unless}}
+      <div>
+        <button
+          type="button"
+          onclick="
+            const tr = closest('tr');
+            if (!tr) return;
+            tr.classList.remove('show');
+            tr.removeChild(tr.querySelector('.content'));
+          "
+        >
+          Close
+        </button>
+        <button type="submit" class="primary">
+          <span class="reload">
+            {{> icons/reload}}
+          </span>
+          <span class="loader">
+            {{> icons/spinner}}
+          </span>
+          Update
+        </button>
+      </div>
+      <div class="response">
+        {{#if error}}
+          {{#unless errors}}
+            <p class="error">{{error}}</p>
+          {{/unless}}
+        {{else if success}}
+          <p class="success">{{success}}</p>
+        {{/if}}
+      </div>
+    </form>
+  {{else}}
+    <p class="no-data">No domain was found.</p>
+  {{/if}}
+</td>

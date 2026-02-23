@@ -28,12 +28,13 @@ async function add(req, res) {
 };
 
 async function addAdmin(req, res) {
-  const { address, banned, homepage } = req.body;
+  const { address, banned, homepage, is_global } = req.body;
 
   const domain = await query.domain.add({
     address,
     homepage,
     banned,
+    is_global,
     ...(banned && { banned_by_id: req.user.id })
   });
 
@@ -94,10 +95,14 @@ async function removeAdmin(req, res) {
     throw new CustomError("Could not find the domain.", 400);
   }
 
+  if (utils.isSystemDomain(domain.address)) {
+    throw new CustomError("Cannot delete a system domain.", 400);
+  }
+
   if (links) {
     await query.link.batchRemove({ domain_id: id });
   }
-  
+
   await query.domain.remove(domain);
 
   if (req.isHTML) {
@@ -166,6 +171,10 @@ async function ban(req, res) {
     throw new CustomError("No domain has been found.", 400);
   }
 
+  if (utils.isSystemDomain(domain.address)) {
+    throw new CustomError("Cannot ban a system domain.", 400);
+  }
+
   if (domain.banned) {
     throw new CustomError("Domain has been banned already.", 400);
   }
@@ -203,6 +212,42 @@ async function ban(req, res) {
   return res.status(200).send({ message: "Banned domain successfully." });
 }
 
+async function updateAdmin(req, res) {
+  const id = req.params.id;
+  const { homepage, is_global } = req.body;
+
+  const domain = await query.domain.find({ id });
+
+  if (!domain) {
+    throw new CustomError("Could not find the domain.", 400);
+  }
+
+  const updateData = { homepage: homepage || null };
+  if (is_global !== undefined) {
+    updateData.is_global = !!is_global;
+  }
+
+  const [updatedDomain] = await query.domain.update(
+    { id: domain.id },
+    updateData
+  );
+
+  if (!updatedDomain) {
+    throw new CustomError("Could not update the domain.", 500);
+  }
+
+  if (req.isHTML) {
+    res.setHeader("HX-Trigger", "reloadMainTable");
+    res.render("partials/admin/domains/edit", {
+      success: "Domain has been updated.",
+      ...utils.sanitize.domain_admin(updatedDomain),
+    });
+    return;
+  }
+
+  return res.status(200).send({ message: "Domain updated successfully." });
+}
+
 module.exports = {
   add,
   addAdmin,
@@ -210,4 +255,5 @@ module.exports = {
   getAdmin,
   remove,
   removeAdmin,
+  updateAdmin,
 }

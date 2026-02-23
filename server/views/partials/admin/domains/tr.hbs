@@ -5,14 +5,13 @@
   <td class="domains-address right-fade">
     {{address}}
     <p class="description">
-      by&nbsp;
       {{~#if user_id~}}
-        <a 
-          aria-label="View user" 
-          data-tooltip="View user" 
+        by&nbsp;<a
+          aria-label="View user"
+          data-tooltip="View user"
           hx-get="/api/users/admin"
           hx-target="closest table"
-          hx-swap="outerHTML" 
+          hx-swap="outerHTML"
           hx-sync="this:replace"
           hx-indicator="closest table"
           hx-vals='{"search":"{{email}}"}'
@@ -23,12 +22,12 @@
         {{#ifEquals @root.query.user email}}
         {{else}}
           &nbsp;(
-          <a 
-            aria-label="View domains" 
-            data-tooltip="View domains" 
+          <a
+            aria-label="View domains"
+            data-tooltip="View domains"
             hx-get="/api/domains/admin"
             hx-target="closest table"
-            hx-swap="outerHTML" 
+            hx-swap="outerHTML"
             hx-sync="this:replace"
             hx-indicator="closest table"
             hx-vals='{"user":"{{email}}"}'
@@ -37,18 +36,20 @@
           </a>)
         {{/ifEquals}}
       {{~else~}}
-        <a 
-          aria-label="View system domains" 
-          data-tooltip="View system domains" 
+        {{#if is_default}}Default{{else}}{{#if is_admin}}Admin{{else}}Global{{/if}}{{/if}}
+        &nbsp;(
+        <a
+          aria-label="View system domains"
+          data-tooltip="View system domains"
           hx-get="/api/domains/admin"
           hx-target="closest table"
-          hx-swap="outerHTML" 
+          hx-swap="outerHTML"
           hx-sync="this:replace"
           hx-indicator="closest table"
-          hx-vals='{"owner":"false"}'
+          hx-vals='{"user":"SYSTEM"}'
         >
-          System
-        </a>
+          view domains
+        </a>)
       {{~/if~}}
       &nbsp;{{~#if description~}}· {{description}}{{~/if}}
     </p>

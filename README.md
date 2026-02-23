@@ -50,7 +50,7 @@ Support the development of Kutt by making a donation or becoming an sponsor.
 
 ## Setup
 
-The only prerequisite is [Node.js](https://nodejs.org/) (version 20 or above). The default database is SQLite. You can optionally install Postgres or MySQL/MariaDB for the database or Redis for the cache. 
+The only prerequisite is [Node.js](https://nodejs.org/) (version 20 or above). The default database is SQLite. You can optionally install Postgres or MySQL/MariaDB for the database or Redis for the cache.
 
 When you first start the app, you're prompted to create an admin account.
 
@@ -87,7 +87,7 @@ Official Kutt Docker image is available on [Docker Hub](https://hub.docker.com/r
 
 The app is configured via environment variables. You can pass environment variables directly or create a `.env` file. View [`.example.env`](./.example.env) file for the list of configurations.
 
-All variables are optional except `JWT_SECRET` which is required on production. 
+All variables are optional except `JWT_SECRET` which is required on production.
 
 You can use files for each of the variables by appending `_FILE` to the name of the variable. Example: `JWT_SECRET_FILE=/path/to/secret_file`.
 
@@ -96,7 +96,8 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `JWT_SECRET` | This is used to sign authentication tokens. Use a **long** **random** string. | - | - |
 | `PORT` |  The port to start the app on | `3000` | `8888` |
 | `SITE_NAME` |  Name of the website | `Kutt` | `Your Site` |
-| `DEFAULT_DOMAIN` |  The domain address that this app runs on | `localhost:3000` | `yoursite.com` |
+| `DEFAULT_DOMAIN` |  The default domain for new links. This is also used as the admin domain if ADMIN_DOMAIN is not set  | `localhost:3000` | `yoursite.com` |
+| `ADMIN_DOMAIN` | The domain where admin functions take place. If unset, falls back to `DEFAULT_DOMAIN` | `""` | `admin.yoursite.com` |
 | `LINK_LENGTH` | The length of of shortened address | `6` | `5` |
 | `LINK_CUSTOM_ALPHABET` | Alphabet used to generate custom addresses. Default value omits o, O, 0, i, I, l, 1, and j to avoid confusion when reading the URL. | (abcd..789) | `abcABC^&*()@` |
 | `DISALLOW_REGISTRATION` | Disable registration. Note that if `MAIL_ENABLED` is set to false, then the registration would still be disabled since it relies on emails to sign up users. | `true` | `false` |
@@ -122,21 +123,66 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `SERVER_CNAME_ADDRESS` | The subdomain shown to the user on the setting's page. It's only for display purposes and has no other use. | - | `custom.yoursite.com` |
 | `CUSTOM_DOMAIN_USE_HTTPS` | Use https for links with custom domain. It's on you to generate SSL certificates for those domains manually—at least on this version for now. | `false` | `true` |
 | `ENABLE_RATE_LIMIT` | Enable rate limiting for some API routes. If Redis is enabled uses Redis, otherwise, uses memory. | `false` | `true` |
-| `MAIL_ENABLED` | Enable emails, which are used for signup, verifying or changing email address, resetting password, and sending reports. If is disabled, all these functionalities will be disabled too. | `false` | `true` | 
+| `MAIL_ENABLED` | Enable emails, which are used for signup, verifying or changing email address, resetting password, and sending reports. If is disabled, all these functionalities will be disabled too. | `false` | `true` |
 | `MAIL_HOST` | Email server host | - | `your-mail-server.com` |
-| `MAIL_PORT` | Email server port | `587` | `465` (SSL) | 
-| `MAIL_USER` | Email server user | - | `myuser` | 
-| `MAIL_PASSWORD` | Email server password for the user | - | `mypassword` | 
-| `MAIL_FROM` | Email address to send the user from | - | `example@yoursite.com` | 
-| `MAIL_SECURE` | Whether use SSL for the email server connection | `false` | `true` | 
-| `OIDC_ENABLED` | Enable OpenID Connect | `false` | `true` | 
-| `OIDC_ISSUER` | OIDC issuer URL | - | `https://example.com/some/path` | 
-| `OIDC_CLIENT_ID` | OIDC client id | - | `example-app` | 
-| `OIDC_CLIENT_SECRET` | OIDC client secret | - | `some-secret` | 
-| `OIDC_SCOPE` | OIDC Scope | `openid profile email` | `openid email` | 
-| `OIDC_EMAIL_CLAIM` | Name of the field to get user's email from | `email` | `userEmail` | 
-| `REPORT_EMAIL` | The email address that will receive submitted reports | - | `example@yoursite.com` | 
-| `CONTACT_EMAIL` | The support email address to show on the app | - | `example@yoursite.com` | 
+| `MAIL_PORT` | Email server port | `587` | `465` (SSL) |
+| `MAIL_USER` | Email server user | - | `myuser` |
+| `MAIL_PASSWORD` | Email server password for the user | - | `mypassword` |
+| `MAIL_FROM` | Email address to send the user from | - | `example@yoursite.com` |
+| `MAIL_SECURE` | Whether use SSL for the email server connection | `false` | `true` |
+| `OIDC_ENABLED` | Enable OpenID Connect | `false` | `true` |
+| `OIDC_ISSUER` | OIDC issuer URL | - | `https://example.com/some/path` |
+| `OIDC_CLIENT_ID` | OIDC client id | - | `example-app` |
+| `OIDC_CLIENT_SECRET` | OIDC client secret | - | `some-secret` |
+| `OIDC_SCOPE` | OIDC Scope | `openid profile email` | `openid email` |
+| `OIDC_EMAIL_CLAIM` | Name of the field to get user's email from | `email` | `userEmail` |
+| `REPORT_EMAIL` | The email address that will receive submitted reports | - | `example@yoursite.com` |
+| `CONTACT_EMAIL` | The support email address to show on the app | - | `example@yoursite.com` |
+
+## Changing DEFAULT_DOMAIN
+
+**WARNING:** Back up your database before running any of the SQL commands in this section.
+
+Default links are stored with `domain_id = null`. The redirect handler associates them with the **current** `DEFAULT_DOMAIN`.
+
+However, if an incoming link belongs to a domain that is **not** in the domains table, it falls through and is matched against the default domain.
+
+Therefore, if you simply change `DEFAULT_DOMAIN` in your `.env` and restart, existing links will work on both the new domain and the old domain, **as long as the old domain has no entry in the domains table**.
+
+### Splitting the old domain out
+
+If you (or a user of Kutt) ever add the old domain through the UI, from then on existing links will ONLY work on the new DEFAULT_DOMAIN.
+
+If you want to separate old links from the new domain to ensure they continue to work indefinitely, follow these steps:
+
+1. Add the old domain via the admin panel first (e.g. `old.example.com`)
+2. Reassign all existing default-domain links to it via SQL:
+  ```sql
+  UPDATE links SET domain_id = (SELECT id FROM domains WHERE address = 'old.example.com') WHERE domain_id IS NULL;
+  ```
+3. Change `DEFAULT_DOMAIN` in `.env` from `old.example.com` to `new.example.com` and restart.
+
+New links will have `domain_id = null` and use `new.example.com`. Existing links will now be tied to `old.example.com`.
+
+### Promoting an existing domain to DEFAULT_DOMAIN
+
+If you want to make an existing custom domain your new `DEFAULT_DOMAIN`:
+
+1. Reassign the custom domain's links to the new default and delete the old custom domain:
+   ```sql
+   UPDATE links SET domain_id = NULL WHERE domain_id = (SELECT id FROM domains WHERE address = 'old.example.com');
+   DELETE FROM domains WHERE address = 'old.example.com';
+   ```
+2. Update `DEFAULT_DOMAIN` in `.env`
+3. Restart to apply the `.env` change
+
+## Using ADMIN_DOMAIN
+
+By default, the admin panel is accessible at `DEFAULT_DOMAIN/admin`. Setting the optional `ADMIN_DOMAIN` variable allows you to host it at a separate domain.
+
+For example, you can host the admin interface at `links.example.com` but use `eg.url` as your default short link domain.
+
+`ADMIN_DOMAIN` has no effect on link creation or redirection — it only controls which domain serves the admin panel.
 
 ## Themes and customizations
 
@@ -173,7 +219,7 @@ custom/
 - **views**: Custom HTML templates to render. ([View example →](https://github.com/thedevs-network/kutt-customizations/tree/main/themes/crimson/views))
   - It should follow the same file naming and folder structure as [`/server/views`](./server/views)
   - Although we try to keep the original file names unchanged, be aware that new changes on Kutt might break your custom views.
- 
+
 #### Example theme: Crimson
 
 This is an example and official theme. Crimson includes custom styles, images, and views.
