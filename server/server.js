@@ -15,6 +15,7 @@ const locals = require("./handlers/locals.handler");
 const links = require("./handlers/links.handler");
 const routes = require("./routes");
 const utils = require("./utils");
+const metrics = require("./utils/metrics");
 
 
 // run the cron jobs
@@ -40,6 +41,19 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+if (env.METRICS_ENABLED) {
+  const metricsPath = env.METRICS_PATH.startsWith("/")
+    ? env.METRICS_PATH
+    : `/${env.METRICS_PATH}`;
+  app.use(metrics.middleware({ ignorePaths: [metricsPath] }));
+  app.get(metricsPath, (req, res) => {
+    res
+      .status(200)
+      .type("text/plain; version=0.0.4; charset=utf-8")
+      .send(metrics.prometheusText());
+  });
+}
 
 // use cookie sessions only when OIDC is enabled
 // because only OIDC is using it
