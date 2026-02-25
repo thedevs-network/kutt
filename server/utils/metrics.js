@@ -13,6 +13,7 @@ const latencyBucketsMs = [
   5000,
   10000,
 ];
+const latencyBucketsSeconds = latencyBucketsMs.map((value) => value / 1000);
 
 const state = {
   processStartMs: Date.now(),
@@ -200,130 +201,132 @@ function prometheusText() {
   };
 
   addMetric(
-    "http_requests_in_flight",
+    "http_server_requests_in_flight",
     "gauge",
     "Number of in-flight HTTP requests.",
     snap.in_flight
   );
   addMetric(
-    "http_requests_total",
+    "http_server_requests_total",
     "counter",
     "Total number of HTTP requests.",
     snap.totals.requests
   );
   addMetric(
-    "http_requests_success_total",
+    "http_server_requests_success_total",
     "counter",
     "Total number of successful HTTP requests (status < 400).",
     snap.totals.success
   );
   addMetric(
-    "http_requests_error_total",
+    "http_server_requests_error_total",
     "counter",
     "Total number of error HTTP requests (status >= 400).",
     snap.totals.error
   );
   addMetric(
-    "http_requests_throughput_rps",
+    "http_server_requests_throughput_rps",
     "gauge",
     "HTTP requests per second since process start.",
     snap.throughput_rps
   );
   addMetric(
-    "http_requests_throughput_rpm",
+    "http_server_requests_throughput_rpm",
     "gauge",
     "HTTP requests per minute since process start.",
     snap.throughput_rpm
   );
 
-  push("# HELP http_request_duration_ms Request duration in milliseconds.");
-  push("# TYPE http_request_duration_ms histogram");
+  push("# HELP http_server_requests_seconds Request duration in seconds.");
+  push("# TYPE http_server_requests_seconds histogram");
   let cumulative = 0;
-  latencyBucketsMs.forEach((limit, index) => {
+  latencyBucketsSeconds.forEach((limit, index) => {
     cumulative += state.bucketCounts[index];
     push(
-      `http_request_duration_ms_bucket${formatLabels({ le: limit })} ${cumulative}`
+      `http_server_requests_seconds_bucket${formatLabels({
+        le: limit,
+      })} ${cumulative}`
     );
   });
   push(
-    `http_request_duration_ms_bucket${formatLabels({
+    `http_server_requests_seconds_bucket${formatLabels({
       le: "+Inf",
     })} ${snap.totals.requests}`
   );
-  push(`http_request_duration_ms_sum ${state.totalDurationMs}`);
-  push(`http_request_duration_ms_count ${snap.totals.requests}`);
+  push(`http_server_requests_seconds_sum ${state.totalDurationMs / 1000}`);
+  push(`http_server_requests_seconds_count ${snap.totals.requests}`);
 
   addMetric(
-    "http_response_time_ms_last",
+    "http_server_requests_seconds_last",
     "gauge",
-    "Last HTTP response time in milliseconds.",
-    snap.response_time_ms.last
+    "Last HTTP response time in seconds.",
+    snap.response_time_ms.last / 1000
   );
   addMetric(
-    "http_response_time_ms_min",
+    "http_server_requests_seconds_min",
     "gauge",
-    "Minimum HTTP response time in milliseconds.",
-    snap.response_time_ms.min
+    "Minimum HTTP response time in seconds.",
+    snap.response_time_ms.min / 1000
   );
   addMetric(
-    "http_response_time_ms_max",
+    "http_server_requests_seconds_max",
     "gauge",
-    "Maximum HTTP response time in milliseconds.",
-    snap.response_time_ms.max
+    "Maximum HTTP response time in seconds.",
+    snap.response_time_ms.max / 1000
   );
   addMetric(
-    "http_response_time_ms_avg",
+    "http_server_requests_seconds_avg",
     "gauge",
-    "Average HTTP response time in milliseconds.",
-    snap.response_time_ms.avg
+    "Average HTTP response time in seconds.",
+    snap.response_time_ms.avg / 1000
   );
   addMetric(
-    "http_response_time_ms_p50",
+    "http_server_requests_seconds_p50",
     "gauge",
-    "50th percentile HTTP response time in milliseconds.",
-    snap.response_time_ms.p50
+    "50th percentile HTTP response time in seconds.",
+    snap.response_time_ms.p50 / 1000
   );
   addMetric(
-    "http_response_time_ms_p90",
+    "http_server_requests_seconds_p90",
     "gauge",
-    "90th percentile HTTP response time in milliseconds.",
-    snap.response_time_ms.p90
+    "90th percentile HTTP response time in seconds.",
+    snap.response_time_ms.p90 / 1000
   );
   addMetric(
-    "http_response_time_ms_p95",
+    "http_server_requests_seconds_p95",
     "gauge",
-    "95th percentile HTTP response time in milliseconds.",
-    snap.response_time_ms.p95
+    "95th percentile HTTP response time in seconds.",
+    snap.response_time_ms.p95 / 1000
   );
 
   for (const [code, data] of Object.entries(snap.status_codes)) {
-    addMetric("http_requests_total", null, null, data.count, { code });
+    addMetric("http_server_requests_total", null, null, data.count, { code });
     addMetric(
-      "http_request_duration_ms_avg",
+      "http_server_requests_seconds_avg",
       "gauge",
-      "Average request duration by HTTP status code in milliseconds.",
-      data.avg_response_time_ms,
+      "Average request duration by HTTP status code in seconds.",
+      data.avg_response_time_ms / 1000,
       { code }
     );
     addMetric(
-      "http_request_duration_ms_min",
+      "http_server_requests_seconds_min",
       "gauge",
-      "Minimum request duration by HTTP status code in milliseconds.",
-      data.min_response_time_ms,
+      "Minimum request duration by HTTP status code in seconds.",
+      data.min_response_time_ms / 1000,
       { code }
     );
     addMetric(
-      "http_request_duration_ms_max",
+      "http_server_requests_seconds_max",
       "gauge",
-      "Maximum request duration by HTTP status code in milliseconds.",
-      data.max_response_time_ms,
+      "Maximum request duration by HTTP status code in seconds.",
+      data.max_response_time_ms / 1000,
       { code }
     );
   }
 
   for (const [code, rate] of Object.entries(snap.success_rate_by_code)) {
     addMetric(
-      "http_response_rate",
+      "http_server_requests_rate",
       "gauge",
       "Success or error rate per HTTP status code.",
       rate,
@@ -333,7 +336,7 @@ function prometheusText() {
 
   for (const [code, rate] of Object.entries(snap.error_rate_by_code)) {
     addMetric(
-      "http_response_rate",
+      "http_server_requests_rate",
       "gauge",
       "Success or error rate per HTTP status code.",
       rate,
