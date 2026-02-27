@@ -140,6 +140,8 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `OIDC_CLIENT_SECRET` | OIDC client secret | - | `some-secret` | 
 | `OIDC_SCOPE` | OIDC Scope | `openid profile email` | `openid email` | 
 | `OIDC_EMAIL_CLAIM` | Name of the field to get user's email from | `email` | `userEmail` | 
+| `OIDC_ROLE_CLAIM` | Name of the claim containing user roles/groups | `roles` | `groups` | 
+| `OIDC_ADMIN_GROUP` | Group or role value that grants admin privileges. Admin status is updated on every login to stay in sync with IdP | - | `admin` | 
 | `REPORT_EMAIL` | The email address that will receive submitted reports | - | `example@yoursite.com` | 
 | `CONTACT_EMAIL` | The support email address to show on the app | - | `example@yoursite.com` | 
 

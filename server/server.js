@@ -25,7 +25,7 @@ if (env.NODE_APP_INSTANCE === 0) {
 }
 
 // intialize passport authentication library
-require("./passport");
+const { oidcInitPromise } = require("./passport");
 
 // create express app
 const app = express();
@@ -86,7 +86,22 @@ app.get("*", renders.notFound);
 
 // handle errors coming from above routes
 app.use(helpers.error);
+
+// Start server after OIDC initialization (if enabled)
+async function startServer() {
+  if (oidcInitPromise) {
+    try {
+      await oidcInitPromise;
+      console.log("> OIDC initialized successfully");
+    } catch (error) {
+      console.error("Failed to initialize OIDC:", error);
+      process.exit(1);
+    }
+  }
   
-app.listen(env.PORT, () => {
-  console.log(`> Ready on http://localhost:${env.PORT}`);
-});
+  app.listen(env.PORT, () => {
+    console.log(`> Ready on http://localhost:${env.PORT}`);
+  });
+}
+
+startServer();

@@ -6,7 +6,8 @@ const bcrypt = require("bcryptjs");
 
 const query = require("./queries");
 const env = require("./env");
-const utils = require("./utils")
+const utils = require("./utils");
+const { ROLES } = require("./consts");
 
 const jwtOptions = {
   jwtFromRequest: req => req.cookies?.token,
@@ -74,6 +75,8 @@ passport.use(
   })
 );
 
+let oidcInitPromise = null;
+
 if (env.OIDC_ENABLED) {
   async function enableOIDC() {
     const requiredKeys = ["OIDC_ISSUER", "OIDC_CLIENT_ID", "OIDC_CLIENT_SECRET", "OIDC_SCOPE", "OIDC_EMAIL_CLAIM"];
@@ -108,12 +111,41 @@ if (env.OIDC_ENABLED) {
         async (req, tokenset, userinfo, done) => {
           try {
             const email = userinfo[env.OIDC_EMAIL_CLAIM];
+            
+            // Check if user should be admin based on OIDC claims
+            // Claims can be in either the ID token or userinfo, check both
+            let shouldBeAdmin = false;
+            if (env.OIDC_ADMIN_GROUP) {
+              const claims = tokenset.claims();
+              const roleClaim = claims[env.OIDC_ROLE_CLAIM] || userinfo[env.OIDC_ROLE_CLAIM];
+              if (process.env.NODE_ENV !== 'production') {
+                console.log('OIDC admin check:', {
+                  roleClaim,
+                  expectedGroup: env.OIDC_ADMIN_GROUP,
+                  email
+                });
+              }
+              if (roleClaim) {
+                // Handle both array and string claim values
+                const roles = Array.isArray(roleClaim) ? roleClaim : [roleClaim];
+                shouldBeAdmin = roles.includes(env.OIDC_ADMIN_GROUP);
+              }
+            }
+            
+            const desiredRole = shouldBeAdmin ? ROLES.ADMIN : ROLES.USER;
             const existingUser = await query.user.find({ email });
   
-            // Existing user.
-            if (existingUser) return done(null, existingUser);
+            // Existing user - update role if needed
+            if (existingUser) {
+              // Update role on every login to stay in sync with IdP
+              if (existingUser.role !== desiredRole) {
+                const updatedUser = await query.user.update({ id: existingUser.id }, { role: desiredRole });
+                return done(null, updatedUser);
+              }
+              return done(null, existingUser);
+            }
   
-            // New user.
+            // New user - create with appropriate role
             // Generate a random password which is not supposed to be used directly.
             const salt = await bcrypt.genSalt(12);
             const password = utils.generateRandomPassword();
@@ -125,6 +157,7 @@ if (env.OIDC_ENABLED) {
               verified: true,
               verification_token: null,
               verification_expires: null,
+              role: desiredRole,
             });
             return done(null, updatedUser);
   
@@ -136,5 +169,7 @@ if (env.OIDC_ENABLED) {
     );
   }
 
-  enableOIDC();
+  oidcInitPromise = enableOIDC();
 }
+
+module.exports = { oidcInitPromise };

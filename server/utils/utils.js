@@ -80,12 +80,14 @@ function addProtocol(url) {
 }
 
 function getSiteURL() {
-  const protocol = !env.isDev ? "https://" : "http://";
+  const isDev = process.env.NODE_ENV !== 'production';
+  const protocol = !isDev ? "https://" : "http://";
   return `${protocol}${env.DEFAULT_DOMAIN}`;
 }
 
 function getShortURL(address, domain) {
-  const protocol = (env.CUSTOM_DOMAIN_USE_HTTPS || !domain) && !env.isDev ? "https://" : "http://";
+  const isDev = process.env.NODE_ENV !== 'production';
+  const protocol = (env.CUSTOM_DOMAIN_USE_HTTPS || !domain) && !isDev ? "https://" : "http://";
   const link = `${domain || env.DEFAULT_DOMAIN}/${address}`;
   const url = `${protocol}${link}`;
   return { address, link, url };
