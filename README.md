@@ -6,6 +6,11 @@
 
 [https://kutt.it](https://kutt.it)
 
+> [!NOTE]
+> [kutt.it](https://kutt.it) domain has been deactivated by the Italian TLD registrar due to the lack of identification documents. I'm in contact with the domain registrar to bring it back as soon as possible.
+>
+>  Meanwhile, please use [kutt.to](https://kutt.to), all the previous and the future links work with this domain as well.
+
 
 [![docker-build-release](https://github.com/thedevs-network/kutt/actions/workflows/docker-build-release.yaml/badge.svg)](https://github.com/thedevs-network/kutt/actions/workflows/docker-build-release.yaml)
 [![Uptime Status](https://uptime.betterstack.com/status-badges/v2/monitor/1ogaa.svg)](https://status.kutt.it)
