@@ -21,5 +21,16 @@ COPY . .
 # expose the port that the app listens on
 EXPOSE 3000
 
+# add tzdata package
+RUN apk add tzdata
+
+# set correct timezone for correct timestamp
+ENV TZ=UTC
+
+# initialize timezone data first
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
 # intialize database and run the app
 CMD npm run migrate && npm start
