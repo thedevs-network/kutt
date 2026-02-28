@@ -64,6 +64,8 @@ const spec = {
   MAIL_PASSWORD: str({ default: "" }),
   OIDC_ENABLED: bool({ default: false }),
   OIDC_ISSUER: str({ default: "" }),
+  OIDC_PROMPT: str({ default: "" }),
+
   OIDC_CLIENT_ID: str({ default: "" }),
   OIDC_CLIENT_SECRET: str({ default: "" }),
   OIDC_SCOPE: str({ default: "openid profile email" }),
