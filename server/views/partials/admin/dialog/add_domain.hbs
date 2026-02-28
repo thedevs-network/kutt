@@ -30,11 +30,20 @@
       {{#if errors.homepage}}<p class="error">{{errors.homepage}}</p>{{/if}}
     </label>
     <label class="checkbox">
-      <input 
-        id="add-domain-banned" 
+      <input
+        id="add-domain-global"
+        name="is_global"
+        type="checkbox"
+        hx-preserve="true"
+      />
+      Global
+    </label>
+    <label class="checkbox">
+      <input
+        id="add-domain-banned"
         name="banned"
         type="checkbox"
-        onchange="canSendVerificationEmail();" 
+        onchange="canSendVerificationEmail();"
         hx-preserve="true"
       />
       Banned

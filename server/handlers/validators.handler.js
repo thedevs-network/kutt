@@ -28,8 +28,12 @@ const createLink = [
     .customSanitizer(utils.addProtocol)
     .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
     .withMessage("URL is not valid.")
-    .custom(value => utils.removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
-    .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
+    .custom(async value => {
+      const host = utils.removeWww(URL.parse(value).host);
+      if (utils.isSystemDomain(host)) throw new Error(`${host} URLs are not allowed.`);
+      const domain = await query.domain.find({ address: host });
+      if (domain?.is_global) throw new Error(`${host} URLs are not allowed.`);
+    }),
   body("password")
     .optional({ nullable: true, checkFalsy: true })
     .custom(checkUser)
@@ -78,23 +82,30 @@ const createLink = [
     .withMessage("Expire time should be more than 1 minute.")
     .customSanitizer(value => utils.dateToUTC(addMilliseconds(new Date(), value))),
   body("domain")
-    .optional({ nullable: true, checkFalsy: true })
-    .customSanitizer(value => value === env.DEFAULT_DOMAIN ? null : value)
-    .custom(checkUser)
-    .withMessage("Only users can use this field.")
-    .isString()
-    .withMessage("Domain should be string.")
-    .customSanitizer(value => value.toLowerCase())
-    .custom(async (address, { req }) => {
-      const domain = await query.domain.find({
-        address,
-        user_id: req.user.id
-      });
-      req.body.fetched_domain = domain || null;
+  .optional({ nullable: true, checkFalsy: true })
+  .customSanitizer(value => value === env.DEFAULT_DOMAIN ? null : value)
+  .custom(checkUser)
+  .withMessage("Only users can use this field.")
+  .isString()
+  .withMessage("Domain should be string.")
+  .customSanitizer(value => value && value.toLowerCase())
+  .custom(async (address, { req }) => {
+    if (!address) {
+      // User selected DEFAULT_DOMAIN — no DB record needed, domain_id will be null
+      req.body.fetched_domain = null;
+      return;
+    }
 
-      if (!domain) return Promise.reject();
-    })
-    .withMessage("You can't use this domain.")
+    const domain = await query.domain.find({ address });
+
+    if (domain && domain.user_id && domain.user_id !== req.user.id) {
+      return Promise.reject();
+    }
+
+    req.body.fetched_domain = domain || null;
+    if (!domain) return Promise.reject();
+  })
+  .withMessage("You can't use this domain.")
 ];
 
 const editLink = [
@@ -107,8 +118,12 @@ const editLink = [
     .customSanitizer(utils.addProtocol)
     .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
     .withMessage("URL is not valid.")
-    .custom(value => utils.removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
-    .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
+    .custom(async value => {
+      const host = utils.removeWww(URL.parse(value).host);
+      if (utils.isSystemDomain(host)) throw new Error(`${host} URLs are not allowed.`);
+      const domain = await query.domain.find({ address: host });
+      if (domain?.is_global) throw new Error(`${host} URLs are not allowed.`);
+    }),
   body("password")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
@@ -174,10 +189,11 @@ const addDomain = [
       const parsed = URL.parse(value);
       return utils.removeWww(parsed.hostname || parsed.href);
     })
-    .custom(value => value !== env.DEFAULT_DOMAIN)
-    .withMessage("You can't use the default domain.")
+    .custom(value => !utils.isSystemDomain(value))
+    .withMessage("You can't use a system domain.")
     .custom(async value => {
       const domain = await query.domain.find({ address: value });
+      if (domain?.is_global) return Promise.reject();
       if (domain?.user_id || domain?.banned) return Promise.reject();
     })
     .withMessage("You can't add this domain."),
@@ -200,10 +216,11 @@ const addDomainAdmin = [
       const parsed = URL.parse(value);
       return utils.removeWww(parsed.hostname || parsed.href);
     })
-    .custom(value => value !== env.DEFAULT_DOMAIN)
-    .withMessage("You can't add the default domain.")
+    .custom(value => !utils.isSystemDomain(value))
+    .withMessage("You can't add a system domain.")
     .custom(async value => {
       const domain = await query.domain.find({ address: value });
+      if (domain?.is_global) return Promise.reject();
       if (domain) return Promise.reject();
     })
     .withMessage("Domain already exists."),
@@ -213,6 +230,10 @@ const addDomainAdmin = [
     .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
     .withMessage("Homepage is not valid."),
   body("banned")
+    .optional({ nullable: true })
+    .customSanitizer(sanitizeCheckbox)
+    .isBoolean(),
+  body("is_global")
     .optional({ nullable: true })
     .customSanitizer(sanitizeCheckbox)
     .isBoolean(),
@@ -256,10 +277,13 @@ const reportLink = [
       checkNull: true
     })
     .customSanitizer(utils.addProtocol)
-    .custom(
-      value => utils.removeWww(URL.parse(value).host) === env.DEFAULT_DOMAIN
-    )
-    .withMessage(`You can only report a ${env.DEFAULT_DOMAIN} link.`)
+    .custom(async value => {
+      const host = utils.removeWww(URL.parse(value).host);
+      if (utils.isSystemDomain(host)) return true;
+      const domain = await query.domain.find({ address: host });
+      if (domain?.is_global) return true;
+      throw new Error("You can only report a link on a system domain.");
+    })
 ];
 
 const banLink = [
@@ -337,6 +361,21 @@ const banDomain = [
     .isBoolean()
 ];
 
+const updateDomainAdmin = [
+  param("id", "ID is invalid.")
+    .exists({ checkFalsy: true, checkNull: true })
+    .isNumeric(),
+  body("homepage")
+    .optional({ checkFalsy: true, nullable: true })
+    .customSanitizer(utils.addProtocol)
+    .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
+    .withMessage("Homepage is not valid."),
+  body("is_global")
+    .optional({ nullable: true })
+    .customSanitizer(value => value === true || value === "on" || value === "true")
+    .isBoolean(),
+];
+
 const createUser = [
   body("password", "Password is not valid.")
     .exists({ checkFalsy: true, checkNull: true })
@@ -350,7 +389,7 @@ const createUser = [
     .isEmail()
     .custom(async (value, { req }) => {
       const user = await query.user.find({ email: value });
-      if (user) 
+      if (user)
         return Promise.reject();
     })
     .withMessage("User already exists."),
@@ -552,13 +591,14 @@ module.exports = {
   deleteUserByAdmin,
   editLink,
   getStats,
-  login, 
+  login,
   newPassword,
   redirectProtected,
   removeDomain,
   removeDomainAdmin,
   reportLink,
   resetPassword,
+  updateDomainAdmin,
   signup,
   signupEmailTaken,
 }

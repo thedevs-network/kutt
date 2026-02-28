@@ -1624,6 +1624,12 @@ table .short-link-wrapper { display: flex; align-items: center; }
   text-align: left;
 }
 
+#main-table-wrapper table tr.edit input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+}
+
 #main-table-wrapper table tr.edit input[name="target"],
 #main-table-wrapper table tr.edit input[name="description"],
 #main-table-wrapper table tr.edit input[name="target"] + p,

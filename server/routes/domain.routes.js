@@ -62,6 +62,17 @@ router.delete(
   asyncHandler(domains.removeAdmin)
 );
 
+router.patch(
+  "/admin/:id",
+  locals.viewTemplate("partials/admin/domains/edit"),
+  asyncHandler(auth.apikey),
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin),
+  validators.updateDomainAdmin,
+  asyncHandler(helpers.verify),
+  asyncHandler(domains.updateAdmin)
+);
+
 router.post(
   "/admin/ban/:id",
   locals.viewTemplate("partials/admin/dialog/ban_domain"),
