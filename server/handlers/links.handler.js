@@ -116,7 +116,8 @@ async function create(req, res) {
       }),
     !customurl && utils.generateId(query, domain_id),
     validators.bannedDomain(targetDomain),
-    validators.bannedHost(targetDomain)
+    validators.bannedHost(targetDomain),
+    validators.allowedDomain(targetDomain)
   ]);
   
   // if "reuse" is true, try to return
@@ -217,7 +218,8 @@ async function edit(req, res) {
         domain_id
       }),
     target && validators.bannedDomain(targetDomain),
-    target && validators.bannedHost(targetDomain)
+    target && validators.bannedHost(targetDomain),
+    target && validators.allowedDomain(targetDomain)
   ]);
 
   // Check if custom link already exists
@@ -310,7 +312,8 @@ async function editAdmin(req, res) {
         domain_id
       }),
     target && validators.bannedDomain(targetDomain),
-    target && validators.bannedHost(targetDomain)
+    target && validators.bannedHost(targetDomain),
+    target && validators.allowedDomain(targetDomain)
   ]);
 
   // Check if custom link already exists

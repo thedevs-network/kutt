@@ -533,9 +533,36 @@ async function bannedHost(domain) {
   }
 };
 
+function allowedDomain(domain) {
+  const allowedList = env.ALLOWED_TARGET_DOMAINS
+    .split(",")
+    .map(d => d.trim().toLowerCase())
+    .filter(Boolean);
+
+  if (allowedList.length === 0) return;
+
+  const normalizedDomain = domain.toLowerCase();
+
+  const isAllowed = allowedList.some(allowed => {
+    if (allowed.startsWith("*.")) {
+      const baseDomain = allowed.slice(2);
+      return normalizedDomain === baseDomain || normalizedDomain.endsWith("." + baseDomain);
+    }
+    return normalizedDomain === allowed;
+  });
+
+  if (!isAllowed) {
+    throw new utils.CustomError(
+      "This domain is not allowed. Only URLs from approved domains can be shortened.",
+      400
+    );
+  }
+};
+
 module.exports = {
   addDomain,
   addDomainAdmin,
+  allowedDomain,
   banDomain,
   banLink,
   banUser,
