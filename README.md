@@ -127,6 +127,8 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `SERVER_CNAME_ADDRESS` | The subdomain shown to the user on the setting's page. It's only for display purposes and has no other use. | - | `custom.yoursite.com` |
 | `CUSTOM_DOMAIN_USE_HTTPS` | Use https for links with custom domain. It's on you to generate SSL certificates for those domains manually—at least on this version for now. | `false` | `true` |
 | `ENABLE_RATE_LIMIT` | Enable rate limiting for some API routes. If Redis is enabled uses Redis, otherwise, uses memory. | `false` | `true` |
+| `METRICS_ENABLED` | Enable the metrics endpoint. | `true` | `false` |
+| `METRICS_PATH` | Metrics endpoint path. | `/metrics` | `/internal/metrics` |
 | `MAIL_ENABLED` | Enable emails, which are used for signup, verifying or changing email address, resetting password, and sending reports. If is disabled, all these functionalities will be disabled too. | `false` | `true` | 
 | `MAIL_HOST` | Email server host | - | `your-mail-server.com` |
 | `MAIL_PORT` | Email server port | `587` | `465` (SSL) | 
@@ -142,6 +144,24 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `OIDC_EMAIL_CLAIM` | Name of the field to get user's email from | `email` | `userEmail` | 
 | `REPORT_EMAIL` | The email address that will receive submitted reports | - | `example@yoursite.com` | 
 | `CONTACT_EMAIL` | The support email address to show on the app | - | `example@yoursite.com` | 
+
+## Metrics
+
+Kutt exposes a Prometheus text-format metrics endpoint for black-box monitoring. The payload includes response time statistics, throughput, in-flight requests, and success/error rates per HTTP status code.
+
+Default endpoint:
+
+```
+GET /metrics
+```
+
+Example Kubernetes annotations for Prometheus scraping:
+
+```
+prometheus.io/scrape: "true"
+prometheus.io/path: "/metrics"
+prometheus.io/port: "3000"
+```
 
 ## Themes and customizations
 
@@ -255,4 +275,3 @@ Download Kutt's extension for web browsers via below links.
 Pull requests are welcome. Open a discussion for feedback, requesting features, or discussing ideas.
 
 Special thanks to [Thomas](https://github.com/trgwii) and [Muthu](https://github.com/MKRhere). Logo design by [Muthu](https://github.com/MKRhere).
-
