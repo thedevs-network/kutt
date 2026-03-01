@@ -48,7 +48,7 @@ async function createAdmin(req, res) {
 }
 
 function notFound(req, res) {
-  res.render("404", {
+  res.status(404).render("404", {
     title: "404 - Not found"
   });
 }
