@@ -129,7 +129,7 @@ async function create(req, res) {
   if (tasks[1]) {
     const error = "Custom URL is already in use.";
     res.locals.errors = { customurl: error };
-    throw new CustomError(error);
+    throw new CustomError(error, 409);
   }
 
   // Create new link
@@ -224,7 +224,7 @@ async function edit(req, res) {
   if (tasks[0]) {
     const error = "Custom URL is already in use.";
     res.locals.errors = { address: error };
-    throw new CustomError("Custom URL is already in use.");
+    throw new CustomError(error, 409);
   }
 
   // Update link
@@ -317,7 +317,7 @@ async function editAdmin(req, res) {
   if (tasks[0]) {
     const error = "Custom URL is already in use.";
     res.locals.errors = { address: error };
-    throw new CustomError("Custom URL is already in use.");
+    throw new CustomError(error, 409);
   }
 
   // Update link
