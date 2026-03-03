@@ -123,8 +123,20 @@ async function get(match, params) {
     .select(...selectable)
     .where(normalizeMatch(match))
     .offset(params.skip)
-    .limit(params.limit)
-    .orderBy("links.id", "desc");
+    .limit(params.limit);
+  
+  // handle sorting
+  const sortBy = params.sortBy || "created_at";
+  const sortOrder = params.sortOrder || "desc";
+  
+  if (sortBy === "created_at") {
+    query.orderBy("links.created_at", sortOrder);
+  } else if (sortBy === "visit_count") {
+    query.orderBy("links.visit_count", sortOrder);
+  } else {
+    // default fallback to id desc for any invalid sortBy
+    query.orderBy("links.id", "desc");
+  }
   
   if (params?.search) {
     query[knex.compatibleILIKE](
@@ -146,9 +158,21 @@ async function getAdmin(match, params) {
   });
 
   query
-    .orderBy("links.id", "desc")
     .offset(params.skip)
     .limit(params.limit)
+  
+  // handle sorting
+  const sortBy = params.sortBy || "created_at";
+  const sortOrder = params.sortOrder || "desc";
+  
+  if (sortBy === "created_at") {
+    query.orderBy("links.created_at", sortOrder);
+  } else if (sortBy === "visit_count") {
+    query.orderBy("links.visit_count", sortOrder);
+  } else {
+    // default fallback to id desc for any invalid sortBy
+    query.orderBy("links.id", "desc");
+  }
   
   if (params?.user) {
     const id = parseInt(params?.user);
@@ -267,7 +291,7 @@ async function update(match, update) {
     update.password = await bcrypt.hash(update.password, salt);
   }
 
-  // if the links' adddress or domain is changed,
+  // if the links' address or domain is changed,
   // make sure to delete the original links from cache 
   let links = []
   if (env.REDIS_ENABLED && (update.address || update.domain_id)) {

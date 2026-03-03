@@ -53,6 +53,8 @@
         <input id="total" name="total" type="hidden" value="{{total}}" />
         <input id="limit" name="limit" type="hidden" value="10" />
         <input id="skip" name="skip" type="hidden" value="0" />
+        <input id="sortBy" name="sortBy" type="hidden" value="{{#if query.sortBy}}{{query.sortBy}}{{else}}created_at{{/if}}" />
+        <input id="sortOrder" name="sortOrder" type="hidden" value="{{#if query.sortOrder}}{{query.sortOrder}}{{else}}desc{{/if}}" />
         <button 
           class="table primary"
           hx-on:click='openDialog("admin-table-dialog")' 
@@ -70,10 +72,16 @@
   <tr>
     <th class="users-id">ID</th>
     <th class="users-email">Email</th>
-    <th class="users-created-at">Created at</th>
+    <th class="users-created-at sortable" onclick="sortBy('created_at')">
+      Created at
+      <span class="sort-indicator"></span>
+    </th>
     <th class="users-verified">Verified</th>
     <th class="users-role">Role</th>
-    <th class="users-links-count">Total links</th>
+    <th class="users-links-count sortable" onclick="sortBy('links_count')">
+      Total links
+      <span class="sort-indicator"></span>
+    </th>
     <th class="users-actions"></th>
   </tr>
 </thead>

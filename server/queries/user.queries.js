@@ -136,10 +136,22 @@ async function getAdmin(match, params) {
     .where(normalizeMatch(match))
     .offset(params.skip)
     .limit(params.limit)
-    .orderBy("users.id", "desc")
     .groupBy(1)
     .groupBy("l.links_count")
     .groupBy("d.domains");
+
+  // handle sorting
+  const sortBy = params.sortBy || "created_at";
+  const sortOrder = params.sortOrder || "desc";
+  
+  if (sortBy === "created_at") {
+    query.orderBy("users.created_at", sortOrder);
+  } else if (sortBy === "links_count") {
+    query.orderBy("l.links_count", sortOrder);
+  } else {
+    // Default fallback
+    query.orderBy("users.id", "desc");
+  }
   
   if (params?.search) {
     const id = parseInt(params?.search);

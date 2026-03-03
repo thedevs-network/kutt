@@ -209,6 +209,71 @@ function resetTableNav() {
   });
 }
 
+function sortBy(field) {
+  const sortByElm = document.querySelector("#sortBy");
+  const sortOrderElm = document.querySelector("#sortOrder");
+  const skipElm = document.querySelector("#skip");
+  
+  if (!sortByElm || !sortOrderElm) return;
+  
+  // reset pagination when sorting
+  if (skipElm) skipElm.value = 0;
+  
+  // if clicking the same field, toggle order. otherwise set to desc
+  if (sortByElm.value === field) {
+    sortOrderElm.value = sortOrderElm.value === "desc" ? "asc" : "desc";
+  } else {
+    sortByElm.value = field;
+    sortOrderElm.value = "desc";
+  }
+  
+  // update sort indicators in the UI
+  updateSortIndicators(sortByElm.value, sortOrderElm.value);
+  
+  // trigger table reload
+  const table = document.querySelector("table[hx-get]");
+  if (table) {
+    htmx.trigger(table, "reloadMainTable");
+  }
+}
+
+function updateSortIndicators(sortBy, sortOrder) {
+  // clear all sort indicators
+  document.querySelectorAll(".sort-indicator").forEach(indicator => {
+    indicator.textContent = "";
+  });
+  
+  // find the active column header and set the indicator
+  const activeHeader = document.querySelector(`.sortable[onclick="sortBy('${sortBy}')"]`);
+  if (activeHeader) {
+    const indicator = activeHeader.querySelector(".sort-indicator");
+    if (indicator) {
+      indicator.textContent = sortOrder === "asc" ? "↑" : "↓";
+    }
+  }
+}
+
+function initializeSortIndicators() {
+  const sortByElm = document.querySelector("#sortBy");
+  const sortOrderElm = document.querySelector("#sortOrder");
+  
+  if (sortByElm && sortOrderElm) {
+    const currentSortBy = sortByElm.value || "created_at";
+    const currentSortOrder = sortOrderElm.value || "desc";
+    updateSortIndicators(currentSortBy, currentSortOrder);
+  }
+}
+
+// initialize sort indicators when the page loads
+document.addEventListener("DOMContentLoaded", initializeSortIndicators);
+
+// also initialize sort indicators after HTMX updates the table
+document.body.addEventListener("htmx:afterSettle", function(evt) {
+  if (evt.detail.target.tagName === "TBODY" || evt.detail.target.tagName === "TABLE") {
+    initializeSortIndicators();
+  }
+});
+
 // tab click
 function setTab(event, targetId) {
   const tabs = Array.from(closest("nav", event.target).children);

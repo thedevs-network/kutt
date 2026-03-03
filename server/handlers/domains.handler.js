@@ -86,7 +86,7 @@ async function remove(req, res) {
 
 async function removeAdmin(req, res) {
   const id = req.params.id;
-  const links = req.query.links
+  const links = req.query.links;
 
   const domain = await query.domain.find({ id });
 
@@ -116,6 +116,8 @@ async function getAdmin(req, res) {
   const { limit, skip } = req.context;
   const search = req.query.search;
   const user = req.query.user;
+  const sortBy = req.query.sortBy;
+  const sortOrder = req.query.sortOrder;
   const banned = utils.parseBooleanQuery(req.query.banned);
   const owner = utils.parseBooleanQuery(req.query.owner);
   const links = utils.parseBooleanQuery(req.query.links);
@@ -126,7 +128,7 @@ async function getAdmin(req, res) {
   };
 
   const [data, total] = await Promise.all([
-    query.domain.getAdmin(match, { limit, search, user, links, skip }),
+    query.domain.getAdmin(match, { limit, search, user, links, skip, sortBy, sortOrder }),
     query.domain.totalAdmin(match, { search, user, links })
   ]);
 
@@ -138,6 +140,15 @@ async function getAdmin(req, res) {
       total_formatted: total.toLocaleString("en-US"),
       limit,
       skip,
+      query: { 
+        sortBy: sortBy || "created_at", 
+        sortOrder: sortOrder || "desc",
+        search,
+        user,
+        banned: req.query.banned,
+        owner: req.query.owner,
+        links: req.query.links
+      },
       table_domains: domains,
     })
     return;

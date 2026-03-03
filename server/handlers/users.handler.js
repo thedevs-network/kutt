@@ -5,6 +5,8 @@ const utils = require("../utils");
 const mail = require("../mail");
 const env = require("../env");
 
+const CustomError = utils.CustomError;
+
 async function get(req, res) {
   const domains = await query.domain.get({ user_id: req.user.id });
 
@@ -63,7 +65,7 @@ async function removeByAdmin(req, res) {
 
 async function getAdmin(req, res) {
   const { limit, skip, all } = req.context;
-  const { role, search } = req.query;
+  const { role, search, sortBy, sortOrder } = req.query;
   const userId = req.user.id;
   const verified = utils.parseBooleanQuery(req.query.verified);
   const banned = utils.parseBooleanQuery(req.query.banned);
@@ -77,7 +79,7 @@ async function getAdmin(req, res) {
   };
 
   const [data, total] = await Promise.all([
-    query.user.getAdmin(match, { limit, search, domains, links, skip }),
+    query.user.getAdmin(match, { limit, search, domains, links, skip, sortBy, sortOrder }),
     query.user.totalAdmin(match, { search, domains, links })
   ]);
 
@@ -89,6 +91,16 @@ async function getAdmin(req, res) {
       total_formatted: total.toLocaleString("en-US"),
       limit,
       skip,
+      query: { 
+        sortBy: sortBy || "created_at", 
+        sortOrder: sortOrder || "desc",
+        search,
+        role,
+        verified: req.query.verified,
+        banned: req.query.banned,
+        domains: req.query.domains,
+        links: req.query.links
+      },
       users,
     })
     return;
@@ -138,7 +150,8 @@ async function ban(req, res) {
 
   // 5. wait for all tasks to finish
   await Promise.all(tasks).catch((err) => {
-    throw new CustomError("Couldn't ban entries.");
+    console.error("User ban operation failed:", err);
+    throw new CustomError(`Couldn't ban entries: ${err.message}`);
   });
 
   // 6. send response
