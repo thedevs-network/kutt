@@ -31,7 +31,7 @@ function error(error, req, res, _next) {
   }
 
 
-  return res.status(statusCode).json({ error: message });
+  return res.status(statusCode).json({ error: message, data: error.data });
 };
 
 
