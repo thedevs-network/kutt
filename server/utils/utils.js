@@ -29,7 +29,7 @@ const charsNeedEscapeInRegExp = ".$*+?()[]{}|^-";
 const customAlphabetEscaped = env.LINK_CUSTOM_ALPHABET
   .split("").map(c => charsNeedEscapeInRegExp.includes(c) ? "\\" + c : c).join("");
 const customAlphabetRegex = new RegExp(`^[${customAlphabetEscaped}_-]+$`);
-const customAddressRegex = new RegExp("^[a-zA-Z0-9-_]+$");
+const customAddressRegex = new RegExp("^[a-zA-Z0-9-_.]+$");
 
 function isAdmin(user) {
   return user.role === ROLES.ADMIN;
