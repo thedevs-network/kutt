@@ -12,13 +12,16 @@ async function up(knex) {
 }
 
 async function down(knex) {
-  await knex.schema.alterTable("links", table => {
-    table.dropColumn("utm_source");
-    table.dropColumn("utm_medium");
-    table.dropColumn("utm_campaign");
-    table.dropColumn("utm_term");
-    table.dropColumn("utm_content");
-  });
+  const hasUtmSource = await knex.schema.hasColumn("links", "utm_source");
+  if (hasUtmSource) {
+    await knex.schema.alterTable("links", table => {
+      table.dropColumn("utm_source");
+      table.dropColumn("utm_medium");
+      table.dropColumn("utm_campaign");
+      table.dropColumn("utm_term");
+      table.dropColumn("utm_content");
+    });
+  }
 }
 
 module.exports = {
