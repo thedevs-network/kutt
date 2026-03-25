@@ -16,6 +16,29 @@ const env = require("../env");
 const CustomError = utils.CustomError;
 const dnsLookup = promisify(dns.lookup);
 
+function buildTargetURL(link) {
+  const utmFields = [
+    ["utm_source", link.utm_source],
+    ["utm_medium", link.utm_medium],
+    ["utm_campaign", link.utm_campaign],
+    ["utm_term", link.utm_term],
+    ["utm_content", link.utm_content],
+  ];
+
+  const hasUTM = utmFields.some(([, v]) => v);
+  if (!hasUTM) return link.target;
+
+  try {
+    const url = new globalThis.URL(link.target);
+    utmFields.forEach(([key, value]) => {
+      if (value) url.searchParams.set(key, value);
+    });
+    return url.toString();
+  } catch {
+    return link.target;
+  }
+}
+
 async function get(req, res) {
   const { limit, skip } = req.context;
   const search = req.query.search;
@@ -97,7 +120,8 @@ async function getAdmin(req, res) {
 };
 
 async function create(req, res) {
-  const { reuse, password, customurl, description, target, fetched_domain, expire_in } = req.body;
+  const { reuse, password, customurl, description, target, fetched_domain, expire_in,
+          utm_source, utm_medium, utm_campaign, utm_term, utm_content } = req.body;
   const domain_id = fetched_domain ? fetched_domain.id : null;
   
   const targetDomain = utils.removeWww(URL.parse(target).hostname);
@@ -141,7 +165,12 @@ async function create(req, res) {
     description,
     target,
     expire_in,
-    user_id: req.user && req.user.id
+    user_id: req.user && req.user.id,
+    utm_source,
+    utm_medium,
+    utm_campaign,
+    utm_term,
+    utm_content,
   });
 
   link.domain = fetched_domain?.address;
@@ -172,14 +201,19 @@ async function edit(req, res) {
 
   let isChanged = false;
   [
-    [req.body.address, "address"], 
-    [req.body.target, "target"], 
-    [req.body.description, "description"], 
-    [req.body.expire_in, "expire_in"], 
-    [req.body.password, "password"]
+    [req.body.address, "address"],
+    [req.body.target, "target"],
+    [req.body.description, "description"],
+    [req.body.expire_in, "expire_in"],
+    [req.body.password, "password"],
+    [req.body.utm_source, "utm_source"],
+    [req.body.utm_medium, "utm_medium"],
+    [req.body.utm_campaign, "utm_campaign"],
+    [req.body.utm_term, "utm_term"],
+    [req.body.utm_content, "utm_content"],
   ].forEach(([value, name]) => {
     if (!value) {
-      if (name === "password" && link.password) 
+      if (name === "password" && link.password)
         req.body.password = null;
       else {
         delete req.body[name];
@@ -205,8 +239,9 @@ async function edit(req, res) {
     throw new CustomError("Should at least update one field.");
   }
 
-  const { address, target, description, expire_in, password } = req.body;
-  
+  const { address, target, description, expire_in, password,
+          utm_source, utm_medium, utm_campaign, utm_term, utm_content } = req.body;
+
   const targetDomain = target && utils.removeWww(URL.parse(target).hostname);
   const domain_id = link.domain_id || null;
 
@@ -237,7 +272,12 @@ async function edit(req, res) {
       ...(description && { description }),
       ...(target && { target }),
       ...(expire_in && { expire_in }),
-      ...((password || password === null) && { password })
+      ...((password || password === null) && { password }),
+      ...(utm_source !== undefined && { utm_source: utm_source || null }),
+      ...(utm_medium !== undefined && { utm_medium: utm_medium || null }),
+      ...(utm_campaign !== undefined && { utm_campaign: utm_campaign || null }),
+      ...(utm_term !== undefined && { utm_term: utm_term || null }),
+      ...(utm_content !== undefined && { utm_content: utm_content || null }),
     }
   );
 
@@ -265,14 +305,19 @@ async function editAdmin(req, res) {
 
   let isChanged = false;
   [
-    [req.body.address, "address"], 
-    [req.body.target, "target"], 
-    [req.body.description, "description"], 
-    [req.body.expire_in, "expire_in"], 
-    [req.body.password, "password"]
+    [req.body.address, "address"],
+    [req.body.target, "target"],
+    [req.body.description, "description"],
+    [req.body.expire_in, "expire_in"],
+    [req.body.password, "password"],
+    [req.body.utm_source, "utm_source"],
+    [req.body.utm_medium, "utm_medium"],
+    [req.body.utm_campaign, "utm_campaign"],
+    [req.body.utm_term, "utm_term"],
+    [req.body.utm_content, "utm_content"],
   ].forEach(([value, name]) => {
     if (!value) {
-      if (name === "password" && link.password) 
+      if (name === "password" && link.password)
         req.body.password = null;
       else {
         delete req.body[name];
@@ -298,8 +343,9 @@ async function editAdmin(req, res) {
     throw new CustomError("Should at least update one field.");
   }
 
-  const { address, target, description, expire_in, password } = req.body;
-  
+  const { address, target, description, expire_in, password,
+          utm_source, utm_medium, utm_campaign, utm_term, utm_content } = req.body;
+
   const targetDomain = target && utils.removeWww(URL.parse(target).hostname);
   const domain_id = link.domain_id || null;
 
@@ -330,7 +376,12 @@ async function editAdmin(req, res) {
       ...(description && { description }),
       ...(target && { target }),
       ...(expire_in && { expire_in }),
-      ...((password || password === null) && { password })
+      ...((password || password === null) && { password }),
+      ...(utm_source !== undefined && { utm_source: utm_source || null }),
+      ...(utm_medium !== undefined && { utm_medium: utm_medium || null }),
+      ...(utm_campaign !== undefined && { utm_campaign: utm_campaign || null }),
+      ...(utm_term !== undefined && { utm_term: utm_term || null }),
+      ...(utm_content !== undefined && { utm_content: utm_content || null }),
     }
   );
 
@@ -516,7 +567,7 @@ async function redirect(req, res, next) {
           if (colon !== -1) {
             const password = decoded.slice(colon + 1);
             const matches = await bcrypt.compare(password, link.password);
-            if (matches) return res.redirect(link.target);
+            if (matches) return res.redirect(buildTargetURL(link));
           }
         }
       }
@@ -541,7 +592,7 @@ async function redirect(req, res, next) {
   }
 
   // 8. Redirect to target
-  return res.redirect(link.target);
+  return res.redirect(buildTargetURL(link));
 };
 
 async function redirectProtected(req, res) {
@@ -574,14 +625,14 @@ async function redirectProtected(req, res) {
 
   // 5. Send target
   if (req.isHTML) {
-    res.setHeader("HX-Redirect", link.target);
+    res.setHeader("HX-Redirect", buildTargetURL(link));
     res.render("partials/protected/form", {
       id: link.uuid,
       message: "Redirecting...",
     });
     return;
   }
-  return res.status(200).send({ target: link.target });
+  return res.status(200).send({ target: buildTargetURL(link) });
 };
 
 async function redirectCustomDomainHomepage(req, res, next) {

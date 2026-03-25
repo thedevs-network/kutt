@@ -94,7 +94,37 @@ const createLink = [
 
       if (!domain) return Promise.reject();
     })
-    .withMessage("You can't use this domain.")
+    .withMessage("You can't use this domain."),
+  body("utm_source")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("UTM Source length must be between 1 and 255."),
+  body("utm_medium")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("UTM Medium length must be between 1 and 255."),
+  body("utm_campaign")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("UTM Campaign length must be between 1 and 255."),
+  body("utm_term")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("UTM Term length must be between 1 and 255."),
+  body("utm_content")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("UTM Content length must be between 1 and 255."),
 ];
 
 const editLink = [
@@ -146,6 +176,36 @@ const editLink = [
     .trim()
     .isLength({ min: 0, max: 2040 })
     .withMessage("Description length must be between 0 and 2040."),
+  body("utm_source")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("UTM Source length must be between 1 and 255."),
+  body("utm_medium")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("UTM Medium length must be between 1 and 255."),
+  body("utm_campaign")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("UTM Campaign length must be between 1 and 255."),
+  body("utm_term")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("UTM Term length must be between 1 and 255."),
+  body("utm_content")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("UTM Content length must be between 1 and 255."),
   param("id", "ID is invalid.")
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 36, max: 36 })
