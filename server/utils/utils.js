@@ -89,12 +89,8 @@ function getShortURL(address, domain) {
   const linkDomain = domain || env.DEFAULT_DOMAIN;
   let path = '';
 
-  if (env.BASE_PATH) {
-    if (linkDomain === env.DEFAULT_DOMAIN) {
-      path = env.BASE_PATH;
-    } else if (env.SHORT_URLS_INCLUDE_PATH) {
-      path = env.BASE_PATH;
-    }
+  if (env.BASE_PATH && env.SHORT_URLS_INCLUDE_PATH) {
+    path = env.BASE_PATH;
   }
 
   const link = `${linkDomain}${path}/${address}`;
