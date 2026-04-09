@@ -4,6 +4,7 @@ const { Router } = require("express");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const express = require("express");
+const session = require("cookie-session");
 const helmet = require("helmet");
 const path = require("node:path");
 const hbs = require("hbs");
@@ -15,7 +16,6 @@ const locals = require("./handlers/locals.handler");
 const links = require("./handlers/links.handler");
 const routes = require("./routes");
 const utils = require("./utils");
-
 
 // run the cron jobs
 // the app might be running in cluster mode (multiple instances) so run the cron job only on one cluster (the first one)
@@ -40,6 +40,17 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// use cookie sessions only when OIDC is enabled
+// because only OIDC is using it
+if (env.OIDC_ENABLED) {
+  app.use(
+    session({
+      keys: [env.JWT_SECRET],
+      maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
+    }),
+  );
+}
 
 const router = Router();
 
@@ -84,7 +95,7 @@ if (env.BASE_PATH) {
 app.use(env.BASE_PATH, router);
 
 if (!env.SHORT_URLS_INCLUDE_PATH) {
-  app.get("/:id", asyncHandler(links.redirect)); 
+  app.get("/:id", asyncHandler(links.redirect));
 }
 
 // finally, 404 pages that don't exist
@@ -92,7 +103,7 @@ app.get("*", renders.notFound);
 
 // handle errors coming from above routes
 app.use(helpers.error);
-  
+
 app.listen(env.PORT, () => {
   console.log(`> Ready on http://localhost:${env.PORT}${env.BASE_PATH}`);
 });
