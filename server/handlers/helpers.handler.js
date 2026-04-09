@@ -6,6 +6,7 @@ const { CustomError } = require("../utils");
 const query = require("../queries");
 const redis = require("../redis");
 const env = require("../env");
+const utils = require("../utils");
 
 function error(error, req, res, _next) {
   if (!(error instanceof CustomError)) {
@@ -131,7 +132,7 @@ async function adminSetup(req, res, next) {
     return;
   }
 
-  res.redirect("/create-admin");
+  res.redirect(utils.getPath('/create-admin'));
 }
 
 module.exports = {

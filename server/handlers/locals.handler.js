@@ -33,6 +33,7 @@ function config(req, res, next) {
   res.locals.mail_enabled = env.MAIL_ENABLED;
   res.locals.report_email = env.REPORT_EMAIL;
   res.locals.custom_styles = utils.getCustomCSSFileNames();
+  res.locals.base_path = env.BASE_PATH;
   next();
 }
 

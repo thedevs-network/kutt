@@ -1,4 +1,4 @@
-<form id="login-signup" hx-post="/api/auth/login" hx-swap="outerHTML">
+<form id="login-signup" hx-post="./api/auth/login" hx-swap="outerHTML">
   {{#unless disallow_login_form}}
     <label class="{{#if errors.email}}error{{/if}}">
       Email address:
@@ -37,7 +37,7 @@
           <button 
             type="button"
             class="secondary signup" 
-            hx-post="/api/auth/signup" 
+            hx-post="./api/auth/signup" 
             hx-target="#login-signup" 
             hx-trigger="click" 
             hx-indicator="#login-signup" 
@@ -56,7 +56,7 @@
   {{/unless}}
   {{#if oidc_enabled}}
     <div class="buttons-wrapper">
-      <a class="button secondary full" href="/login/oidc" title="Login with OIDC">
+      <a class="button secondary full" href="./login/oidc" title="Login with OIDC">
         <span>{{> icons/key}}</span>
         Login with OIDC
       </a>
@@ -64,7 +64,7 @@
   {{/if}}
   {{#unless disallow_login_form}}
     {{#if mail_enabled}}
-      <a class="forgot-password" href="/reset-password" title="Reset password">Forgot your password?</a>
+      <a class="forgot-password" href="./reset-password" title="Reset password">Forgot your password?</a>
     {{/if}}
   {{/unless}}
   {{#unless errors}}
