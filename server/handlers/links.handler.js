@@ -110,10 +110,7 @@ async function create(req, res) {
         domain_id
       }),
     customurl &&
-      query.link.find({
-        address: customurl,
-        domain_id
-      }),
+      query.link.findByAddressCaseInsensitive(customurl, domain_id),
     !customurl && utils.generateId(query, domain_id),
     validators.bannedDomain(targetDomain),
     validators.bannedHost(targetDomain)
@@ -212,22 +209,17 @@ async function edit(req, res) {
 
   const tasks = await Promise.all([
     address &&
-      query.link.find({
-        address,
-        domain_id
-      }),
+      query.link.findByAddressCaseInsensitive(address, domain_id, link.id),
     target && validators.bannedDomain(targetDomain),
     target && validators.bannedHost(targetDomain)
   ]);
 
-  // Check if custom link already exists
   if (tasks[0]) {
     const error = "Custom URL is already in use.";
     res.locals.errors = { address: error };
     throw new CustomError("Custom URL is already in use.");
   }
 
-  // Update link
   const [updatedLink] = await query.link.update(
     {
       id: link.id
@@ -305,22 +297,17 @@ async function editAdmin(req, res) {
 
   const tasks = await Promise.all([
     address &&
-      query.link.find({
-        address,
-        domain_id
-      }),
+      query.link.findByAddressCaseInsensitive(address, domain_id, link.id),
     target && validators.bannedDomain(targetDomain),
     target && validators.bannedHost(targetDomain)
   ]);
 
-  // Check if custom link already exists
   if (tasks[0]) {
     const error = "Custom URL is already in use.";
     res.locals.errors = { address: error };
     throw new CustomError("Custom URL is already in use.");
   }
 
-  // Update link
   const [updatedLink] = await query.link.update(
     {
       id: link.id

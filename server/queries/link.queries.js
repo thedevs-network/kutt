@@ -197,6 +197,30 @@ async function find(match) {
   return link;
 }
 
+async function findByAddressCaseInsensitive(address, domain_id, excludeLinkId = null) {
+  const query = knex("links")
+    .select(...selectable)
+    .leftJoin("domains", "links.domain_id", "domains.id");
+  
+  if (knex.isPostgres) {
+    query.whereRaw('LOWER(links.address) = LOWER(?)', [address]);
+  } else {
+    query.where(knex.raw('LOWER(links.address) = LOWER(?)', [address]));
+  }
+  
+  if (domain_id !== undefined && domain_id !== null) {
+    query.andWhere("links.domain_id", domain_id);
+  } else {
+    query.andWhereNull("links.domain_id");
+  }
+  
+  if (excludeLinkId) {
+    query.andWhereNot("links.id", excludeLinkId);
+  }
+  
+  return query.first();
+}
+
 async function create(params) {
   let encryptedPassword = null;
   
@@ -300,6 +324,7 @@ module.exports = {
   batchRemove,
   create,
   find,
+  findByAddressCaseInsensitive,
   get,
   getAdmin,
   incrementVisit,

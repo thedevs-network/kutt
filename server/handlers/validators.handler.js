@@ -47,7 +47,7 @@ const createLink = [
     .withMessage("Custom URL length must be between 1 and 64.")
     .custom(value => utils.customAddressRegex.test(value) || utils.customAlphabetRegex.test(value))
     .withMessage("Custom URL is not valid.")
-    .custom(value => !utils.preservedURLs.some(url => url.toLowerCase() === value))
+    .custom(value => !utils.preservedURLs.some(url => url.toLowerCase() === value.toLowerCase()))
     .withMessage("You can't use this custom URL."),
   body("reuse")
     .optional({ nullable: true })
@@ -122,7 +122,7 @@ const editLink = [
     .withMessage("Custom URL length must be between 1 and 64.")
     .custom(value => utils.customAddressRegex.test(value) || utils.customAlphabetRegex.test(value))
     .withMessage("Custom URL is not valid")
-    .custom(value => !utils.preservedURLs.some(url => url.toLowerCase() === value))
+    .custom(value => !utils.preservedURLs.some(url => url.toLowerCase() === value.toLowerCase()))
     .withMessage("You can't use this custom URL."),
   body("expire_in")
     .optional({ nullable: true, checkFalsy: true })
