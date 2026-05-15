@@ -2,19 +2,19 @@
   <div id="shorturl">
     {{#if link}}
       <div class="clipboard">
-        <button 
+        <button
           type="button"
-          aria-label="Copy" 
-          hx-on:click="handleShortURLCopyLink(this);" 
+          aria-label="Copy"
+          hx-on:click="handleShortURLCopyLink(this);"
           data-url="{{url}}"
         >
         {{> icons/copy}}
         </button>
         {{> icons/check}}
       </div>
-      <h1 
-        class="link" 
-        hx-on:click="handleShortURLCopyLink(this);" 
+      <h1
+        class="link"
+        hx-on:click="handleShortURLCopyLink(this);"
         data-url="{{url}}"
       >
         {{link}}
@@ -24,12 +24,12 @@
         <h1>Cut your links <span>shorter</span>.</h1>
     {{/unless}}
   </div>
-  <form 
-    id="shortener-form" 
-    hx-post="/api/links" 
-    hx-trigger="submit queue:none" 
-    hx-target="closest main" 
-    hx-swap="outerHTML" 
+  <form
+    id="shortener-form"
+    hx-post="/api/links"
+    hx-trigger="submit queue:none"
+    hx-target="closest main"
+    hx-swap="outerHTML"
     autocomplete="off"
   >
     <div class="target-wrapper {{#if errors.target}}error{{/if}}">
@@ -55,9 +55,9 @@
       {{/unless}}
     </div>
     <label id="advanced" class="checkbox">
-      <input 
-        name="show_advanced" 
-        type="checkbox" 
+      <input
+        name="show_advanced"
+        type="checkbox"
         hx-on:change="htmx.toggleClass('#advanced-options', 'hidden')"
         {{#if show_advanced}}checked="true"{{/if}}
       />
@@ -67,19 +67,22 @@
       <div class="advanced-input-wrapper">
         <label class="{{#if errors.domain}}error{{/if}}">
           Domain:
-          <select 
-            id="domain" 
-            name="domain" 
-            hx-preserve="true" 
+          <select
+            id="domain"
+            name="domain"
+            hx-preserve="true"
             hx-on:change="
               const elm = document.querySelector('#customurl-label span');
               if (!elm) return;
               elm.textContent = event.target.value + '/';
             "
           >
-            <option value={{default_domain}}>{{default_domain}}</option>
-            {{#each domains}}
-              <option value={{address}}>{{address}}</option>
+            <option value="{{default_domain}}">{{default_domain}} (default)</option>
+            {{#each other_global_domains}}
+              <option value="{{this}}">{{this}}</option>
+            {{/each}}
+            {{#each user_domains}}
+              <option value="{{address}}">{{address}}</option>
             {{/each}}
           </select>
           {{#if errors.domain}}<p class="error">{{errors.domain}}</p>{{/if}}
@@ -87,23 +90,23 @@
         <label id="customurl-label" class="{{#if errors.customurl}}error{{/if}}">
           <span id="customurl-label-value" hx-preserve="true">{{default_domain}}/</span>
           <input
-            type="text" 
-            id="customurl" 
-            name="customurl" 
-            placeholder="Custom address..." 
+            type="text"
+            id="customurl"
+            name="customurl"
+            placeholder="Custom address..."
             hx-preserve="true"
-            autocomplete="off" 
+            autocomplete="off"
           />
           {{#if errors.customurl}}<p class="error">{{errors.customurl}}</p>{{/if}}
         </label>
         <label class="{{#if errors.password}}error{{/if}}">
           Password:
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            placeholder="Password..." 
-            hx-preserve="true" 
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Password..."
+            hx-preserve="true"
             autocomplete="new-password"
           />
           {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
@@ -112,23 +115,23 @@
       <div class="advanced-input-wrapper">
         <label class="expire-in {{#if errors.expire_in}}error{{/if}}">
           Expire in:
-          <input 
-            type="text" 
-            id="expire_in" 
-            name="expire_in" 
-            placeholder="2 minutes/hours/days" 
-            hx-preserve="true" 
+          <input
+            type="text"
+            id="expire_in"
+            name="expire_in"
+            placeholder="2 minutes/hours/days"
+            hx-preserve="true"
           />
           {{#if errors.expire_in}}<p class="error">{{errors.expire_in}}</p>{{/if}}
         </label>
         <label class="description {{#if errors.description}}error{{/if}}">
           Description:
-          <input 
-            type="text" 
-            id="description" 
-            name="description" 
-            placeholder="Description..." 
-            hx-preserve="true" 
+          <input
+            type="text"
+            id="description"
+            name="description"
+            placeholder="Description..."
+            hx-preserve="true"
           />
           {{#if errors.description}}<p class="error">{{errors.description}}</p>{{/if}}
         </label>

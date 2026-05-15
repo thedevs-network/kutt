@@ -35,7 +35,8 @@ async function add(params) {
     homepage: params.homepage,
     user_id: params.user_id,
     banned: !!params.banned,
-    banned_by_id: params.banned_by_id
+    banned_by_id: params.banned_by_id,
+    is_global: !!params.is_global
   };
 
   if (id) {
@@ -114,6 +115,7 @@ const selectable_admin = [
   "domains.address",
   "domains.homepage",
   "domains.banned",
+  "domains.is_global",
   "domains.created_at",
   "domains.updated_at",
   "domains.user_id",
@@ -140,11 +142,15 @@ async function getAdmin(match, params) {
     .groupBy("users.email");
 
   if (params?.user) {
-    const id = parseInt(params?.user);
-    if (Number.isNaN(id)) {
-      query[knex.compatibleILIKE]("users.email", "%" + params.user + "%");
+    if (params.user.toUpperCase() === "SYSTEM") {
+      query.whereNull("domains.user_id");
     } else {
-      query.andWhere("domains.user_id", id);
+      const id = parseInt(params?.user);
+      if (Number.isNaN(id)) {
+        query[knex.compatibleILIKE]("users.email", "%" + params.user + "%");
+      } else {
+        query.andWhere("domains.user_id", id);
+      }
     }
   }
 
@@ -178,11 +184,15 @@ async function totalAdmin(match, params) {
   });
   
   if (params?.user) {
-    const id = parseInt(params?.user);
-    if (Number.isNaN(id)) {
-      query[knex.compatibleILIKE]("users.email", "%" + params.user + "%");
+    if (params.user.toUpperCase() === "SYSTEM") {
+      query.whereNull("domains.user_id");
+    } else {
+      const id = parseInt(params?.user);
+      if (Number.isNaN(id)) {
+        query[knex.compatibleILIKE]("users.email", "%" + params.user + "%");
       } else {
-      query.andWhere("domains.user_id", id);
+        query.andWhere("domains.user_id", id);
+      }
     }
   }
 

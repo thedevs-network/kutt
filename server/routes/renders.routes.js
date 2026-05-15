@@ -203,8 +203,16 @@ router.get(
   "/admin/link/edit/:id",
   locals.noLayout,
   asyncHandler(auth.jwt),
-  asyncHandler(auth.admin), 
+  asyncHandler(auth.admin),
   asyncHandler(renders.linkEditAdmin)
+);
+
+router.get(
+  "/admin/domain/edit/:id",
+  locals.noLayout,
+  asyncHandler(auth.jwt),
+  asyncHandler(auth.admin),
+  asyncHandler(renders.domainEditAdmin)
 );
 
 router.get(

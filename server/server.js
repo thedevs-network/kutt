@@ -16,7 +16,6 @@ const links = require("./handlers/links.handler");
 const routes = require("./routes");
 const utils = require("./utils");
 
-
 // run the cron jobs
 // the app might be running in cluster mode (multiple instances) so run the cron job only on one cluster (the first one)
 // NODE_APP_INSTANCE variable is added by pm2 automatically, if you're using something else to cluster your app, then make sure to set this variable
@@ -86,7 +85,7 @@ app.get("*", renders.notFound);
 
 // handle errors coming from above routes
 app.use(helpers.error);
-  
+
 app.listen(env.PORT, () => {
   console.log(`> Ready on http://localhost:${env.PORT}`);
 });

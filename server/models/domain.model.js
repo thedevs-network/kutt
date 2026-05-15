@@ -30,8 +30,9 @@ async function createDomainTable(knex) {
         .uuid("uuid")
         .notNullable()
         .defaultTo(knex.fn.uuid());
+      table.boolean("is_global").notNullable().defaultTo(false);
       table.timestamps(false, true);
-      
+
     });
   }
 }

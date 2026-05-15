@@ -99,7 +99,7 @@ function statsObjectToArray(obj) {
         value: obj[key][name]
       }))
       .sort((a, b) => b.value - a.value);
-  
+
   return {
     browser: objToArr("browser"),
     os: objToArr("os"),
@@ -135,12 +135,12 @@ function dateToUTC(date) {
   if (knex.isSQLite) {
     return dateUTC.substring(0, 10) + " " + dateUTC.substring(11, 19);
   }
-  
+
   // mysql doesn't save time in utc, so format the date in local timezone instead
   if (knex.isMySQL) {
     return format(new Date(date), "yyyy-MM-dd HH:mm:ss");
   }
-  
+
   // return unformatted utc string for postgres
   return dateUTC;
 }
@@ -334,9 +334,16 @@ const sanitize = {
   },
   domain_admin: domain => {
     const timestamps = parseTimestamps(domain);
+    const is_global = !!domain.is_global;
+    const is_default = domain.address.toLowerCase() === env.DEFAULT_DOMAIN.trim().toLowerCase();
+    const is_admin = !!(env.ADMIN_DOMAIN && domain.address.toLowerCase() === env.ADMIN_DOMAIN.trim().toLowerCase());
     return {
       ...domain,
       ...timestamps,
+      is_global,
+      is_default,
+      is_admin,
+      is_protected: is_default || is_admin,
       links_count: (domain.links_count ?? 0).toLocaleString("en-US"),
       relative_created_at: getTimeAgo(timestamps.created_at),
       relative_updated_at: getTimeAgo(timestamps.updated_at),
@@ -360,7 +367,7 @@ function registerHandlebarsHelpers() {
   hbs.registerHelper("json", function(context) {
     return JSON.stringify(context);
   });
-  
+
   const blocks = {};
 
   hbs.registerHelper("extend", function(name, context) {
@@ -404,6 +411,16 @@ function getCustomCSSFileNames() {
   return custom_css_file_names;
 }
 
+function getAdminDomain() {
+  return env.ADMIN_DOMAIN || env.DEFAULT_DOMAIN;
+}
+
+function isSystemDomain(address) {
+  const normalized = address.trim().toLowerCase();
+  return normalized === env.DEFAULT_DOMAIN.trim().toLowerCase()
+    || (env.ADMIN_DOMAIN && normalized === env.ADMIN_DOMAIN.trim().toLowerCase());
+}
+
 module.exports = {
   addProtocol,
   customAddressRegex,
@@ -413,6 +430,7 @@ module.exports = {
   deleteCurrentToken,
   generateId,
   generateRandomPassword,
+  getAdminDomain,
   getCustomCSSFileNames,
   getDifferenceFunction,
   getInitStats,
@@ -420,6 +438,7 @@ module.exports = {
   getShortURL,
   getStatsPeriods,
   isAdmin,
+  isSystemDomain,
   parseBooleanQuery,
   parseDatetime,
   parseTimestamps,

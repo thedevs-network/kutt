@@ -304,12 +304,23 @@ async function linkEditAdmin(req, res) {
   });
 }
 
+async function domainEditAdmin(req, res) {
+  const domain = await query.domain.find({ id: req.params.id });
+  if (!domain) {
+    throw new utils.CustomError("Could not find the domain.", 400);
+  }
+  res.render("partials/admin/domains/edit", {
+    ...utils.sanitize.domain_admin(domain),
+  });
+}
+
 module.exports = {
   addDomainAdmin,
   addDomainForm,
   admin,
   banned,
   confirmDomainBan,
+  domainEditAdmin,
   confirmDomainDelete,
   confirmDomainDeleteAdmin,
   confirmLinkBan,
