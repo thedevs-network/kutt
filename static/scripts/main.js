@@ -2,12 +2,12 @@
 // htmx.logAll();
 
 // add text/html accept header to receive html instead of json for the requests
-document.body.addEventListener("htmx:configRequest", function(evt) {
+document.body.addEventListener("htmx:configRequest", function (evt) {
   evt.detail.headers["Accept"] = "text/html,*/*";
 });
 
 // redirect to homepage
-document.body.addEventListener("redirectToHomepage", function() {
+document.body.addEventListener("redirectToHomepage", function () {
   setTimeout(() => {
     window.location.replace("/");
   }, 1500);
@@ -15,27 +15,27 @@ document.body.addEventListener("redirectToHomepage", function() {
 
 // reset form if event is sent from the backend
 function resetForm(id) {
-  return function() {
+  return function () {
     const form = document.getElementById(id);
     if (!form) return;
     form.reset();
-  }
+  };
 }
 document.body.addEventListener("resetChangePasswordForm", resetForm("change-password"));
 document.body.addEventListener("resetChangeEmailForm", resetForm("change-email"));
 
 // an htmx extension to use the specifed params in the path instead of the query or body
 htmx.defineExtension("path-params", {
-  onEvent: function(name, evt) {
+  onEvent: function (name, evt) {
     if (name === "htmx:configRequest") {
-      evt.detail.path = evt.detail.path.replace(/{([^}]+)}/g, function(_, param) {
-        var val = evt.detail.parameters[param]
-        delete evt.detail.parameters[param]
-        return val === undefined ? "{" + param + "}" : encodeURIComponent(val)
-      })
+      evt.detail.path = evt.detail.path.replace(/{([^}]+)}/g, function (_, param) {
+        var val = evt.detail.parameters[param];
+        delete evt.detail.parameters[param];
+        return val === undefined ? "{" + param + "}" : encodeURIComponent(val);
+      });
     }
-  }
-})
+  },
+});
 
 // find closest element
 function closest(selector, elm) {
@@ -50,13 +50,13 @@ function closest(selector, elm) {
   }
 
   return null;
-};
+}
 
 // get url query param
 function getQueryParams() {
   const search = window.location.search.replace("?", "");
   const query = {};
-  search.split("&").map(q => {
+  search.split("&").map((q) => {
     const keyvalue = q.split("=");
     query[keyvalue[0]] = keyvalue[1];
   });
@@ -84,6 +84,44 @@ function formatDateHour(selector) {
   element.textContent = date.getHours() + ":" + date.getMinutes();
 }
 
+function canCopyImageFunc() {
+  return navigator.clipboard && window.ClipboardItem;
+}
+
+async function handleCopyQR(qrCodeUrl) {
+  const response = await fetch(qrCodeUrl);
+  const blob = await response.blob();
+
+  await navigator.clipboard.write([
+    new ClipboardItem({
+      [blob.type]: blob,
+    }),
+  ]);
+}
+
+async function handleDownloadQR(qrCodeUrl) {
+  const response = await fetch(qrCodeUrl);
+  const blob = await response.blob();
+  const link = document.createElement("a");
+  link.href = window.URL.createObjectURL(blob);
+  link.download = "qrcode.png";
+  link.click();
+}
+
+function createCopyQRButton(qrcode, text) {
+  const button = document.createElement("button");
+
+  button.className = "button primary";
+  button.style.width = "100%";
+  button.style.marginTop = "15px";
+
+  button.innerHTML = `<span>${text}</span>`;
+
+  qrcode._el.append(button);
+
+  return button;
+}
+
 // show QR code
 function handleQRCode(element, id) {
   const dialog = document.getElementById(id);
@@ -95,10 +133,22 @@ function handleQRCode(element, id) {
     text: element.dataset.url,
     width: 200,
     height: 200,
-    colorDark : "#000000",
-    colorLight : "#ffffff",
-    correctLevel : QRCode.CorrectLevel.H
-  });   
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H,
+  });
+  const canCopyImage = canCopyImageFunc();
+  const button = createCopyQRButton(qrcode, canCopyImage ? "Copy QR Code" : "Download QR Code");
+  if (button) {
+    button.addEventListener("click", function () {
+      const canvas = qrcode._el.querySelector("canvas");
+      if (!canvas) return;
+
+      const qrCodeUrl = canvas.toDataURL("image/png");
+
+      canCopyImage ? handleCopyQR(qrCodeUrl) : handleDownloadQR(qrCodeUrl);
+    });
+  }
 }
 
 // copy the link to clipboard
@@ -109,10 +159,11 @@ function handleCopyLink(element) {
 // copy the link and toggle copy button style
 function handleShortURLCopyLink(element) {
   handleCopyLink(element);
-  const clipboard = element.parentNode.querySelector(".clipboard") || closest(".clipboard", element);
+  const clipboard =
+    element.parentNode.querySelector(".clipboard") || closest(".clipboard", element);
   if (!clipboard || clipboard.classList.contains("copied")) return;
   clipboard.classList.add("copied");
-  setTimeout(function() {
+  setTimeout(function () {
     clipboard.classList.remove("copied");
   }, 1000);
 }
@@ -136,7 +187,7 @@ function closeDialog() {
   dialog.classList.add("dialog");
 }
 
-window.addEventListener("click", function(event) {
+window.addEventListener("click", function (event) {
   const dialog = document.querySelector(".dialog");
   if (dialog && event.target === dialog) {
     closeDialog();
@@ -149,7 +200,7 @@ function setLinksLimit(event) {
   const limitInput = document.querySelector("#limit");
   if (!limitInput || !buttons || !buttons.length) return;
   limitInput.value = event.target.textContent;
-  buttons.forEach(b => {
+  buttons.forEach((b) => {
     b.disabled = b.textContent === event.target.textContent;
   });
 }
@@ -164,10 +215,10 @@ function setLinksSkip(event, action) {
   const limit = parseInt(limitElm.value);
   const total = parseInt(totalElm.value);
   skipElm.value = action === "next" ? skip + limit : Math.max(skip - limit, 0);
-  document.querySelectorAll(".pagination .next").forEach(elm => {
+  document.querySelectorAll(".pagination .next").forEach((elm) => {
     elm.disabled = total <= parseInt(skipElm.value) + limit;
   });
-  document.querySelectorAll(".pagination .prev").forEach(elm => {
+  document.querySelectorAll(".pagination .prev").forEach((elm) => {
     elm.disabled = parseInt(skipElm.value) <= 0;
   });
 }
@@ -180,10 +231,10 @@ function updateLinksNav() {
   const total = parseInt(totalElm.value);
   const skip = parseInt(skipElm.value);
   const limit = parseInt(limitElm.value);
-  document.querySelectorAll(".pagination .next").forEach(elm => {
+  document.querySelectorAll(".pagination .next").forEach((elm) => {
     elm.disabled = total <= skip + limit;
   });
-  document.querySelectorAll(".pagination .prev").forEach(elm => {
+  document.querySelectorAll(".pagination .prev").forEach((elm) => {
     elm.disabled = skip <= 0;
   });
 }
@@ -198,13 +249,13 @@ function resetTableNav() {
   const total = parseInt(totalElm.value);
   const skip = parseInt(skipElm.value);
   const limit = parseInt(limitElm.value);
-  document.querySelectorAll(".pagination .next").forEach(elm => {
+  document.querySelectorAll(".pagination .next").forEach((elm) => {
     elm.disabled = total <= skip + limit;
   });
-  document.querySelectorAll(".pagination .prev").forEach(elm => {
+  document.querySelectorAll(".pagination .prev").forEach((elm) => {
     elm.disabled = skip <= 0;
   });
-  document.querySelectorAll("table .nav .limit button").forEach(b => {
+  document.querySelectorAll("table .nav .limit button").forEach((b) => {
     b.disabled = b.textContent === limit.toString();
   });
 }
@@ -243,17 +294,17 @@ function clearSeachInput(event) {
 function onSearchInputLoad() {
   const linkSearchInput = document.getElementById("search");
   if (!linkSearchInput) return;
-  const linkClearButton = linkSearchInput.parentElement.querySelector("button.clear")
+  const linkClearButton = linkSearchInput.parentElement.querySelector("button.clear");
   linkClearButton.style.display = linkSearchInput.value.length > 0 ? "block" : "none";
 
   const userSearchInput = document.getElementById("search_user");
   if (!userSearchInput) return;
-  const userClearButton = userSearchInput.parentElement.querySelector("button.clear")
+  const userClearButton = userSearchInput.parentElement.querySelector("button.clear");
   userClearButton.style.display = userSearchInput.value.length > 0 ? "block" : "none";
 
   const domainSearchInput = document.getElementById("search_domain");
   if (!domainSearchInput) return;
-  const domainClearButton = domainSearchInput.parentElement.querySelector("button.clear")
+  const domainClearButton = domainSearchInput.parentElement.querySelector("button.clear");
   domainClearButton.style.display = domainSearchInput.value.length > 0 ? "block" : "none";
 }
 
@@ -261,10 +312,11 @@ onSearchInputLoad();
 
 // create user checkbox control
 function canSendVerificationEmail() {
-  const canSendVerificationEmail = !document.getElementById("create-user-verified").checked && !document.getElementById("create-user-banned").checked;
+  const canSendVerificationEmail =
+    !document.getElementById("create-user-verified").checked &&
+    !document.getElementById("create-user-banned").checked;
   const checkbox = document.getElementById("send-email-label");
-  if (canSendVerificationEmail)
-    checkbox.classList.remove("hidden");
+  if (canSendVerificationEmail) checkbox.classList.remove("hidden");
   if (!canSendVerificationEmail && !checkbox.classList.contains("hidden"))
     checkbox.classList.add("hidden");
 }
@@ -272,91 +324,104 @@ function canSendVerificationEmail() {
 // htmx prefetch extension
 // https://github.com/bigskysoftware/htmx-extensions/blob/main/src/preload/README.md
 htmx.defineExtension("preload", {
-  onEvent: function(name, event) {
+  onEvent: function (name, event) {
     if (name !== "htmx:afterProcessNode") {
-      return
+      return;
     }
-    var attr = function(node, property) {
-      if (node == undefined) { return undefined }
-      return node.getAttribute(property) || node.getAttribute("data-" + property) || attr(node.parentElement, property)
-    }
-    var load = function(node) {
-      var done = function(html) {
+    var attr = function (node, property) {
+      if (node == undefined) {
+        return undefined;
+      }
+      return (
+        node.getAttribute(property) ||
+        node.getAttribute("data-" + property) ||
+        attr(node.parentElement, property)
+      );
+    };
+    var load = function (node) {
+      var done = function (html) {
         if (!node.preloadAlways) {
-          node.preloadState = "DONE"
+          node.preloadState = "DONE";
         }
 
         if (attr(node, "preload-images") == "true") {
-          document.createElement("div").innerHTML = html
+          document.createElement("div").innerHTML = html;
         }
-      }
+      };
 
-      return function() {
+      return function () {
         if (node.preloadState !== "READY") {
-          return
+          return;
         }
-        var hxGet = node.getAttribute("hx-get") || node.getAttribute("data-hx-get")
+        var hxGet = node.getAttribute("hx-get") || node.getAttribute("data-hx-get");
         if (hxGet) {
           htmx.ajax("GET", hxGet, {
             source: node,
-            handler: function(elt, info) {
-              done(info.xhr.responseText)
-            }
-          })
-          return
+            handler: function (elt, info) {
+              done(info.xhr.responseText);
+            },
+          });
+          return;
         }
         if (node.getAttribute("href")) {
-          var r = new XMLHttpRequest()
-          r.open("GET", node.getAttribute("href"))
-          r.onload = function() { done(r.responseText) }
-          r.send()
+          var r = new XMLHttpRequest();
+          r.open("GET", node.getAttribute("href"));
+          r.onload = function () {
+            done(r.responseText);
+          };
+          r.send();
         }
-      }
-    }
-    var init = function(node) {
-      if (node.getAttribute("href") + node.getAttribute("hx-get") + node.getAttribute("data-hx-get") == "") {
-        return
+      };
+    };
+    var init = function (node) {
+      if (
+        node.getAttribute("href") +
+          node.getAttribute("hx-get") +
+          node.getAttribute("data-hx-get") ==
+        ""
+      ) {
+        return;
       }
       if (node.preloadState !== undefined) {
-        return
+        return;
       }
-      var on = attr(node, "preload") || "mousedown"
-      const always = on.indexOf("always") !== -1
+      var on = attr(node, "preload") || "mousedown";
+      const always = on.indexOf("always") !== -1;
       if (always) {
-        on = on.replace("always", "").trim()
+        on = on.replace("always", "").trim();
       }
-      node.addEventListener(on, function(evt) {
+      node.addEventListener(on, function (evt) {
         if (node.preloadState === "PAUSE") {
-          node.preloadState = "READY"
+          node.preloadState = "READY";
           if (on === "mouseover") {
-            window.setTimeout(load(node), 100)
+            window.setTimeout(load(node), 100);
           } else {
-            load(node)()
+            load(node)();
           }
         }
-      })
+      });
       switch (on) {
         case "mouseover":
-          node.addEventListener("touchstart", load(node))
-          node.addEventListener("mouseout", function(evt) {
-            if ((evt.target === node) && (node.preloadState === "READY")) {
-              node.preloadState = "PAUSE"
+          node.addEventListener("touchstart", load(node));
+          node.addEventListener("mouseout", function (evt) {
+            if (evt.target === node && node.preloadState === "READY") {
+              node.preloadState = "PAUSE";
             }
-          })
-          break
+          });
+          break;
 
         case "mousedown":
-          node.addEventListener("touchstart", load(node))
-          break
+          node.addEventListener("touchstart", load(node));
+          break;
       }
-      node.preloadState = "PAUSE"
-      node.preloadAlways = always
-      htmx.trigger(node, "preload:init")
-    }
+      node.preloadState = "PAUSE";
+      node.preloadAlways = always;
+      htmx.trigger(node, "preload:init");
+    };
     const parent = event.target || event.detail.elt;
-    parent.querySelectorAll("[preload]").forEach(function(node) {
-      init(node)
-      node.querySelectorAll("a,[hx-get],[data-hx-get]").forEach(init)
-    })
-  }
-})
+    parent.querySelectorAll("[preload]").forEach(function (node) {
+      init(node);
+      node.querySelectorAll("a,[hx-get],[data-hx-get]").forEach(init);
+    });
+  },
+});
