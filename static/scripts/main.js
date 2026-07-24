@@ -91,14 +91,32 @@ function handleQRCode(element, id) {
   if (!dialogContent) return;
   openDialog(id, "qrcode");
   dialogContent.textContent = "";
-  const qrcode = new QRCode(dialogContent, {
+  const qrSize = 400;
+  const logoMaxSize = Math.round(qrSize * 0.25); // ~18% of QR, keeps it scannable
+
+  new QRCode(dialogContent, {
     text: element.dataset.url,
-    width: 200,
-    height: 200,
+    width: qrSize,
+    height: qrSize,
     colorDark : "#000000",
     colorLight : "#ffffff",
     correctLevel : QRCode.CorrectLevel.H
-  });   
+  });
+
+  // Optional center logo: custom/images/qr-logo.png
+  // If the file is missing, QR is shown without a logo
+  const logo = new Image();
+  logo.alt = "";
+  logo.className = "qr-logo";
+  logo.onload = function () {
+    logo.style.maxWidth = logoMaxSize + "px";
+    logo.style.maxHeight = logoMaxSize + "px";
+    dialogContent.appendChild(logo);
+  };
+  logo.onerror = function () {
+    // no custom logo — leave QR as-is
+  };
+  logo.src = "/images/logo.png";
 }
 
 // copy the link to clipboard
