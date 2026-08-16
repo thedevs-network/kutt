@@ -36,7 +36,16 @@ if (env.TRUST_PROXY) {
   app.set("trust proxy", true);
 }
 
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      "script-src": ["'self'", "'unsafe-eval'"], // htmx hx-on:* attributes are compiled via new Function()
+      "script-src-attr": ["'unsafe-inline'"], // several views still use onclick=/onchange= attributes
+      "style-src": ["'self'"], // no inline style="" anywhere in the views
+      "upgrade-insecure-requests": null, // don't force-upgrade self-hosted plain-HTTP instances
+    },
+  },
+}));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
