@@ -61,9 +61,11 @@ function deleteCurrentToken(res) {
 }
 
 function generateRandomPassword() {
-  // 24-64 characters.
-  const length = Math.floor(Math.random() * 41 ) + 24;
-  return [...crypto.randomBytes(length)].map(byte => String.fromCharCode((byte % 93) + 33)).join("");
+  // 24-64 characters, each in the printable ASCII range 33-125 (93 possible values).
+  // crypto.randomInt avoids both Math.random() for the length and the modulo bias
+  // of `byte % 93` (256 % 93 != 0).
+  const length = crypto.randomInt(24, 65);
+  return Array.from({ length }, () => String.fromCharCode(crypto.randomInt(33, 126))).join("");
 }
 
 async function generateId(query, domain_id) {
