@@ -127,8 +127,7 @@ async function sendReportEmail(link) {
     from: env.MAIL_FROM || env.MAIL_USER,
     to: env.REPORT_EMAIL,
     subject: "[REPORT]",
-    text: link,
-    html: link
+    text: link
   });
 
   if (!mail.accepted.length) {
