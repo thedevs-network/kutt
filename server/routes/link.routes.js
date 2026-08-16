@@ -113,6 +113,7 @@ router.post(
   auth.featureAccess([env.MAIL_ENABLED]),
   validators.reportLink,
   asyncHandler(helpers.verify),
+  helpers.rateLimit({ window: 60, limit: 10 }),
   asyncHandler(link.report)
 );
 
