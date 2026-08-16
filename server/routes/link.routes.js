@@ -103,6 +103,7 @@ router.post(
   locals.protected,
   validators.redirectProtected,
   asyncHandler(helpers.verify),
+  helpers.rateLimit({ window: 60, limit: 5 }),
   asyncHandler(link.redirectProtected)
 );
 
