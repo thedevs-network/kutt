@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { cleanEnv, num, str, bool } = require("envalid");
+const { cleanEnv, num, str, bool, json } = require("envalid");
 const { readFileSync } = require("node:fs");
 
 const supportedDBClients = [
@@ -40,7 +40,7 @@ const spec = {
   DB_NAME: str({ default: "kutt" }),
   DB_USER: str({ default: "postgres" }),
   DB_PASSWORD: str({ default: "" }),
-  DB_SSL: bool({ default: false }),
+  DB_SSL: json({ default: false }),
   DB_POOL_MIN: num({ default: 0 }),
   DB_POOL_MAX: num({ default: 10 }),
   REDIS_ENABLED: bool({ default: false }),
