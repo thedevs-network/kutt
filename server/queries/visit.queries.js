@@ -1,4 +1,4 @@
-const { isAfter, subDays, subHours, set, format } = require("date-fns");
+const { isAfter } = require("date-fns");
 
 const utils = require("../utils");
 const redis = require("../redis");
@@ -19,9 +19,7 @@ async function add(params) {
     // Create a subquery first that truncates the
     const subquery = trx("visits")
       .select("visits.*")
-      .select({
-        created_at_hours: utils.knexUtils(trx).truncatedTimestamp("created_at", "hour")
-      })
+      .select({ created_at_hours: utils.truncatedCreatedAtHour })
       .where({ link_id: data.link_id })
       .as("subquery");
 
