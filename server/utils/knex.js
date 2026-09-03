@@ -27,17 +27,17 @@ const precision = "hour";
 
 const truncatedCreatedAtHour =
   driverName === "sqlite3" || driverName === "better-sqlite3"
-    ? knex.raw(`strftime('${formats.sqlite3[precision]}', ${column})`)
+    ? knex.raw(`strftime(?, ??)`, [formats.sqlite3[precision], column])
     : driverName === "mssql"
-    ? knex.raw(`FORMAT(${column}, '${formats.mssql[precision]}')`)
+    ? knex.raw(`FORMAT(??, ?)`, [column, formats.mssql[precision]])
     : driverName === "pg" ||
         driverName === "pgnative" ||
         driverName === "cockroachdb"
-    ? knex.raw(`date_trunc(?, ${column} at time zone 'Z')`, [precision])
+    ? knex.raw(`date_trunc(?, ?? at time zone 'Z')`, [precision, column])
     : driverName === "oracle" || driverName === "oracledb"
-    ? knex.raw(`TRUNC(${column}, ?)`, [precision])
+    ? knex.raw(`TRUNC(??, ?)`, [column, precision])
     : driverName === "mysql" || driverName === "mysql2"
-    ? knex.raw(`DATE_FORMAT(${column}, '${formats.mysql[precision]}')`)
+    ? knex.raw(`DATE_FORMAT(??, ?)`, [column, formats.mysql[precision]])
     : (() => {
       throw new Error(
         `${driverName} does not support timestamp truncation with precision`,
