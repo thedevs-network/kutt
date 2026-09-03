@@ -32,7 +32,7 @@ const spec = {
   DEFAULT_DOMAIN: str({ example: "kutt.to", default: "localhost:3000" }),
   LINK_LENGTH: num({ default: 6 }),
   LINK_CUSTOM_ALPHABET: str({ default: "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789" }),
-  TRUST_PROXY: bool({ default: true }),
+  TRUST_PROXY: str({ default: "0" }),
   DB_CLIENT: str({ choices: supportedDBClients, default: "better-sqlite3" }),
   DB_FILENAME: str({ default: "db/data" }),
   DB_HOST: str({ default: "localhost" }),

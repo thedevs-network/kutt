@@ -30,10 +30,15 @@ require("./passport");
 // create express app
 const app = express();
 
-// this tells the express app that it's running behind a proxy server
-// and thus it should get the IP address from the proxy server
-if (env.TRUST_PROXY) {
+// TRUST_PROXY takes a hop count (example: 1 in the scenario with a single reverse proxy), which is the
+// only way to tell Express to trust just that many hops of X-Forwarded-For. 
+if (env.TRUST_PROXY === "true") {
   app.set("trust proxy", true);
+} else if (env.TRUST_PROXY !== "false") {
+  const trustProxyHops = Number(env.TRUST_PROXY);
+  if (trustProxyHops > 0) {
+    app.set("trust proxy", trustProxyHops);
+  }
 }
 
 app.use(helmet({ contentSecurityPolicy: false }));

@@ -108,7 +108,7 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `DISALLOW_REGISTRATION` | Disable registration. Note that if `MAIL_ENABLED` is set to false, then the registration would still be disabled since it relies on emails to sign up users. | `true` | `false` |
 | `DISALLOW_LOGIN_FORM` | Disable login with email and password. Only makes sense if OIDC is enabled. | `false` | `true` |
 | `DISALLOW_ANONYMOUS_LINKS` | Disable anonymous link creation | `true` | `false` |
-| `TRUST_PROXY` | If the app is running behind a proxy server like NGINX or Cloudflare and that it should get the IP address from that proxy server. If you're not using a proxy server then set this to false, otherwise users can override their IP address. | `true` | `false` |
+| `TRUST_PROXY` | Number of reverse proxy hops to trust for reading the client IP from `X-Forwarded-For`. `0` means don't trust it at all. Never set this higher than the actual number of proxies, or clients can override their own IP and bypass rate limiting. `true`/`false` are also still accepted for backward compatibility (`true` trusts an unbounded chain). | `0` | `1` |
 | `DB_CLIENT` |  Which database client to use. Supported clients: `pg` or `pg-native` for Postgres, `mysql2` for MySQL or MariaDB, `sqlite3` and `better-sqlite3` for SQLite. NOTE: `pg-native` and `sqlite3` are not installed by default, use `npm` to install them before use. | `better-sqlite3` | `pg` |
 | `DB_FILENAME` |  File path for the SQLite database. Only if you use SQLite. | `db/data` | `/var/lib/data` |
 | `DB_HOST` | Database connection host. Only if you use Postgres or MySQL. | `localhost` | `your-db-host.com` |
