@@ -77,7 +77,51 @@
         </label>
       </div>
       <div>
-        <button 
+        <label class="{{#if errors.utm_source}}error{{/if}}">
+          UTM Source:
+          <input
+            id="edit-utm_source-{{id}}"
+            name="utm_source" type="text" placeholder="e.g. google"
+            value="{{utm_source}}" hx-preserve="true" />
+          {{#if errors.utm_source}}<p class="error">{{errors.utm_source}}</p>{{/if}}
+        </label>
+        <label class="{{#if errors.utm_medium}}error{{/if}}">
+          UTM Medium:
+          <input
+            id="edit-utm_medium-{{id}}"
+            name="utm_medium" type="text" placeholder="e.g. cpc"
+            value="{{utm_medium}}" hx-preserve="true" />
+          {{#if errors.utm_medium}}<p class="error">{{errors.utm_medium}}</p>{{/if}}
+        </label>
+        <label class="{{#if errors.utm_campaign}}error{{/if}}">
+          UTM Campaign:
+          <input
+            id="edit-utm_campaign-{{id}}"
+            name="utm_campaign" type="text" placeholder="e.g. spring_sale"
+            value="{{utm_campaign}}" hx-preserve="true" />
+          {{#if errors.utm_campaign}}<p class="error">{{errors.utm_campaign}}</p>{{/if}}
+        </label>
+      </div>
+      <div>
+        <label class="{{#if errors.utm_term}}error{{/if}}">
+          UTM Term:
+          <input
+            id="edit-utm_term-{{id}}"
+            name="utm_term" type="text" placeholder="e.g. running+shoes"
+            value="{{utm_term}}" hx-preserve="true" />
+          {{#if errors.utm_term}}<p class="error">{{errors.utm_term}}</p>{{/if}}
+        </label>
+        <label class="{{#if errors.utm_content}}error{{/if}}">
+          UTM Content:
+          <input
+            id="edit-utm_content-{{id}}"
+            name="utm_content" type="text" placeholder="e.g. logolink"
+            value="{{utm_content}}" hx-preserve="true" />
+          {{#if errors.utm_content}}<p class="error">{{errors.utm_content}}</p>{{/if}}
+        </label>
+      </div>
+      <div>
+        <button
           type="button"
           onclick="
             const tr = closest('tr');
