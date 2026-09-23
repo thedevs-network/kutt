@@ -1,0 +1,19 @@
+{{> header}}
+<main class="link-archive">
+  <div class="archive-heading"><h1>{{t "ui.link_history"}}</h1><a href="/">{{t "ui.links"}}</a><a href="/settings/trash">{{t "ui.trash"}}</a></div>
+  <h2>{{link.link.link}}</h2><p>{{link.lifecycle_label}}</p>
+  <ol class="archive-list">
+    {{#each entries}}
+      <li class="archive-item">
+        <h2>{{localizedLabel "action" action}}</h2><time datetime="{{created_at}}">{{date created_at}}</time>
+        <p>{{actor}} / {{localizedLabel "source" source}}</p>
+        {{#if changed}}<p>{{t "ui.changed_value" value1=changed}}</p>{{/if}}
+      </li>
+    {{else}}<li>{{t "ui.no_recorded_changes"}}</li>{{/each}}
+  </ol>
+  <nav class="archive-nav" aria-label="{{t 'ui.history_pages'}}">
+    {{#if previous}}<a href="{{previous}}">{{t "ui.newer"}}</a>{{/if}}
+    {{#if next}}<a href="{{next}}">{{t "ui.older"}}</a>{{/if}}
+  </nav>
+</main>
+{{> footer}}

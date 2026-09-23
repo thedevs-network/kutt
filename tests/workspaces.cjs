@@ -1,0 +1,158 @@
+const assert = require("node:assert/strict");
+const { randomUUID } = require("node:crypto");
+const { spawnSync } = require("node:child_process");
+const path = require("node:path");
+const Database = require("better-sqlite3");
+
+module.exports = async ({ request, session, database, account, restart, root, directory, env }) => {
+  const db = new Database(database);
+  const checked = async (promise, status = 200) => {
+    const r = await promise;
+    assert.equal(r.status, status, await r.clone().text());
+    return status === 204 || status >= 400 ? null : r.json();
+  };
+  const call = (method, suffix = "", body, who = session, headers) => request(method, "/api/v2/workspaces" + suffix, body, who, headers);
+  try {
+    const owner = db.prepare("SELECT * FROM users WHERE email=?").get(account.email);
+    const people = {};
+    for (const name of ["editor", "viewer", "outsider"]) {
+      const email = `workspace-${name}@example.com`;
+      db.prepare("INSERT INTO users(email,password,verified,banned) VALUES(?,?,1,0)").run(email, owner.password);
+      const login = await checked(request("POST", "/api/auth/login", { email, password: account.password }));
+      people[name] = { ...db.prepare("SELECT id,email FROM users WHERE email=?").get(email), token: login.token };
+    }
+    const editor = people.editor.token, viewer = people.viewer.token, outsider = people.outsider.token;
+    await checked(call("GET", "", undefined, null), 401);
+    for (const name of ["", "a".repeat(81), "line\nbreak", {}, []]) await checked(call("POST", "", { name }), 400);
+    await checked(call("POST", "", { name: "CSRF" }, session, { Origin: "https://evil.invalid" }), 403);
+    await checked(call("POST", "", { name: "CSRF" }, session, { Origin: "null" }), 403);
+    const space = await checked(call("POST", "", { name: "Family workspace" }), 201);
+    const base = "/" + space.id;
+    await checked(call("POST", "", { name: " FAMILY WORKSPACE " }), 409);
+    await checked(call("PATCH", base, { name: "Shared workspace" }));
+    await checked(call("GET", base, undefined, editor), 404);
+    const otherSpace = await checked(call("POST", "", { name: "Private outsider" }, outsider), 201);
+    await checked(call("GET", "/" + otherSpace.id), 404, "Site admin is not a member");
+    const invitations = {};
+    for (const role of ["editor", "viewer"]) invitations[role] = await checked(call("POST", base + "/members", { email: people[role].email, role }), 201);
+    await checked(call("POST", base + "/members", { email: people.editor.email, role: "editor" }), 409);
+    await checked(call("POST", base + "/members", { email: people.outsider.email, role: "owner" }), 400);
+    await checked(call("GET", base, undefined, editor), 404, "Invitation is not access");
+    assert.equal((await checked(call("GET", "", undefined, editor))).invitations.length, 1);
+    await checked(call("POST", "/invitations/" + invitations.editor.id + "/accept", {}, outsider), 404);
+    for (const role of ["editor", "viewer"]) await checked(call("POST", "/invitations/" + invitations[role].id + "/accept", {}, people[role].token));
+    await checked(call("POST", "/invitations/" + invitations.editor.id + "/accept", {}, editor), 404);
+    assert.equal((await checked(call("GET", base, undefined, viewer))).role, "viewer");
+    assert.deepEqual((await checked(call("GET", base, undefined, viewer))).members, []);
+    await checked(call("PATCH", base, { name: "Takeover" }, editor), 403);
+    await checked(call("POST", base + "/members", { email: people.outsider.email, role: "viewer" }, editor), 403);
+    await checked(call("DELETE", base, { confirm: space.id }, editor), 403);
+
+    const personal = await checked(request("POST", "/api/links", { target: "https://192.0.2.1/private", customurl: "ws-private-" + randomUUID() }, session), 201);
+    const shared = await checked(request("POST", "/api/links", { target: "https://192.0.2.1/shared", customurl: "ws-shared-" + randomUUID(), password: "preserve-protection" }, session), 201);
+    await checked(call("POST", base + "/shares", { link_id: shared.id }), 204);
+    await checked(call("POST", base + "/shares", { link_id: shared.id }), 204);
+    assert.equal((await checked(call("GET", base, undefined, viewer))).total, 1);
+    assert.equal((await checked(call("GET", base, undefined, viewer))).data[0].password, true);
+    assert(!(await checked(call("GET", base, undefined, viewer))).data.some(l => l.id === personal.id));
+    await checked(call("PATCH", base + "/links/" + personal.id, { paused: true }, editor), 404);
+    await checked(call("POST", base + "/shares", { link_id: personal.id }, editor), 403);
+    await checked(request("PATCH", "/api/links/" + shared.id + "/lifecycle", { paused: true }, editor), 404);
+    await checked(request("GET", "/api/links/" + shared.id + "/qr", undefined, viewer), 404);
+    await checked(call("PATCH", base + "/links/" + shared.id, { paused: true }, viewer), 403);
+    await checked(call("DELETE", base + "/links/" + shared.id, undefined, viewer), 403);
+    await checked(call("POST", base + "/links", { target: "https://192.0.2.1/viewer" }, viewer), 403);
+    const password = db.prepare("SELECT password FROM links WHERE uuid=?").get(shared.id).password;
+    await checked(call("PATCH", base + "/links/" + shared.id, { description: "Changed by editor", paused: true }, editor));
+    assert.equal(db.prepare("SELECT password FROM links WHERE uuid=?").get(shared.id).password, password);
+    assert.equal((await request("GET", "/" + shared.address)).status, 410);
+    await checked(call("PATCH", base + "/links/" + shared.id, { paused: false, password: null, max_visits: 2 }, editor));
+    assert.equal((await request("GET", "/" + shared.address)).status, 302);
+    const created = await checked(call("POST", base + "/links", { target: "https://192.0.2.1/from-editor", address: "ws-created-" + randomUUID() }, editor), 201);
+    assert.equal(db.prepare("SELECT user_id FROM links WHERE uuid=?").get(created.id).user_id, owner.id);
+    const audit = db.prepare("SELECT h.actor_id FROM link_history h JOIN links l ON l.id=h.link_id WHERE l.uuid=? ORDER BY h.id DESC").get(created.id);
+    assert.equal(audit.actor_id, people.editor.id);
+    for (const input of [{ target: "javascript:alert(1)" }, { target: "https://user:password@example.com" }, { address: "api" }, { max_visits: -1 }, { user_id: people.editor.id }, { password: {} }, { target: ["https://example.com"] }]) {
+      await checked(call("PATCH", base + "/links/" + created.id, input, editor), 400);
+    }
+    await checked(call("PATCH", base + "/links/" + created.id, { target: "https://192.0.2.1/csrf" }, editor, { Origin: "https://evil.invalid" }), 403);
+    const before = db.prepare("SELECT target FROM links WHERE uuid=?").get(created.id).target;
+    db.exec("CREATE TRIGGER fail_workspace_history BEFORE INSERT ON link_history WHEN NEW.action='updated' BEGIN SELECT RAISE(ABORT,'forced rollback'); END");
+    await checked(call("PATCH", base + "/links/" + created.id, { target: "https://192.0.2.1/rollback" }, editor), 500);
+    db.exec("DROP TRIGGER fail_workspace_history");
+    assert.equal(db.prepare("SELECT target FROM links WHERE uuid=?").get(created.id).target, before);
+    await checked(call("PATCH", base + "/links/" + created.id, { address: shared.address }, editor), 409);
+    assert.equal(db.prepare("SELECT target FROM links WHERE uuid=?").get(created.id).target, before);
+    const updates = await Promise.all(Array.from({ length: 4 }, (_, i) => call("PATCH", base + "/links/" + created.id, { description: "Concurrent " + i }, editor)));
+    assert(updates.every(r => r.status === 200), "Serialized editor writes must all succeed");
+    assert.match(db.prepare("SELECT description FROM links WHERE uuid=?").get(created.id).description, /^Concurrent [0-3]$/);
+    const native = await request("POST", "/settings/workspaces/" + space.id,
+      { operation: "edit_link", link_id: created.id, target: "https://192.0.2.1/native-csrf" }, editor,
+      { Origin: "https://evil.invalid", Accept: "text/html" });
+    assert.equal(native.status, 403);
+    assert.equal(db.prepare("SELECT target FROM links WHERE uuid=?").get(created.id).target, before);
+
+    const token = async (scopes, who = editor, domain_scope = "all") => checked(request("POST", "/api/tokens", { name: "Workspace test", scopes, domain_scope }, who), 201);
+    const read = await token(["workspaces:read"]), write = await token(["workspaces:write"]), old = await token(["links:read", "links:update"]);
+    const limited = await token(["workspaces:read", "workspaces:write"], editor, "default");
+    const key = t => ({ "X-API-Key": t.token });
+    await checked(call("GET", base, undefined, session, key(old)), 403, "No cookie elevation");
+    await checked(call("GET", base, undefined, session, key(limited)), 403);
+    await checked(call("GET", base, undefined, null, key(read)));
+    await checked(call("PATCH", base + "/links/" + created.id, { paused: true }, session, key(read)), 403);
+    await checked(call("PATCH", base + "/links/" + created.id, { paused: true }, null, key(write)));
+    await checked(call("POST", base + "/members", { email: people.outsider.email, role: "viewer" }, session, key(write)), 403);
+    await checked(call("GET", "", undefined, null, key(read))).then(r => assert(!("invitations" in r)));
+    await checked(call("PATCH", base + "/members/" + invitations.editor.id, { role: "viewer" }), 204);
+    await checked(call("PATCH", base + "/links/" + created.id, { paused: false }, session, key(write)), 403);
+    await checked(call("PATCH", base + "/members/" + invitations.editor.id, { role: "editor" }), 204);
+    await restart();
+    await checked(call("PATCH", base + "/links/" + created.id, { paused: false }, null, key(write)));
+    db.prepare("UPDATE users SET banned=1 WHERE id=?").run(people.editor.id);
+    const banned = await call("PATCH", base + "/links/" + created.id, { paused: true }, session, key(write));
+    assert([401, 403].includes(banned.status), "Banned editor token must not inherit owner cookie");
+    assert.equal(db.prepare("SELECT paused FROM links WHERE uuid=?").get(created.id).paused, 0);
+    db.prepare("UPDATE users SET banned=0 WHERE id=?").run(people.editor.id);
+    await checked(call("DELETE", base + "/links/" + created.id, undefined, editor));
+    assert.equal((await checked(call("GET", base + "?state=trash", undefined, viewer))).data[0].id, created.id);
+    await checked(call("POST", base + "/links/" + created.id + "/restore", {}, viewer), 403);
+    await checked(call("POST", base + "/links/" + created.id + "/restore", {}, editor));
+    const alias = db.prepare("SELECT address FROM links WHERE uuid=?").get(created.id).address;
+    assert.equal((await request("GET", "/" + alias)).status, 302);
+
+    const domainId = Number(db.prepare("INSERT INTO domains(uuid,address,user_id,banned) VALUES(?,?,?,0)").run(randomUUID(), "workspace-owned.invalid", owner.id).lastInsertRowid);
+    db.prepare("UPDATE links SET domain_id=? WHERE uuid=?").run(domainId, created.id);
+    db.prepare("UPDATE domains SET banned=1 WHERE id=?").run(domainId);
+    await checked(call("PATCH", base + "/links/" + created.id, { paused: true }, editor), 409);
+    db.prepare("UPDATE domains SET banned=0,user_id=? WHERE id=?").run(people.editor.id, domainId);
+    await checked(call("PATCH", base + "/links/" + created.id, { paused: true }, editor), 409);
+    db.prepare("UPDATE links SET domain_id=NULL WHERE uuid=?").run(created.id);
+    await checked(call("POST", base + "/links", { target: "https://192.0.2.1/cross-domain", domain: "workspace-owned.invalid" }, editor), 403);
+    db.prepare("UPDATE users SET banned=1 WHERE id=?").run(owner.id);
+    await checked(call("GET", base, undefined, null, key(read)), 404);
+    assert.equal((await checked(call("GET", "", undefined, null, key(read)))).data.length, 0);
+    db.prepare("UPDATE users SET banned=0 WHERE id=?").run(owner.id);
+    await checked(call("DELETE", base + "/members/" + invitations.editor.id), 204);
+    await checked(call("GET", base, undefined, null, key(read)), 404);
+    await checked(call("PATCH", base + "/links/" + created.id, { paused: true }, session, key(write)), 404);
+    await checked(call("DELETE", base + "/members/" + invitations.viewer.id, undefined, viewer), 204);
+    await checked(call("GET", base, undefined, viewer), 404);
+    const declined = await checked(call("POST", base + "/members", { email: people.viewer.email, role: "viewer" }), 201);
+    await checked(call("POST", "/invitations/" + declined.id + "/decline", {}, viewer));
+    await checked(call("POST", "/invitations/" + declined.id + "/accept", {}, viewer), 404);
+    await checked(request("DELETE", "/api/users/admin/" + owner.id, undefined, session), 409);
+    assert(db.prepare("SELECT id FROM links WHERE uuid=?").get(created.id));
+    const down = spawnSync(process.execPath, [path.join(root, "node_modules/knex/bin/cli.js"), "--knexfile", path.join(root, "knexfile.js"), "migrate:down", "20260914020000_workspaces.js"], { cwd: directory, env, encoding: "utf8", timeout: 60000 });
+    assert.notEqual(down.status, 0, "Refuse destructive workspace downgrade");
+    await checked(call("DELETE", base, { confirm: "wrong" }), 400);
+    await checked(call("DELETE", base, { confirm: space.id }), 204);
+    assert(db.prepare("SELECT id FROM links WHERE uuid=?").get(created.id), "Close keeps link data");
+    assert.equal((await request("GET", "/" + alias)).status, 302, "Close keeps public redirects");
+    await checked(call("DELETE", "/" + otherSpace.id, { confirm: otherSpace.id }, outsider), 204);
+    assert.equal(db.prepare("SELECT count(*) n FROM workspace_members").get().n, 0);
+    assert.equal(db.prepare("SELECT count(*) n FROM workspace_links").get().n, 0);
+    assert.equal(db.pragma("quick_check", { simple: true }), "ok");
+    assert.deepEqual(db.pragma("foreign_key_check"), []);
+    console.log("PASS: workspace roles, accepted invitations/revocation, owner/personal/domain isolation, scoped tokens, CSRF, atomic edits, trash/restore, restart and non-destructive closure/downgrade guard");
+  } finally { db.close(); }
+};

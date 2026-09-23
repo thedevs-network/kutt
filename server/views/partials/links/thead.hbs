@@ -1,18 +1,21 @@
 <thead>
   <tr class="controls links-controls">
     <th class="search">
-      <input class="table-input search" id="search" name="search" type="text" placeholder="Search..." hx-on:keyup="resetTableNav()" />
+      <label class="list-search-label" for="search">{{t "ui.search"}}
+        <input class="table-input search" id="search" name="search" type="search" placeholder="{{t 'ui.search_2'}}" aria-label="{{t 'ui.search_links'}}" data-ui-reset-nav="input" />
+      </label>
       <input id="total" name="total" type="hidden" value="{{total}}" />
       <input id="limit" name="limit" type="hidden" value="10" />
       <input id="skip" name="skip" type="hidden" value="0" />
+      {{> list_sort profile='links' state=query}}
     </th>
     {{> links/nav}}
   </tr>
-  <tr>
-    <th class="original-url">Original URL</th>
-    <th class="created-at">Created at</th>
-    <th class="short-link">Short link</th>
-    <th class="views">Views</th>
-    <th class="actions"></th>
+  <tr class="table-columns">
+    <th class="original-url" scope="col">{{t "ui.original_url"}}</th>
+    <th class="created-at" scope="col">{{t "ui.created_at"}}</th>
+    <th class="short-link" scope="col">{{t "ui.short_link"}}</th>
+    <th class="views" scope="col">{{t "ui.views"}}</th>
+    <th class="actions" scope="col"></th>
   </tr>
 </thead>

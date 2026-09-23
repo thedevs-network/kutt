@@ -8,6 +8,13 @@ const locals = require("../handlers/locals.handler");
 const auth = require("../handlers/auth.handler");
 
 const router = Router();
+const grants = require("../handlers/domain-grants.handler");
+router.get("/available", asyncHandler(auth.apikey), asyncHandler(auth.jwt), grants.boundary, asyncHandler(grants.available));
+router.get("/:id/grants", asyncHandler(auth.apikey), asyncHandler(auth.jwt), grants.boundary, asyncHandler(grants.list));
+router.post("/:id/grants", asyncHandler(auth.apikey), asyncHandler(auth.jwt), auth.sessionOrigin, grants.boundary,
+  helpers.rateLimit({ window: 60, limit: 30, always: true, key: "domain-grants" }), asyncHandler(grants.grant));
+router.delete("/:id/grants/:grantId", asyncHandler(auth.apikey), asyncHandler(auth.jwt), auth.sessionOrigin, grants.boundary,
+  helpers.rateLimit({ window: 60, limit: 30, always: true, key: "domain-grants" }), asyncHandler(grants.revoke));
 
 router.get(
   "/admin",
@@ -25,6 +32,8 @@ router.post(
   locals.viewTemplate("partials/settings/domain/add_form"),
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
+  asyncHandler(auth.sessionOrigin),
+  helpers.rateLimit({ window: 60, limit: 10, always: true }),
   validators.addDomain,
   asyncHandler(helpers.verify),
   asyncHandler(domains.add)
@@ -36,6 +45,7 @@ router.post(
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   asyncHandler(auth.admin),
+  asyncHandler(auth.sessionOrigin),
   validators.addDomainAdmin,
   asyncHandler(helpers.verify),
   asyncHandler(domains.addAdmin)
@@ -46,6 +56,7 @@ router.delete(
   locals.viewTemplate("partials/settings/domain/delete"),
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
+  asyncHandler(auth.sessionOrigin),
   validators.removeDomain,
   asyncHandler(helpers.verify),
   asyncHandler(domains.remove)
@@ -57,6 +68,7 @@ router.delete(
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   asyncHandler(auth.admin),
+  asyncHandler(auth.sessionOrigin),
   validators.removeDomainAdmin,
   asyncHandler(helpers.verify),
   asyncHandler(domains.removeAdmin)
@@ -68,6 +80,7 @@ router.post(
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   asyncHandler(auth.admin),
+  asyncHandler(auth.sessionOrigin),
   validators.banDomain,
   asyncHandler(helpers.verify),
   asyncHandler(domains.ban)

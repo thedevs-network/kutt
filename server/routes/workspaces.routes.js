@@ -1,0 +1,25 @@
+const { Router } = require("express");
+const auth = require("../handlers/auth.handler");
+const handler = require("../handlers/workspaces.handler");
+const helpers = require("../handlers/helpers.handler");
+const asyncHandler = require("../utils/asyncHandler");
+const router = Router();
+router.use(asyncHandler(auth.apikey), asyncHandler(auth.jwt), handler.boundary,
+  helpers.rateLimit({ window: 60, limit: 60 }));
+router.get("/", asyncHandler(handler.list));
+router.post("/", asyncHandler(handler.api("create")));
+router.post("/invitations/:invitationId/accept", asyncHandler(handler.api("accept")));
+router.post("/invitations/:invitationId/decline", asyncHandler(handler.api("decline")));
+router.get("/:id", asyncHandler(handler.detail));
+router.patch("/:id", asyncHandler(handler.api("rename")));
+router.delete("/:id", asyncHandler(handler.api("close")));
+router.post("/:id/members", asyncHandler(handler.api("invite")));
+router.patch("/:id/members/:memberId", asyncHandler(handler.api("role")));
+router.delete("/:id/members/:memberId", asyncHandler(handler.api("remove_member")));
+router.post("/:id/shares", asyncHandler(handler.api("share")));
+router.delete("/:id/shares/:linkId", asyncHandler(handler.api("unshare")));
+router.post("/:id/links", asyncHandler(handler.api("create_link")));
+router.patch("/:id/links/:linkId", asyncHandler(handler.api("edit_link")));
+router.delete("/:id/links/:linkId", asyncHandler(handler.api("trash_link")));
+router.post("/:id/links/:linkId/restore", asyncHandler(handler.api("restore_link")));
+module.exports = router;

@@ -1,0 +1,45 @@
+{{> header}}
+<main class="link-archive routing-page" data-link-id="{{id}}">
+  <header class="archive-heading"><h1>{{t "ui.redirect_rules"}}</h1><a href="/settings/library">{{t "ui.library"}}</a><a href="/">{{t "ui.links"}}</a></header>
+  <p class="routing-url">{{short_url}}</p>
+  <div class="routing-fallback"><h2>{{t "ui.default_destination"}}</h2><p>{{target}}</p></div>
+  <p id="routing-status" role="status" aria-live="polite">{{t "ui.loading"}}</p>
+  <form id="routing-form">
+    <ol id="routing-rules" aria-label="{{t 'ui.ordered_rules'}}"></ol>
+    <div class="routing-toolbar">
+      <button type="button" id="routing-add" disabled>{{> icons/plus}} {{t "ui.add_rule"}}</button>
+      <button type="submit" id="routing-save" class="primary" disabled>{{> icons/check}} {{t "ui.save_rules"}}</button>
+      <button type="button" id="routing-reload" title="{{t 'ui.reload_saved_rules'}}" aria-label="{{t 'ui.reload_saved_rules'}}">{{> icons/reload}}</button>
+    </div>
+  </form>
+  <section class="routing-preview"><h2>{{t "ui.test_redirect"}}</h2>
+    <form id="routing-preview-form">
+      <label>{{t "ui.device"}}<select name="device" aria-label="{{t 'ui.device'}}"><option value="desktop">{{t "ui.desktop"}}</option><option value="mobile">{{t "ui.mobile"}}</option><option value="tablet">{{t "ui.tablet"}}</option><option value="bot">{{t "ui.bot"}}</option><option value="other">{{t "ui.other"}}</option></select></label>
+      <label>{{t "ui.preferred_language"}}<input name="language" placeholder="fr-FR" maxlength="35" /></label>
+      <label>{{t "ui.country"}}<input name="country" placeholder="FR" maxlength="2" /></label>
+      <label>{{t "ui.query_string"}}<input name="query" placeholder="{{t 'ui.campaign_summer'}}" maxlength="2048" /></label>
+      <button type="submit" id="routing-test" disabled>{{t "ui.preview"}}</button>
+    </form>
+    <output id="routing-result" aria-live="polite"></output>
+  </section>
+  <template id="routing-rule-template"><li class="routing-rule">
+    <div class="routing-rule-heading"><h2></h2><div class="routing-rule-actions">
+      <button type="button" data-action="up" title="{{t 'ui.move_rule_up'}}" aria-label="{{t 'ui.move_rule_up'}}"><span class="routing-up">{{> icons/chevron_left}}</span></button>
+      <button type="button" data-action="down" title="{{t 'ui.move_rule_down'}}" aria-label="{{t 'ui.move_rule_down'}}"><span class="routing-down">{{> icons/chevron_right}}</span></button>
+      <button type="button" data-action="remove" title="{{t 'ui.remove_rule'}}" aria-label="{{t 'ui.remove_rule'}}">{{> icons/trash}}</button>
+    </div></div>
+    <div class="routing-rule-fields"><label>{{t "ui.name"}}<input data-field="name" required maxlength="80" /></label><label>{{t "ui.destination"}}<input data-field="target" type="url" required maxlength="2040" /></label></div>
+    <div class="routing-conditions"></div><button type="button" data-action="add-condition">{{> icons/plus}} {{t "ui.add_condition"}}</button>
+  </li></template>
+  <template id="routing-condition-template"><div class="routing-condition">
+    <label>{{t "ui.condition"}}<select data-field="kind" aria-label="{{t 'ui.condition'}}"><option value="devices">{{t "ui.device"}}</option><option value="languages">{{t "ui.language"}}</option><option value="countries">{{t "ui.country"}}</option><option value="query">{{t "ui.query"}}</option></select></label>
+    <label data-part="device">{{t "ui.device"}}<select data-field="device" aria-label="{{t 'ui.device'}}"><option value="desktop">{{t "ui.desktop"}}</option><option value="mobile">{{t "ui.mobile"}}</option><option value="tablet">{{t "ui.tablet"}}</option><option value="bot">{{t "ui.bot"}}</option><option value="other">{{t "ui.other"}}</option></select></label>
+    <label data-part="values" hidden>{{t "ui.values_comma_separated"}}<input data-field="values" maxlength="700" /></label>
+    <label data-part="key" hidden>{{t "ui.query_key"}}<input data-field="key" maxlength="80" /></label>
+    <label data-part="op" hidden>{{t "ui.match"}}<select data-field="op" aria-label="{{t 'ui.match'}}"><option value="equals">{{t "ui.equals"}}</option><option value="present">{{t "ui.present"}}</option><option value="absent">{{t "ui.absent"}}</option></select></label>
+    <label data-part="value" hidden>{{t "ui.value"}}<input data-field="value" maxlength="200" /></label>
+    <button type="button" data-action="remove-condition" title="{{t 'ui.remove_condition'}}" aria-label="{{t 'ui.remove_condition'}}">{{> icons/x}}</button>
+  </div></template>
+</main>
+<script nonce="{{cspNonce}}" src="/scripts/routing.js" defer></script>
+{{> footer}}

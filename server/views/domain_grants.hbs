@@ -1,0 +1,31 @@
+{{> header}}
+<main class="domain-grants">
+  <header><h1>{{t "domain_grants.title"}}</h1><a href="/settings">{{t "ui.settings"}}</a></header>
+  {{#if selected}}
+    <nav><a href="/settings/domain-sharing">{{t "ui.domains"}}</a></nav>
+    <h2>{{selected.domain.address}}</h2>
+    {{#if error}}<p class="error" role="alert">{{error}}</p>{{/if}}
+    {{#if selected.domain.banned}}<p role="status">{{t "domain_grants.banned"}}</p>{{else}}
+      <form method="post" action="/settings/domain-sharing/{{selected.domain.id}}" class="grant-form">
+        <input type="hidden" name="operation" value="grant" />
+        <div><label for="grant-email">{{t "domain_grants.recipient"}}</label>
+          <input id="grant-email" name="email" type="email" value="{{email}}" autocomplete="off" maxlength="255" required /></div>
+        <button class="primary" type="submit">{{t "domain_grants.grant"}}</button>
+      </form>
+    {{/if}}
+    <ul class="grant-list">
+      {{#each selected.data}}
+        <li><div><span>{{email}}</span><time datetime="{{created_at}}">{{date created_at}}</time></div>
+          <form method="get" action="/settings/domain-sharing/{{../selected.domain.id}}/revoke/{{id}}">
+            <button type="submit" class="secondary" aria-label="{{t 'domain_grants.revoke_for' email=email}}">{{t "domain_grants.revoke"}}</button>
+          </form></li>
+      {{else}}<li>{{t "domain_grants.empty"}}</li>{{/each}}
+    </ul>
+  {{else}}
+    <h2>{{t "domain_grants.owned"}}</h2>
+    <ul class="grant-list">{{#each owned}}<li><a href="/settings/domain-sharing/{{uuid}}">{{address}}</a></li>{{else}}<li>{{t "ui.no_domains_yet"}}</li>{{/each}}</ul>
+    <h2>{{t "domain_grants.shared"}}</h2>
+    <ul class="grant-list">{{#each shared}}<li>{{address}}</li>{{else}}<li>{{t "domain_grants.no_shared"}}</li>{{/each}}</ul>
+  {{/if}}
+</main>
+{{> footer}}

@@ -1,0 +1,13 @@
+const { Router } = require("express");
+const auth = require("../handlers/auth.handler");
+const tokens = require("../handlers/tokens.handler");
+const shortcuts = require("../handlers/shortcuts.handler");
+const helpers = require("../handlers/helpers.handler");
+const asyncHandler = require("../utils/asyncHandler");
+const router = Router();
+router.use(tokens.sessionOnly, asyncHandler(auth.jwt), require("../handlers/privacy.handler").boundary);
+router.get("/", shortcuts.recipe);
+router.get("/template", shortcuts.template);
+router.get("/guide", shortcuts.guide);
+router.post("/token", helpers.rateLimit({ window: 60, limit: 5 }), asyncHandler(shortcuts.create));
+module.exports = router;

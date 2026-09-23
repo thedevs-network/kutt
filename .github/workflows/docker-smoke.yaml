@@ -1,0 +1,71 @@
+name: Docker smoke test
+
+on:
+  pull_request:
+    paths:
+      - "Dockerfile"
+      - "package*.json"
+      - "server/**"
+      - "knexfile.js"
+      - "docker-compose*.yml"
+      - ".example.env"
+      - "tests/**"
+      - "static/**"
+      - "locales/**"
+      - "examples/**"
+      - "scripts/**"
+      - ".dockerignore"
+      - ".github/workflows/docker-smoke.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sqlite-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build production image
+        run: docker build -t kutt-smoke .
+      - name: Validate example deployment configuration
+        run: python3 tests/compose-config.py
+      - name: Check hardened image runtime
+        run: docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges:true --entrypoint node kutt-smoke tests/image-hardening.cjs
+      - name: Test isolated SQLite runtime without external network access
+        run: docker run --rm --network none --entrypoint node kutt-smoke tests/container-smoke.cjs
+      - name: Test isolated Redis worker and rate limits
+        run: sh tests/redis-smoke.sh kutt-smoke
+      - name: Test asymmetric OIDC login and logout
+        run: docker run --rm --network none --entrypoint node kutt-smoke tests/oidc-algorithms.cjs
+      - name: Unicode search on real MySQL and PostgreSQL
+        run: |
+          sh tests/search-database.sh kutt-smoke mysql2
+          sh tests/search-database.sh kutt-smoke pg
+      - name: Stable sorting on SQLite
+        run: docker run --rm --network none --read-only --tmpfs /tmp:mode=1777 --cap-drop ALL --security-opt no-new-privileges:true -e KUTT_DATABASE_DISPOSABLE=1 -e DB_CLIENT=better-sqlite3 -e DB_FILENAME=/tmp/kutt-sort-ci.sqlite -e REDIS_ENABLED=false -e DEFAULT_DOMAIN=localhost -e JWT_SECRET=disposable-sort-fixture-not-a-real-secret --entrypoint node kutt-smoke tests/list-sort-sqlite.cjs
+      - name: OIDC role lifecycle on real MySQL and PostgreSQL
+        run: |
+          sh tests/search-database.sh kutt-smoke mysql2 tests/oidc-roles-database.cjs
+          sh tests/search-database.sh kutt-smoke pg tests/oidc-roles-database.cjs
+      - name: Shared-domain grants on real MySQL and PostgreSQL
+        run: |
+          sh tests/search-database.sh kutt-smoke mysql2 tests/management-domain-grants.cjs
+          sh tests/search-database.sh kutt-smoke pg tests/management-domain-grants.cjs
+      - name: Verified database and Redis TLS
+        run: |
+          sh tests/transport-tls.sh kutt-smoke pg
+          sh tests/transport-tls.sh kutt-smoke mysql2
+          sh tests/transport-tls.sh kutt-smoke redis
+      - name: Browser sorting and concurrent draft regression
+        run: |
+          npm install --prefix "$RUNNER_TEMP/kutt-browser" --no-audit --no-fund --package-lock=false playwright@1.62.1
+          node "$RUNNER_TEMP/kutt-browser/node_modules/playwright/cli.js" install --with-deps chromium
+          PLAYWRIGHT_MODULE="$RUNNER_TEMP/kutt-browser/node_modules/playwright" KUTT_EVIDENCE_DIR="$RUNNER_TEMP/kutt-browser-evidence" sh tests/browser-list-sorting.sh kutt-smoke
+      - name: English French Spanish workflows
+        run: PLAYWRIGHT_MODULE="$RUNNER_TEMP/kutt-browser/node_modules/playwright" KUTT_EVIDENCE_DIR="$RUNNER_TEMP/kutt-i18n-evidence" sh tests/browser-i18n.sh kutt-smoke
+      - name: Community features under enforced CSP
+        run: |
+          npm ci --prefix tests/browser-deps --no-audit --no-fund
+          PLAYWRIGHT_MODULE="$RUNNER_TEMP/kutt-browser/node_modules/playwright" KUTT_EVIDENCE_DIR="$RUNNER_TEMP/kutt-community-evidence" sh tests/browser-community.sh kutt-smoke

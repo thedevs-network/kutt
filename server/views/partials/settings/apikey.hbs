@@ -1,20 +1,18 @@
 <section id="apikey-wrapper">
-  <h2>API</h2>
+  <h2>{{t "ui.legacy_api_key"}}</h2>
   <p>
-    In additional to this website, you can use the API to create, delete and
-    get shortened URLs. If you're not familiar with API, don't generate the key. 
-    DO NOT share this key on the client side of your website. 
-    <a href="https://docs.kutt.to" title="API Docs" target="_blank">
-      Read API docs.
+    {{t "ui.in_additional_to_this_website_you_can_use_the_api_to"}}
+    <a href="https://docs.kutt.to" title="{{t 'ui.api_docs'}}" target="_blank">
+      {{t "ui.read_api_docs"}}
     </a>
   </p>
-  <div id="apikey">
+  <div id="apikey" data-copy-container>
     {{#if user.apikey}}
       <div class="clipboard small">
         <button 
           type="button"
-          aria-label="Copy" 
-          hx-on:click="handleShortURLCopyLink(this);" 
+          aria-label="{{t 'ui.copy'}}"
+          data-ui-copy
           data-url="{{user.apikey}}"
         >
         {{> icons/copy}}
@@ -22,7 +20,7 @@
         {{> icons/check}}
       </div>
       <p 
-        hx-on:click="handleShortURLCopyLink(this);" 
+        data-ui-copy
         data-url="{{user.apikey}}"
       >
         {{user.apikey}}
@@ -41,7 +39,7 @@
     <button type="submit" class="secondary">
       <span>{{> icons/zap}}</span>
       <span>{{> icons/spinner}}</span>
-      {{#if user.apikey}}Reg{{else}}G{{/if}}enerate key
+      {{#if user.apikey}}{{t "token.regenerate"}}{{else}}{{t "token.generate"}}{{/if}}
     </button>
   </form>
 </section>

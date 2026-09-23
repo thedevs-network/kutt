@@ -1,0 +1,21 @@
+<form id="lifecycle-{{id}}" class="link-lifecycle" method="post" action="/api/links/{{id}}/lifecycle"
+  hx-patch="/api/links/{{id}}/lifecycle" hx-select="#lifecycle-{{id}}" hx-swap="outerHTML settle:0ms">
+  <fieldset>
+    <legend>{{t "ui.availability"}}</legend>
+    <label><input type="checkbox" name="paused" {{#if paused}}checked{{/if}} /> {{t "ui.paused"}}</label>
+    <label>{{t "ui.start_utc"}}<input type="datetime-local" step="1" name="starts_at" value="{{starts_at_input}}" /></label>
+    <label>{{t "ui.end_utc"}}<input type="datetime-local" step="1" name="ends_at" value="{{ends_at_input}}" /></label>
+    <label>{{t "ui.maximum_redirects"}}<input type="number" name="max_visits" min="1" max="2147483647" step="1" value="{{max_visits}}" /></label>
+    <label><input type="checkbox" name="clear_expiry" {{#if clear_expiry}}checked{{/if}} /> {{t "ui.remove_previous_expiry"}}</label>
+    <input type="hidden" name="expiry_snapshot" value="{{expiry_snapshot}}" />
+    {{#if error}}<small>{{t "ui.current_expiry"}} {{#if expire_in}}{{expire_in}}{{else}}{{t "ui.none"}}{{/if}}</small>{{/if}}
+    <p>{{lifecycle_label}} &middot; {{t "lifecycle.redirects" count=redirect_count formatted=(number redirect_count)}}</p>
+    <button type="submit" class="primary" id="availability-submit-{{id}}">{{t "ui.save_availability"}}</button>
+  </fieldset>
+  <div class="response" role="status">
+    {{#if error}}<p class="error">{{error}}</p>{{else if success}}<p class="success">{{success}}</p>{{/if}}
+  </div>
+  {{#if success}}
+    <template><p id="lifecycle-status-{{id}}" class="description" hx-swap-oob="true">{{lifecycle_label}}</p></template>
+  {{/if}}
+</form>

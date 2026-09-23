@@ -1,0 +1,28 @@
+.language-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+}
+.language-selector label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.language-selector select { width: 8rem; max-width: 100%; margin: 0; padding: 0 1.75rem 0 0.75rem; letter-spacing: 0; }
+.language-selector button { width: 2rem; height: 2rem; padding: 0.35rem; flex: 0 0 2rem; }
+.language-selector svg { width: 1rem; height: 1rem; }
+.site-header { flex-wrap: wrap; gap: 0.75rem; }
+.site-header nav > ul { flex-wrap: wrap; }
+button, .button, label, summary { overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .site-header nav { width: 100%; }
+  .site-header nav > ul { justify-content: flex-start; gap: 0.65rem; }
+  .library .library-filters > label,
+  .library .library-filters > label:first-child,
+  .library-toolbar > label:not(.library-checkbox) { flex-basis: 100%; }
+  .list-sort-controls label { flex-basis: 100%; }
+}
+.destination-policy code { overflow-wrap: anywhere; }

@@ -1,0 +1,25 @@
+.health-page { max-width: 900px; }
+.health-page * { box-sizing: border-box; min-width: 0; }
+.health-page .archive-heading { position: static; width: 100%; height: auto; min-height: 0; padding: 0; margin: 1rem 0; justify-content: flex-start; }
+.health-page .archive-heading h1 { font-size: 1.65rem; margin: 0 auto 0 0; }
+.health-page h2 { font-size: 1.15rem; }
+.health-page p, .health-page li, .health-page a { overflow-wrap: anywhere; line-height: 1.5; }
+.health-page form { display: grid; gap: 1rem; }
+.health-page label { display: flex; flex-direction: column; gap: .5rem; }
+.health-page .health-toggle { flex-direction: row; align-items: center; }
+.health-page input[type=checkbox] { width: 20px; height: 20px; }
+.health-page input[type=number] { width: 140px; padding: .6rem; background: white; border: 1px solid #aebdc3; border-radius: 6px; font: inherit; color: inherit; }
+.health-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
+.health-page button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 42px; padding: .6rem .9rem; background: #176ec0; color: white; border: 0; border-radius: 6px; box-shadow: none; transition: background-color .15s; transform: none; }
+.health-page button:disabled { opacity: .5; }
+.health-page button[hidden] { display: none; }
+.health-page button svg { width: 18px; height: 18px; }
+#health-refresh, #health-reload { background: #e1e7e9; color: inherit; }
+.health-page section { margin-top: 2rem; border-top: 1px solid #cbd5da; padding-top: 1rem; }
+.health-page ul { list-style: none; padding: 0; }
+.health-page li { border-bottom: 1px solid #cbd5da; padding: 1rem 0; }
+.health-page li p { margin: .5rem 0; }
+.health-page .error { color: #b32336; animation: none; }
+.health-page .healthy { color: #26743c; }
+#health-message { min-height: 1.5rem; }
+@media (max-width: 640px) { .health-page .archive-heading h1 { font-size: 1.4rem; flex-basis: 100%; } }

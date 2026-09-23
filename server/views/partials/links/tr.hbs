@@ -1,6 +1,7 @@
 <tr id="tr-{{id}}" {{#if swap_oob}}hx-swap-oob="true"{{/if}}>
   <td class="original-url right-fade">
-    <a href="{{target}}" target="_blank" rel="noopener noreferrer">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.original_url"}}</span>
+    <a href="{{target}}" title="{{target}}" target="_blank" rel="noopener noreferrer">
       {{target}}
     </a>
     {{#if description}}
@@ -10,18 +11,21 @@
     {{/if}}
   </td>
   <td class="created-at">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.created_at_availability"}}</span>
     {{relative_created_at}}
+    <p id="lifecycle-status-{{id}}" class="description">{{lifecycle_label}}</p>
     {{#if relative_expire_in}}
       <p class="description">
-        Expires in {{relative_expire_in}}
+        {{t "ui.expires_in_value" value1=relative_expire_label}}
       </p>
     {{/if}}
   </td>
-  <td class="short-link right-fade">
+  <td class="short-link right-fade" data-copy-container>
+    <span class="table-field-label" aria-hidden="true">{{t "ui.short_link"}}</span>
     <div class="clipboard small">
       <button 
-        aria-label="Copy" 
-        hx-on:click="handleShortURLCopyLink(this);"
+        aria-label="{{t 'ui.copy'}}"
+        data-ui-copy
         data-url="{{link.url}}"
       >
         {{> icons/copy}}
@@ -33,6 +37,7 @@
     </a>
   </td>
   <td class="views">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.views"}}</span>
     {{visit_count}}
   </td>
     {{> links/actions}}

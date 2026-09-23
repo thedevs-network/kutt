@@ -1,33 +1,32 @@
 <h2>
-  Custom domain
+  {{t "ui.custom_domain"}}
 </h2>
 <p>
-  You can set a custom domain for your short URLs, so instead of
-  <b>{{default_domain}}/shorturl</b> you can have
-  <b>yoursite.com/shorturl.</b>
+  {{t "ui.you_can_set_a_custom_domain_for_your_short_urls_so"}}
+  <b>{{default_domain}}/shorturl</b> {{t "ui.you_can_have"}}
+  <b>{{t "ui.yoursite_com_shorturl"}}</b>
 </p>
 
 {{#if server_cname_address}}
   <p>
-    Point your domain's A record to 
+    {{t "ui.point_your_domain_s_a_record_to"}}
     {{#if server_ip_address}}
       <b>{{server_ip_address}}</b>
     {{else}}
-      our <b>IP address</b>
-    {{/if}} or your subdomain's CNAME record to
-    <b>{{server_cname_address}}</b>. If you're using <b>Cloudflare</b>,
-    make sure to use <b>DNS only</b> mode for your subdomain.
+      {{t "ui.our"}} <b>{{t "ui.ip_address"}}</b>
+    {{/if}} {{t "ui.or_your_subdomain_s_cname_record_to"}}
+    <b>{{server_cname_address}}</b>{{t "ui.https_and_proxy_routing_must_be_configured_by_the_service_administrator"}}
   </p>
-  <p>Then, add the domain via the form below:</p>
+  <p>{{t "ui.then_add_the_domain_and_verify_its_dns_ownership"}}</p>
 {{else}}
   <p>
-    Point your domain's A record to 
+    {{t "ui.point_your_domain_s_a_record_to"}}
     {{#if server_ip_address}}
       <b>{{server_ip_address}}</b>
     {{else}}
-      our <b>IP address</b>
+      {{t "ui.our"}} <b>{{t "ui.ip_address"}}</b>
     {{/if}} 
-    then add the domain via the form below:
+    {{t "ui.then_add_the_domain_and_verify_its_dns_ownership_2"}}
   </p>
 {{/if}}
 
@@ -39,13 +38,14 @@
     hx-indicator=".add-domain-wrapper"
     hx-get="/add-domain-form"
     hx-target="#domain-form-wrapper"
-    hx-swap="innerHTML"
-    hx-on::after-request="event.srcElement.classList.add('hidden')"
+    hx-swap="innerHTML settle:0"
+    data-ui-domain-load
   >
     <span>{{> icons/plus}}</span>
-    Add domain
+    {{t "ui.add_domain"}}
   </button>
   {{> icons/spinner}}
+  <p id="domain-load-error" class="error" role="alert" hidden>{{t "ui.could_not_load_the_domain_form_try_again"}}</p>
   <div id="domain-form-wrapper">
   </div>
 </div>

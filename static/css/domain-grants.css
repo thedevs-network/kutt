@@ -1,0 +1,20 @@
+.domain-grants { display: block; text-align: left; width: calc(100% - 32px); max-width: 960px; margin: 24px auto; padding: 0; box-sizing: border-box; }
+.domain-grants header, .grant-form, .grant-list li { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; }
+.domain-grants header { justify-content: space-between; width: 100%; height: auto; min-height: 0; margin: 0 0 16px; padding: 0; }
+.domain-grants h1 { font-size: 28px; line-height: 1.2; margin: 0; }
+.domain-grants h2 { font-size: 20px; margin: 28px 0 16px; }
+.domain-grants h1, .domain-grants h2, .grant-list li, .domain-grants p { overflow-wrap: anywhere; min-width: 0; }
+.domain-grants .grant-form { margin: 24px 0; align-items: end; flex-direction: row; }
+.grant-form > div { flex: 1 1 240px; min-width: 0; }
+.grant-form label, .grant-list time { display: block; margin-bottom: 8px; }
+.grant-form input { width: 100%; box-sizing: border-box; min-height: 40px; }
+.domain-grants button { width: auto; min-height: 40px; padding: 8px 16px; white-space: normal; }
+.grant-list { padding: 0; list-style: none; }
+.grant-list li { padding: 16px 0; border-bottom: 1px solid var(--color-border, #a0a0a0); }
+.grant-list li > div { flex: 1 1 200px; min-width: 0; }
+.grant-list form { margin: 0; width: auto; }
+.grant-list time { font-size: 14px; margin-top: 4px; }
+.grant-consequences { padding-left: 24px; }
+.grant-consequences li { margin: 12px 0; overflow-wrap: anywhere; }
+.domain-grants .grant-confirm-actions { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 16px; width: auto; margin: 24px 0; }
+.grant-confirm-actions .button { min-height: 40px; box-sizing: border-box; }

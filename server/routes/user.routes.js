@@ -33,6 +33,7 @@ router.post(
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   asyncHandler(auth.admin),
+  asyncHandler(auth.sessionOrigin),
   validators.createUser,
   asyncHandler(helpers.verify),
   asyncHandler(user.create)
@@ -43,6 +44,7 @@ router.post(
   locals.viewTemplate("partials/settings/delete_account"),
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
+  asyncHandler(auth.sessionOrigin),
   validators.deleteUser,
   asyncHandler(helpers.verify),
   asyncHandler(user.remove)
@@ -54,6 +56,7 @@ router.delete(
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   asyncHandler(auth.admin),
+  asyncHandler(auth.sessionOrigin),
   validators.deleteUserByAdmin,
   asyncHandler(helpers.verify),
   asyncHandler(user.removeByAdmin)
@@ -65,6 +68,7 @@ router.post(
   asyncHandler(auth.apikey),
   asyncHandler(auth.jwt),
   asyncHandler(auth.admin),
+  asyncHandler(auth.sessionOrigin),
   validators.banUser,
   asyncHandler(helpers.verify),
   asyncHandler(user.ban)

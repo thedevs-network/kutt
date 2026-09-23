@@ -2,22 +2,23 @@
   {{#if id}}
     <form 
       id="edit-form-{{id}}"
+      method="post" action="/api/links/{{id}}"
       hx-patch="/api/links/{id}"
       hx-ext="path-params"
       hx-vals='{"id":"{{id}}"}' 
-      hx-select="form"
-      hx-swap="outerHTML"
+      hx-select="#edit-form-{{id}}"
+      hx-swap="outerHTML settle:0ms"
       hx-sync="this:replace"
       class="{{class}}"
     >
       <div>
         <label class="{{#if errors.target}}error{{/if}}">
-          Target:
+          {{t "ui.target"}}
           <input 
             id="edit-target-{{id}}"
             name="target" 
             type="text" 
-            placeholder="Target..." 
+            placeholder="{{t 'ui.target_2'}}"
             required="true"
             value="{{target}}"
             hx-preserve="true"
@@ -30,7 +31,8 @@
             id="edit-address-{{id}}"
             name="address" 
             type="text" 
-            placeholder="Custom URL..." 
+            placeholder="guide.pdf"
+            maxlength="64"
             required="true"
             value="{{address}}"
             hx-preserve="true"
@@ -38,12 +40,12 @@
           {{#if errors.address}}<p class="error">{{errors.address}}</p>{{/if}}
         </label>
         <label class="{{#if errors.password}}error{{/if}}">
-          Password:
+          {{t "ui.password"}}
           <input 
             id="edit-password-{{id}}"
             name="password" 
             type="password" 
-            placeholder="Password..." 
+            placeholder="{{t 'ui.password_2'}}"
             value="{{#if password}}••••••••{{/if}}"
             hx-preserve="true"
           />
@@ -52,50 +54,47 @@
       </div>
       <div>
         <label class="{{#if errors.description}}error{{/if}}">
-          Description:
+          {{t "ui.description"}}
           <input 
             id="edit-description-{{id}}"
             name="description" 
             type="text" 
-            placeholder="Description..." 
+            placeholder="{{t 'ui.description_2'}}"
             value="{{description}}"
             hx-preserve="true"
           />
           {{#if errors.description}}<p class="error">{{errors.description}}</p>{{/if}}
         </label>
         <label class="{{#if errors.expire_in}}error{{/if}}">
-          Expire in:
+          {{t "ui.expire_in"}}
           <input 
             id="edit-expire_in-{{id}}"
             name="expire_in" 
             type="text" 
-            placeholder="2 minutes/hours/days"
+            placeholder="{{t 'ui.2_minutes_hours_days'}}"
             value="{{relative_expire_in}}"
-            hx-preserve="true"
           />
+          <input type="hidden" name="expiry_snapshot" value="{{expiry_snapshot}}" />
+          {{#if error}}<small>{{t "ui.current_expiry"}} {{#if expire_in}}{{expire_in}}{{else}}{{t "ui.none"}}{{/if}}</small>{{/if}}
           {{#if errors.expire_in}}<p class="error">{{errors.expire_in}}</p>{{/if}}
         </label>
       </div>
+      {{> campaign}}
       <div>
         <button 
           type="button"
-          onclick="
-            const tr = closest('tr');
-            if (!tr) return;
-            tr.classList.remove('show');
-            tr.removeChild(tr.querySelector('.content'));
-          "
+          data-ui-edit-close="{{id}}"
         >
-          Close
+          {{t "ui.close"}}
         </button>
-        <button type="submit" class="primary">
+        <button type="submit" class="primary" id="edit-submit-{{id}}">
           <span class="reload">
             {{> icons/reload}}
           </span>
           <span class="loader">
             {{> icons/spinner}}
           </span>
-          Update
+          {{t "ui.update"}}
         </button>
       </div>
       <div class="response">
@@ -111,7 +110,9 @@
         {{> links/tr}}
       </template>
     </form>
+    {{> links/lifecycle}}
+    <a href="/link/history/{{id}}">{{t "ui.history"}}</a>
   {{else}}
-    <p class="no-data">No link was found.</p>
+    <p class="no-data">{{t "ui.no_link_was_found"}}</p>
   {{/if}}
 </td>

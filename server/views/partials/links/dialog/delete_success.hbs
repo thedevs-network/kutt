@@ -3,10 +3,10 @@
     {{> icons/check}}
   </div>
   <p>
-    Your link <b>"{{link}}"</b> has been deleted.
+    {{t "ui.your_link"}} <b>"{{link}}"</b> {{t "ui.is_in_trash"}}
   </p>
   <div class="buttons">
-    <button type="button" hx-on:click="closeDialog()">Close</button>
+    <a href="/settings/trash">{{t "ui.open_trash"}}</a>
+    <button type="button" data-ui-close-dialog>{{t "ui.close"}}</button>
   </div>
 </div>
-

@@ -1,87 +1,86 @@
 <tr id="tr-{{id}}" {{#if swap_oob}}hx-swap-oob="true"{{/if}}>
   <td class="domains-id">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.id"}}</span>
     {{id}}
   </td>
   <td class="domains-address right-fade">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.address_owner"}}</span>
     {{address}}
     <p class="description">
-      by&nbsp;
+      {{t "ui.by"}}
       {{~#if user_id~}}
-        <a 
-          aria-label="View user" 
-          data-tooltip="View user" 
+        <button type="button" class="link-button" data-focus-after="#tab-users" aria-label="{{t 'ui.view_user'}}"
+          data-tooltip="{{t 'ui.view_user'}}"
           hx-get="/api/users/admin"
           hx-target="closest table"
-          hx-swap="outerHTML" 
+          hx-swap="outerHTML settle:0ms"
           hx-sync="this:replace"
           hx-indicator="closest table"
           hx-vals='{"search":"{{email}}"}'
-          onclick="setTab(event, 'tab-links')"
         >
           {{email}}
-        </a>
+        </button>
         {{#ifEquals @root.query.user email}}
         {{else}}
           &nbsp;(
-          <a 
-            aria-label="View domains" 
-            data-tooltip="View domains" 
+          <button type="button" class="link-button" data-focus-after="#tab-domains" aria-label="{{t 'ui.view_domains'}}"
+            data-tooltip="{{t 'ui.view_domains'}}"
             hx-get="/api/domains/admin"
             hx-target="closest table"
-            hx-swap="outerHTML" 
+            hx-swap="outerHTML settle:0ms"
             hx-sync="this:replace"
             hx-indicator="closest table"
             hx-vals='{"user":"{{email}}"}'
           >
-            view domains
-          </a>)
+            {{t "ui.view_domains_2"}}
+          </button>)
         {{/ifEquals}}
       {{~else~}}
-        <a 
-          aria-label="View system domains" 
-          data-tooltip="View system domains" 
+        <button type="button" class="link-button" data-focus-after="#tab-domains" aria-label="{{t 'ui.view_system_domains'}}"
+          data-tooltip="{{t 'ui.view_system_domains'}}"
           hx-get="/api/domains/admin"
           hx-target="closest table"
-          hx-swap="outerHTML" 
+          hx-swap="outerHTML settle:0ms"
           hx-sync="this:replace"
           hx-indicator="closest table"
           hx-vals='{"owner":"false"}'
         >
-          System
-        </a>
+          {{t "ui.system"}}
+        </button>
       {{~/if~}}
       &nbsp;{{~#if description~}}· {{description}}{{~/if}}
     </p>
   </td>
   <td class="domains-homepage right-fade">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.homepage"}}</span>
     {{#if homepage}}
-      <a href="{{homepage}}" target="_blank" rel="noopener noreferrer">
+      <a href="{{homepage}}" title="{{homepage}}" target="_blank" rel="noopener noreferrer">
         {{homepage}}
       </a>
     {{else}}
-      No homepage
+      {{t "ui.no_homepage"}}
     {{/if}}
   </td>
   <td class="domains-created-at">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.created_at"}}</span>
     {{relative_created_at}}
   </td>
   <td class="domains-links-count">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.total_links"}}</span>
     {{#ifEquals links_count '0'}}
       {{links_count}}
     {{else}}
-      <a
-        data-tooltip="View links"
-        aria-label="View links"
+      <button type="button" class="link-button" data-focus-after="#tab-links" data-tooltip="{{t 'ui.view_links'}}"
+        aria-label="{{t 'ui.view_links'}}"
         hx-get="/api/links/admin"
         hx-target="closest table"
-        hx-swap="outerHTML" 
+        hx-swap="outerHTML settle:0ms"
         hx-sync="this:replace"
         hx-vals='{"domain":"{{address}}"}'
         hx-indicator="closest table"
-        onclick="setTab(event, 'tab-links')"
       >
         {{links_count}}
-      </a>
+      </button>
     {{/ifEquals}}
   </td>
   {{> admin/domains/actions}}

@@ -3,12 +3,7 @@ const path = require("node:path");
 
 const env = require("../env");
 
-const redis = {
-  port: env.REDIS_PORT,
-  host: env.REDIS_HOST,
-  db: env.REDIS_DB,
-  ...(env.REDIS_PASSWORD && { password: env.REDIS_PASSWORD })
-};
+const redis = require("../redis-options")(env);
 
 let visit;
 

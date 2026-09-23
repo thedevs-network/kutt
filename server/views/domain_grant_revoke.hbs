@@ -1,0 +1,21 @@
+{{> header}}
+<main class="domain-grants">
+  <header><h1>{{t "domain_grants.confirm_title"}}</h1></header>
+  {{#if error}}<p class="error" role="alert">{{error}}</p>{{/if}}
+  {{#if grant}}
+    <p>{{t "domain_grants.confirm_recipient" email=grant.email domain=domain.address}}</p>
+    <ul class="grant-consequences">
+      <li>{{t "domain_grants.confirm_tokens"}}</li>
+      <li>{{t "domain_grants.confirm_health"}}</li>
+      <li>{{t "domain_grants.confirm_redirects"}}</li>
+    </ul>
+    <form method="post" action="/settings/domain-sharing/{{domain.id}}/revoke/{{grant.id}}" class="grant-confirm-actions">
+      <input type="hidden" name="confirm" value="{{grant.id}}" />
+      <a class="button" href="/settings/domain-sharing/{{domain.id}}">{{t "ui.cancel"}}</a>
+      <button type="submit" class="danger">{{t "domain_grants.revoke"}}</button>
+    </form>
+  {{else}}
+    <a href="/settings/domain-sharing/{{domain.id}}">{{t "ui.domains"}}</a>
+  {{/if}}
+</main>
+{{> footer}}

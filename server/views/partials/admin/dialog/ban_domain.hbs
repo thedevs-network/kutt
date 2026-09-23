@@ -1,24 +1,24 @@
 <div class="content">
-  <h2>Ban domain?</h2>
+  <h2>{{t "ui.ban_domain"}}</h2>
   <p>
-    Are you sure do you want to ban the domain &quot;<b>{{address}}</b>&quot;?
+    {{t "dialog.ban_domain" value=address}}
   </p>
   <div class="ban-checklist">
     {{#if hasUser}}
       <label class="checkbox">
         <input id="ban-domain-user" name="user" type="checkbox" />
-        Owner
+        {{t "ui.owner"}}
       </label>
     {{/if}}
     {{#if hasLink}}
       <label class="checkbox">
         <input id="ban-domain-links" name="links" type="checkbox" />
-        Links
+        {{t "ui.links"}}
       </label>
     {{/if}}
   </div>
   <div class="buttons">
-    <button type="button" hx-on:click="closeDialog()">Cancel</button>
+    <button type="button" data-ui-close-dialog>{{t "ui.cancel"}}</button>
     <button 
       type="button"
       class="danger confirm" 
@@ -34,7 +34,7 @@
       <span class="stop">
         {{> icons/stop}}
       </span>
-      Ban
+      {{t "ui.ban"}}
     </button>
     {{> icons/spinner}}
   </div>

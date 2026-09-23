@@ -1,50 +1,21 @@
 {{> header}}
 <section id="terms" class="section-container">
-  <h3>{{default_domain}} Terms of Service</h3>
+  <h3>{{t "terms.title" domain=default_domain}}</h3>
   <p>
-    By accessing the website at
-    <a href="https://{{default_domain}}">https://{{default_domain}}</a>, you are agreeing to be bound by these terms of service, all applicable
-    laws and regulations, and agree that you are responsible for compliance
-    with any applicable local laws. If you do not agree with any of these
-    terms, you are prohibited from using or accessing this site. The
-    materials contained in this website are protected by applicable
-    copyright and trademark law.
+    {{t "ui.by_accessing_the_website_at"}}
+    <a href="https://{{default_domain}}">https://{{default_domain}}</a>{{t "ui.you_are_agreeing_to_be_bound_by_these_terms_of_service"}}
   </p>
   <p>
-    In no event shall {{site_name}} or its suppliers be
-    liable for any damages (including, without limitation, damages for loss
-    of data or profit, or due to business interruption) arising out of the
-    use or inability to use the materials on
-    {{default_domain}} website, even if
-    {{site_name}} or a {{site_name}}
-    authorized representative has been notified orally or in writing of the
-    possibility of such damage. Because some jurisdictions do not allow
-    limitations on implied warranties, or limitations of liability for
-    consequential or incidental damages, these limitations may not apply to
-    you.
+    {{t "ui.in_no_event_shall_value_or_its_suppliers_be_liable_for" value1=site_name value2=default_domain value3=site_name value4=site_name}}
   </p>
   <p>
-    The materials appearing on {{site_name}} website could
-    include technical, typographical, or photographic errors.
-    {{site_name}} does not warrant that any of the
-    materials on its website are accurate, complete or current.
-    {{site_name}} may make changes to the materials
-    contained on its website at any time without notice. However
-    {{site_name}} does not make any commitment to update
-    the materials.
+    {{t "ui.the_materials_appearing_on_value_website_could_include_technical_typographical_or" value1=site_name value2=site_name value3=site_name value4=site_name}}
   </p>
   <p>
-    {{site_name}} has not reviewed all of the sites linked
-    to its website and is not responsible for the contents of any such
-    linked site. The inclusion of any link does not imply endorsement by
-    {{site_name}} of the site. Use of any such linked
-    website is at the "user's" own risk.
+    {{t "ui.value_has_not_reviewed_all_of_the_sites_linked_to_its" value1=site_name value2=site_name}}
   </p>
   <p>
-    {{site_name}} may revise these terms of service for
-    its website at any time without notice. By using this website you are
-    agreeing to be bound by the then current version of these terms of
-    service.
+    {{t "ui.value_may_revise_these_terms_of_service_for_its_website_at" value1=site_name}}
   </p>
 </section>
 {{> footer}}

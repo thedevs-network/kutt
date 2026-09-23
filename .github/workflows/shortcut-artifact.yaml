@@ -1,0 +1,18 @@
+name: Shortcut artifact verification
+on:
+  pull_request:
+    paths: ['examples/**', 'scripts/**', 'tests/shortcut-template.cjs', '.github/workflows/shortcut-artifact.yaml']
+  push:
+    branches: [main]
+    tags: ['v*-sr94.*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: macos-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: node tests/shortcut-template.cjs
+      - run: python3 scripts/verify-shortcut.py

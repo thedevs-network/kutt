@@ -5,21 +5,18 @@
   hx-get="/api/links/{id}/stats"
   hx-swap="innerHTML"
   hx-trigger="load once"
-  hx-vals='js:{ id: getQueryParams().id || "" }' 
+  data-stats-id="{{stats_id}}"
   hx-ext="path-params"
-  hx-on::after-swap="
-    trimText('.stats-info p', 80);
-    formatDateHour('#stats .last-update-value');
-    createCharts();
-  "
+  data-ui-stats
 >
   <div class="loading-stats">
     {{> icons/spinner}}
-    Loading stats...
+    {{t "ui.loading_stats"}}
   </div>
 </section>
 {{> footer}}
 {{#extend "scripts"}}
-  <script src="/libs/chart.min.js"></script>
-  <script src="/scripts/stats.js"></script>
+  <script nonce="{{cspNonce}}" src="/libs/chart.min.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/chart-theme.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/stats.js"></script>
 {{/extend}}

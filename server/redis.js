@@ -5,12 +5,7 @@ const env = require("./env");
 let client;
 
 if (env.REDIS_ENABLED) {
-  client = new Redis({
-    host: env.REDIS_HOST,
-    port: env.REDIS_PORT,
-    db: env.REDIS_DB,
-    ...(env.REDIS_PASSWORD && { password: env.REDIS_PASSWORD })
-  });
+  client = new Redis(require("./redis-options")(env));
 }
 
 const key = {

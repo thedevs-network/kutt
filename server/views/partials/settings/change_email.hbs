@@ -1,8 +1,8 @@
 <section id="change-email-wrapper">
   <h2>
-    Change email
+    {{t "ui.change_email"}}
   </h2>
-  <p>Enter your password and a new email address to change your email address.</p>
+  <p>{{t "ui.enter_your_password_and_a_new_email_address_to_change_your"}}</p>
   <form 
     id="change-email"
     hx-post="/api/auth/change-email"
@@ -12,23 +12,23 @@
   >
     <div class="inputs">
       <label class="{{#if errors.password}}error{{/if}}">
-        Passwod:
+        {{t "ui.passwod"}}
         <input 
           id="password-for-change-email" 
           name="password" 
           type="password" 
-          placeholder="Password..."
+          placeholder="{{t 'ui.password_2'}}"
           hx-preserve="true"
         />
         {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
       </label>
       <label class="{{#if errors.email}}error{{/if}}">
-        New email address:
+        {{t "ui.new_email_address"}}
         <input 
           id="email-for-change-email" 
           name="email" 
           type="email" 
-          placeholder="john@example.com"
+          placeholder="{{t 'ui.john_example_com'}}"
           hx-preserve="true"
         />
         {{#if errors.email}}<p class="error">{{errors.email}}</p>{{/if}}
@@ -37,7 +37,7 @@
     <button type="submit" class="primary">
       <span>{{> icons/reload}}</span>
       <span>{{> icons/spinner}}</span>
-      Update
+      {{t "ui.update"}}
     </button>
     {{#if error}}
       {{#unless errors}}

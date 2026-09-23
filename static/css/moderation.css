@@ -1,0 +1,12 @@
+.moderation-page { display: block; text-align: left; max-width: 960px; width: calc(100% - 32px); margin: 24px auto; }
+.moderation-page form, .moderation-page nav, .moderation-list li { display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 16px; }
+.moderation-page form { margin: 24px 0; }
+.moderation-page h2 { font-size: 20px; margin-top: 32px; }
+.moderation-list { padding: 0; list-style: none; }
+.moderation-list li { padding: 16px 0; border-bottom: 1px solid #d4d8dc; }
+.moderation-list li > span, .moderation-list time { overflow-wrap: anywhere; min-width: 0; }
+.moderation-list li > span:first-child { flex: 1; }
+.moderation-list a { white-space: nowrap; }
+.moderation-page select { width: 260px; max-width: 100%; }
+.moderation-page button { width: auto; min-height: 40px; padding: 8px 20px; }
+.moderation-page p { overflow-wrap: anywhere; }

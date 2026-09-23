@@ -1,0 +1,70 @@
+<section id="tokens-wrapper">
+  <h2>{{t "ui.api_tokens"}}</h2>
+  {{#if newToken}}
+    <div class="token-result" data-token-secret>
+      <label for="new-api-token">{{t "ui.new_token"}} <small>{{t "ui.shown_once"}}</small></label>
+      <div class="token-secret-controls">
+        <input id="new-api-token" type="password" aria-label="{{t 'ui.new_api_token'}}" readonly autocomplete="off" spellcheck="false" value="{{newToken}}" />
+        <div class="token-secret-actions">
+          <button type="button" class="secondary" data-token-action="reveal" aria-label="{{t 'ui.reveal_api_token'}}" title="{{t 'ui.reveal_api_token'}}" aria-pressed="false" disabled>{{> icons/eye}}</button>
+          <button type="button" class="secondary" data-token-action="copy" aria-label="{{t 'ui.copy_api_token'}}" title="{{t 'ui.copy_api_token'}}" disabled>{{> icons/copy}}</button>
+          <button type="button" class="secondary" data-token-action="hide" aria-label="{{t 'ui.hide_api_token'}}" title="{{t 'ui.hide_api_token'}}" disabled>{{> icons/x}}</button>
+        </div>
+      </div>
+      <p class="token-secret-status" role="status" aria-live="polite" aria-atomic="true"></p>
+    </div>
+  {{/if}}
+  {{#if error}}<p class="error" role="alert">{{error}}</p>{{/if}}
+  <ul class="api-token-list">
+    {{#each apiTokens}}
+      <li>
+        <div class="api-token-details">
+          <strong>{{name}}</strong> <small>{{status}}</small>
+          <code>{{prefix}}...</code>
+          <small>{{scopesLabel}}</small>
+          <small>{{t "ui.domain_value" value1=domainLabel}}</small>
+          <small>{{t "ui.expires_2"}} {{#if expires_at}}{{date expires_at}}{{else}}{{t "ui.never"}}{{/if}}</small>
+        </div>
+        {{#if active}}
+          <button type="button" class="secondary" aria-label="{{t 'ui.revoke_value' value1=name}}" title="{{t 'ui.revoke_token'}}"
+            hx-delete="/api/tokens/{{id}}" hx-target="#tokens-wrapper" hx-swap="outerHTML"
+            hx-confirm="{{t 'ui.revoke_this_token_applications_using_it_will_lose_access'}}">
+            {{> icons/trash}}
+          </button>
+        {{/if}}
+      </li>
+    {{else}}
+      <li>{{t "ui.no_api_tokens"}}</li>
+    {{/each}}
+  </ul>
+  <form hx-post="/api/tokens" hx-target="#tokens-wrapper" hx-swap="outerHTML" hx-disabled-elt="button[type=submit]">
+    <div class="inputs">
+      <label>{{t "ui.name"}} <input type="text" name="name" required maxlength="80" autocomplete="off" /></label>
+      <label>{{t "ui.expires_in"}}
+        <select name="expires_in_days">
+          <option value="7">{{t "ui.7_days"}}</option>
+          <option value="30" selected>{{t "ui.30_days"}}</option>
+          <option value="90">{{t "ui.90_days"}}</option>
+          <option value="365">{{t "ui.1_year"}}</option>
+          <option value="never">{{t "ui.never"}}</option>
+        </select>
+      </label>
+      <label>{{t "ui.domain"}}
+        <select name="domain_scope" aria-label="{{t 'ui.domain'}}">
+          <option value="all">{{t "domain_grants.all_available"}}</option>
+          <option value="default">{{default_domain}}</option>
+          {{#each tokenDomains}}<option value="{{uuid}}">{{address}}</option>{{/each}}
+        </select>
+      </label>
+    </div>
+    <fieldset class="token-scopes">
+      <legend>{{t "ui.permissions"}}</legend>
+      {{#each tokenScopes}}
+        <label><input type="checkbox" name="scopes" value="{{value}}" /> {{label}}</label>
+      {{/each}}
+    </fieldset>
+    <button type="submit" class="secondary">
+      <span>{{> icons/zap}}</span><span>{{> icons/spinner}}</span>{{t "ui.create_token"}}
+    </button>
+  </form>
+</section>

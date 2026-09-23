@@ -1,5 +1,5 @@
 <div class="content admin-create">
-  <h2>Add domain</h2>
+  <h2>{{t "ui.add_domain"}}</h2>
   <form
     id="add-domain-form"
     hx-post="/api/domains/admin" 
@@ -8,23 +8,23 @@
     hx-indicator="closest .content"
   >
     <label class="{{#if errors.address}}error{{/if}}">
-      Address:
+      {{t "ui.address"}}
       <input
         name="address"
         id="add-domain-address"
         type="text"
-        placeholder="Address..."
+        placeholder="{{t 'ui.address_2'}}"
         hx-preserve="true"
       />
       {{#if errors.address}}<p class="error">{{errors.address}}</p>{{/if}}
     </label>
     <label class="{{#if errors.homepage}}error{{/if}}">
-      Homepage (optional):
+      {{t "ui.homepage_optional"}}
       <input
         name="homepage"
         id="add-domain-homepage"
         type="text"
-        placeholder="Homepage address.."
+        placeholder="{{t 'ui.homepage_address'}}"
         hx-preserve="true"
       />
       {{#if errors.homepage}}<p class="error">{{errors.homepage}}</p>{{/if}}
@@ -34,16 +34,15 @@
         id="add-domain-banned" 
         name="banned"
         type="checkbox"
-        onchange="canSendVerificationEmail();" 
         hx-preserve="true"
       />
-      Banned
+      {{t "ui.banned"}}
     </label>
     <div class="buttons">
-      <button type="button" hx-on:click="closeDialog()">Cancel</button>
+      <button type="button" data-ui-close-dialog>{{t "ui.cancel"}}</button>
       <button type="submit" class="primary">
         <span>{{> icons/plus}}</span>
-        Add
+        {{t "ui.add"}}
       </button>
       {{> icons/spinner}}
     </div>

@@ -1,3 +1,4 @@
+const i18n = require("../i18n");
 const { addMilliseconds } = require("date-fns");
 const { body, param, query: queryValidator } = require("express-validator");
 const promisify = require("node:util").promisify;
@@ -20,47 +21,51 @@ const sanitizeCheckbox = value => value === true || value === "on" || value;
 const createLink = [
   body("target")
     .exists({ checkNull: true, checkFalsy: true })
-    .withMessage("Target is missing.")
-    .isString()
+    .withMessage(() => i18n.t("messages.target_is_missing"))
+    .isString().bail()
     .trim()
     .isLength({ min: 1, max: 2040 })
-    .withMessage("Maximum URL length is 2040.")
+    .withMessage(() => i18n.t("messages.maximum_url_length_is_2040"))
+    .bail()
     .customSanitizer(utils.addProtocol)
     .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
-    .withMessage("URL is not valid.")
+    .withMessage(() => i18n.t("messages.url_is_not_valid"))
     .custom(value => utils.removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
-    .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
+    .withMessage(() => i18n.t("messages.value_urls_are_not_allowed", {value1: env.DEFAULT_DOMAIN})).bail()
+    .custom(value => !!require("../destination-policy").requireAllowed(value)),
   body("password")
     .optional({ nullable: true, checkFalsy: true })
     .custom(checkUser)
-    .withMessage("Only users can use this field.")
+    .withMessage(() => i18n.t("messages.only_users_can_use_this_field"))
     .isString()
     .isLength({ min: 3, max: 64 })
-    .withMessage("Password length must be between 3 and 64."),
+    .withMessage(() => i18n.t("messages.password_length_must_be_between_3_and_64")),
   body("customurl")
     .optional({ nullable: true, checkFalsy: true })
     .custom(checkUser)
-    .withMessage("Only users can use this field.")
-    .isString()
+    .withMessage(() => i18n.t("messages.only_users_can_use_this_field"))
+    .isString().bail()
+    .custom(value => !/[\u0000-\u001f\u007f]/.test(value))
+    .withMessage(() => i18n.t("messages.custom_url_is_not_valid")).bail()
     .trim()
     .isLength({ min: 1, max: 64 })
-    .withMessage("Custom URL length must be between 1 and 64.")
-    .custom(value => utils.customAddressRegex.test(value) || utils.customAlphabetRegex.test(value))
-    .withMessage("Custom URL is not valid.")
+    .withMessage(() => i18n.t("messages.custom_url_length_must_be_between_1_and_64"))
+    .custom(value => require("../link-alias").valid(value))
+    .withMessage(() => i18n.t("messages.custom_url_is_not_valid"))
     .custom(value => !utils.preservedURLs.some(url => url.toLowerCase() === value))
-    .withMessage("You can't use this custom URL."),
+    .withMessage(() => i18n.t("messages.you_can_t_use_this_custom_url")),
   body("reuse")
     .optional({ nullable: true })
     .custom(checkUser)
-    .withMessage("Only users can use this field.")
+    .withMessage(() => i18n.t("messages.only_users_can_use_this_field"))
     .isBoolean()
-    .withMessage("Reuse must be boolean."),
+    .withMessage(() => i18n.t("messages.reuse_must_be_boolean")),
   body("description")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
     .trim()
     .isLength({ min: 1, max: 2040 })
-    .withMessage("Description length must be between 1 and 2040."),
+    .withMessage(() => i18n.t("messages.description_length_must_be_between_1_and_2040")),
   body("expire_in")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
@@ -72,58 +77,58 @@ const createLink = [
         return false;
       }
     })
-    .withMessage("Expire format is invalid. Valid examples: 1m, 8h, 42 days.")
+    .withMessage(() => i18n.t("messages.expire_format_is_invalid_valid_examples_1m_8h_42_days"))
     .customSanitizer(ms)
     .custom(value => value >= ms("1m"))
-    .withMessage("Expire time should be more than 1 minute.")
+    .withMessage(() => i18n.t("messages.expire_time_should_be_more_than_1_minute"))
     .customSanitizer(value => utils.dateToUTC(addMilliseconds(new Date(), value))),
   body("domain")
     .optional({ nullable: true, checkFalsy: true })
     .customSanitizer(value => value === env.DEFAULT_DOMAIN ? null : value)
     .custom(checkUser)
-    .withMessage("Only users can use this field.")
+    .withMessage(() => i18n.t("messages.only_users_can_use_this_field"))
     .isString()
-    .withMessage("Domain should be string.")
+    .withMessage(() => i18n.t("messages.domain_should_be_string"))
     .customSanitizer(value => value.toLowerCase())
     .custom(async (address, { req }) => {
-      const domain = await query.domain.find({
-        address,
-        user_id: req.user.id
-      });
+      const domain = await require("../domain-access").find(knex, req.user.id, { address });
       req.body.fetched_domain = domain || null;
 
       if (!domain) return Promise.reject();
     })
-    .withMessage("You can't use this domain.")
+    .withMessage(() => i18n.t("messages.you_can_t_use_this_domain"))
 ];
 
 const editLink = [
   body("target")
     .optional({ checkFalsy: true, nullable: true })
-    .isString()
+    .isString().bail()
     .trim()
     .isLength({ min: 1, max: 2040 })
-    .withMessage("Maximum URL length is 2040.")
+    .withMessage(() => i18n.t("messages.maximum_url_length_is_2040"))
+    .bail()
     .customSanitizer(utils.addProtocol)
     .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
-    .withMessage("URL is not valid.")
+    .withMessage(() => i18n.t("messages.url_is_not_valid"))
     .custom(value => utils.removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
-    .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
+    .withMessage(() => i18n.t("messages.value_urls_are_not_allowed", {value1: env.DEFAULT_DOMAIN})),
   body("password")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
     .isLength({ min: 3, max: 64 })
-    .withMessage("Password length must be between 3 and 64."),
+    .withMessage(() => i18n.t("messages.password_length_must_be_between_3_and_64")),
   body("address")
     .optional({ checkFalsy: true, nullable: true })
-    .isString()
+    .isString().bail()
+    .custom(value => !/[\u0000-\u001f\u007f]/.test(value))
+    .withMessage(() => i18n.t("messages.custom_url_is_not_valid_2")).bail()
     .trim()
     .isLength({ min: 1, max: 64 })
-    .withMessage("Custom URL length must be between 1 and 64.")
-    .custom(value => utils.customAddressRegex.test(value) || utils.customAlphabetRegex.test(value))
-    .withMessage("Custom URL is not valid")
+    .withMessage(() => i18n.t("messages.custom_url_length_must_be_between_1_and_64"))
+    .custom(value => require("../link-alias").valid(value))
+    .withMessage(() => i18n.t("messages.custom_url_is_not_valid_2"))
     .custom(value => !utils.preservedURLs.some(url => url.toLowerCase() === value))
-    .withMessage("You can't use this custom URL."),
+    .withMessage(() => i18n.t("messages.you_can_t_use_this_custom_url")),
   body("expire_in")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
@@ -135,91 +140,103 @@ const editLink = [
         return false;
       }
     })
-    .withMessage("Expire format is invalid. Valid examples: 1m, 8h, 42 days.")
+    .withMessage(() => i18n.t("messages.expire_format_is_invalid_valid_examples_1m_8h_42_days"))
     .customSanitizer(ms)
     .custom(value => value >= ms("1m"))
-    .withMessage("Expire time should be more than 1 minute.")
+    .withMessage(() => i18n.t("messages.expire_time_should_be_more_than_1_minute"))
     .customSanitizer(value => utils.dateToUTC(addMilliseconds(new Date(), value))),
   body("description")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
     .trim()
     .isLength({ min: 0, max: 2040 })
-    .withMessage("Description length must be between 0 and 2040."),
-  param("id", "ID is invalid.")
+    .withMessage(() => i18n.t("messages.description_length_must_be_between_0_and_2040")),
+  param("id", () => i18n.t("messages.id_is_invalid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 36, max: 36 })
 ];
 
 const redirectProtected = [
-  body("password", "Password is invalid.")
+  body("password", () => i18n.t("messages.password_is_invalid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isString()
     .isLength({ min: 3, max: 64 })
-    .withMessage("Password length must be between 3 and 64."),
-  param("id", "ID is invalid.")
+    .withMessage(() => i18n.t("messages.password_length_must_be_between_3_and_64")),
+  param("id", () => i18n.t("messages.id_is_invalid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 36, max: 36 })
 ];
 
 const addDomain = [
-  body("address", "Domain is not valid.")
+  body("address", () => i18n.t("messages.domain_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
+    .isString().bail()
     .isLength({ min: 3, max: 64 })
-    .withMessage("Domain length must be between 3 and 64.")
+    .withMessage(() => i18n.t("messages.domain_length_must_be_between_3_and_64")).bail()
     .trim()
     .customSanitizer(utils.addProtocol)
-    .custom(value => utils.urlRegex.test(value))
+    .custom(value => utils.urlRegex.test(value)).bail()
     .customSanitizer(value => {
       const parsed = URL.parse(value);
       return utils.removeWww(parsed.hostname || parsed.href);
     })
     .custom(value => value !== env.DEFAULT_DOMAIN)
-    .withMessage("You can't use the default domain.")
+    .withMessage(() => i18n.t("messages.you_can_t_use_the_default_domain"))
+    .custom(value => !require("../management-origin").reserved(value))
+    .withMessage(() => i18n.t("domain_grants.management_reserved"))
     .custom(async value => {
       const domain = await query.domain.find({ address: value });
       if (domain?.user_id || domain?.banned) return Promise.reject();
     })
-    .withMessage("You can't add this domain."),
+    .withMessage(() => i18n.t("messages.you_can_t_add_this_domain")),
   body("homepage")
     .optional({ checkFalsy: true, nullable: true })
+    .isString().bail()
+    .isLength({ max: 2040 }).withMessage(() => i18n.t("messages.maximum_homepage_url_length_is_2040")).bail()
     .customSanitizer(utils.addProtocol)
     .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
-    .withMessage("Homepage is not valid.")
+    .withMessage(() => i18n.t("messages.homepage_is_not_valid")).bail()
+    .custom(value => !!require("../destination-policy").requireAllowed(value))
 ];
 
 const addDomainAdmin = [
-  body("address", "Domain is not valid.")
+  body("address", () => i18n.t("messages.domain_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
+    .isString().bail()
     .isLength({ min: 3, max: 64 })
-    .withMessage("Domain length must be between 3 and 64.")
+    .withMessage(() => i18n.t("messages.domain_length_must_be_between_3_and_64")).bail()
     .trim()
     .customSanitizer(utils.addProtocol)
-    .custom(value => utils.urlRegex.test(value))
+    .custom(value => utils.urlRegex.test(value)).bail()
     .customSanitizer(value => {
       const parsed = URL.parse(value);
       return utils.removeWww(parsed.hostname || parsed.href);
     })
     .custom(value => value !== env.DEFAULT_DOMAIN)
-    .withMessage("You can't add the default domain.")
+    .withMessage(() => i18n.t("messages.you_can_t_add_the_default_domain"))
+    .custom(value => !require("../management-origin").reserved(value))
+    .withMessage(() => i18n.t("domain_grants.management_reserved"))
     .custom(async value => {
       const domain = await query.domain.find({ address: value });
       if (domain) return Promise.reject();
     })
-    .withMessage("Domain already exists."),
+    .withMessage(() => i18n.t("messages.domain_already_exists")),
   body("homepage")
     .optional({ checkFalsy: true, nullable: true })
+    .isString().bail()
+    .isLength({ max: 2040 }).withMessage(() => i18n.t("messages.maximum_homepage_url_length_is_2040")).bail()
     .customSanitizer(utils.addProtocol)
     .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
-    .withMessage("Homepage is not valid."),
+    .withMessage(() => i18n.t("messages.homepage_is_not_valid")).bail()
+    .custom(value => !!require("../destination-policy").requireAllowed(value)),
   body("banned")
     .optional({ nullable: true })
     .customSanitizer(sanitizeCheckbox)
-    .isBoolean(),
+    .isBoolean().toBoolean(),
 ]
 
 const removeDomain = [
-  param("id", "ID is invalid.")
+  param("id", () => i18n.t("messages.id_is_invalid"))
     .exists({
       checkFalsy: true,
       checkNull: true
@@ -228,7 +245,7 @@ const removeDomain = [
 ];
 
 const removeDomainAdmin = [
-  param("id", "ID is invalid.")
+  param("id", () => i18n.t("messages.id_is_invalid"))
     .exists({
       checkFalsy: true,
       checkNull: true
@@ -237,11 +254,12 @@ const removeDomainAdmin = [
   queryValidator("links")
     .optional({ nullable: true })
     .customSanitizer(sanitizeCheckbox)
-    .isBoolean(),
+    .isBoolean()
+    .toBoolean(),
 ];
 
 const deleteLink = [
-  param("id", "ID is invalid.")
+  param("id", () => i18n.t("messages.id_is_invalid"))
     .exists({
       checkFalsy: true,
       checkNull: true
@@ -250,44 +268,51 @@ const deleteLink = [
 ];
 
 const reportLink = [
-  body("link", "No link has been provided.")
+  body("link", () => i18n.t("messages.no_link_has_been_provided"))
     .exists({
       checkFalsy: true,
       checkNull: true
     })
+    .isString().bail()
+    .isLength({ max: 4096 }).bail()
+    .custom(value => !/[\u0000-\u0020\u007f<>]/.test(value)).bail()
     .customSanitizer(utils.addProtocol)
     .custom(
-      value => utils.removeWww(URL.parse(value).host) === env.DEFAULT_DOMAIN
+      value => {
+        const parsed = new URL.URL(value);
+        return ["https:", "http:"].includes(parsed.protocol) && !parsed.username && !parsed.password &&
+          utils.removeWww(parsed.host) === env.DEFAULT_DOMAIN;
+      }
     )
-    .withMessage(`You can only report a ${env.DEFAULT_DOMAIN} link.`)
+    .withMessage(() => i18n.t("messages.you_can_only_report_a_value_link", {value1: env.DEFAULT_DOMAIN}))
 ];
 
 const banLink = [
-  param("id", "ID is invalid.")
+  param("id", () => i18n.t("messages.id_is_invalid"))
     .exists({
       checkFalsy: true,
       checkNull: true
     })
     .isLength({ min: 36, max: 36 }),
-  body("host", '"host" should be a boolean.')
+  body("host", () => i18n.t("messages.host_should_be_a_boolean"))
     .optional({
       nullable: true
     })
     .customSanitizer(sanitizeCheckbox)
     .isBoolean(),
-  body("user", '"user" should be a boolean.')
+  body("user", () => i18n.t("messages.user_should_be_a_boolean"))
     .optional({
       nullable: true
     })
     .customSanitizer(sanitizeCheckbox)
     .isBoolean(),
-  body("userLinks", '"userLinks" should be a boolean.')
+  body("userLinks", () => i18n.t("messages.userlinks_should_be_a_boolean"))
     .optional({
       nullable: true
     })
     .customSanitizer(sanitizeCheckbox)
     .isBoolean(),
-  body("domain", '"domain" should be a boolean.')
+  body("domain", () => i18n.t("messages.domain_should_be_a_boolean"))
     .optional({
       nullable: true
     })
@@ -296,19 +321,19 @@ const banLink = [
 ];
 
 const banUser = [
-  param("id", "ID is invalid.")
+  param("id", () => i18n.t("messages.id_is_invalid"))
     .exists({
       checkFalsy: true,
       checkNull: true
     })
     .isNumeric(),
-  body("links", '"links" should be a boolean.')
+  body("links", () => i18n.t("messages.links_should_be_a_boolean"))
     .optional({
       nullable: true
     })
     .customSanitizer(sanitizeCheckbox)
     .isBoolean(),
-  body("domains", '"domains" should be a boolean.')
+  body("domains", () => i18n.t("messages.domains_should_be_a_boolean"))
     .optional({
       nullable: true
     })
@@ -317,19 +342,19 @@ const banUser = [
 ];
 
 const banDomain = [
-  param("id", "ID is invalid.")
+  param("id", () => i18n.t("messages.id_is_invalid"))
     .exists({
       checkFalsy: true,
       checkNull: true
     })
     .isNumeric(),
-  body("links", '"links" should be a boolean.')
+  body("links", () => i18n.t("messages.links_should_be_a_boolean"))
     .optional({
       nullable: true
     })
     .customSanitizer(sanitizeCheckbox)
     .isBoolean(),
-  body("domains", '"domains" should be a boolean.')
+  body("user", () => i18n.t("messages.user_should_be_a_boolean"))
     .optional({
       nullable: true
     })
@@ -338,42 +363,42 @@ const banDomain = [
 ];
 
 const createUser = [
-  body("password", "Password is not valid.")
+  body("password", () => i18n.t("messages.password_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 8, max: 64 })
-    .withMessage("Password length must be between 8 and 64."),
-  body("email", "Email is not valid.")
+    .withMessage(() => i18n.t("messages.password_length_must_be_between_8_and_64")),
+  body("email", () => i18n.t("messages.email_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .trim()
     .isLength({ min: 1, max: 255 })
-    .withMessage("Email length must be max 255.")
+    .withMessage(() => i18n.t("messages.email_length_must_be_max_255"))
     .isEmail()
     .custom(async (value, { req }) => {
       const user = await query.user.find({ email: value });
       if (user) 
         return Promise.reject();
     })
-    .withMessage("User already exists."),
-  body("role", "Role is not valid.")
+    .withMessage(() => i18n.t("messages.user_already_exists")),
+  body("role", () => i18n.t("messages.role_is_not_valid"))
     .optional({ nullable: true, checkFalsy: true })
     .trim()
     .isIn([ROLES.USER, ROLES.ADMIN]),
   body("verified")
     .optional({ nullable: true })
     .customSanitizer(sanitizeCheckbox)
-    .isBoolean(),
+    .isBoolean().toBoolean(),
   body("banned")
     .optional({ nullable: true })
     .customSanitizer(sanitizeCheckbox)
-    .isBoolean(),
+    .isBoolean().toBoolean(),
   body("verification_email")
     .optional({ nullable: true })
     .customSanitizer(sanitizeCheckbox)
-    .isBoolean(),
+    .isBoolean().toBoolean(),
 ];
 
 const getStats = [
-  param("id", "ID is invalid.")
+  param("id", () => i18n.t("messages.id_is_invalid"))
     .exists({
       checkFalsy: true,
       checkNull: true
@@ -382,20 +407,20 @@ const getStats = [
 ];
 
 const signup = [
-  body("password", "Password is not valid.")
+  body("password", () => i18n.t("messages.password_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 8, max: 64 })
-    .withMessage("Password length must be between 8 and 64."),
-  body("email", "Email is not valid.")
+    .withMessage(() => i18n.t("messages.password_length_must_be_between_8_and_64")),
+  body("email", () => i18n.t("messages.email_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .trim()
     .isLength({ min: 0, max: 255 })
-    .withMessage("Email length must be max 255.")
+    .withMessage(() => i18n.t("messages.email_length_must_be_max_255"))
     .isEmail()
 ];
 
 const signupEmailTaken = [
-  body("email", "Email is not valid.")
+  body("email", () => i18n.t("messages.email_is_not_valid"))
     .custom(async (value, { req }) => {
       const user = await query.user.find({ email: value });
 
@@ -407,108 +432,108 @@ const signupEmailTaken = [
         return Promise.reject();
       }
     })
-    .withMessage("You can't use this email address.")
+    .withMessage(() => i18n.t("messages.you_can_t_use_this_email_address"))
 ];
 
 const login = [
-  body("password", "Password is not valid.")
+  body("password", () => i18n.t("messages.password_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 8, max: 64 })
-    .withMessage("Password length must be between 8 and 64."),
-  body("email", "Email is not valid.")
+    .withMessage(() => i18n.t("messages.password_length_must_be_between_8_and_64")),
+  body("email", () => i18n.t("messages.email_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .trim()
     .isLength({ min: 1, max: 255 })
-    .withMessage("Email length must be max 255.")
+    .withMessage(() => i18n.t("messages.email_length_must_be_max_255"))
     .isEmail()
 ];
 
 const createAdmin = [
-  body("password", "Password is not valid.")
+  body("password", () => i18n.t("messages.password_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 8, max: 64 })
-    .withMessage("Password length must be between 8 and 64."),
-  body("email", "Email is not valid.")
+    .withMessage(() => i18n.t("messages.password_length_must_be_between_8_and_64")),
+  body("email", () => i18n.t("messages.email_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .trim()
     .isLength({ min: 0, max: 255 })
-    .withMessage("Email length must be max 255.")
+    .withMessage(() => i18n.t("messages.email_length_must_be_max_255"))
     .isEmail()
 ];
 
 const changePassword = [
-  body("currentpassword", "Password is not valid.")
+  body("currentpassword", () => i18n.t("messages.password_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 8, max: 64 })
-    .withMessage("Password length must be between 8 and 64."),
-  body("newpassword", "Password is not valid.")
+    .withMessage(() => i18n.t("messages.password_length_must_be_between_8_and_64")),
+  body("newpassword", () => i18n.t("messages.password_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 8, max: 64 })
-    .withMessage("Password length must be between 8 and 64.")
+    .withMessage(() => i18n.t("messages.password_length_must_be_between_8_and_64"))
 ];
 
 const changeEmail = [
-  body("password", "Password is not valid.")
+  body("password", () => i18n.t("messages.password_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 8, max: 64 })
-    .withMessage("Password length must be between 8 and 64."),
-  body("email", "Email address is not valid.")
+    .withMessage(() => i18n.t("messages.password_length_must_be_between_8_and_64")),
+  body("email", () => i18n.t("messages.email_address_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .trim()
     .isLength({ min: 1, max: 255 })
-    .withMessage("Email length must be max 255.")
+    .withMessage(() => i18n.t("messages.email_length_must_be_max_255"))
     .isEmail()
 ];
 
 const resetPassword = [
-  body("email", "Email is not valid.")
+  body("email", () => i18n.t("messages.email_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .trim()
     .isLength({ min: 0, max: 255 })
-    .withMessage("Email length must be max 255.")
+    .withMessage(() => i18n.t("messages.email_length_must_be_max_255"))
     .isEmail()
 ];
 
 const newPassword = [
-  body("reset_password_token", "Reset password token is invalid.")
+  body("reset_password_token", () => i18n.t("messages.reset_password_token_is_invalid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 36, max: 36 }),
-  body("new_password", "Password is not valid.")
+  body("new_password", () => i18n.t("messages.password_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 8, max: 64 })
-    .withMessage("Password length must be between 8 and 64."),
-  body("repeat_password", "Password is not valid.")
+    .withMessage(() => i18n.t("messages.password_length_must_be_between_8_and_64")),
+  body("repeat_password", () => i18n.t("messages.password_is_not_valid"))
     .custom((repeat_password, { req }) => {
       return repeat_password === req.body.new_password;
     })
-    .withMessage("Passwords don't match."),
+    .withMessage(() => i18n.t("messages.passwords_don_t_match")),
 ];
 
 const deleteUser = [
-  body("password", "Password is not valid.")
+  body("password", () => i18n.t("messages.password_is_not_valid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isLength({ min: 8, max: 64 })
     .custom(async (password, { req }) => {
       const isMatch = await bcrypt.compare(password, req.user.password);
       if (!isMatch) return Promise.reject();
     })
-    .withMessage("Password is not correct.")
+    .withMessage(() => i18n.t("messages.password_is_not_correct"))
 ];
 
 const deleteUserByAdmin = [
-  param("id", "ID is invalid.")
+  param("id", () => i18n.t("messages.id_is_invalid"))
     .exists({ checkFalsy: true, checkNull: true })
     .isNumeric()
 ];
 
 async function bannedDomain(domain) {
-  const isBanned = await query.domain.find({
+  const isBanned = await require("../knex")("domains").where({
     address: domain,
     banned: true
-  });
+  }).first();
 
   if (isBanned) {
-    throw new utils.CustomError("Domain is banned.", 400);
+    throw new utils.CustomError(i18n.t("messages.domain_is_banned"), 400);
   }
 };
 
@@ -520,16 +545,16 @@ async function bannedHost(domain) {
 
     if (!dnsRes || !dnsRes.address) return;
 
-    isBanned = await query.host.find({
+    isBanned = await require("../knex")("hosts").where({
       address: dnsRes.address,
       banned: true
-    });
+    }).first();
   } catch (error) {
     isBanned = null;
   }
 
   if (isBanned) {
-    throw new utils.CustomError("URL is containing malware/scam.", 400);
+    throw new utils.CustomError(i18n.t("messages.url_is_containing_malware_scam"), 400);
   }
 };
 

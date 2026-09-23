@@ -11,6 +11,7 @@ on:
 
 jobs:
   dockerhub-build-push:
+    if: github.repository == 'thedevs-network/kutt'
     runs-on: ubuntu-latest
     steps:
       -

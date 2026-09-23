@@ -1,0 +1,26 @@
+.shortcut-page { max-width: 54rem; }
+.shortcut-page * { box-sizing: border-box; min-width: 0; }
+.shortcut-page .archive-heading { position: static; width: 100%; height: auto; min-height: 0; padding: 0; margin: 1rem 0; justify-content: flex-start; }
+.shortcut-page .archive-heading h1 { font-size: 1.65rem; margin: 0 auto 0 0; }
+.shortcut-page h2 { font-size: 1.15rem; }
+.shortcut-page p, .shortcut-page a { overflow-wrap: anywhere; line-height: 1.5; }
+.shortcut-page button { display: inline-flex; width: auto; align-items: center; justify-content: center; gap: .5rem; min-height: 42px; padding: .6rem .9rem; background: #176ec0; color: white; border: 0; border-radius: 6px; box-shadow: none; transition: background-color .15s; transform: none; font: inherit; }
+.shortcut-page button:disabled { opacity: .5; }
+.shortcut-page input { background: white; border: 1px solid #aebdc3; border-radius: 6px; font: inherit; color: inherit; }
+.shortcut-value button, #shortcut-hide { background: #e1e7e9; color: inherit; }
+#shortcut-revoke { background: #a82335; }
+.shortcut-page .error { color: #b32336; animation: none; }
+.shortcut-page label { display: block; margin: 1rem 0 .5rem; }
+.shortcut-page input { min-width: 0; max-width: 100%; width: 100%; padding: .65rem; }
+.shortcut-value { display: flex; gap: .5rem; align-items: stretch; }
+.shortcut-value button { flex: 0 0 2.75rem; padding: .6rem; }
+.shortcut-value svg, .shortcut-template svg, .shortcut-page button svg { width: 1.1rem; height: 1.1rem; vertical-align: middle; }
+.shortcut-template { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+.shortcut-policy { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: .5rem; }
+.shortcut-policy dd { margin: 0; overflow-wrap: anywhere; }
+.shortcut-page section { border-top: 1px solid #ccd4d9; padding-top: 1rem; margin-top: 1.5rem; }
+.shortcut-page button { max-width: 100%; white-space: normal; }
+.shortcut-page #shortcut-secret[hidden] { display: none; }
+.shortcut-page #shortcut-secret button { margin-bottom: .5rem; }
+.shortcut-page #shortcut-message { min-height: 1.5em; overflow-wrap: anywhere; }
+@media(max-width: 480px) { .shortcut-policy { grid-template-columns: 5rem minmax(0, 1fr); } .shortcut-page .archive-heading h1 { font-size: 1.4rem; flex-basis: 100%; } }

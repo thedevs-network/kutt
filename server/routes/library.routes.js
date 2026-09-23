@@ -1,0 +1,15 @@
+const { Router } = require("express");
+const auth = require("../handlers/auth.handler");
+const library = require("../handlers/library.handler");
+const asyncHandler = require("../utils/asyncHandler");
+const router = Router();
+router.use(asyncHandler(auth.apikey), asyncHandler(auth.jwt));
+router.get("/", asyncHandler(library.list));
+router.post("/bulk", asyncHandler(library.api("bulk")));
+router.post("/labels", asyncHandler(library.api("save_label")));
+router.patch("/labels/:id", asyncHandler(library.api("save_label")));
+router.delete("/labels/:id", asyncHandler(library.api("remove_label")));
+router.post("/filters", asyncHandler(library.api("save_filter")));
+router.patch("/filters/:id", asyncHandler(library.api("save_filter")));
+router.delete("/filters/:id", asyncHandler(library.api("remove_filter")));
+module.exports = router;

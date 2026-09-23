@@ -1,63 +1,65 @@
 <tr id="tr-{{id}}" {{#if swap_oob}}hx-swap-oob="true"{{/if}}>
   <td class="users-id">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.id"}}</span>
     {{id}}
   </td>
   <td class="users-email">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.email_domains"}}</span>
     {{email}}
     <p class="description">
       {{#if domains}}
-        <a
-          aria-label="View domains" 
-          data-tooltip="View domains" 
+        <button type="button" class="link-button" data-focus-after="#tab-domains" aria-label="{{t 'ui.view_domains'}}"
+          data-tooltip="{{t 'ui.view_domains'}}"
           hx-get="/api/domains/admin"
           hx-target="closest table"
-          hx-swap="outerHTML" 
+          hx-swap="outerHTML settle:0ms"
           hx-sync="this:replace"
           hx-indicator="closest table"
           hx-vals='{"user":"{{email}}"}'
-          onclick="setTab(event, 'tab-links')"
         >
           {{domains}}
-        </a>
+        </button>
       {{else}}
-        <span>No domains</span>
+        <span>{{t "ui.no_domains_2"}}</span>
       {{/if}}
     </p>
   </td>
   <td class="users-created-at">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.created_at"}}</span>
     {{relative_created_at}}
   </td>
   <td class="users-verified">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.verified"}}</span>
     {{#if verified}}
-      <span class="status green">VERIFIED</span>
+      <span class="status green">{{t "ui.verified_2"}}</span>
     {{else}}
-      <span class="status gray">NOT VERIFIED</span>
+      <span class="status gray">{{t "ui.not_verified_2"}}</span>
     {{/if}}
   </td>
   <td class="users-role">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.role_3"}}</span>
     {{#ifEquals role "ADMIN"}}
-    <span class="status red">ADMIN</span>
+    <span class="status red">{{t "ui.admin_2"}}</span>
     {{else}}
-    <span class="status gray">USER</span>
+    <span class="status gray">{{t "ui.user_2"}}</span>
     {{/ifEquals}}
   </td>
   <td class="users-links-count">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.total_links"}}</span>
     {{#ifEquals links_count '0'}}
       {{links_count}}
     {{else}}
-      <a
-        data-tooltip="View links"
-        aria-label="View links"
+      <button type="button" class="link-button" data-focus-after="#tab-links" data-tooltip="{{t 'ui.view_links'}}"
+        aria-label="{{t 'ui.view_links'}}"
         hx-get="/api/links/admin"
         hx-target="closest table"
-        hx-swap="outerHTML" 
+        hx-swap="outerHTML settle:0ms"
         hx-sync="this:replace"
         hx-vals='{"user":"{{email}}"}'
         hx-indicator="closest table"
-        onclick="setTab(event, 'tab-links')"
       >
         {{links_count}}
-      </a>
+      </button>
     {{/ifEquals}}
   </td>
   {{> admin/users/actions}}

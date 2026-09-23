@@ -1,0 +1,27 @@
+<div class="date-time-field">
+  <label for="{{name}}" data-date-time-label>{{label}}</label>
+  <div data-date-time>
+    <input id="{{name}}" name="{{name}}" type="datetime-local" step="1"
+      min="1970-01-01T00:00:00" max="9999-12-31T23:59:59" value="{{value}}" hx-preserve="true" data-date-time-value />
+    <div class="date-time-result" data-date-time-result hidden>
+      <input id="{{name}}-display" type="text" readonly data-date-time-display placeholder="{{empty}}"
+        aria-haspopup="dialog" aria-controls="{{name}}-picker" aria-expanded="false" />
+      <button type="button" data-date-time-open aria-label="{{choose}}" title="{{choose}}"
+        aria-haspopup="dialog" aria-controls="{{name}}-picker" aria-expanded="false">{{> icons/calendar}}</button>
+    </div>
+    <dialog id="{{name}}-picker" class="date-time-dialog" aria-labelledby="{{name}}-picker-title" data-date-time-dialog>
+      <h2 id="{{name}}-picker-title">{{label}}</h2>
+      <div class="date-time-parts">
+        <label>{{t "schedule.date"}}<input type="date" data-date-time-date min="1970-01-01" max="9999-12-31" /></label>
+        <label>{{t "schedule.time"}}<input type="time" data-date-time-time step="1" /></label>
+      </div>
+      <p class="error" role="alert" data-date-time-error hidden></p>
+      <div class="date-time-actions">
+        <button type="button" data-date-time-clear>{{t "schedule.clear"}}</button>
+        <button type="button" data-date-time-cancel>{{t "ui.cancel"}}</button>
+        <button type="button" class="primary" data-date-time-apply>{{t "schedule.apply"}}</button>
+      </div>
+    </dialog>
+  </div>
+  {{#if error}}<p class="error" data-error-field="{{name}}">{{error}}</p>{{/if}}
+</div>

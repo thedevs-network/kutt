@@ -1,3 +1,4 @@
+const i18n = require("../i18n");
 const { differenceInDays, differenceInHours, differenceInMonths, differenceInMilliseconds, addDays, subHours, subDays, subMonths, subYears, format } = require("date-fns");
 const { customAlphabet } = require("nanoid");
 const crypto = require("node:crypto");
@@ -23,7 +24,8 @@ class CustomError extends Error {
   }
 }
 
-const urlRegex = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)+(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
+// Userinfo is a single non-space run; overlapping repetitions caused quadratic backtracking.
+const urlRegex = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)+(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
 
 const charsNeedEscapeInRegExp = ".$*+?()[]{}|^-";
 const customAlphabetEscaped = env.LINK_CUSTOM_ALPHABET
@@ -35,13 +37,17 @@ function isAdmin(user) {
   return user.role === ROLES.ADMIN;
 }
 
-function signToken(user) {
+function signToken(user, context = {}) {
+  const now = Math.floor(Date.now() / 1000);
+  const oidc = context.oi ? { oi: context.oi, os: context.os || null, oa: context.oa } : {};
   return JWT.sign(
       {
         iss: "ApiAuth",
         sub: user.id,
-        iat: parseInt((new Date().getTime() / 1000).toFixed(0)),
-        exp: parseInt((addDays(new Date(), 7).getTime() / 1000).toFixed(0))
+        av: Number(user.auth_version || 0),
+        ...oidc,
+        iat: now,
+        exp: context.oi ? Math.min(now + 7 * 86400, Math.floor(context.oa / 1000) + env.OIDC_SESSION_MAX_SECONDS) : now + 7 * 86400
       },
       env.JWT_SECRET
     )
@@ -51,13 +57,14 @@ function setToken(res, token) {
   res.cookie("token", token, {
     maxAge: 1000 * 60 * 60 * 24 * 7, // expire after seven days
     httpOnly: true,
-    secure: env.isProd,
-    sameSite: "Lax"
+    secure: require("../management-origin").secureCookie(),
+    sameSite: "Lax",
+    path: "/"
   });
 }
 
 function deleteCurrentToken(res) {
-  res.clearCookie("token", { httpOnly: true, secure: env.isProd });
+  res.clearCookie("token", { httpOnly: true, secure: require("../management-origin").secureCookie(), sameSite: "Lax", path: "/" });
 }
 
 function generateRandomPassword() {
@@ -67,12 +74,13 @@ function generateRandomPassword() {
 }
 
 async function generateId(query, domain_id) {
-  const address = nanoid();
-  const link = await query.link.find({ address, domain_id });
-  if (link) {
-    return generateId(query, domain_id)
-  };
-  return address;
+  // Custom alphabets may generate unsafe dot segments or reserved root names.
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const address = nanoid();
+    if (!require("../link-alias").valid(address)) continue;
+    if (!await require("../link-history").reserved(address, domain_id)) return address;
+  }
+  throw new CustomError(i18n.t("aliases.generation_failed"), 503);
 }
 
 function addProtocol(url) {
@@ -81,8 +89,7 @@ function addProtocol(url) {
 }
 
 function getSiteURL() {
-  const protocol = !env.isDev ? "https://" : "http://";
-  return `${protocol}${env.DEFAULT_DOMAIN}`;
+  return require("../management-origin").origin();
 }
 
 function getShortURL(address, domain) {
@@ -114,7 +121,7 @@ function getDifferenceFunction(type) {
   if (type === "lastWeek") return differenceInDays;
   if (type === "lastMonth") return differenceInDays;
   if (type === "lastYear") return differenceInMonths;
-  throw new Error("Unknown type.");
+  throw new Error(i18n.t("messages.unknown_type"));
 }
 
 function parseDatetime(date) {
@@ -156,6 +163,8 @@ function getStatsPeriods(now) {
 }
 
 const preservedURLs = [
+  "language",
+  "locales",
   "login",
   "logout",
   "create-admin",
@@ -229,39 +238,8 @@ function getInitStats() {
 }
 
 // format date to relative date
-const MINUTE = 60,
-      HOUR = MINUTE * 60,
-      DAY = HOUR * 24,
-      WEEK = DAY * 7,
-      MONTH = DAY * 30,
-      YEAR = DAY * 365;
 function getTimeAgo(dateString) {
-  const date = new Date(dateString);
-  const secondsAgo = Math.round((Date.now() - Number(date)) / 1000);
-
-  if (secondsAgo < MINUTE) {
-    return `${secondsAgo} second${secondsAgo !== 1 ? "s" : ""} ago`;
-  }
-
-  let divisor;
-  let unit = "";
-
-  if (secondsAgo < HOUR) {
-    [divisor, unit] = [MINUTE, "minute"];
-  } else if (secondsAgo < DAY) {
-    [divisor, unit] = [HOUR, "hour"];
-  } else if (secondsAgo < WEEK) {
-    [divisor, unit] = [DAY, "day"];
-  } else if (secondsAgo < MONTH) {
-    [divisor, unit] = [WEEK, "week"];
-  } else if (secondsAgo < YEAR) {
-    [divisor, unit] = [MONTH, "month"];
-  } else {
-    [divisor, unit] = [YEAR, "year"];
-  }
-
-  const count = Math.floor(secondsAgo / divisor);
-  return `${count} ${unit}${count > 1 ? "s" : ""} ago`;
+  return i18n.ago(dateString);
 }
 
 
@@ -281,6 +259,7 @@ const sanitize = {
     return {
       ...link,
       ...timestamps,
+      ...require("../link-lifecycle").describe(link),
       banned_by_id: undefined,
       domain_id: undefined,
       user_id: undefined,
@@ -293,9 +272,12 @@ const sanitize = {
   },
   link_html: link => {
     const timestamps = parseTimestamps(link);
+    const remaining = link.expire_in && differenceInMilliseconds(parseDatetime(link.expire_in), new Date());
+    const relativeExpiry = link.expire_in && ms(remaining, { long: true });
     return {
       ...link,
       ...timestamps,
+      ...require("../link-lifecycle").describe(link),
       banned_by_id: undefined,
       domain_id: undefined,
       user_id: undefined,
@@ -303,23 +285,30 @@ const sanitize = {
       banned: !!link.banned,
       id: link.uuid,
       relative_created_at: getTimeAgo(timestamps.created_at),
-      relative_expire_in: link.expire_in && ms(differenceInMilliseconds(parseDatetime(link.expire_in), new Date()), { long: true }),
+      relative_expire_in: relativeExpiry,
+      relative_expire_label: link.expire_in && i18n.duration(remaining),
+      expiry_snapshot: require("../link-expiry-edit").snapshot(link, relativeExpiry),
       password: !!link.password,
-      visit_count: link.visit_count.toLocaleString("en-US"),
+      visit_count: i18n.number(link.visit_count),
       link: getShortURL(link.address, link.domain),
     }
   },
   link_admin: link => {
     const timestamps = parseTimestamps(link);
+    const remaining = link.expire_in && differenceInMilliseconds(parseDatetime(link.expire_in), new Date());
+    const relativeExpiry = link.expire_in && ms(remaining, { long: true });
     return {
       ...link,
       ...timestamps,
+      ...require("../link-lifecycle").describe(link),
       domain: link.domain || env.DEFAULT_DOMAIN,
       id: link.uuid,
       relative_created_at: getTimeAgo(timestamps.created_at),
-      relative_expire_in: link.expire_in && ms(differenceInMilliseconds(parseDatetime(link.expire_in), new Date()), { long: true }),
+      relative_expire_in: relativeExpiry,
+      relative_expire_label: link.expire_in && i18n.duration(remaining),
+      expiry_snapshot: require("../link-expiry-edit").snapshot(link, relativeExpiry),
       password: !!link.password,
-      visit_count: link.visit_count.toLocaleString("en-US"),
+      visit_count: i18n.number(link.visit_count),
       link: getShortURL(link.address, link.domain)
     }
   },
@@ -328,7 +317,7 @@ const sanitize = {
     return {
       ...user,
       ...timestamps,
-      links_count: (user.links_count ?? 0).toLocaleString("en-US"),
+      links_count: i18n.number(user.links_count ?? 0),
       relative_created_at: getTimeAgo(timestamps.created_at),
       relative_updated_at: getTimeAgo(timestamps.updated_at),
     }
@@ -338,7 +327,7 @@ const sanitize = {
     return {
       ...domain,
       ...timestamps,
-      links_count: (domain.links_count ?? 0).toLocaleString("en-US"),
+      links_count: i18n.number(domain.links_count ?? 0),
       relative_created_at: getTimeAgo(timestamps.created_at),
       relative_updated_at: getTimeAgo(timestamps.updated_at),
     }
@@ -350,7 +339,7 @@ function sleep(ms) {
 }
 
 function removeWww(host) {
-  return host?.replace("www.", "");
+  return host?.replace(/^www\./, "");
 };
 
 /**
@@ -368,6 +357,8 @@ function getUseragentBrowser(agent) {
     return "opera";
   else if (agent.isEdge)
     return "edge";
+  else if (agent.isSafari)
+    return "safari";
   else
     return "other";
 }
@@ -394,6 +385,9 @@ function getUseragentOS(agent) {
 }
 
 function registerHandlebarsHelpers() {
+  hbs.registerHelper("hasNextPage", function(total, limit, skip) {
+    return Number(total) > Number(skip || 0) + Number(limit || 10);
+  });
   hbs.registerHelper("ifEquals", function(arg1, arg2, options) {
     return (arg1 === arg2) ? options.fn(this) : options.inverse(this);
   });
@@ -402,9 +396,10 @@ function registerHandlebarsHelpers() {
     return JSON.stringify(context);
   });
   
-  const blocks = {};
+  const renderBlocks = options => i18n.blocks() || (options.data.root._i18nBlocks ||= {});
 
   hbs.registerHelper("extend", function(name, context) {
+      const blocks = renderBlocks(context);
       let block = blocks[name];
       if (!block) {
           block = blocks[name] = [];
@@ -412,17 +407,13 @@ function registerHandlebarsHelpers() {
       block.push(context.fn(this));
   });
 
-  hbs.registerHelper("block", function(name) {
+  hbs.registerHelper("block", function(name, options) {
+      const blocks = renderBlocks(options);
       const val = (blocks[name] || []).join("\n");
       blocks[name] = [];
       return val;
   });
-  hbs.registerPartials(path.join(__dirname, "../views/partials"), function (err) {});
-  const customPartialsPath = path.join(__dirname, "../../custom/views/partials");
-  const customPartialsExist = fs.existsSync(customPartialsPath);
-  if (customPartialsExist) {
-    hbs.registerPartials(customPartialsPath, function (err) {});
-  }
+  return require("../template-partials")(hbs, path.join(__dirname, "../views/partials"), path.join(__dirname, "../../custom/views/partials"));
 }
 
 // grab custom styles file name from the custom/css folder

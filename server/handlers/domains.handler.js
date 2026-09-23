@@ -1,3 +1,4 @@
+const i18n = require("../i18n");
 const { Handler } = require("express");
 
 const { CustomError, sanitize } = require("../utils");
@@ -7,12 +8,19 @@ const utils = require("../utils");
 const env = require("../env");
 
 async function add(req, res) {
-  const { address, homepage } = req.body;
+  const address = req.body.address.toLowerCase(), homepage = req.body.homepage;
+  const verification = require("../domain-verification");
+  if (!await verification.verify(address, req.user, req.body.proof)) {
+    const proof = verification.pending(address, req.user, req.body.proof) || verification.challenge(address, req.user);
+    const message = i18n.t("messages.publish_this_dns_txt_record_then_verify_ownership_existing_domains_are");
+    if (req.isHTML) return res.render("partials/settings/domain/add_form", { domain_verification: proof, verification_notice: message });
+    return res.status(409).json({ error: message, verification: proof });
+  }
 
-  const domain = await query.domain.add({
+  const domain = await query.domain.claim({
     address,
     homepage,
-    user_id: req.user.id
+    user: req.user
   });
 
   if (req.isHTML) {
@@ -30,12 +38,7 @@ async function add(req, res) {
 async function addAdmin(req, res) {
   const { address, banned, homepage } = req.body;
 
-  const domain = await query.domain.add({
-    address,
-    homepage,
-    banned,
-    ...(banned && { banned_by_id: req.user.id })
-  });
+  const domain = await require("../moderation").addDomain({ address, homepage, banned }, req.user);
 
   if (req.isHTML) {
     res.setHeader("HX-Trigger", "reloadMainTable");
@@ -45,7 +48,7 @@ async function addAdmin(req, res) {
     return;
   }
   
-  return res.status(200).send({ message: "The domain has been added successfully." });
+  return res.status(200).send({ message: i18n.t("messages.the_domain_has_been_added_successfully") });
 };
 
 async function remove(req, res) {
@@ -55,16 +58,13 @@ async function remove(req, res) {
   });
 
   if (!domain) {
-    throw new CustomError("Could not delete the domain.", 400);
+    throw new CustomError(i18n.t("messages.could_not_delete_the_domain"), 400);
   }
   
-  const [updatedDomain] = await query.domain.update(
-    { id: domain.id },
-    { user_id: null }
-  );
+  const updatedDomain = await query.domain.release(domain.id, req.user.id, req.user);
 
   if (!updatedDomain) {
-    throw new CustomError("Could not delete the domain.", 500);
+    throw new CustomError(i18n.t("messages.could_not_delete_the_domain"), 500);
   }
 
   if (env.REDIS_ENABLED) {
@@ -81,24 +81,20 @@ async function remove(req, res) {
     return;
   }
 
-  return res.status(200).send({ message: "Domain deleted successfully" });
+  return res.status(200).send({ message: i18n.t("messages.domain_deleted_successfully") });
 };
 
 async function removeAdmin(req, res) {
   const id = req.params.id;
-  const links = req.query.links
+  const links = req.query.links;
 
   const domain = await query.domain.find({ id });
 
   if (!domain) {
-    throw new CustomError("Could not find the domain.", 400);
+    throw new CustomError(i18n.t("messages.could_not_find_the_domain"), 400);
   }
 
-  if (links) {
-    await query.link.batchRemove({ domain_id: id });
-  }
-  
-  await query.domain.remove(domain);
+  await query.domain.remove(domain, { trashLinks: links === true, actor: req.user });
 
   if (req.isHTML) {
     res.setHeader("HX-Reswap", "outerHTML");
@@ -109,7 +105,7 @@ async function removeAdmin(req, res) {
     return;
   }
 
-  return res.status(200).send({ message: "Domain deleted successfully" });
+  return res.status(200).send({ message: i18n.t("messages.domain_deleted_successfully") });
 }
 
 async function getAdmin(req, res) {
@@ -126,7 +122,7 @@ async function getAdmin(req, res) {
   };
 
   const [data, total] = await Promise.all([
-    query.domain.getAdmin(match, { limit, search, user, links, skip }),
+    query.domain.getAdmin(match, { limit, search, user, links, skip, ...require("../list-sort").parse(req.query, "domains") }),
     query.domain.totalAdmin(match, { search, user, links })
   ]);
 
@@ -135,7 +131,7 @@ async function getAdmin(req, res) {
   if (req.isHTML) {
     res.render("partials/admin/domains/table", {
       total,
-      total_formatted: total.toLocaleString("en-US"),
+      total_formatted: i18n.number(total),
       limit,
       skip,
       table_domains: domains,
@@ -152,45 +148,10 @@ async function getAdmin(req, res) {
 }
 
 async function ban(req, res) {
-  const { id } = req.params;
+  const moderation = require("../moderation");
+  const domain = await moderation.moderate("domain", req.params.id, true, req.user, moderation.options(req));
 
-  const update = {
-    banned_by_id: req.user.id,
-    banned: true
-  };
-
-  // 1. check if domain exists
-  const domain = await query.domain.find({ id });
-
-  if (!domain) {
-    throw new CustomError("No domain has been found.", 400);
-  }
-
-  if (domain.banned) {
-    throw new CustomError("Domain has been banned already.", 400);
-  }
-
-  const tasks = [];
-
-  // 2. ban domain
-  tasks.push(query.domain.update({ id }, update));
-  
-  // 3. ban user
-  if (req.body.user && domain.user_id) {
-    tasks.push(query.user.update({ id: domain.user_id }, update));
-  }
-  
-  // 4. ban links
-  if (req.body.links) {
-    tasks.push(query.link.update({ domain_id: id }, update));
-  }
-  
-  // 5. wait for all tasks to finish
-  await Promise.all(tasks).catch((err) => {
-    throw new CustomError("Couldn't ban entries.");
-  });
-
-  // 6. send response
+  // Send the response only after the complete transaction commits.
   if (req.isHTML) {
     res.setHeader("HX-Reswap", "outerHTML");
     res.setHeader("HX-Trigger", "reloadMainTable");
@@ -200,7 +161,7 @@ async function ban(req, res) {
     return;
   }
 
-  return res.status(200).send({ message: "Banned domain successfully." });
+  return res.status(200).send({ message: i18n.t("messages.banned_domain_successfully") });
 }
 
 module.exports = {

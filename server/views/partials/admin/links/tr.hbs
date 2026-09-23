@@ -1,71 +1,70 @@
 <tr id="tr-{{id}}" {{#if swap_oob}}hx-swap-oob="true"{{/if}}>
   <td class="original-url right-fade">
-    <a href="{{target}}" target="_blank" rel="noopener noreferrer">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.original_url_owner"}}</span>
+    <a href="{{target}}" title="{{target}}" target="_blank" rel="noopener noreferrer">
       {{target}}
     </a>
     <p class="description">
-      by&nbsp;
+      {{t "ui.by"}}
       {{~#if user_id~}}
-        <a 
-          aria-label="View user" 
-          data-tooltip="View user" 
+        <button type="button" class="link-button" data-focus-after="#tab-users" aria-label="{{t 'ui.view_user'}}"
+          data-tooltip="{{t 'ui.view_user'}}"
           hx-get="/api/users/admin"
           hx-target="closest table"
-          hx-swap="outerHTML" 
+          hx-swap="outerHTML settle:0ms"
           hx-sync="this:replace"
           hx-indicator="closest table"
           hx-vals='{"search":"{{email}}"}'
-          onclick="setTab(event, 'tab-links')"
         >
           {{email}}
-        </a>
+        </button>
         {{#ifEquals @root.query.user email}}
         {{else}}
           &nbsp;(
-          <a 
-            aria-label="View links by this user" 
-            data-tooltip="View links by this user" 
+          <button type="button" class="link-button" data-focus-after="#tab-links" aria-label="{{t 'ui.view_links_by_this_user'}}"
+            data-tooltip="{{t 'ui.view_links_by_this_user'}}"
             hx-get="/api/links/admin"
             hx-target="closest table"
-            hx-swap="outerHTML" 
+            hx-swap="outerHTML settle:0ms"
             hx-sync="this:replace"
             hx-indicator="closest table"
             hx-vals='{"user":"{{email}}"}'
           >
-            view links
-          </a>)
+            {{t "ui.view_links_2"}}
+          </button>)
         {{/ifEquals}}
       {{~else~}}
-        <a 
-          aria-label="View anonymous links" 
-          data-tooltip="View anonymous links" 
+        <button type="button" class="link-button" data-focus-after="#tab-links" aria-label="{{t 'ui.view_anonymous_links'}}"
+          data-tooltip="{{t 'ui.view_anonymous_links'}}"
           hx-get="/api/links/admin"
           hx-target="closest table"
-          hx-swap="outerHTML" 
+          hx-swap="outerHTML settle:0ms"
           hx-sync="this:replace"
           hx-indicator="closest table"
           hx-vals='{"anonymous":"true"}'
         >
-          Anonymous
-        </a>
+          {{t "ui.anonymous_2"}}
+        </button>
       {{~/if~}}
       &nbsp;{{~#if description~}}· {{description}}{{~/if}}
     </p>
   </td>
   <td class="created-at">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.created_at"}}</span>
     {{relative_created_at}}
     {{#if relative_expire_in}}
       <p class="description">
-        Expires in {{relative_expire_in}}
+        {{t "ui.expires_in_value" value1=relative_expire_label}}
       </p>
     {{/if}}
   </td>
   <td class="short-link right-fade">
-    <div class="short-link-wrapper">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.short_link_domain"}}</span>
+    <div class="short-link-wrapper" data-copy-container>
       <div class="clipboard small">
         <button 
-          aria-label="Copy" 
-          hx-on:click="handleShortURLCopyLink(this);"
+          aria-label="{{t 'ui.copy'}}"
+          data-ui-copy
           data-url="{{link.url}}"
         >
           {{> icons/copy}}
@@ -75,19 +74,19 @@
       <a href="{{link.url}}">/{{link.address}}</a>
     </div>
     <p class="description">
-      <a 
-        aria-label="View links by this domain" 
-        data-tooltip="View links by this domain" 
+      <button type="button" class="link-button" data-focus-after="#tab-links" aria-label="{{t 'ui.view_links_by_this_domain'}}"
+        data-tooltip="{{t 'ui.view_links_by_this_domain'}}"
         hx-get="/api/links/admin"
         hx-target="closest table"
-        hx-swap="outerHTML" 
+        hx-swap="outerHTML settle:0ms"
         hx-sync="this:replace"
         hx-vals='{"domain":"{{domain}}"}'
         hx-indicator="closest table"
-      >{{domain}}</a>
+      >{{domain}}</button>
     </p>
   </td>
   <td class="views">
+    <span class="table-field-label" aria-hidden="true">{{t "ui.views"}}</span>
     {{visit_count}}
   </td>
     {{> admin/links/actions}}

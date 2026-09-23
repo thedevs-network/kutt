@@ -1,0 +1,87 @@
+{{> header}}
+<main class="link-archive library">
+  <header class="archive-heading"><h1 data-page-focus tabindex="-1">{{t "ui.library"}}</h1><a href="/">{{t "ui.links"}}</a><a href="/settings/analytics">{{t "ui.analytics"}}</a><a href="/settings/transfer">{{t "ui.import_and_export"}}</a><a href="/settings/trash">{{t "ui.trash"}}</a></header>
+  {{#if error}}<p class="library-error" role="alert">{{error}}</p>{{/if}}
+  {{#if notice}}<p class="library-notice" role="status" tabindex="-1">{{notice}}</p>{{/if}}
+  <form class="library-filters" action="/settings/library" method="get" aria-label="{{t 'ui.filter_links'}}">
+    <label>{{t "ui.search"}}<input type="search" name="q" value="{{filters.q}}" maxlength="200" /></label>
+    <label>{{t "ui.tag"}}<select name="tag" aria-label="{{t 'ui.tag'}}"><option value="">{{t "ui.all_tags"}}</option>{{#each tags}}<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}</select></label>
+    <label>{{t "ui.collection"}}<select name="collection" aria-label="{{t 'ui.collection'}}"><option value="">{{t "ui.all_collections"}}</option>{{#each collections}}<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}</select></label>
+    <label>{{t "ui.state"}}<select name="state" aria-label="{{t 'ui.state'}}">{{#each states}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></label>
+    {{> list_sort profile='links' state=filters}}
+    <button class="primary" type="submit">{{t "ui.filter"}}</button><a href="/settings/library">{{t "ui.clear"}}</a>
+  </form>
+  <nav class="library-saved" aria-label="{{t 'ui.saved_filters'}}">
+    {{#each saved_filters}}<a href="{{url}}">{{name}}</a>{{/each}}
+  </nav>
+  <details class="library-manage"><summary>{{t "ui.tags_collections_and_saved_filters"}}</summary>
+    <div class="library-manage-grid">
+      <section><h2>{{t "ui.tags_and_collections"}}</h2>
+        <form method="post" action="/settings/library" class="library-inline" aria-label="{{t 'ui.create_label'}}">
+          <input type="hidden" name="operation" value="save_label" /><input type="hidden" name="return_to" value="{{view_url}}" />
+          <label>{{t "ui.kind"}}<select name="kind" aria-label="{{t 'ui.kind'}}"><option value="tag">{{t "ui.tag"}}</option><option value="collection">{{t "ui.collection"}}</option></select></label>
+          <label>{{t "ui.name"}}<input name="name" required maxlength="80" /></label><button type="submit">{{t "ui.create"}}</button>
+        </form>
+        {{#each labels}}
+          <form method="post" action="/settings/library" class="library-inline library-label-edit" aria-label="{{t 'ui.edit_value_value' value1=(localizedLabel "kind" kind) value2=name}}">
+            <input type="hidden" name="id" value="{{id}}" /><input type="hidden" name="kind" value="{{kind}}" /><input type="hidden" name="return_to" value="{{@root.view_url}}" />
+            <label>{{localizedLabel "kind" kind}}<input name="name" value="{{name}}" required maxlength="80" /></label>
+            <button class="library-icon" name="operation" value="save_label" title="{{t 'ui.save_name'}}" aria-label="{{t 'ui.save_name'}}">{{> icons/check}}</button>
+            <button class="library-icon" name="operation" value="remove_label" title="{{t 'ui.remove_label'}}" aria-label="{{t 'ui.remove_label'}}" data-confirm="{{t 'ui.remove_this_label_from_your_links_the_links_themselves_will_remain'}}">{{> icons/trash}}</button>
+          </form>
+        {{/each}}
+      </section>
+      <section><h2>{{t "ui.saved_filters"}}</h2>
+        <form method="post" action="/settings/library" class="library-inline" aria-label="{{t 'ui.save_current_filter'}}">
+          <input type="hidden" name="operation" value="save_filter" /><input type="hidden" name="return_to" value="{{view_url}}" />
+          {{> library/filter_fields filters}}
+          <label>{{t "ui.filter_name"}}<input name="name" required maxlength="80" /></label><button type="submit">{{t "ui.save_filter"}}</button>
+        </form>
+        {{#each saved_filters}}
+          <details class="library-filter-edit"><summary>{{name}}</summary>
+            <form method="post" action="/settings/library" class="library-inline" aria-label="{{t 'ui.edit_filter_value' value1=name}}">
+              <input type="hidden" name="id" value="{{id}}" /><input type="hidden" name="return_to" value="{{@root.view_url}}" />
+              {{> library/filter_fields filters}}
+              <label>{{t "ui.name"}}<input name="name" value="{{name}}" required maxlength="80" /></label>
+              <button class="library-icon" name="operation" value="save_filter" title="{{t 'ui.save_name'}}" aria-label="{{t 'ui.save_name'}}">{{> icons/check}}</button>
+              <button class="library-icon" name="operation" value="remove_filter" title="{{t 'ui.remove_saved_filter'}}" aria-label="{{t 'ui.remove_saved_filter'}}" data-confirm="{{t 'ui.remove_this_saved_filter'}}">{{> icons/trash}}</button>
+            </form>
+            <form method="post" action="/settings/library">
+              <input type="hidden" name="operation" value="save_filter" /><input type="hidden" name="id" value="{{id}}" /><input type="hidden" name="name" value="{{name}}" />
+              <input type="hidden" name="return_to" value="{{@root.view_url}}" />{{> library/filter_fields @root.filters}}
+              <button type="submit">{{t "ui.replace_with_current_filters"}}</button>
+            </form>
+          </details>
+        {{/each}}
+      </section>
+    </div>
+  </details>
+  <form method="post" action="/settings/library" id="library-bulk">
+    <input type="hidden" name="operation" value="bulk" /><input type="hidden" name="return_to" value="{{view_url}}" />
+    <div class="library-toolbar">
+      <label class="library-checkbox"><input type="checkbox" id="library-select-all" />{{t "ui.select_page"}}</label>
+      <output id="library-selection" aria-live="polite">{{t "library.selected" count=0}}</output>
+      <label>{{t "ui.action"}}<select name="action" id="library-action" aria-label="{{t 'ui.action'}}"><option value="add_label">{{t "ui.add_label"}}</option><option value="remove_label">{{t "ui.remove_label"}}</option><option value="pause">{{t "ui.pause"}}</option><option value="resume">{{t "ui.resume"}}</option><option value="trash">{{t "ui.move_to_trash"}}</option></select></label>
+      <label id="library-label-field">{{t "ui.label"}}<select name="label_id" aria-label="{{t 'ui.label'}}"><option value="">{{t "ui.select_a_label"}}</option>{{#each labels}}<option value="{{id}}">{{localizedLabel "kind" kind}}: {{name}}</option>{{/each}}</select></label>
+      <button type="submit" id="library-apply" disabled>{{t "ui.apply"}}</button>
+    </div>
+    <p class="library-count">{{t "library.links" count=total formatted=(number total)}}</p>
+    <ul class="library-links">
+      {{#each data}}
+        <li>
+          <label class="library-row-select"><input type="checkbox" name="ids" value="{{id}}" aria-label="{{t 'ui.select_value' value1=address}}" {{#unless selectable}}disabled{{/unless}} /></label>
+          <div class="library-link-main">
+            <a href="{{link}}" target="_blank" rel="noopener noreferrer">{{link}}</a>
+            <p class="library-target">{{target}}</p>
+            {{#if description}}<p>{{description}}</p>{{/if}}
+            <ul class="library-labels">{{#each labels}}<li class="library-label-{{kind}}">{{name}}</li>{{/each}}</ul>
+          </div>
+          <div class="library-link-meta"><span>{{lifecycle_label}}</span><a href="/link/history/{{id}}">{{t "ui.history"}}</a>{{#if selectable}}<a href="/link/routing/{{id}}" title="{{t 'ui.redirect_rules'}}" aria-label="{{t 'ui.redirect_rules'}}">{{> icons/shuffle}}</a><a href="/link/forwarding/{{id}}" title="{{t 'ui.path_and_query_forwarding'}}" aria-label="{{t 'ui.path_and_query_forwarding'}}">{{> icons/chevron_right}}</a><a href="/link/health/{{id}}" title="{{t 'ui.destination_health'}}" aria-label="{{t 'ui.destination_health'}}">{{> icons/heart}}</a><a href="/link/qr/{{id}}" title="{{t 'ui.qr_code'}}" aria-label="{{t 'ui.qr_code'}}">{{> icons/qrcode}}</a>{{/if}}</div>
+        </li>
+      {{else}}<li class="library-empty">{{t "ui.no_matching_links"}}</li>{{/each}}
+    </ul>
+  </form>
+  <nav class="archive-nav" aria-label="{{t 'ui.library_pages'}}">{{#if previous}}<a href="{{previous}}">{{t "ui.previous"}}</a>{{/if}}<span>{{t "ui.page_value" value1=page}}</span>{{#if next}}<a href="{{next}}">{{t "ui.next"}}</a>{{/if}}</nav>
+</main>
+<script nonce="{{cspNonce}}" src="/scripts/library.js" defer></script>
+{{> footer}}

@@ -2,14 +2,14 @@
   {{#ifEquals links.length 0}}
     <tr class="no-data">
       <td>
-        No links.
+        {{t "ui.no_links_2"}}
       </td>
     </tr>
   {{else}}
     <tr class="loading-placeholder">
       <td>
         {{> icons/spinner}}
-        Loading links...
+        {{t "ui.loading_links"}}
       </td>
     </tr>
   {{/ifEquals}}

@@ -3,10 +3,10 @@
     {{> icons/check}}
   </div>
   <p>
-    Your domain <b>"{{address}}"</b> has been deleted.
+    {{t "ui.your_domain"}} <b>"{{address}}"</b> {{t "ui.has_been_deleted"}}
   </p>
   <div class="buttons">
-    <button type="button" hx-on:click="closeDialog()">Close</button>
+    <button type="button" data-ui-close-dialog>{{t "ui.close"}}</button>
   </div>
 </div>
 {{> settings/domain/table}}

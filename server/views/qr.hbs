@@ -1,0 +1,35 @@
+{{> header}}
+<main class="link-archive qr-page" data-qr-id="{{id}}">
+  <header class="archive-heading"><h1>{{t "ui.qr_code"}}</h1><a href="/settings/library">{{t "ui.library"}}</a><a href="/">{{t "ui.links"}}</a></header>
+  <div class="qr-controls">
+    <form id="qr-settings" method="get" action="/link/qr/{{id}}" aria-label="{{t 'ui.qr_settings'}}">
+      <label>{{t "ui.size_px"}}<input type="number" name="size" min="128" max="1024" step="1" value="{{size}}" required /></label>
+      <label>{{t "ui.error_correction"}}<select name="level">{{#each levels}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{value}}</option>{{/each}}</select></label>
+      <button type="submit">{{t "ui.apply"}}</button>
+    </form>
+    <div id="qr-branding" class="qr-branding" hidden>
+      <label for="qr-logo">{{t "qr.logo_label"}}<input id="qr-logo" type="file" accept="image/png,.png" /></label>
+      <img id="qr-logo-preview" alt="{{t 'qr.selected_logo'}}" width="48" height="48" hidden />
+      <button id="qr-logo-remove" type="button" aria-label="{{t 'qr.remove_logo'}}" title="{{t 'qr.remove_logo'}}" disabled>{{> icons/x}}</button>
+    </div>
+    <div class="qr-actions"><a id="qr-png" class="button primary" href="{{image_url}}" download="kutt-qr-{{id}}.png">{{t "ui.download_png"}}</a><a id="qr-svg" class="button" href="{{svg_url}}" download="kutt-qr-{{id}}.svg">{{t "ui.download_svg"}}</a><button id="qr-copy" type="button" aria-label="{{t 'ui.copy_qr_image'}}" title="{{t 'ui.copy_qr_image'}}" disabled>{{> icons/copy}}</button><button id="qr-print" type="button" disabled>{{t "ui.print"}}</button></div>
+    <p id="qr-copy-status" role="status" aria-live="polite"></p>
+    <p class="qr-state">{{lifecycle_label}}{{#if protected}} {{t "ui.password_protected_2"}}{{/if}}</p>
+    <p id="qr-error" role="alert" hidden
+      data-load="{{t 'ui.qr_image_could_not_load_sign_in_again_or_retry'}}"
+      data-logo="{{t 'qr.invalid_logo'}}"
+      data-pending="{{t 'qr.changes_pending'}}"
+      data-rendering="{{t 'qr.generating'}}"
+      data-ready="{{t 'qr.ready'}}"
+      data-copying="{{t 'ui.copying'}}"
+      data-copied="{{t 'ui.qr_image_copied'}}"
+      data-copy-failed="{{t 'ui.could_not_copy_image_retry_or_download_png'}}"
+      data-copy-unavailable="{{t 'ui.image_copying_unavailable_download_png_instead'}}">{{t "ui.qr_image_could_not_load_sign_in_again_or_retry"}}</p>
+  </div>
+  <figure class="qr-sheet">
+    <div class="qr-preview-frame"><img id="qr-preview" src="{{image_url}}" alt="{{t 'ui.qr_code_for_value' value1=short_url}}" width="512" height="512" /></div>
+    <figcaption>{{short_url}}</figcaption>
+  </figure>
+</main>
+<script nonce="{{cspNonce}}" src="/scripts/qr.js" defer></script>
+{{> footer}}

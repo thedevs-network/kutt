@@ -1,62 +1,68 @@
 <tr class="category">
   <th class="category-total">
     <p id="category-total">
-      Total {{title}}: <b>{{#if total includeZero=true}}{{total_formatted}}{{else}}-{{/if}}</b>
+      {{t "ui.total_value" value1=(localizedLabel "resource" title)}} <b>{{#if total includeZero=true}}{{total_formatted}}{{else}}-{{/if}}</b>
     </p>
   </th>
   <th class="category-tab">
-    <nav class="tab" role="tablist">
-      <a 
+    <nav class="tab" role="tablist" aria-label="{{t 'ui.administration'}}">
+      <button type="button"
         id="tab-links" 
         role="tab" 
         hx-get="/api/links/admin"
         hx-target="closest table"
-        hx-swap="outerHTML" 
+        hx-swap="outerHTML settle:0ms"
+        aria-controls="admin-table-results"
         hx-disinherit="*"
         hx-sync="this:replace"
         hx-indicator="closest table"
-        onclick="setTab(event)"
         {{#ifEquals title 'links'}}
-          class="active"
-          hx-on:htmx:before-request="event.preventDefault()"
+          class="active" aria-selected="true" tabindex="0"
+          data-ui-no-request
+        {{else}}
+          aria-selected="false" tabindex="-1"
         {{/ifEquals}}
       >
-        Links
-      </a>
-      <a 
+        {{t "ui.links"}}
+      </button>
+      <button type="button"
         id="tab-users" 
         role="tab" 
         hx-get="/api/users/admin"
         hx-target="closest table"
-        hx-swap="outerHTML" 
+        hx-swap="outerHTML settle:0ms"
+        aria-controls="admin-table-results"
         hx-disinherit="*"
         hx-sync="this:replace"
         hx-indicator="closest table"
-        onclick="setTab(event)"
         {{#ifEquals title 'users'}}
-          class="active"
-          hx-on:htmx:before-request="event.preventDefault()"
+          class="active" aria-selected="true" tabindex="0"
+          data-ui-no-request
+        {{else}}
+          aria-selected="false" tabindex="-1"
         {{/ifEquals}}
       >
-        Users
-      </a>
-       <a 
+        {{t "ui.users"}}
+      </button>
+       <button type="button"
         id="tab-domains" 
         role="tab" 
         hx-get="/api/domains/admin"
         hx-target="closest table"
-        hx-swap="outerHTML" 
+        hx-swap="outerHTML settle:0ms"
+        aria-controls="admin-table-results"
         hx-disinherit="*"
         hx-sync="this:replace"
         hx-indicator="closest table"
-        onclick="setTab(event)"
         {{#ifEquals title 'domains'}}
-          class="active"
-          hx-on:htmx:before-request="event.preventDefault()"
+          class="active" aria-selected="true" tabindex="0"
+          data-ui-no-request
+        {{else}}
+          aria-selected="false" tabindex="-1"
         {{/ifEquals}}
       >
-        Domains
-      </a>
+        {{t "ui.domains"}}
+      </button>
     </nav>
   </th>
 </tr>

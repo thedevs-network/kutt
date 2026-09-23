@@ -1,0 +1,32 @@
+{{> header}}
+<main class="link-archive privacy-page" data-link="{{link_id}}" data-retention="{{retention}}">
+  <header class="archive-heading"><h1>{{title}}</h1><a href="/settings/analytics">{{t "ui.analytics"}}</a><a href="/">{{t "ui.links"}}</a></header>
+  <p id="privacy-status" role="status" aria-live="polite">{{t "ui.loading"}}</p>
+  <button id="privacy-reload" type="button" title="{{t 'ui.reload_settings'}}">{{> icons/reload}} {{t "ui.reload"}}</button>
+  {{#if retention}}
+  <form id="retention-form" hidden>
+    <fieldset><legend>{{t "ui.analytics_retention"}}</legend>
+      <label class="privacy-choice"><input type="radio" name="mode" value="keep" checked /> {{t "ui.keep_all_analytics"}}</label>
+      <label class="privacy-choice"><input type="radio" name="mode" value="expire" /> {{t "ui.delete_expired_analytics"}}</label>
+      <label id="retention-days-label" hidden>{{t "ui.retention_days"}}<input name="days" type="number" min="1" max="36500" step="1" value="365" /></label>
+    </fieldset>
+    <button type="submit">{{t "ui.preview_changes"}}</button>
+  </form>
+  <section id="retention-preview" hidden aria-label="{{t 'ui.retention_preview'}}">
+    <h2>{{t "ui.retention_preview"}}</h2><p id="retention-cutoff"></p><p id="retention-count"></p>
+    <p>{{t "ui.deleted_analytics_cannot_be_recovered_without_a_backup_links_and_lifetime"}}</p>
+    <label class="privacy-choice" id="retention-ack-label"><input type="checkbox" id="retention-ack" /> {{t "ui.permanently_delete_expired_analytics"}}</label>
+    <button type="button" id="retention-save">{{t "ui.apply_retention"}}</button>
+  </section>
+  <section id="retention-state" hidden><h2>{{t "ui.last_retention_run"}}</h2><dl><dt>{{t "ui.completed"}}</dt><dd id="retention-last"></dd><dt>{{t "ui.deleted_hourly_buckets"}}</dt><dd id="retention-deleted"></dd><dt>{{t "ui.status"}}</dt><dd id="retention-error"></dd></dl></section>
+  {{else}}
+  <h2>{{address}}</h2>
+  <form id="tracking-form" hidden>
+    <label class="privacy-choice"><input type="checkbox" id="tracking-enabled" checked /> {{t "ui.record_analytics"}}</label>
+    <p>{{t "ui.turning_this_off_stops_new_analytics_including_displayed_visit_counts_existing"}}</p>
+    <button type="submit">{{t "ui.save_tracking"}}</button>
+  </form>
+  {{/if}}
+</main>
+<script nonce="{{cspNonce}}" src="/scripts/privacy.js" defer></script>
+{{> footer}}

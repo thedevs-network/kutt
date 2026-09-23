@@ -1,0 +1,10 @@
+<dialog id="{{id}}" class="dialog" aria-label="{{t 'ui.dialog'}}" aria-modal="true" hx-request='{"timeout":30000}' hx-sync="closest dialog:drop">
+  <div class="box">
+    <button type="button" class="dialog-close" aria-label="{{t 'ui.close_dialog'}}" title="{{t 'ui.close_dialog'}}" data-ui-close-dialog>
+      <span aria-hidden="true">{{> icons/x}}</span>
+    </button>
+    <p class="dialog-status" role="status" aria-live="polite"></p>
+    <div class="content-wrapper"></div>
+    <div class="loading" aria-hidden="true">{{> icons/spinner}}</div>
+  </div>
+</dialog>

@@ -1,10 +1,24 @@
 {{> header}}
 <section id="settings" class="section-container">
   <h1 class="settings-welcome">
-    Welcome, <span>{{user.email}}</span>.
+    {{t "ui.welcome"}} <span>{{user.email}}</span>.
   </h1>
   <hr />
+  <nav class="settings-nav" aria-label="{{t 'ui.settings'}}">
+  <a href="/settings/security">{{t "ui.account_security"}}</a>
+  <a href="/settings/integrations">{{t "ui.integrations"}}</a>
+  <a href="/settings/health">{{t "ui.destination_monitoring"}}</a>
+  <a href="/settings/destination-policy">{{t "destination_policy.title"}}</a>
+  <a href="/settings/shortcuts">{{t "ui.ios_shortcut"}}</a>
+  <a href="/settings/analytics">{{t "ui.analytics"}}</a>
+  {{#ifEquals user.role "ADMIN"}}<a href="/settings/retention">{{t "ui.analytics_retention"}}</a>{{/ifEquals}}
+  <a href="/settings/workspaces">{{t "ui.workspaces"}}</a>
+  <a href="/settings/domain-sharing">{{t "domain_grants.title"}}</a>
+  </nav>
+  <hr />
   {{> settings/domain/index}}
+  <hr />
+  {{> settings/tokens}}
   <hr />
   {{> settings/apikey}}
   <hr />

@@ -2,13 +2,17 @@ services:
   server:
     build:
       context: .
+    env_file: .env
     volumes:
        - db_data_sqlite:/var/lib/kutt
        - custom:/kutt/custom
     environment:
+      JWT_SECRET: ${JWT_SECRET:?Set a long random JWT_SECRET in .env}
+      DB_CLIENT: better-sqlite3
       DB_FILENAME: "/var/lib/kutt/data.sqlite"
+      TRUST_PROXY: ${TRUST_PROXY:-false}
     ports:
-      - 3000:3000
+      - "127.0.0.1:3000:3000"
 volumes:
   db_data_sqlite:
   custom:

@@ -2,6 +2,68 @@
 
 # Kutt.to
 
+## Managed-Link Contribution
+
+This RobinMJD contribution extends upstream Kutt with managed-link workflows,
+community-inspired features and focused UI/security improvements. It is prepared
+for the existing [upstream PR #1046](https://github.com/thedevs-network/kutt/pull/1046);
+upstream authorship, branding, license, donation links and project information
+remain below. No maintainer merge or production rollout is implied.
+
+The original workflows include [scoped API tokens and idempotency](docs/API-TOKENS.md),
+[availability](docs/LINK-LIFECYCLE.md), [history/trash](docs/LINK-HISTORY.md),
+[stable OIDC identities](docs/OIDC-SECURITY.md), [Library](docs/LIBRARY.md),
+[CSV/JSON transfer](docs/TRANSFER.md), [QR exports](docs/QR-CODES.md),
+[workspaces](docs/WORKSPACES.md), [routing](docs/ROUTING.md),
+[analytics](docs/ANALYTICS.md), [privacy/retention](docs/PRIVACY.md),
+[webhooks](docs/WEBHOOKS.md), [forwarding](docs/FORWARDING.md),
+[destination monitoring](docs/DESTINATION-HEALTH.md) and the optional
+[iOS Shortcut](examples/IOS-SHORTCUT.md). [DNS ownership proof](docs/CUSTOM-DOMAINS.md)
+and [campaign URL building](docs/CAMPAIGNS.md) are retained.
+
+The [21-feature community guide](docs/COMMUNITY-FEATURE-ROADMAP.md) maps each
+addition to its compatibility boundaries, guide and tests. It includes complete
+English/French/Spanish localization, light/dark/system appearance, stable sorting,
+branded QR exports, safe moderation, explicit domain sharing and management-host
+isolation, optional CSP/OIDC roles/destination policy/metrics, verified database
+and Redis TLS, dotted aliases, interactive geography and indexed visit lookup.
+[Proposal credits](docs/UPSTREAM-PR-REVIEW.md) distinguish upstream inspiration
+from independently adapted implementations; the [UI review](docs/UI-UX-REVIEW.md)
+describes browser workflows and remaining acceptance limits.
+
+[Interface polish](docs/INTERFACE-POLISH.md) adds aligned responsive filters,
+theme-aware action icons, compact creation/Library layouts, grouped Settings
+navigation and meaningful empty analytics, with EN/FR/ES rendered regressions.
+
+The 1,519-key English/French/Spanish catalogs also include reviewed copy polish:
+formal Spanish management prompts, clearer moderation errors and natural
+French/Spanish geography percentage explanations. Stable keys, escaped
+placeholders and API identifiers are unchanged; focused checks cover the copy
+and its rendered confirmation, sorting and geography surfaces.
+
+Analytics CSV/JSON exports use the shared light/dark button styling with readable
+text and current-color icons. Focused rendered checks cover normal/hover/focus
+contrast and actual keyboard downloads without changing filters or file formats.
+
+Review [deployment and recovery](docs/DEPLOYMENT.md), [security boundaries](docs/SECURITY-MAINTENANCE.md)
+and each feature's migration notes before upgrading. Preserve the database and
+original signing/encryption secret together. Optional policies are not enabled
+implicitly, and old images can ignore newer authorization/lifecycle policies.
+
+Native domain-grant revocation now asks for confirmation and explains permanent
+scoped-token revocation and disabled health monitoring; Cancel is non-mutating
+and regranting does not restore those effects automatically. QR uploads use
+plain PNG base64 while retaining exact legacy data-URI API compatibility. Actual
+WAF/IdP/custom-template behavior must be validated without weakening controls.
+
+Run the isolated suites from [tests/README.md](tests/README.md), starting with
+`docker build -t kutt-test .` and
+`docker run --rm --network none --entrypoint node kutt-test tests/container-smoke.cjs`.
+SQLite has full feature regression; PostgreSQL/MySQL have focused execution,
+not an exhaustive parity guarantee. Never use production data for these fixtures.
+Browser screenshots and operator release/backup records belong outside this
+contribution. Existing upstream Docker Hub workflows do not publish from forks.
+
 **Kutt** is a modern URL shortener with support for custom domains. Create and edit links, view statistics, manage users, and more.
 
 [https://kutt.to](https://kutt.to)
@@ -35,7 +97,7 @@
 ## Key features
 
 - Created with self-host in mind:
-  - Zero configuration needed
+  - SQLite by default, with explicit production secrets
   - Easy setup with no build step
   - Supporting various databases (SQLite, Postgres, MySQL)
   - Ability to disable registration and anonymous links
@@ -56,32 +118,42 @@ Support the development of Kutt by making a donation or becoming an sponsor.
 
 ## Setup
 
-The only prerequisite is [Node.js](https://nodejs.org/) (version 20 or above). The default database is SQLite. You can optionally install Postgres or MySQL/MariaDB for the database or Redis for the cache. 
+Use [Node.js](https://nodejs.org/) 24, matching the tested Docker runtime. The default database is SQLite. Optional Postgres and MySQL/MariaDB examples are not evidence that every fork feature has passed those engines. Redis can provide shared cache, visit queues and rate-limit storage.
 
 When you first start the app, you're prompted to create an admin account.
 
-1. Clone this repository or [download the latest zip](https://github.com/thedevs-network/kutt/releases)
-2. Install dependencies: `npm install`
-3. Initialize database: `npm run migrate`
-5. Start the app for development `npm run dev` or production `npm start`
+1. Clone this fork or download a [versioned release](https://github.com/RobinMJD/kutt/releases).
+2. Copy `.example.env` to `.env`, restrict it to mode `0600`, and set a long random `JWT_SECRET`. Set `DEFAULT_DOMAIN` to the canonical hostname (no scheme/path). Preserve existing production secrets when upgrading.
+3. Install locked dependencies: `npm ci`.
+4. Initialize the configured database: `npm run migrate`.
+5. Start development with `npm run dev`, or production with `npm start` behind your secured HTTPS reverse proxy.
 
 ## Docker
 
-Make sure Docker is installed, then you can start the app from the root directory:
+Configure the private `.env` above first. With Docker Compose installed:
 
 ```sh
-docker compose up
+docker compose config --quiet
+docker compose up --build -d
 ```
 
 Various docker-compose configurations are available. Use `docker compose -f <file_name> up` to start the one you want:
 
 - [`docker-compose.yml`](./docker-compose.yml): Default Kutt setup. Uses SQLite for the database.
-- [`docker-compose.sqlite-redis.yml`](./docker-compose.sqlite-redis.yml): Starts Kutt with SQLite and Redis.
-  - Required environment variable: `REDIS_ENABLED`
+- [`docker-compose.sqlite-redis.yml`](./docker-compose.sqlite-redis.yml): Starts Kutt with SQLite and Redis; enables Redis automatically.
 - [`docker-compose.postgres.yml`](./docker-compose.postgres.yml): Starts Kutt with Postgres and Redis.
-  - Required environment variables: `REDIS_ENABLED`, `DB_PASSWORD`, `DB_NAME`, `DB_USER`
+  - Required environment variables: `POSTGRES_IMAGE`, `DB_PASSWORD`, `DB_NAME`, `DB_USER`.
 - [`docker-compose.mariadb.yml`](./docker-compose.mariadb.yml): Starts Kutt with MariaDB and Redis.
-  - Required environment variables: `REDIS_ENABLED`, `DB_PASSWORD`, `DB_NAME`, `DB_USER`, `DB_PORT`
+  - Required environment variables: `MARIADB_IMAGE`, `DB_PASSWORD`, `DB_NAME`, a non-root `DB_USER`, and `MARIADB_ROOT_PASSWORD_FILE` pointing to a separate root-password file.
+
+All examples require `JWT_SECRET`, pass application configuration from `.env`,
+and publish only `127.0.0.1:3000`. SQL credentials must match any existing volume;
+changing environment variables does not change existing database accounts.
+Do not publish the backend directly. Configure HTTPS, WAF and management SSO
+before external access, keeping only short-link redirects intentionally public.
+See [deployment and recovery](docs/DEPLOYMENT.md) for proxy, database-version,
+backup and rollback requirements. Never use `docker compose down --volumes` on
+an instance whose data you intend to retain.
 
 Official Kutt Docker image is available on [Docker Hub](https://hub.docker.com/r/kutt/kutt).
 
@@ -95,7 +167,12 @@ The app is configured via environment variables. You can pass environment variab
 
 All variables are optional except `JWT_SECRET` which is required on production. 
 
-You can use files for each of the variables by appending `_FILE` to the name of the variable. Example: `JWT_SECRET_FILE=/path/to/secret_file`.
+You can use files for each variable by appending `_FILE`. Example:
+`JWT_SECRET_FILE=/run/secrets/jwt_secret`. The file must exist inside the app
+container/process, is trimmed, and takes precedence over the inline value.
+Unreadable configured files stop startup rather than silently using a fallback.
+The Compose examples use inline `JWT_SECRET` validation; adapt their mounts and
+environment explicitly when using Docker secrets instead.
 
 | Variable | Description | Default | Example |
 | -------- | ----------- | ------- | ------- |
@@ -137,7 +214,7 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `MAIL_SECURE` | Whether use SSL for the email server connection | `false` | `true` | 
 | `OIDC_ENABLED` | Enable OpenID Connect | `false` | `true` | 
 | `OIDC_ISSUER` | OIDC issuer URL | - | `https://example.com/some/path` | 
-| `OIDC_POMPT` | OIDC prompt | - | `login` | 
+| `OIDC_PROMPT` | OIDC prompt | - | `login` |
 | `OIDC_CLIENT_ID` | OIDC client id | - | `example-app` | 
 | `OIDC_CLIENT_SECRET` | OIDC client secret | - | `some-secret` | 
 | `OIDC_SCOPE` | OIDC Scope | `openid profile email` | `openid email` | 
@@ -258,4 +335,3 @@ Download Kutt's extension for web browsers via below links.
 Pull requests are welcome. Open a discussion for feedback, requesting features, or discussing ideas.
 
 Special thanks to [Thomas](https://github.com/trgwii) and [Muthu](https://github.com/MKRhere). Logo design by [Muthu](https://github.com/MKRhere).
-

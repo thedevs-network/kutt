@@ -1,0 +1,32 @@
+{{> header}}
+<main class="integrations-page">
+  <header><h1>{{t "ui.integrations"}}</h1><a href="/settings">{{t "ui.settings"}}</a><a href="/">{{t "ui.links"}}</a></header>
+  <p id="integration-status" role="status" aria-live="polite" tabindex="-1">{{t "ui.loading"}}</p>
+  <nav aria-label="{{t 'ui.integration_actions'}}"><button id="hooks-reload" type="button" title="{{t 'ui.reload_integrations'}}">{{> icons/reload}} {{t "ui.reload"}}</button><button id="hook-new" type="button">{{t "ui.new_webhook"}}</button></nav>
+  <section aria-labelledby="hooks-title"><h2 id="hooks-title">{{t "ui.webhooks"}}</h2><div id="hooks-list"></div></section>
+  <section id="hook-editor" hidden>
+    <h2 id="hook-editor-title">{{t "ui.new_webhook"}}</h2>
+    <form id="hook-form" method="post" action="/api/v2/webhooks" aria-labelledby="hook-editor-title">
+      <label>{{t "ui.name"}}<input name="name" maxlength="80" required /></label>
+      <label>{{t "ui.receiver_url"}}<input name="url" type="url" maxlength="2048" placeholder="https://receiver.example.com/webhook" required /></label>
+      <label class="integration-choice"><input name="enabled" type="checkbox" /> {{t "ui.enabled"}}</label>
+      <fieldset><legend>{{t "ui.events"}}</legend>{{#each event_types}}<label class="integration-choice"><input type="checkbox" name="events" value="{{this}}" checked /> {{localizedLabel "event" this}}</label>{{/each}}</fieldset>
+      <p id="hook-form-error" class="integration-error" role="alert" tabindex="-1" hidden></p>
+      <div class="integration-actions"><button type="submit">{{t "ui.save_webhook"}}</button><button id="hook-cancel" type="button">{{t "ui.cancel"}}</button></div>
+    </form>
+  </section>
+  <section id="hook-secret" aria-labelledby="hook-secret-title" hidden>
+    <h2 id="hook-secret-title">{{t "ui.signing_secret"}}</h2>
+    <p>{{t "ui.this_secret_is_shown_once_store_it_securely_on_the_receiver"}}</p>
+    <output id="hook-secret-value"></output>
+    <p id="hook-secret-status" role="status" aria-live="polite" aria-atomic="true"></p>
+    <div class="integration-actions">
+      <button id="hook-secret-copy" type="button" title="{{t 'ui.copy_signing_secret'}}">{{> icons/copy}} <span id="hook-secret-copy-label">{{t "ui.copy"}}</span></button>
+      <button id="hook-secret-hide" type="button">{{t "ui.dismiss"}}</button>
+    </div>
+  </section>
+  <section id="hook-deliveries" hidden><header><h2 id="deliveries-title">{{t "ui.deliveries"}}</h2><button id="deliveries-reload" type="button" title="{{t 'ui.reload_deliveries'}}">{{> icons/reload}}</button></header><p id="deliveries-status" role="status"></p><div id="deliveries-list"></div><button id="deliveries-older" type="button" hidden>{{t "ui.older_deliveries"}}</button></section>
+  <section aria-labelledby="events-title"><header><h2 id="events-title">{{t "ui.live_activity"}}</h2><label class="integration-choice"><input id="events-live" type="checkbox" checked /> {{t "ui.live"}}</label><span id="events-status" role="status">{{t "ui.connecting"}}</span></header><ol id="events-list"></ol></section>
+</main>
+<script nonce="{{cspNonce}}" src="/scripts/webhooks.js?v={{asset_version}}" defer></script>
+{{> footer}}

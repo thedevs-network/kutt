@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{locale}}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -8,35 +8,55 @@
   <link rel="icon" sizes="16x16" href="/images/favicon-16x16.png" />
   <link rel="apple-touch-icon" href="/images/favicon-196x196.png" />
   <link rel="mask-icon" href="/images/icon.svg" color="blue" />
-  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="manifest" href="/locales/{{locale}}.webmanifest" />
   <meta name="theme-color" content="#f3f3f3" />
+  <script nonce="{{cspNonce}}" src="/scripts/theme.js"></script>
   <meta property="fb:app_id" content="123456789" />
-  <meta name="htmx-config" content='{"withCredentials":true}'>
+  <meta name="htmx-config" content='{"withCredentials":true,"allowEval":{{#if (cspEnforced)}}false{{else}}true{{/if}},"allowScriptTags":{{#if (cspEnforced)}}false{{else}}true{{/if}},"inlineStyleNonce":"{{cspNonce}}"{{#if (cspEnabled)}},"attributesToSettle":["class","width","height"]{{/if}} }'>
   <meta property="og:url" content="https://{{default_domain}}" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="{{site_name}}" />
   <meta property="og:image" content="https://{{default_domain}}/images/card.png" />
-  <meta property="og:description" content="Free & Open Source Modern URL Shortener" />
+  <meta property="og:description" content="{{t 'ui.free_open_source_modern_url_shortener'}}" />
   <meta name="twitter:url" content="https://{{default_domain}}" />
   <meta name="twitter:title" content="{{site_name}}" />
-  <meta name="twitter:description" content="Free & Open Source Modern URL Shortener" />
+  <meta name="twitter:description" content="{{t 'ui.free_open_source_modern_url_shortener'}}" />
   <meta name="twitter:image" content="https://{{default_domain}}/images/card.png" />
-  <meta name="description" content="{{site_name}} is a free and open source URL shortener with custom domains and stats." />
+  <meta name="description" content="{{t 'ui.value_is_a_free_and_open_source_url_shortener_with_custom' value1=site_name}}" />
   <title>{{site_name}} | {{title}}</title>
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/campaign.css">
+  <link rel="stylesheet" href="/css/i18n.css">
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/date-time.css">
+  {{{block "stylesheets"}}}
+  <link rel="stylesheet" href="/css/interface.css">
   {{#each custom_styles}}
     <link rel="stylesheet" href="/css/{{this}}">
   {{/each}}
-  {{{block "stylesheets"}}}
 </head>
 <body>
   <div class="main-wrapper">
     {{{body}}}
   </div>
 
+  <script nonce="{{cspNonce}}" src="/locales/i18next.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/i18n-core.js"></script>
+  <script nonce="{{cspNonce}}" src="/locales/{{locale}}.js"></script>
   {{{block "scripts"}}}
-  <script src="/libs/htmx.min.js"></script>
-  <script src="/libs/qrcode.min.js"></script>
-  <script src="/scripts/main.js"></script>
+  <script nonce="{{cspNonce}}" src="/libs/htmx.min.js"></script>
+  <script nonce="{{cspNonce}}" src="/libs/qrcode.min.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/focus.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/date-time.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/validation.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/dialogs.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/copy.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/token-secret.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/responses.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/main.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/ui-events.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/list-sorting.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/campaign-url.js"></script>
+  <script nonce="{{cspNonce}}" src="/scripts/campaign.js"></script>
 </body>
 </html>

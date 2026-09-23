@@ -1,0 +1,17 @@
+{{> header}}
+<main class="link-archive">
+  <div class="archive-heading"><h1>{{t "ui.trash"}}</h1><a href="/">{{t "ui.links"}}</a></div>
+  <p>{{t "ui.links_value" value1=total}}</p>
+  <form method="get" action="/settings/trash" class="library-filters" aria-label="{{t 'sorting.trash'}}">
+    <input type="hidden" name="limit" value="{{limit}}" />
+    {{> list_sort profile='links' state=sorting}}<button type="submit">{{t "ui.apply"}}</button>
+  </form>
+  <div class="archive-list">
+    {{#each links}}{{> links/trash_item}}{{else}}<p>{{t "ui.trash_is_empty"}}</p>{{/each}}
+  </div>
+  <nav class="archive-nav" aria-label="{{t 'ui.trash_pages'}}">
+    {{#if previous}}<a href="{{previous}}">{{t "ui.previous"}}</a>{{/if}}
+    {{#if next}}<a href="{{next}}">{{t "ui.next"}}</a>{{/if}}
+  </nav>
+</main>
+{{> footer}}

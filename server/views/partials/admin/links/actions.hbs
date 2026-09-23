@@ -1,55 +1,57 @@
 <td class="actions">
   {{#if password}}
-    <button class="action password" disabled="true" data-tooltip="Password protected">
+    <button class="action password" disabled="true" aria-label="{{t 'ui.password_protected'}}" data-tooltip="{{t 'ui.password_protected'}}">
       {{> icons/key}}
     </button>
   {{/if}}
   {{#if banned}}
-    <button class="action banned" disabled="true" data-tooltip="Banned">
+    <a class="button action banned" href="/admin/moderation/link/{{id}}" aria-label="{{t 'moderation.remove_for' value=link.address}}" title="{{t 'moderation.remove'}}">
       {{> icons/stop}}
-    </button>
+    </a>
   {{/if}}
   <a
     class="button action stats"
     href="/stats?id={{id}}"
-    title="Stats"
-    class="action stats"
+    title="{{t 'ui.statistics'}}"
+    aria-label="{{t 'ui.statistics_for_value' value1=link.address}}"
   >
     {{> icons/chart}}
   </a>
   <button
     class="action qrcode"
-    hx-on:click="handleQRCode(this, 'admin-table-dialog')"
+    type="button"
+    aria-label="{{t 'ui.qr_code_for_value' value1=link.address}}"
+    title="{{t 'ui.qr_code'}}"
+    data-ui-qr-dialog="admin-table-dialog"
     data-url="{{link.url}}"
   >
     {{> icons/qrcode}}
   </button>
   <button 
     class="action edit"
+    id="edit-opener-{{id}}"
+    type="button"
+    aria-label="{{t 'ui.edit_value' value1=link.address}}"
+    title="{{t 'ui.edit_link'}}"
     hx-trigger="click queue:none"
     hx-ext="path-params"
     hx-get="/admin/link/edit/{id}" 
     hx-vals='{"id":"{{id}}"}'
-    hx-swap="beforeend"
+    hx-swap="beforeend settle:0ms"
     hx-target="next tr.edit"
     hx-indicator="next tr.edit"
     hx-sync="this:drop"
-    hx-on::before-request="
-      const tr = event.detail.target;
-      tr.classList.add('show');
-      if (tr.querySelector('.content')) {
-        event.preventDefault();
-        tr.classList.remove('show');
-        tr.removeChild(tr.querySelector('.content'));
-      }
-    "
+    data-ui-edit-toggle
   >
     {{> icons/pencil}}
   </button>
   {{#unless banned}}
     <button 
-      class="action ban" 
-      hx-on:click='openDialog("admin-table-dialog")' 
+      class="action ban"
+      type="button"
+      aria-label="{{t 'ui.ban_value' value1=link.address}}"
+      title="{{t 'ui.ban_link'}}"
+      data-ui-open-dialog="admin-table-dialog"
       hx-get="/confirm-link-ban" 
       hx-target="#admin-table-dialog .content-wrapper" 
       hx-indicator="#admin-table-dialog" 
@@ -59,8 +61,11 @@
     </button>
   {{/unless}}
   <button 
-    class="action delete" 
-    hx-on:click='openDialog("admin-table-dialog")' 
+    class="action delete"
+    type="button"
+    aria-label="{{t 'ui.move_value_to_trash' value1=link.address}}"
+    title="{{t 'ui.move_to_trash'}}"
+    data-ui-open-dialog="admin-table-dialog"
     hx-get="/confirm-link-delete" 
     hx-target="#admin-table-dialog .content-wrapper" 
     hx-indicator="#admin-table-dialog" 

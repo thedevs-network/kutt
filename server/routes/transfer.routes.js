@@ -1,0 +1,12 @@
+const { Router } = require("express");
+const auth = require("../handlers/auth.handler");
+const transfer = require("../handlers/transfer.handler");
+const helpers = require("../handlers/helpers.handler");
+const asyncHandler = require("../utils/asyncHandler");
+const router = Router();
+router.use(asyncHandler(auth.apikey), asyncHandler(auth.jwt));
+router.get("/template", helpers.rateLimit({ window: 60, limit: 10 }), asyncHandler(transfer.template));
+router.get("/export", helpers.rateLimit({ window: 60, limit: 10 }), asyncHandler(transfer.download));
+router.post("/preview", helpers.rateLimit({ window: 60, limit: 10 }), asyncHandler(transfer.preview));
+router.post("/commit", helpers.rateLimit({ window: 60, limit: 5 }), asyncHandler(transfer.commit));
+module.exports = router;

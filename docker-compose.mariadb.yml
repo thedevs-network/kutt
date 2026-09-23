@@ -2,27 +2,33 @@ services:
   server:
     build:
       context: .
+    env_file: .env
     volumes:
       - custom:/kutt/custom
     environment:
+        JWT_SECRET: ${JWT_SECRET:?Set a long random JWT_SECRET in .env}
+        TRUST_PROXY: ${TRUST_PROXY:-false}
         DB_CLIENT: mysql2
         DB_HOST: mariadb
         DB_PORT: 3306
+        DB_NAME: ${DB_NAME:?Set DB_NAME}
+        DB_USER: ${DB_USER:?Set a non-root DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
         REDIS_ENABLED: true
         REDIS_HOST: redis
         REDIS_PORT: 6379
     ports:
-      - 3000:3000
+      - "127.0.0.1:3000:3000"
     depends_on:
       mariadb:
         condition: service_healthy
       redis:
         condition: service_started
   mariadb:
-    image: mariadb:10
+    image: ${MARIADB_IMAGE:?Set the existing MariaDB image or mariadb:11.4 for a new instance}
     restart: always
     healthcheck:
-      test: ['CMD-SHELL', 'mysql ${DB_NAME} --user=${DB_USER} --password=${DB_PASSWORD} --execute "SELECT 1;"']
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
       interval: 3s
       retries: 5
       start_period: 30s
@@ -32,14 +38,19 @@ services:
       MARIADB_DATABASE: ${DB_NAME}
       MARIADB_USER: ${DB_USER}
       MARIADB_PASSWORD: ${DB_PASSWORD}
-      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD_FILE: /run/secrets/mariadb_root_password
+    secrets:
+      - mariadb_root_password
     expose:
       - 3306
   redis:
-    image: redis:alpine
+    image: redis:8-alpine
     restart: always
     expose:
       - 6379
 volumes:
   db_data_mariadb:
   custom:
+secrets:
+  mariadb_root_password:
+    file: ${MARIADB_ROOT_PASSWORD_FILE:?Set path to a separate MariaDB root-password file}

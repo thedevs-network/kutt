@@ -2,20 +2,17 @@
   id="add-domain"
   hx-post="/api/domains"
   hx-sync="this:abort"
-  hx-swap="outerHTML"
-  hx-on::after-request="
-    document.querySelector('.show-domain-form').classList.remove('hidden');
-    document.querySelector('#add-domain').remove();
-  "
+  hx-swap="outerHTML settle:0"
+  data-ui-domain-save
 >
   <div class="inputs">
     <label class="{{#if errors.address}}error{{/if}}">
-      Address:
+      {{t "ui.address"}}
       <input 
         id="address" 
         name="address" 
         type="text" 
-        placeholder="yoursite.com" 
+        placeholder="{{t 'ui.yoursite_com'}}"
         required="true" 
         hx-preserve="true" 
 
@@ -23,11 +20,11 @@
       {{#if errors.address}}<p class="error">{{errors.address}}</p>{{/if}}
     </label>
     <label class="{{#if errors.homepage}}error{{/if}}">
-      Homepage (Optional):
+      {{t "ui.homepage_optional_2"}}
       <input 
         id="homepage" 
         name="homepage" 
-        placeholder="Homepage URL" 
+        placeholder="{{t 'ui.homepage_url'}}"
         type="text" 
         hx-preserve="true" 
 
@@ -35,21 +32,32 @@
       {{#if errors.homepage}}<p class="error">{{errors.homepage}}</p>{{/if}}
     </label>
   </div>
+  {{#if domain_verification}}
+    <input type="hidden" name="proof" value="{{domain_verification.proof}}" />
+    <p role="status">{{verification_notice}}</p>
+    <dl class="domain-verification">
+      <dt>{{t "ui.dns_record_type"}}</dt><dd>{{t "ui.txt"}}</dd>
+      <dt>{{t "ui.record_name"}}</dt><dd data-copy-container><code>{{domain_verification.record_name}}</code>
+        <button type="button" aria-label="{{t 'ui.copy_dns_record_name'}}" title="{{t 'ui.copy_dns_record_name'}}" data-url="{{domain_verification.record_name}}" data-ui-copy>{{> icons/copy}}</button>
+      </dd>
+      <dt>{{t "ui.record_value"}}</dt><dd data-copy-container><code>{{domain_verification.record_value}}</code>
+        <button type="button" aria-label="{{t 'ui.copy_dns_record_value'}}" title="{{t 'ui.copy_dns_record_value'}}" data-url="{{domain_verification.record_value}}" data-ui-copy>{{> icons/copy}}</button>
+      </dd>
+      <dt>{{t "ui.expires"}}</dt><dd>{{date domain_verification.expires_at}}</dd>
+    </dl>
+  {{/if}}
   <p>
     <small>
-      If you leave homepage empty, <b>yoursite.com</b> will be redirected to <b>{{default_domain}}</b>.
+      {{t "ui.if_you_leave_homepage_empty"}} <b>{{t "ui.yoursite_com"}}</b> {{t "ui.will_be_redirected_to"}} <b>{{default_domain}}</b>.
     </small>
   </p>
   <div class="buttons-wrapper">
-    <button type="button" onclick="
-      document.querySelector('.show-domain-form').classList.remove('hidden');
-      document.querySelector('#add-domain').remove();
-    ">
-      Cancel
+    <button type="button" data-ui-domain-cancel>
+      {{t "ui.cancel"}}
     </button>
     <button type="submit" class="primary">
       <span>{{> icons/plus}}</span>
-      Add domain
+      {{#if domain_verification}}{{t "ui.verify_ownership"}}{{else}}{{t "ui.add_domain"}}{{/if}}
     </button>
   </div>
   {{> icons/spinner}}

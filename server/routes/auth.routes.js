@@ -10,10 +10,17 @@ const env = require("../env");
 
 const router = Router();
 
+const security = require("../handlers/security.handler");
+const { sessionOnly } = require("../handlers/tokens.handler");
+router.get("/security", sessionOnly, asyncHandler(auth.jwt), asyncHandler(security.status));
+router.post("/revoke-sessions", sessionOnly, asyncHandler(auth.jwt), asyncHandler(security.revoke));
+router.post("/oidc/backchannel", helpers.rateLimit({ window: 60, limit: 60 }), asyncHandler(security.backchannel));
+
 router.post(
   "/login",
   locals.viewTemplate("partials/auth/form"),
   auth.featureAccess([!env.DISALLOW_LOGIN_FORM]),
+  require("../handlers/login-origin.handler"),
   validators.login,
   asyncHandler(helpers.verify),
   helpers.rateLimit({ window: 60, limit: 5 }),
@@ -46,6 +53,7 @@ router.post(
   "/change-password",
   locals.viewTemplate("partials/settings/change_password"),
   asyncHandler(auth.jwt),
+  asyncHandler(auth.sessionOrigin),
   validators.changePassword,
   asyncHandler(helpers.verify),
   helpers.rateLimit({ window: 60, limit: 5 }),
@@ -56,6 +64,7 @@ router.post(
   "/change-email",
   locals.viewTemplate("partials/settings/change_email"),
   asyncHandler(auth.jwt),
+  asyncHandler(auth.sessionOrigin),
   auth.featureAccess([env.MAIL_ENABLED]),
   validators.changeEmail,
   asyncHandler(helpers.verify),
@@ -67,6 +76,7 @@ router.post(
   "/apikey",
   locals.viewTemplate("partials/settings/apikey"),
   asyncHandler(auth.jwt),
+  asyncHandler(auth.sessionOrigin),
   helpers.rateLimit({ window: 60, limit: 10 }),
   asyncHandler(auth.generateApiKey)
 );

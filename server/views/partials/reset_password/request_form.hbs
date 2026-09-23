@@ -10,12 +10,12 @@
   {{else}}
     <div class="inputs-wrapper">
       <label>
-        Email address:
+        {{t "ui.email_address"}}
         <input 
           id="reset-password-email" 
           name="email" 
           type="email" 
-          placeholder="Email address..."
+          placeholder="{{t 'ui.email_address_2'}}"
           hx-preserve="true"
           class="{{#if errors.email}}error{{/if}}"
           required 
@@ -23,7 +23,7 @@
       </label>
       <button type="submit" class="primary">
         <span>{{> icons/spinner}}</span>
-        Reset password
+        {{t "ui.reset_password"}}
       </button>
     </div>
     {{#if error}}<p class="error">{{error}}</p>{{/if}}

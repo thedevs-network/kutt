@@ -1,0 +1,10 @@
+{{> header}}
+<main class="link-archive health-page" data-health-dashboard="true">
+  <header class="archive-heading"><h1>{{t "ui.destination_monitoring"}}</h1><a href="/settings/library">{{t "ui.library"}}</a><a href="/">{{t "ui.links"}}</a></header>
+  <div class="health-toolbar"><button id="health-refresh" type="button" title="{{t 'ui.refresh_monitoring'}}" aria-label="{{t 'ui.refresh_monitoring'}}">{{> icons/reload}}</button></div>
+  <p id="health-message" role="status" aria-live="polite">{{t "ui.loading"}}</p>
+  <ul id="health-links"></ul>
+  <button id="health-more" type="button" hidden>{{t "ui.load_more"}}</button>
+</main>
+<script nonce="{{cspNonce}}" src="/scripts/link-health.js" defer></script>
+{{> footer}}

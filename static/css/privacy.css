@@ -1,0 +1,23 @@
+.privacy-page { max-width: 850px; }
+.privacy-page * { box-sizing: border-box; }
+.privacy-page h1 { font-size: 1.75rem; }
+.privacy-page h2 { font-size: 1.1rem; overflow-wrap: anywhere; margin: 1.5rem 0 1rem; }
+.privacy-page p { line-height: 1.5; overflow-wrap: anywhere; }
+.privacy-page form { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; margin: 1.5rem 0; }
+.privacy-page fieldset { border: 0; border-bottom: 1px solid #cbd5da; padding: 0 0 1rem; width: 100%; }
+.privacy-page legend { font-weight: 600; margin-bottom: 1rem; }
+.privacy-page label { display: flex; flex-direction: column; gap: .5rem; margin: .75rem 0; }
+.privacy-page .privacy-choice { flex-direction: row; align-items: center; gap: .65rem; }
+.privacy-page input[type="checkbox"], .privacy-page input[type="radio"] { flex: 0 0 20px; width: 20px; height: 20px; margin: 0; appearance: auto; }
+.privacy-page input[type="number"] { width: 180px; max-width: 100%; border: 1px solid #cbd5da; border-radius: 6px; padding: .6rem; background: #fff; color: var(--text-color); }
+.privacy-page button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 42px; padding: .6rem .9rem; border: 0; border-radius: 6px; box-shadow: none; background: #176ec0; color: #fff; }
+.privacy-page button svg { width: 18px; height: 18px; }
+.privacy-page button:disabled { opacity: .5; }
+#privacy-reload { background: #e1e7e9; color: inherit; }
+#privacy-status { min-height: 1.5rem; }
+.privacy-page .error { color: #b32336; }
+.privacy-page section { margin-top: 2rem; border-top: 1px solid #cbd5da; padding-top: 1rem; }
+.privacy-page dl { display: grid; grid-template-columns: minmax(100px, 1fr) minmax(0, 2fr); gap: .75rem; }
+.privacy-page dd { margin: 0; overflow-wrap: anywhere; }
+.privacy-page [hidden] { display: none !important; }
+@media (max-width: 640px) { .privacy-page h1 { font-size: 1.4rem; } .privacy-page .archive-heading { flex-wrap: wrap; } }

@@ -8,17 +8,17 @@
             id="search" 
             name="search" 
             type="text" 
-            placeholder="Search link..." 
+            placeholder="{{t 'ui.search_link'}}" aria-label="{{t 'ui.search_links'}}"
             class="table-input search admin" 
-            hx-on:input="onSearchChange(event)" 
-            hx-on:keyup="resetTableNav()"
+            data-ui-search
+            data-ui-reset-nav="keyup"
             value="{{query.search}}"
           />
           <button 
             type="button" 
-            aria-label="Clear search" 
+            aria-label="{{t 'ui.clear_search'}}"
             class="clear" 
-            onclick="clearSeachInput(event)"
+            data-ui-clear-search
           >
             {{> icons/x}}
           </button>
@@ -28,17 +28,17 @@
             id="search_domain" 
             name="domain" 
             type="text" 
-            placeholder="Search domain..." 
+            placeholder="{{t 'ui.search_domain'}}" aria-label="{{t 'ui.search_domains'}}"
             class="table-input search admin" 
-            hx-on:input="onSearchChange(event)" 
-            hx-on:keyup="resetTableNav()"
+            data-ui-search
+            data-ui-reset-nav="keyup"
             value="{{query.domain}}"
           />
           <button 
             type="button" 
-            aria-label="Clear user search" 
+            aria-label="{{t 'ui.clear_domain_search'}}"
             class="clear" 
-            onclick="clearSeachInput(event)"
+            data-ui-clear-search
           >
             {{> icons/x}}
           </button>
@@ -48,17 +48,17 @@
             id="search_user" 
             name="user" 
             type="text" 
-            placeholder="Search user..." 
+            placeholder="{{t 'ui.search_user'}}" aria-label="{{t 'ui.search_users'}}"
             class="table-input search admin" 
-            hx-on:input="onSearchChange(event)" 
-            hx-on:keyup="resetTableNav()"
+            data-ui-search
+            data-ui-reset-nav="keyup"
             value="{{query.user}}"
           />
           <button 
             type="button" 
-            aria-label="Clear user search" 
+            aria-label="{{t 'ui.clear_user_search'}}"
             class="clear" 
-            onclick="clearSeachInput(event)"
+            data-ui-clear-search
           >
             {{> icons/x}}
           </button>
@@ -69,44 +69,45 @@
           id="links-select-banned"
           name="banned"
           class="table-input ban"
-          hx-on:change="resetTableNav()"
-        >
-          <option value="" selected>Banned...</option>
-          <option value="true">Banned</option>
-          <option value="false">Not banned</option>
+          data-ui-reset-nav="change"
+         aria-label="{{t 'ui.banned_status'}}">
+          <option value="" selected>{{t "ui.banned_2"}}</option>
+          <option value="true">{{t "ui.banned"}}</option>
+          <option value="false">{{t "ui.not_banned"}}</option>
         </select>
         <select 
           id="links-select-anonymous"
           name="anonymous"
           class="table-input anonymous"
-          hx-on:change="resetTableNav()"
-        >
-          <option value="">Anonymous...</option>
-          <option value="true" {{#ifEquals query.anonymous 'true'}}selected{{/ifEquals}}>Anonymous</option>
-          <option value="false" {{#ifEquals query.anonymous 'false'}}selected{{/ifEquals}}>User</option>
+          data-ui-reset-nav="change"
+         aria-label="{{t 'ui.link_owner_type'}}">
+          <option value="">{{t "ui.anonymous"}}</option>
+          <option value="true" {{#ifEquals query.anonymous 'true'}}selected{{/ifEquals}}>{{t "ui.anonymous_2"}}</option>
+          <option value="false" {{#ifEquals query.anonymous 'false'}}selected{{/ifEquals}}>{{t "ui.user"}}</option>
         </select>
         <select 
-          id="links-select-anonymous"
+          id="links-select-domain"
           name="has_domain"
           class="table-input has_domain"
-          hx-on:change="resetTableNav()"
-        >
-          <option value="">Domain...</option>
-          <option value="true" {{#ifEquals query.has_domain 'true'}}selected{{/ifEquals}}>With domain</option>
-          <option value="false" {{#ifEquals query.has_domain 'false'}}selected{{/ifEquals}}>No domain</option>
+          data-ui-reset-nav="change"
+         aria-label="{{t 'ui.custom_domain'}}">
+          <option value="">{{t "ui.domain_2"}}</option>
+          <option value="true" {{#ifEquals query.has_domain 'true'}}selected{{/ifEquals}}>{{t "ui.with_domain"}}</option>
+          <option value="false" {{#ifEquals query.has_domain 'false'}}selected{{/ifEquals}}>{{t "ui.no_domain"}}</option>
         </select>
         <input id="total" name="total" type="hidden" value="{{total}}" />
         <input id="limit" name="limit" type="hidden" value="10" />
         <input id="skip" name="skip" type="hidden" value="0" />
+        {{> list_sort profile='links' state=query}}
       </div>
     </th>
     {{> admin/table_nav}}
   </tr>
-  <tr>
-    <th class="original-url">Original URL</th>
-    <th class="created-at">Created at</th>
-    <th class="short-link">Short link</th>
-    <th class="views">Views</th>
-    <th class="actions"></th>
+  <tr class="table-columns">
+    <th class="original-url" scope="col">{{t "ui.original_url"}}</th>
+    <th class="created-at" scope="col">{{t "ui.created_at"}}</th>
+    <th class="short-link" scope="col">{{t "ui.short_link"}}</th>
+    <th class="views" scope="col">{{t "ui.views"}}</th>
+    <th class="actions" scope="col"></th>
   </tr>
 </thead>

@@ -2,40 +2,47 @@ services:
   server:
     build:
       context: .
+    env_file: .env
     volumes:
       - custom:/kutt/custom
     environment:
+        JWT_SECRET: ${JWT_SECRET:?Set a long random JWT_SECRET in .env}
+        TRUST_PROXY: ${TRUST_PROXY:-false}
         DB_CLIENT: pg
         DB_HOST: postgres
         DB_PORT: 5432
+        DB_NAME: ${DB_NAME:?Set DB_NAME}
+        DB_USER: ${DB_USER:?Set DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
         REDIS_ENABLED: true
         REDIS_HOST: redis
         REDIS_PORT: 6379
     ports:
-      - 3000:3000
+      - "127.0.0.1:3000:3000"
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_started
   postgres:
-    image: postgres
+    # Match the existing volume's major version; never implicitly upgrade it.
+    image: ${POSTGRES_IMAGE:?Set the existing PostgreSQL image or postgres:17-alpine for a new instance}
     restart: always
-    user: ${DB_USER}
     volumes:
       - db_data_pg:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD} 
     expose:
       - 5432
     healthcheck:
-      test: [ "CMD", "pg_isready" ]
+      test: [ "CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\"" ]
       interval: 10s
       timeout: 5s
       retries: 5
   redis:
-    image: redis:alpine
+    image: redis:8-alpine
     restart: always
     expose:
       - 6379

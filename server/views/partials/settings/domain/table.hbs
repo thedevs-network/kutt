@@ -1,8 +1,8 @@
 <table id="domains-table" hx-swap-oob="true">
   <thead>
     <tr>
-      <th class="domain">Domain</th>
-      <th class="homepage">Homepage</th>
+      <th class="domain">{{t "ui.domain"}}</th>
+      <th class="homepage">{{t "ui.homepage"}}</th>
       <th class="actions"></th>
     </tr>
   </thead>
@@ -11,7 +11,7 @@
       {{#each domains}}
         <tr>
           <td class="domain">
-            {{address}}
+            <a href="/settings/domain-sharing/{{id}}" title="{{t 'domain_grants.title'}}">{{address}}</a>
           </td>
           <td class="homepage">
             {{homepage}}
@@ -20,7 +20,9 @@
             <button 
               type="button"
               class="action delete" 
-              hx-on:click='openDialog("domain-dialog")' 
+              aria-label="{{t 'ui.delete_domain_value' value1=address}}"
+              title="{{t 'ui.delete_domain_2'}}"
+              data-ui-open-dialog="domain-dialog"
               hx-get="/confirm-domain-delete" 
               hx-target="#domain-dialog .content-wrapper" 
               hx-indicator="#domain-dialog" 
@@ -34,7 +36,7 @@
     {{else}}
       <tr>
         <td class="no-entry">
-          No domains yet.
+          {{t "ui.no_domains_yet"}}
         </td>
       </tr>
     {{/if}}

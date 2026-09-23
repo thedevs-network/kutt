@@ -1,13 +1,16 @@
 <td class="actions users-actions">
   {{#if banned}}
-    <button class="action banned" disabled="true" data-tooltip="Banned">
+    <a class="button action banned" href="/admin/moderation/user/{{id}}" aria-label="{{t 'moderation.remove_for' value=email}}" title="{{t 'moderation.remove'}}">
       {{> icons/stop}}
-    </button>
+    </a>
   {{/if}}
   {{#unless banned}}
     <button 
-      class="action ban" 
-      hx-on:click='openDialog("admin-table-dialog")' 
+      class="action ban"
+      type="button"
+      aria-label="{{t 'ui.ban_user_value' value1=email}}"
+      title="{{t 'ui.ban_user_2'}}"
+      data-ui-open-dialog="admin-table-dialog"
       hx-get="/confirm-user-ban" 
       hx-target="#admin-table-dialog .content-wrapper" 
       hx-indicator="#admin-table-dialog" 
@@ -17,8 +20,11 @@
     </button>
   {{/unless}}
   <button 
-    class="action delete" 
-    hx-on:click='openDialog("admin-table-dialog")' 
+    class="action delete"
+    type="button"
+    aria-label="{{t 'ui.delete_user_value' value1=email}}"
+    title="{{t 'ui.delete_user_2'}}"
+    data-ui-open-dialog="admin-table-dialog"
     hx-get="/confirm-user-delete" 
     hx-target="#admin-table-dialog .content-wrapper" 
     hx-indicator="#admin-table-dialog" 

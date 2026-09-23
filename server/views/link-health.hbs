@@ -1,0 +1,18 @@
+{{> header}}
+<main class="link-archive health-page" data-link-id="{{id}}">
+  <header class="archive-heading"><h1>{{t "ui.destination_health"}}</h1><a href="/settings/health">{{t "ui.monitoring"}}</a><a href="/settings/library">{{t "ui.library"}}</a></header>
+  <p>{{short_url}}</p>
+  <p id="health-message" role="status" aria-live="polite">{{t "ui.loading"}}</p>
+  <form id="health-form">
+    <label class="health-toggle"><input type="checkbox" name="enabled" disabled />{{t "ui.monitor_destinations"}}</label>
+    <label>{{t "ui.check_interval_hours"}}<input name="interval_hours" type="number" min="1" max="168" value="24" required disabled /></label>
+    <div class="health-toolbar">
+      <button id="health-save" type="submit" disabled>{{> icons/check}} {{t "ui.save_monitoring"}}</button>
+      <button id="health-check" type="button" disabled>{{> icons/heart}} {{t "ui.check_now"}}</button>
+      <button id="health-reload" type="button" title="{{t 'ui.reload_saved_monitoring'}}" aria-label="{{t 'ui.reload_saved_monitoring'}}">{{> icons/reload}}</button>
+    </div>
+  </form>
+  <section><h2 id="health-state">{{t "ui.not_checked"}}</h2><p id="health-times"></p><ul id="health-results"></ul></section>
+</main>
+<script nonce="{{cspNonce}}" src="/scripts/link-health.js" defer></script>
+{{> footer}}

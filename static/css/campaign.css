@@ -1,0 +1,8 @@
+.campaign { grid-column: 1 / -1; min-width: 0; margin: 12px 0; white-space: normal; text-align: left; }
+.campaign summary { cursor: pointer; font-size: 15px; padding: 8px 0; }
+.campaign .campaign-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; border: 0; margin: 0; padding: 8px 0; min-width: 0; }
+.campaign .campaign-fields label { display: flex; flex-direction: column; gap: 6px; min-width: 0; width: 100%; }
+.campaign .campaign-fields input { box-sizing: border-box; min-width: 0; width: 100%; }
+.campaign-actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+.campaign-status { display: block; font-size: 14px; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .campaign .campaign-fields { grid-template-columns: 1fr; } }

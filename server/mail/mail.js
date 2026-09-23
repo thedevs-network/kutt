@@ -1,144 +1,29 @@
 const nodemailer = require("nodemailer");
-const path = require("node:path");
-const fs = require("node:fs");
-
-const { resetMailText, verifyMailText, changeEmailText } = require("./text");
 const { CustomError } = require("../utils");
 const env = require("../env");
+const i18n = require("../i18n");
+const { render } = require("./render");
 
-const mailConfig = {
-  host: env.MAIL_HOST,
-  port: env.MAIL_PORT,
-  secure: env.MAIL_SECURE,
-  auth: env.MAIL_USER
-    ? {
-        user: env.MAIL_USER,
-        pass: env.MAIL_PASSWORD
-      }
-    : undefined
-};
+const transporter = nodemailer.createTransport({
+  host: env.MAIL_HOST, port: env.MAIL_PORT, secure: env.MAIL_SECURE,
+  auth: env.MAIL_USER ? { user: env.MAIL_USER, pass: env.MAIL_PASSWORD } : undefined
+});
 
-const transporter = nodemailer.createTransport(mailConfig);
-
-// Read email templates
-const resetEmailTemplatePath = path.join(__dirname, "template-reset.html");
-const verifyEmailTemplatePath = path.join(__dirname, "template-verify.html");
-const changeEmailTemplatePath = path.join(__dirname,"template-change-email.html");
-
-
-let resetEmailTemplate, 
-    verifyEmailTemplate,
-    changeEmailTemplate;
-
-// only read email templates if email is enabled
-if (env.MAIL_ENABLED) {
-  resetEmailTemplate = fs
-    .readFileSync(resetEmailTemplatePath, { encoding: "utf-8" })
-    .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
-    .replace(/{{site_name}}/gm, env.SITE_NAME);
-  verifyEmailTemplate = fs
-    .readFileSync(verifyEmailTemplatePath, { encoding: "utf-8" })
-    .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
-    .replace(/{{site_name}}/gm, env.SITE_NAME);
-  changeEmailTemplate = fs
-    .readFileSync(changeEmailTemplatePath, { encoding: "utf-8" })
-    .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
-    .replace(/{{site_name}}/gm, env.SITE_NAME);
+async function send(kind, to, token) {
+  if (!env.MAIL_ENABLED) throw new Error("Email is not enabled.");
+  const management = require("../management-origin").configured();
+  const content = render(kind, { domain: management?.host || env.DEFAULT_DOMAIN, origin: management?.origin, site_name: env.SITE_NAME, token });
+  const mail = await transporter.sendMail({ from: env.MAIL_FROM || env.MAIL_USER, to, ...content });
+  if (!mail.accepted.length) throw new CustomError(i18n.t(kind === "reset" ?
+    "messages.couldn_t_send_reset_password_email_try_again_later" : "messages.couldn_t_send_verification_email_try_again_later"));
 }
-
-async function verification(user) {
-  if (!env.MAIL_ENABLED) {
-    throw new Error("Attempting to send verification email but email is not enabled.");
-  };
-
-  const mail = await transporter.sendMail({
-    from: env.MAIL_FROM || env.MAIL_USER,
-    to: user.email,
-    subject: "Verify your account",
-    text: verifyMailText
-      .replace(/{{verification}}/gim, user.verification_token)
-      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
-      .replace(/{{site_name}}/gm, env.SITE_NAME),
-    html: verifyEmailTemplate
-      .replace(/{{verification}}/gim, user.verification_token)
-      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
-      .replace(/{{site_name}}/gm, env.SITE_NAME)
-  });
-
-  if (!mail.accepted.length) {
-    throw new CustomError("Couldn't send verification email. Try again later.");
-  }
-}
-
-async function changeEmail(user) {
-  if (!env.MAIL_ENABLED) {
-    throw new Error("Attempting to send change email token but email is not enabled.");
-  };
-  
-  const mail = await transporter.sendMail({
-    from: env.MAIL_FROM || env.MAIL_USER,
-    to: user.change_email_address,
-    subject: "Verify your new email address",
-    text: changeEmailText
-      .replace(/{{verification}}/gim, user.change_email_token)
-      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
-      .replace(/{{site_name}}/gm, env.SITE_NAME),
-    html: changeEmailTemplate
-      .replace(/{{verification}}/gim, user.change_email_token)
-      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
-      .replace(/{{site_name}}/gm, env.SITE_NAME)
-  });
-  
-  if (!mail.accepted.length) {
-    throw new CustomError("Couldn't send verification email. Try again later.");
-  }
-}
-
-async function resetPasswordToken(user) {
-  if (!env.MAIL_ENABLED) {
-    throw new Error("Attempting to send reset password email but email is not enabled.");
-  };
-
-  const mail = await transporter.sendMail({
-    from: env.MAIL_FROM || env.MAIL_USER,
-    to: user.email,
-    subject: "Reset your password",
-    text: resetMailText
-      .replace(/{{resetpassword}}/gm, user.reset_password_token)
-      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN),
-    html: resetEmailTemplate
-      .replace(/{{resetpassword}}/gm, user.reset_password_token)
-      .replace(/{{domain}}/gm, env.DEFAULT_DOMAIN)
-  });
-
-  if (!mail.accepted.length) {
-    throw new CustomError(
-      "Couldn't send reset password email. Try again later."
-    );
-  }
-}
-
+const verification = user => send("verify", user.email, user.verification_token);
+const changeEmail = user => send("change-email", user.change_email_address, user.change_email_token);
+const resetPasswordToken = user => send("reset", user.email, user.reset_password_token);
 async function sendReportEmail(link) {
-  if (!env.MAIL_ENABLED) {
-    throw new Error("Attempting to send report email but email is not enabled.");
-  };
-
-  const mail = await transporter.sendMail({
-    from: env.MAIL_FROM || env.MAIL_USER,
-    to: env.REPORT_EMAIL,
-    subject: "[REPORT]",
-    text: link,
-    html: link
-  });
-
-  if (!mail.accepted.length) {
-    throw new CustomError("Couldn't submit the report. Try again later.");
-  }
+  if (!env.MAIL_ENABLED) throw new Error("Email is not enabled.");
+  const mail = await transporter.sendMail({ from: env.MAIL_FROM || env.MAIL_USER,
+    to: env.REPORT_EMAIL, subject: i18n.t("mail.report_subject"), text: link });
+  if (!mail.accepted.length) throw new CustomError(i18n.t("messages.couldn_t_submit_the_report_try_again_later"));
 }
-
-module.exports = {
-  changeEmail,
-  verification,
-  resetPasswordToken,
-  sendReportEmail,
-}
+module.exports = { verification, changeEmail, resetPasswordToken, sendReportEmail };

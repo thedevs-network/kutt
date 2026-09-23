@@ -1,54 +1,53 @@
 <td class="actions">
+  <a class="button action" href="/link/tracking/{{id}}" title="{{t 'ui.tracking_settings'}}" aria-label="{{t 'ui.tracking_settings'}}">{{> icons/shield}}</a>
+  <a class="button action" href="/link/routing/{{id}}" title="{{t 'ui.redirect_rules'}}" aria-label="{{t 'ui.redirect_rules'}}">{{> icons/shuffle}}</a>
+  <a class="button action" href="/link/forwarding/{{id}}" title="{{t 'ui.path_and_query_forwarding'}}" aria-label="{{t 'ui.path_and_query_forwarding'}}">{{> icons/chevron_right}}</a>
+  <a class="button action" href="/link/health/{{id}}" title="{{t 'ui.destination_health'}}" aria-label="{{t 'ui.destination_health'}}">{{> icons/heart}}</a>
   {{#if password}}
-    <button class="action password" disabled="true" data-tooltip="Password protected">
+    <button class="action password" disabled="true" aria-label="{{t 'ui.password_protected'}}" data-tooltip="{{t 'ui.password_protected'}}">
       {{> icons/key}}
     </button>
   {{/if}}
   {{#if banned}}
-    <button class="action banned" disabled="true" data-tooltip="Banned">
+    <button class="action banned" disabled="true" aria-label="{{t 'ui.banned'}}" data-tooltip="{{t 'ui.banned'}}">
       {{> icons/stop}}
     </button>
   {{/if}}
   <a
     class="button action stats"
     href="/stats?id={{id}}"
-    title="Stats"
-    class="action stats"
+    title="{{t 'ui.statistics'}}"
+    aria-label="{{t 'ui.statistics_for_value' value1=link.address}}"
   >
     {{> icons/chart}}
   </a>
-  <button
-    class="action qrcode"
-    hx-on:click="handleQRCode(this, 'link-dialog')"
-    data-url="{{link.url}}"
-  >
+  <a class="button action qrcode" href="/link/qr/{{id}}" title="{{t 'ui.qr_code'}}" aria-label="{{t 'ui.qr_code'}}">
     {{> icons/qrcode}}
-  </button>
+  </a>
   <button 
     class="action edit"
+    id="edit-opener-{{id}}"
+    type="button"
+    aria-label="{{t 'ui.edit_value' value1=link.address}}"
+    title="{{t 'ui.edit_link'}}"
     hx-trigger="click queue:none"
     hx-ext="path-params"
     hx-get="/link/edit/{id}" 
     hx-vals='{"id":"{{id}}"}'
-    hx-swap="beforeend"
+    hx-swap="beforeend settle:0ms"
     hx-target="next tr.edit"
     hx-indicator="next tr.edit"
     hx-sync="this:drop"
-    hx-on::before-request="
-      const tr = event.detail.target;
-      tr.classList.add('show');
-      if (tr.querySelector('.content')) {
-        event.preventDefault();
-        tr.classList.remove('show');
-        tr.removeChild(tr.querySelector('.content'));
-      }
-    "
+    data-ui-edit-toggle
   >
     {{> icons/pencil}}
   </button>
   <button 
-    class="action delete" 
-    hx-on:click='openDialog("link-dialog")' 
+    class="action delete"
+    type="button"
+    aria-label="{{t 'ui.move_value_to_trash' value1=link.address}}"
+    title="{{t 'ui.move_to_trash'}}"
+    data-ui-open-dialog="link-dialog"
     hx-get="/confirm-link-delete" 
     hx-target="#link-dialog .content-wrapper" 
     hx-indicator="#link-dialog" 

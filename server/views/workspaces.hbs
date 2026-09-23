@@ -1,0 +1,125 @@
+{{> header}}
+<main class="link-archive library workspaces">
+  <header class="archive-heading"><h1 data-page-focus tabindex="-1">{{t "ui.workspaces"}}</h1><a href="/settings/library">{{t "ui.personal_library"}}</a><a href="/">{{t "ui.links"}}</a></header>
+  {{#if error}}<p class="library-error" role="alert">{{error}}</p>{{/if}}
+  <nav class="workspace-tabs" aria-label="{{t 'ui.workspaces'}}"><a href="/settings/workspaces">{{t "ui.all_workspaces"}}</a>{{#each all.data}}<a href="/settings/workspaces/{{id}}">{{name}}</a>{{/each}}</nav>
+  {{#unless selected}}
+    <form method="post" action="/settings/workspaces" class="workspace-form" aria-label="{{t 'ui.create_workspace'}}">
+      <input type="hidden" name="operation" value="create" />
+      <label>{{t "ui.workspace_name"}}<input name="name" required maxlength="80" /></label><button type="submit" class="primary">{{t "ui.create_workspace"}}</button>
+    </form>
+    <h2>{{t "ui.your_workspaces"}}</h2><ul class="workspace-list">
+      {{#each all.data}}<li><a href="/settings/workspaces/{{id}}">{{name}}</a><span>{{localizedLabel "role" role}}</span></li>{{else}}<li>{{t "ui.no_workspaces_yet"}}</li>{{/each}}
+    </ul>
+    <h2>{{t "ui.invitations"}}</h2><ul class="workspace-list">
+      {{#each all.invitations}}<li><div><strong>{{name}}</strong><p>{{owner}} · {{localizedLabel "role" role}}</p></div>
+        <form method="post" action="/settings/workspaces" class="workspace-actions" aria-label="{{t 'ui.invitation_to_value' value1=name}}">
+          <input type="hidden" name="invitation_id" value="{{id}}" />
+          <button name="operation" value="accept" class="primary">{{t "ui.accept"}}</button><button name="operation" value="decline">{{t "ui.decline"}}</button>
+        </form></li>{{else}}<li>{{t "ui.no_pending_invitations"}}</li>{{/each}}
+    </ul>
+  {{/unless}}
+  {{#with selected}}
+    <header class="archive-heading"><h2>{{name}}</h2><span>{{localizedLabel "role" role}}</span>
+      {{#unless owner}}<form method="post" action="{{@root.action_url}}"><input type="hidden" name="operation" value="remove_member" /><input type="hidden" name="member_id" value="{{membership_id}}" /><button type="submit" data-confirm="{{t 'ui.leave_this_workspace_you_will_lose_access_to_its_shared_links'}}">{{t "ui.leave_workspace"}}</button></form>{{/unless}}
+    </header>
+    {{#if owner}}
+      <details class="workspace-manage" {{#if share_q}}open{{/if}}><summary>{{t "ui.workspace_and_members"}}</summary>
+        <form method="post" action="{{@root.action_url}}" class="workspace-form" aria-label="{{t 'ui.rename_workspace'}}">
+          <input type="hidden" name="operation" value="rename" /><label>{{t "ui.name"}}<input name="name" value="{{name}}" required maxlength="80" /></label><button type="submit" title="{{t 'ui.save_name'}}" aria-label="{{t 'ui.save_workspace_name'}}" class="library-icon">{{> icons/check}}</button>
+        </form>
+        <form method="post" action="{{@root.action_url}}" class="workspace-form" aria-label="{{t 'ui.invite_member'}}">
+          <input type="hidden" name="operation" value="invite" /><label>{{t "ui.account_email"}}<input name="email" type="email" required maxlength="255" autocomplete="off" /></label>
+          <label>{{t "ui.role_3"}}<select name="role" aria-label="{{t 'ui.role_3'}}"><option value="viewer">{{t "ui.viewer"}}</option><option value="editor">{{t "ui.editor"}}</option></select></label><button type="submit">{{t "ui.invite"}}</button>
+        </form>
+        <ul class="workspace-list">{{#each members}}<li><div><strong>{{email}}</strong><p>{{#if accepted}}{{t "ui.member"}}{{else}}{{t "ui.invitation_pending"}}{{/if}}{{#if unavailable}} {{t "ui.account_unavailable"}}{{/if}}</p></div>
+          <form method="post" action="{{@root.action_url}}" class="workspace-actions" aria-label="{{t 'ui.member_value' value1=email}}">
+            <input type="hidden" name="member_id" value="{{id}}" /><label>{{t "ui.role_3"}}<select name="role" aria-label="{{t 'ui.role_3'}}"><option value="viewer" {{#unless editor}}selected{{/unless}}>{{t "ui.viewer"}}</option><option value="editor" {{#if editor}}selected{{/if}}>{{t "ui.editor"}}</option></select></label>
+            <button name="operation" value="role" title="{{t 'ui.save_role'}}" aria-label="{{t 'ui.save_role'}}" class="library-icon">{{> icons/check}}</button>
+            <button name="operation" value="remove_member" title="{{t 'ui.remove_member_or_invitation'}}" aria-label="{{t 'ui.remove_member_or_invitation'}}" class="library-icon" data-confirm="{{t 'ui.revoke_this_workspace_membership_or_invitation'}}">{{> icons/trash}}</button>
+          </form></li>{{else}}<li>{{t "ui.no_other_members"}}</li>{{/each}}</ul>
+        <form method="get" action="{{@root.action_url}}" class="workspace-form" aria-label="{{t 'ui.find_personal_link'}}">
+          <input type="hidden" name="q" value="{{q}}" /><input type="hidden" name="state" value="{{state}}" />
+          <input type="hidden" name="page" value="{{page}}" /><input type="hidden" name="sort" value="{{sort}}" /><input type="hidden" name="direction" value="{{direction}}" />
+          <label>{{t "ui.find_personal_link"}}<input type="search" name="share_q" value="{{share_q}}" maxlength="200" /></label><button type="submit">{{t "ui.search"}}</button>
+        </form>
+        <form method="post" action="{{@root.action_url}}" class="workspace-form" aria-label="{{t 'ui.share_existing_link'}}">
+          <input type="hidden" name="operation" value="share" /><label>{{t "ui.personal_link"}}<select name="link_id" aria-label="{{t 'ui.personal_link'}}" required><option value="">{{t "ui.select_a_link"}}</option>{{#each share_candidates}}<option value="{{id}}">{{#if domain}}{{domain}}/{{/if}}{{address}}</option>{{/each}}</select></label><button type="submit" data-confirm="{{t 'ui.share_this_link_s_destination_and_settings_with_all_accepted_workspace'}}">{{t "ui.share_link"}}</button>
+        </form>
+        <form method="post" action="{{@root.action_url}}" class="workspace-close">
+          <input type="hidden" name="operation" value="close" /><input type="hidden" name="confirm" value="{{id}}" />
+          <button type="submit" data-confirm="{{t 'ui.close_this_workspace_and_remove_all_memberships_links_will_remain_in'}}">{{t "ui.close_workspace"}}</button>
+        </form>
+      </details>
+    {{/if}}
+    {{#if editor}}<details class="workspace-manage"><summary>{{t "ui.create_shared_link"}}</summary>
+      <form method="post" action="{{@root.action_url}}" class="workspace-form" aria-label="{{t 'ui.create_shared_link'}}">
+        <input type="hidden" name="operation" value="create_link" />
+        <label class="workspace-wide">{{t "ui.destination"}}<input name="target" type="url" required maxlength="2040" placeholder="https://example.com/" /></label>
+        {{> campaign}}
+        <label>{{t "ui.alias"}}<input name="address" maxlength="64" placeholder="docs/v1.2" /></label>
+        <label>{{t "ui.domain"}}<select name="domain" aria-label="{{t 'ui.domain'}}"><option value="">{{t "ui.default_domain"}}</option>{{#each domains}}<option value="{{address}}">{{address}}</option>{{/each}}</select></label>
+        <label>{{t "ui.description_3"}}<input name="description" maxlength="2040" /></label>
+        <label>{{t "ui.link_password"}}<input name="password" type="password" minlength="3" maxlength="64" autocomplete="new-password" /></label>
+        <button type="submit" class="primary">{{t "ui.create_link"}}</button>
+      </form>
+    </details>{{/if}}
+    <form class="workspace-form" method="get" action="{{@root.action_url}}" aria-label="{{t 'ui.filter_shared_links'}}">
+      <label>{{t "ui.search"}}<input type="search" name="q" value="{{q}}" maxlength="200" /></label>
+      <label>{{t "ui.state"}}<select name="state" aria-label="{{t 'ui.state'}}"><option value="active" {{#unless trash}}selected{{/unless}}>{{t "ui.not_in_trash"}}</option><option value="trash" {{#if trash}}selected{{/if}}>{{t "ui.in_trash"}}</option></select></label>
+      {{> list_sort profile='links' state=this}}<button type="submit">{{t "ui.filter"}}</button>
+    </form>
+    <p>{{t "library.links" count=total formatted=(number total)}}</p><ul class="workspace-links">
+      {{#each data}}<li>
+        <div class="workspace-link-heading"><a href="{{link}}" target="_blank" rel="noopener noreferrer">{{link}}</a><span>{{lifecycle_label}}</span></div>
+        <p class="library-target">{{target}}</p>{{#if description}}<p>{{description}}</p>{{/if}}
+        {{#if password}}<p>{{t "ui.password_protected"}}</p>{{/if}}
+        <div class="workspace-actions">
+          <button type="button" data-copy="{{link}}" title="{{t 'ui.copy_short_link'}}" aria-label="{{t 'ui.copy_short_link'}}" class="library-icon">{{> icons/copy}}</button>
+          {{#if can_unshare}}<form method="post" action="{{@root.action_url}}"><input type="hidden" name="operation" value="unshare" /><input type="hidden" name="link_id" value="{{id}}" /><button type="submit" data-confirm="{{t 'ui.remove_this_share_the_link_will_remain_in_your_personal_library'}}">{{t "ui.unshare"}}</button></form>{{/if}}
+          {{#if can_edit}}<form method="post" action="{{@root.action_url}}"><input type="hidden" name="link_id" value="{{id}}" />
+            {{#if trashed}}<button name="operation" value="restore_link">{{t "ui.restore"}}</button>{{else}}<button name="operation" value="trash_link" title="{{t 'ui.move_to_trash'}}" aria-label="{{t 'ui.move_to_trash'}}" class="library-icon" data-confirm="{{t 'ui.move_this_shared_link_to_trash_its_public_redirect_will_stop'}}">{{> icons/trash}}</button>{{/if}}
+          </form>{{/if}}
+        </div>
+        {{#if can_edit}}{{#unless trashed}}<details class="workspace-edit" id="workspace-edit-{{id}}" {{#if edit_error}}open{{/if}}><summary>{{t "ui.edit_link"}}</summary>
+          {{#if edit_error}}<p class="library-error workspace-edit-error" id="workspace-error-{{id}}" role="alert" tabindex="-1">{{edit_error}}</p>{{/if}}
+          {{#if edit_conflict}}<section class="workspace-current" aria-label="{{t 'ui.current_saved_values'}}">
+            <h3>{{t "ui.current_saved_values"}}</h3>
+            <dl><dt>{{t "ui.destination"}}</dt><dd>{{target}}</dd><dt>{{t "ui.alias"}}</dt><dd>{{address}}</dd>
+              <dt>{{t "ui.description_3"}}</dt><dd>{{#if description}}{{description}}{{else}}{{t "ui.none_2"}}{{/if}}</dd>
+              <dt>{{t "ui.password_3"}}</dt><dd>{{#if password}}{{t "ui.protected"}}{{else}}{{t "ui.none_2"}}{{/if}}</dd>
+              <dt>{{t "ui.paused"}}</dt><dd>{{#if paused}}{{t "ui.yes"}}{{else}}{{t "ui.no"}}{{/if}}</dd>
+              <dt>{{t "ui.start_utc"}}</dt><dd>{{#if starts_at}}{{utcDate starts_at}}{{else}}{{t "ui.none_2"}}{{/if}}</dd>
+              <dt>{{t "ui.end_utc"}}</dt><dd>{{#if ends_at}}{{utcDate ends_at}}{{else}}{{t "ui.none_2"}}{{/if}}</dd>
+              <dt>{{t "ui.legacy_expiry"}}</dt><dd>{{#if expire_in}}{{expire_in}}{{else}}{{t "ui.none_2"}}{{/if}}</dd>
+              <dt>{{t "ui.maximum_redirects"}}</dt><dd>{{#if max_visits}}{{max_visits}}{{else}}{{t "ui.unlimited"}}{{/if}}</dd>
+            </dl>
+            <a href="{{@root.action_url}}#workspace-edit-{{id}}">{{t "ui.discard_draft_and_reload"}}</a>
+          </section>{{/if}}
+          <form method="post" action="{{@root.action_url}}" class="workspace-form" aria-label="{{t 'ui.edit_value' value1=address}}" {{#if edit_error}}aria-describedby="workspace-error-{{id}}"{{/if}}>
+            {{#with edit_values}}
+            <input type="hidden" name="operation" value="edit_link" /><input type="hidden" name="link_id" value="{{id}}" /><input type="hidden" name="policy" value="on" />
+            <input type="hidden" name="edit_revision" value="{{edit_revision}}" />
+            <label class="workspace-wide">{{t "ui.destination"}}<input name="target" type="url" value="{{target}}" required maxlength="2040" /></label>
+            {{> campaign}}
+            <label>{{t "ui.alias"}}<input name="address" value="{{address}}" required maxlength="64" placeholder="docs/v1.2" /></label>
+            <label>{{t "ui.description_3"}}<input name="description" value="{{description}}" maxlength="2040" /></label>
+            <label>{{t "ui.new_password_3"}}<input name="password" type="password" minlength="3" maxlength="64" autocomplete="new-password" /></label>
+            {{#if password_reentry}}<p class="workspace-wide">{{t "ui.password_was_not_retained_enter_it_again_to_change_protection"}}</p>{{/if}}
+            <label class="workspace-checkbox"><input type="checkbox" name="clear_password" {{#if clear_password}}checked{{/if}} />{{t "ui.remove_password"}}</label>
+            <label class="workspace-checkbox"><input name="paused" type="checkbox" {{#if paused}}checked{{/if}} />{{t "ui.paused"}}</label>
+            <label>{{t "ui.start_utc"}}<input type="datetime-local" name="starts_at" value="{{starts_at_input}}" step="1" /></label>
+            <label>{{t "ui.end_utc"}}<input type="datetime-local" name="ends_at" value="{{ends_at_input}}" step="1" /></label>
+            <label>{{t "ui.maximum_redirects"}}<input type="number" name="max_visits" min="1" max="2147483647" value="{{max_visits}}" /></label>
+            <button type="submit" class="primary">{{t "ui.save_link"}}</button>
+            {{/with}}
+          </form>
+        </details>{{/unless}}{{/if}}
+      </li>{{else}}<li>{{t "ui.no_matching_shared_links"}}</li>{{/each}}
+    </ul>
+    <nav class="archive-nav" aria-label="{{t 'ui.shared_link_pages'}}">{{#if @root.previous}}<a href="{{@root.previous}}">{{t "ui.previous"}}</a>{{/if}}<span>{{t "ui.page_value" value1=page}}</span>{{#if @root.next}}<a href="{{@root.next}}">{{t "ui.next"}}</a>{{/if}}</nav>
+  {{/with}}
+  <output id="workspace-notice" role="status" aria-live="polite"></output>
+</main>
+<script nonce="{{cspNonce}}" src="/scripts/workspaces.js" defer></script>
+{{> footer}}

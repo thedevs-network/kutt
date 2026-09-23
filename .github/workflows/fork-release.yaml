@@ -1,0 +1,96 @@
+name: Fork release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*-sr94.*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-publish:
+    if: github.repository == 'RobinMJD/kutt'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build exact source
+        run: docker build -t kutt-tested .
+      - name: Validate example deployment configuration
+        run: python3 tests/compose-config.py
+      - name: Isolated regression tests
+        run: docker run --rm --network none --entrypoint node kutt-tested tests/container-smoke.cjs
+      - name: Isolated Redis visit-worker and restart regression
+        run: sh tests/redis-smoke.sh kutt-tested
+      - name: Asymmetric OIDC login and logout regression
+        run: docker run --rm --network none --entrypoint node kutt-tested tests/oidc-algorithms.cjs
+      - name: Unicode search on real MySQL and PostgreSQL
+        run: |
+          sh tests/search-database.sh kutt-tested mysql2
+          sh tests/search-database.sh kutt-tested pg
+      - name: Stable sorting on SQLite
+        run: docker run --rm --network none --read-only --tmpfs /tmp:mode=1777 --cap-drop ALL --security-opt no-new-privileges:true -e KUTT_DATABASE_DISPOSABLE=1 -e DB_CLIENT=better-sqlite3 -e DB_FILENAME=/tmp/kutt-sort-ci.sqlite -e REDIS_ENABLED=false -e DEFAULT_DOMAIN=localhost -e JWT_SECRET=disposable-sort-fixture-not-a-real-secret --entrypoint node kutt-tested tests/list-sort-sqlite.cjs
+      - name: OIDC role lifecycle on real MySQL and PostgreSQL
+        run: |
+          sh tests/search-database.sh kutt-tested mysql2 tests/oidc-roles-database.cjs
+          sh tests/search-database.sh kutt-tested pg tests/oidc-roles-database.cjs
+          sh tests/search-database.sh kutt-tested mysql2 tests/oidc-role-writes.cjs
+          sh tests/search-database.sh kutt-tested pg tests/oidc-role-writes.cjs
+      - name: Shared-domain grants on real MySQL and PostgreSQL
+        run: |
+          sh tests/search-database.sh kutt-tested mysql2 tests/management-domain-grants.cjs
+          sh tests/search-database.sh kutt-tested pg tests/management-domain-grants.cjs
+      - name: Alias claims on real MySQL and PostgreSQL
+        run: |
+          sh tests/dotted-alias-database.sh kutt-tested mysql2
+          sh tests/dotted-alias-database.sh kutt-tested pg
+      - name: Verified database and Redis TLS
+        run: |
+          sh tests/transport-tls.sh kutt-tested pg
+          sh tests/transport-tls.sh kutt-tested mysql2
+          sh tests/transport-tls.sh kutt-tested redis
+      - name: Browser sorting and concurrent draft regression
+        run: |
+          npm install --prefix "$RUNNER_TEMP/kutt-browser" --no-audit --no-fund --package-lock=false playwright@1.62.1
+          node "$RUNNER_TEMP/kutt-browser/node_modules/playwright/cli.js" install --with-deps chromium
+          PLAYWRIGHT_MODULE="$RUNNER_TEMP/kutt-browser/node_modules/playwright" KUTT_EVIDENCE_DIR="$RUNNER_TEMP/kutt-browser-evidence" sh tests/browser-list-sorting.sh kutt-tested
+      - name: Browser moderation and native confirmation regression
+        run: PLAYWRIGHT_MODULE="$RUNNER_TEMP/kutt-browser/node_modules/playwright" KUTT_EVIDENCE_DIR="$RUNNER_TEMP/kutt-moderation-evidence" sh tests/browser-moderation.sh kutt-tested
+      - name: Browser dotted alias and draft recovery regression
+        run: PLAYWRIGHT_MODULE="$RUNNER_TEMP/kutt-browser/node_modules/playwright" KUTT_EVIDENCE_DIR="$RUNNER_TEMP/kutt-alias-evidence" sh tests/browser-dotted-aliases.sh kutt-tested
+      - name: Browser theme, contrast and storage recovery regression
+        run: PLAYWRIGHT_MODULE="$RUNNER_TEMP/kutt-browser/node_modules/playwright" KUTT_EVIDENCE_DIR="$RUNNER_TEMP/kutt-theme-evidence" sh tests/browser-theme.sh kutt-tested
+      - name: English French Spanish workflows
+        run: |
+          PLAYWRIGHT_MODULE="$RUNNER_TEMP/kutt-browser/node_modules/playwright" KUTT_EVIDENCE_DIR="$RUNNER_TEMP/kutt-i18n-evidence" sh tests/browser-i18n.sh kutt-tested
+          for locale in fr es; do
+            KUTT_TEST_LOCALE="$locale" PLAYWRIGHT_MODULE="$RUNNER_TEMP/kutt-browser/node_modules/playwright" KUTT_EVIDENCE_DIR="$RUNNER_TEMP/kutt-theme-$locale" sh tests/browser-theme.sh kutt-tested
+          done
+      - name: Responsive interface and actual icon paint regression
+        run: |
+          for locale in en fr es; do
+            KUTT_TEST_LOCALE="$locale" PLAYWRIGHT_MODULE="$RUNNER_TEMP/kutt-browser/node_modules/playwright" KUTT_EVIDENCE_DIR="$RUNNER_TEMP/kutt-interface-$locale" sh tests/browser-csp.sh kutt-tested interface
+          done
+      - name: Community features under enforced CSP
+        run: |
+          npm ci --prefix tests/browser-deps --no-audit --no-fund
+          PLAYWRIGHT_MODULE="$RUNNER_TEMP/kutt-browser/node_modules/playwright" KUTT_EVIDENCE_DIR="$RUNNER_TEMP/kutt-community-evidence" sh tests/browser-community.sh kutt-tested
+      - name: Authenticate to GitHub Container Registry
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish the tested image
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          docker tag kutt-tested "ghcr.io/robinmjd/kutt:${VERSION}"
+          docker push "ghcr.io/robinmjd/kutt:${VERSION}"

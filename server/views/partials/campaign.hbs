@@ -1,0 +1,15 @@
+<details class="campaign" data-campaign>
+  <summary>{{t "ui.campaign_parameters"}}</summary>
+  <fieldset class="campaign-fields">
+    <label>{{t "ui.source"}}<input type="text" data-campaign-field="utm_source" maxlength="255" autocomplete="off" /></label>
+    <label>{{t "ui.medium"}}<input type="text" data-campaign-field="utm_medium" maxlength="255" autocomplete="off" /></label>
+    <label>{{t "ui.campaign"}}<input type="text" data-campaign-field="utm_campaign" maxlength="255" autocomplete="off" /></label>
+    <label>{{t "ui.term"}}<input type="text" data-campaign-field="utm_term" maxlength="255" autocomplete="off" /></label>
+    <label>{{t "ui.content"}}<input type="text" data-campaign-field="utm_content" maxlength="255" autocomplete="off" /></label>
+  </fieldset>
+  <section class="campaign-actions">
+    <button type="button" data-campaign-apply>{{t "ui.apply_parameters"}}</button>
+    <button type="button" data-campaign-clear>{{t "ui.clear_parameters"}}</button>
+  </section>
+  <output class="campaign-status" role="status" aria-live="polite"></output>
+</details>

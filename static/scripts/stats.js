@@ -16,7 +16,7 @@ function createViewsChartLabel(ctx) {
     const nowDay = new Date().getDate();
     for (let i = 6; i >= 0; --i) {
       const date = new Date(new Date().setDate(nowDay - i));
-      labels.push(`${date.getDate()} ${date.toLocaleString("default",{month:"short"})}`);
+      labels.push(window.KuttI18n.date(date, { day: "numeric", month: "short" }));
     }
   }
 
@@ -24,7 +24,7 @@ function createViewsChartLabel(ctx) {
     const nowDay = new Date().getDate();  
     for (let i = 29; i >= 0; --i) {
       const date = new Date(new Date().setDate(nowDay - i));
-      labels.push(`${date.getDate()} ${date.toLocaleString("default",{month:"short"})}`);
+      labels.push(window.KuttI18n.date(date, { day: "numeric", month: "short" }));
     }
   }
 
@@ -32,7 +32,7 @@ function createViewsChartLabel(ctx) {
     const nowMonth = new Date().getMonth();  
     for (let i = 11; i >= 0; --i) {
       const date = new Date(new Date().setMonth(nowMonth - i));
-      labels.push(`${date.toLocaleString("default",{month:"short"})} ${date.toLocaleString("default",{year:"numeric"})}`);
+      labels.push(window.KuttI18n.date(date, { month: "short", year: "numeric" }));
     }
   }
 
@@ -65,7 +65,7 @@ function beautifyBrowserName(name) {
   if (name === "edge") return "Edge";
   if (name === "opera") return "Opera";
   if (name === "safari") return "Safari";
-  if (name === "other") return "Other";
+  if (name === "other") return window.KuttI18n.t("ui.other");
   if (name === "ie") return "IE";
   return name;
 }
@@ -92,7 +92,7 @@ function createViewsChart() {
       data: {
         labels: labels,
         datasets: [{
-          label: "Views",
+          label: window.KuttI18n.t("ui.views"),
           data,
           tension: 0.3,
   
@@ -177,7 +177,7 @@ function createBrowsersChart() {
       data: {
         labels: data.map(d => beautifyBrowserName(d.name)),
         datasets: [{
-          label: "Views",
+          label: window.KuttI18n.t("ui.views"),
           data: data.map(d => d.value),
           backgroundColor: gradient,
           borderColor: "rgba(179, 157, 219, 1)",
@@ -243,7 +243,7 @@ function createReferrersChart() {
     let hoverBorderWidth = 2;
     let borderColor = "rgba(179, 157, 219, 1)";
     if (data.length === 0) {
-      data.push({ name: "No views.", value: 1 });
+      data.push({ name: window.KuttI18n.t("ui.no_views"), value: 1 });
       max = { value: 1000 };
       tooltipEnabled = false;
       hoverBackgroundColor = "rgba(179, 157, 219, 0.1)";
@@ -254,9 +254,9 @@ function createReferrersChart() {
     new Chart(ctx, {
       type: "doughnut",
       data: {
-        labels: data.map(d => d.name.replace(/\[dot\]/g, ".")),
+        labels: data.map(d => (d.name === "Direct" ? window.KuttI18n.t("analytics.direct") : d.name === "Unknown" ? window.KuttI18n.t("ui.unknown") : d.name).replace(/\[dot\]/g, ".")),
         datasets: [{
-          label: "Views",
+          label: window.KuttI18n.t("ui.views"),
           data: data.map(d => d.value),
           backgroundColor: data.map(d => `rgba(179, 157, 219, ${Math.max((d.value / max.value) - 0.2, 0.1).toFixed(2)})`),
           borderWidth: 1,
@@ -305,7 +305,7 @@ function beautifyOsName(name) {
   if (name === "linux") return "Linux";
   if (name === "macos") return "macOS";
   if (name === "windows") return "Windows";
-  if (name === "other") return "Other";
+  if (name === "other") return window.KuttI18n.t("ui.other");
   return name;
 }
 
@@ -331,7 +331,7 @@ function createOsChart() {
       data: {
         labels: data.map(d => beautifyOsName(d.name)),
         datasets: [{
-          label: "Views",
+          label: window.KuttI18n.t("ui.views"),
           data: data.map(d => d.value),
           backgroundColor: gradient,
           borderColor: "rgba(179, 157, 219, 1)",
@@ -412,14 +412,14 @@ function feedMapData(period) {
 }
 
 // handle map tooltip hover
-function mapTooltipHoverOver() {
+function mapTooltipHoverOver(event) {
   const tooltip = document.querySelector("#map-tooltip");
   if (!tooltip) return;
   if (!event.target.dataset.id) return mapTooltipHoverOut();
   if (!tooltip.classList.contains("active")) {
     tooltip.classList.add("visible");
   }
-  tooltip.dataset.tooltip = `${event.target.ariaLabel}: ${event.target.dataset.views || 0}`;
+  tooltip.dataset.tooltip = `${event.target.ariaLabel}: ${window.KuttI18n.number(event.target.dataset.views || 0)}`;
   const rect = event.target.getBoundingClientRect();
   tooltip.style.top = rect.top + (rect.height / 2) + "px";
   tooltip.style.left = rect.left + (rect.width / 2) + "px";
@@ -442,6 +442,7 @@ function createCharts() {
     setTimeout(function() { createCharts() }, 100);
     return;
   }
+  Chart.defaults.locale = window.KuttI18n.locale;
   createViewsChart();
   createBrowsersChart();
   createReferrersChart();

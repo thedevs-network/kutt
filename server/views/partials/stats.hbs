@@ -3,39 +3,40 @@
     <p>{{> icons/x}} {{error}}</p>
     <div class="stats-back-to-home">
       <a class="back-to-home" href="/">
-        ← Back to homepage
+        {{t "ui.back_to_homepage"}}
       </a>
     </div>
   </div>
 {{else}}
   <div class="stats-info">
     <h2>
-      Stats for:
-      <a href="{{link.link.url}}" title="Short link">
+      {{t "ui.stats_for"}}
+      <a href="{{link.link.url}}" title="{{t 'ui.short_link'}}">
         {{link.link.link}}
       </a>
     </h2>
     <p>{{link.target}}</p>
+    <a href="/settings/analytics?link={{link.id}}">{{t "ui.date_range_and_exports"}}</a>
   </div>
   <main id="stats">
     <div class="stats-head">
       <p>
-        Total views: <span class="total-number">{{link.visit_count}}</span>
+        {{t "ui.total_views"}} <span class="total-number">{{link.visit_count}}</span>
       </p>
       <nav class="stats-nav">
-        <button type="button" class="nav" data-period="year" onclick="changeStatsPeriod(event)">Year</button>
-        <button type="button" class="nav" data-period="month" onclick="changeStatsPeriod(event)">Month</button>
-        <button type="button" class="nav" data-period="week" onclick="changeStatsPeriod(event)">Week</button>
-        <button type="button" class="nav" data-period="day" onclick="changeStatsPeriod(event)" disabled="true">Day</button>
+        <button type="button" class="nav" data-period="year" data-ui-stats-period>{{t "ui.year"}}</button>
+        <button type="button" class="nav" data-period="month" data-ui-stats-period>{{t "ui.month"}}</button>
+        <button type="button" class="nav" data-period="week" data-ui-stats-period>{{t "ui.week"}}</button>
+        <button type="button" class="nav" data-period="day" data-ui-stats-period disabled="true">{{t "ui.day"}}</button>
       </nav>
     </div>
 
     <div class="stats-period">
-      <h2 data-period="day"><span class="total-in-period">{{stats.lastDay.total}}</span> tracked visits in the last day.</h2>
-      <h2 class="hidden" data-period="week"><span class="total-in-period">{{stats.lastWeek.total}}</span> tracked visits in the last week.</h2>
-      <h2 class="hidden" data-period="month"><span class="total-in-period">{{stats.lastMonth.total}}</span> tracked visits in the last month.</h2>
-      <h2 class="hidden" data-period="year"><span class="total-in-period">{{stats.lastYear.total}}</span> tracked visits in the last year.</h2>
-      <p class="last-update">Last update at <span class="last-update-value" data-date="{{stats.updatedAt}}"></span>.</p>
+      <h2 data-period="day"><span class="total-in-period">{{number stats.lastDay.total}}</span> {{t "stats.day" count=stats.lastDay.total}}</h2>
+      <h2 class="hidden" data-period="week"><span class="total-in-period">{{number stats.lastWeek.total}}</span> {{t "stats.week" count=stats.lastWeek.total}}</h2>
+      <h2 class="hidden" data-period="month"><span class="total-in-period">{{number stats.lastMonth.total}}</span> {{t "stats.month" count=stats.lastMonth.total}}</h2>
+      <h2 class="hidden" data-period="year"><span class="total-in-period">{{number stats.lastYear.total}}</span> {{t "stats.year" count=stats.lastYear.total}}</h2>
+      <p class="last-update">{{t "ui.last_update_at"}} <span class="last-update-value" data-date="{{stats.updatedAt}}"></span>.</p>
       <canvas class="visits" height="350" data-period="day" data-data="{{json stats.lastDay.views}}"></canvas>
       <canvas class="visits hidden" height="350" data-period="week" data-data="{{json stats.lastWeek.views}}"></canvas>
       <canvas class="visits hidden" height="350" data-period="month" data-data="{{json stats.lastMonth.views}}"></canvas>
@@ -43,14 +44,14 @@
       <hr />
       <div class="stats-columns-wrapper">
         <div>
-          <h2>Referrers.</h2>
+          <h2>{{t "ui.referrers_2"}}</h2>
           <canvas class="referrers" height="325" data-period="day" data-data="{{json stats.lastDay.stats.referrer}}"></canvas>
           <canvas class="referrers hidden" height="325" data-period="week" data-data="{{json stats.lastWeek.stats.referrer}}"></canvas>
           <canvas class="referrers hidden" height="325" data-period="month" data-data="{{json stats.lastMonth.stats.referrer}}"></canvas>
           <canvas class="referrers hidden" height="325" data-period="year" data-data="{{json stats.lastYear.stats.referrer}}"></canvas>
         </div>
         <div>
-          <h2>Browsers.</h2>
+          <h2>{{t "ui.browsers_2"}}</h2>
           <canvas class="browsers" height="350" data-period="day" data-data="{{json stats.lastDay.stats.browser}}"></canvas>
           <canvas class="browsers hidden" height="350" data-period="week" data-data="{{json stats.lastWeek.stats.browser}}"></canvas>
           <canvas class="browsers hidden" height="350" data-period="month" data-data="{{json stats.lastMonth.stats.browser}}"></canvas>
@@ -60,29 +61,26 @@
       <hr />
       <div class="stats-columns-wrapper">
         <div>
-          <h2>Countries.</h2>
+          <h2>{{t "ui.countries_2"}}</h2>
           <div id="map-tooltip"></div>
           <svg 
             class="map" 
             xmlns="http://www.w3.org/2000/svg" 
-            aria-label="world map" 
+            aria-label="{{t 'ui.world_map'}}"
             viewBox="{{map.viewBox}}"
             data-day="{{json stats.lastDay.stats.country}}"
             data-week="{{json stats.lastWeek.stats.country}}"
             data-month="{{json stats.lastMonth.stats.country}}"
             data-year="{{json stats.lastYear.stats.country}}"
-            onmouseout="mapTooltipHoverOut()"
-            onmousemove="mapTooltipHoverOver(event)"
-            onpointerdown="mapTooltipHoverOver(event)"
-            onpointerup="mapTooltipHoverOut()"
+            data-ui-map
           >
             {{#each map.layers}}
-              <path data-id="{{id}}" aria-label="{{name}}" d="{{d}}"></path>
+              <path data-id="{{id}}" aria-label="{{region id}}" d="{{d}}"></path>
             {{/each}}
           </svg>
         </div>
         <div>
-          <h2>Operating systems.</h2>
+          <h2>{{t "ui.operating_systems_2"}}</h2>
           <canvas class="os" height="350" data-period="day" data-data="{{json stats.lastDay.stats.os}}"></canvas>
           <canvas class="os hidden" height="350" data-period="week" data-data="{{json stats.lastWeek.stats.os}}"></canvas>
           <canvas class="os hidden" height="350" data-period="month" data-data="{{json stats.lastMonth.stats.os}}"></canvas>
@@ -94,7 +92,7 @@
 
   <div class="stats-back-to-home">
     <a class="back-to-home" href="/">
-      ← Back to homepage
+      {{t "ui.back_to_homepage"}}
     </a>
   </div>
 {{/if}}

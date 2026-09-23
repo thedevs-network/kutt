@@ -4,18 +4,27 @@ const utils = require("../utils");
 const redis = require("../redis");
 const knex = require("../knex");
 const env = require("../env");
+const referrerCounts = require("../analytics-referrers");
 
 async function add(params) {
   const data = {
     ...params,
     country: params.country.toLowerCase(),
-    referrer: params.referrer.toLowerCase()
+    referrer: typeof params.referrer === "string" && params.referrer.length <= 1265 ? params.referrer.toLowerCase() : referrerCounts.OTHER
   };
 
   const nowUTC = new Date().toISOString();
   const truncatedNow = nowUTC.substring(0, 10) + " " + nowUTC.substring(11, 14) + "00:00";
 
   return knex.transaction(async (trx) => {
+    // Keep the displayed counter and its aggregate in the same transaction.
+    // The write also serializes inline workers before reading the hourly bucket.
+    const changed = await trx("links").where({ id: data.link_id, user_id: data.user_id, banned: false })
+      .whereNull("deleted_at").update({ visit_count: trx.ref("visit_count") });
+    if (!changed) return;
+    const tracking = await require("../analytics-privacy").tracking(data.link_id, trx);
+    if (!tracking.enabled || tracking.revision !== (data.tracking_revision ?? 0)) return;
+    await trx("links").where({ id: data.link_id }).increment("visit_count", 1);
     // Create a subquery first that truncates the
     const subquery = trx("visits")
       .select("visits.*")
@@ -32,7 +41,6 @@ async function add(params) {
       
     if (visit) {
       const countries = typeof visit.countries === "string" ? JSON.parse(visit.countries) : visit.countries;
-      const referrers = typeof visit.referrers === "string" ? JSON.parse(visit.referrers) : visit.referrers;
       await trx("visits")
         .where({ id: visit.id })
         .increment(`br_${data.browser}`, 1)
@@ -42,12 +50,9 @@ async function add(params) {
           updated_at: utils.dateToUTC(new Date()),
           countries: JSON.stringify({
             ...countries,
-            [data.country]: (countries[data.country] ?? 0) + 1
+            [data.country]: (Object.hasOwn(countries, data.country) ? countries[data.country] : 0) + 1
           }),
-          referrers: JSON.stringify({
-            ...referrers,
-             [data.referrer]: (referrers[data.referrer] ?? 0) + 1
-          })
+          referrers: referrerCounts.append(visit.referrers, data.referrer)
         });
     } else {
       // This must also happen in the transaction to avoid concurrency
@@ -67,7 +72,10 @@ async function add(params) {
 }
 
 async function find(match, total) {
-  if (match.link_id && env.REDIS_ENABLED) {
+  // Once retention has been configured, never read/write legacy cache entries:
+  // a concurrent purge must not leave deleted aggregates visible via Redis.
+  const cacheable = match.link_id && env.REDIS_ENABLED && (await require("../analytics-privacy").retention()).revision === 0;
+  if (cacheable) {
     const key = redis.key.stats(match.link_id);
     const cached = await redis.client.get(key);
     if (cached) return JSON.parse(cached);
@@ -111,7 +119,8 @@ async function find(match, total) {
       const view = stats[type].views[index];
       const period = stats[type].stats;
       const countries = typeof visit.countries === "string" ? JSON.parse(visit.countries) : visit.countries;
-      const referrers = typeof visit.referrers === "string" ? JSON.parse(visit.referrers) : visit.referrers;
+      const referrers = new Map(Object.entries(period.referrer));
+      for (const [name, count] of referrerCounts.entries(visit.referrers, visit.total)) referrerCounts.add(referrers, name, count);
       stats[type].stats = {
         browser: {
           chrome: period.browser.chrome + visit.br_chrome,
@@ -135,21 +144,12 @@ async function find(match, total) {
           ...Object.entries(countries).reduce(
             (obj, [country, count]) => ({
               ...obj,
-              [country]: (period.country[country] || 0) + count
+              [country]: (Object.hasOwn(period.country, country) ? period.country[country] : 0) + count
             }),
             {}
           )
         },
-        referrer: {
-          ...period.referrer,
-          ...Object.entries(referrers).reduce(
-            (obj, [referrer, count]) => ({
-              ...obj,
-              [referrer]: (period.referrer[referrer] || 0) + count
-            }),
-            {}
-          )
-        }
+        referrer: Object.fromEntries(referrers)
       };
       stats[type].views[index] += visit.total;
       stats[type].total += visit.total;
@@ -180,7 +180,7 @@ async function find(match, total) {
     updatedAt: new Date()
   };
 
-  if (match.link_id && env.REDIS_ENABLED) {
+  if (cacheable) {
     const key = redis.key.stats(match.link_id);
     redis.client.set(key, JSON.stringify(response), "EX", 60);
   }

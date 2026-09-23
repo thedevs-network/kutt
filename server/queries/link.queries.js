@@ -1,9 +1,13 @@
+const i18n = require("../i18n");
 const bcrypt = require("bcryptjs");
 
 const utils = require("../utils");
 const redis = require("../redis");
 const knex = require("../knex");
 const env = require("../env");
+const history = require("../link-history");
+const filterAdminUser = require("./admin-user-filter");
+const sorting = require("../list-sort");
 
 const CustomError = utils.CustomError;
 
@@ -21,7 +25,14 @@ const selectable = [
   "links.visit_count",
   "links.user_id",
   "links.uuid",
-  "domains.address as domain"
+  "links.paused",
+  "links.starts_at",
+  "links.ends_at",
+  "links.max_visits",
+  "links.redirect_count",
+  "links.deleted_at",
+  "links.archived_domain",
+  knex.raw("coalesce(domains.address, links.archived_domain) as domain")
 ];
 
 const selectable_admin = [
@@ -37,7 +48,7 @@ function normalizeMatch(match) {
     delete newMatch.address;
   }
 
-  if (newMatch.user_id) {
+  if (Object.hasOwn(newMatch, "user_id")) {
     newMatch["links.user_id"] = newMatch.user_id;
     delete newMatch.user_id;
   }
@@ -63,6 +74,7 @@ function normalizeMatch(match) {
 async function total(match, params) {
   const normalizedMatch = normalizeMatch(match);
   const query = knex("links");
+  query[params?.trash ? "whereNotNull" : "whereNull"]("links.deleted_at");
   
   Object.entries(normalizedMatch).forEach(([key, value]) => {
     query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
@@ -84,19 +96,13 @@ async function total(match, params) {
 
 async function totalAdmin(match, params) {
   const query = knex("links");
+  query.whereNull("links.deleted_at");
 
   Object.entries(normalizeMatch(match)).forEach(([key, value]) => {
     query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
   });
   
-  if (params?.user) {
-    const id = parseInt(params?.user);
-    if (Number.isNaN(id)) {
-      query[knex.compatibleILIKE]("users.email", "%" + params.user + "%");
-      } else {
-      query.andWhere("links.user_id", params.user);
-    }
-  }
+  filterAdminUser(query, "links.user_id", params?.user);
 
   if (params?.search) {
     query[knex.compatibleILIKE](
@@ -123,8 +129,9 @@ async function get(match, params) {
     .select(...selectable)
     .where(normalizeMatch(match))
     .offset(params.skip)
-    .limit(params.limit)
-    .orderBy("links.id", "desc");
+    .limit(params.limit);
+  sorting.apply(query, params);
+  query[params?.trash ? "whereNotNull" : "whereNull"]("links.deleted_at");
   
   if (params?.search) {
     query[knex.compatibleILIKE](
@@ -140,24 +147,18 @@ async function get(match, params) {
 
 async function getAdmin(match, params) {
   const query = knex("links").select(...selectable_admin);
+  query.whereNull("links.deleted_at");
 
   Object.entries(normalizeMatch(match)).forEach(([key, value]) => {
     query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
   });
 
+  sorting.apply(query, params);
   query
-    .orderBy("links.id", "desc")
     .offset(params.skip)
     .limit(params.limit)
   
-  if (params?.user) {
-    const id = parseInt(params?.user);
-    if (Number.isNaN(id)) {
-      query[knex.compatibleILIKE]("users.email", "%" + params.user + "%");
-    } else {
-      query.andWhere("links.user_id", params.user);
-    }
-  }
+  filterAdminUser(query, "links.user_id", params?.user);
 
   if (params?.search) {
     query[knex.compatibleILIKE](
@@ -176,20 +177,23 @@ async function getAdmin(match, params) {
   return query;
 }
 
-async function find(match) {
-  if (match.address && match.domain_id !== undefined && env.REDIS_ENABLED) {
+async function find(match, { fresh = false, includeTrash = false } = {}) {
+  if (!fresh && !includeTrash && match.address && match.domain_id !== undefined && env.REDIS_ENABLED) {
     const key = redis.key.link(match.address, match.domain_id);
     const cachedLink = await redis.client.get(key);
     if (cachedLink) return JSON.parse(cachedLink);
   }
   
-  const link = await knex("links")
+  const lookup = knex("links")
     .select(...selectable)
     .where(normalizeMatch(match))
     .leftJoin("domains", "links.domain_id", "domains.id")
     .first();
+  if (!includeTrash) lookup.whereNull("links.deleted_at");
+  if (match.address) lookup.whereNull("links.archived_domain");
+  const link = await lookup;
   
-  if (link && env.REDIS_ENABLED) {
+  if (link && !fresh && env.REDIS_ENABLED) {
     const key = redis.key.link(link.address, link.domain_id);
     redis.client.set(key, JSON.stringify(link), "EX", 60 * 15);
   }
@@ -197,7 +201,10 @@ async function find(match) {
   return link;
 }
 
-async function create(params) {
+async function create(params, db = knex, actor = {}) {
+  if (!db.isTransaction) return knex.transaction(transaction => create(params, transaction, actor));
+  await require("../domain-access").lock(db);
+  await require("../domain-access").link(db, params);
   let encryptedPassword = null;
   
   if (params.password) {
@@ -205,7 +212,7 @@ async function create(params) {
     encryptedPassword = await bcrypt.hash(params.password, salt);
   }
   
-  let [link] = await knex(
+  let [link] = await db(
     "links"
   ).insert(
     {
@@ -215,6 +222,10 @@ async function create(params) {
       address: params.address,
       description: params.description || null,
       expire_in: params.expire_in || null,
+      paused: params.paused || false,
+      starts_at: params.starts_at ?? null,
+      ends_at: params.ends_at ?? null,
+      max_visits: params.max_visits ?? null,
       target: params.target
     },
     "*"
@@ -223,26 +234,31 @@ async function create(params) {
   // mysql doesn't return the whole link, but rather the id number only
   // so we need to fetch the link ourselves
   if (typeof link === "number") {
-    link = await knex("links").where("id", link).first();
+    link = await db("links").where("id", link).first();
   }
 
+  await history.claim(db, link);
+  await history.record(db, link, "created", [], actor);
   return link;
 }
 
-async function remove(match) {
-  const link = await knex("links").where(match).first();
-  
-  if (!link) {
-    return { isRemoved: false, error: "Could not find the link.", link: null }
-  }
-
-  const deletedLink = await knex("links").where("id", link.id).delete();
+async function remove(match, actor = {}, request) {
+  const link = await knex.transaction(async db => {
+    await require("../domain-access").lock(db);
+    const link = await db("links").where(match).first();
+    if (link) {
+      if (request) await require("../domain-access").writeLink(db, request, link, "links:delete");
+      await history.trash(db, link, actor);
+    }
+    return link;
+  });
+  if (!link) return { isRemoved: false, error: i18n.t("messages.could_not_find_the_link"), link: null };
 
   if (env.REDIS_ENABLED) {
     redis.remove.link(link);
   }
   
-  return { isRemoved: !!deletedLink, link };
+  return { isRemoved: true, link };
 }
 
 async function batchRemove(match) {
@@ -254,14 +270,16 @@ async function batchRemove(match) {
   
   const links = await query.clone();
   
-  await query.delete();
+  await knex.transaction(async db => {
+    for (const link of links) await history.trash(db, link);
+  });
   
   if (env.REDIS_ENABLED) {
     links.forEach(redis.remove.link);
   }
 }
 
-async function update(match, update) {
+async function update(match, update, actor = {}, { expiryExpected, request } = {}) {
   if (update.password) {
     const salt = await bcrypt.genSalt(12);
     update.password = await bcrypt.hash(update.password, salt);
@@ -274,9 +292,23 @@ async function update(match, update) {
     links = await knex("links").select('*').where(match);
   }
   
-  await knex("links")
-    .where(match)
-    .update({ ...update, updated_at: utils.dateToUTC(new Date()) });
+  await knex.transaction(async db => {
+    await require("../domain-access").lock(db);
+    const selection = db("links").where(match);
+    if ((expiryExpected !== undefined || update.target !== undefined) && !knex.client.config.client.includes("sqlite")) selection.forUpdate();
+    const current = await selection;
+    for (const link of current) {
+      await require("../domain-access").link(db, link);
+      await require("../domain-access").link(db, { ...link, ...update });
+      if (request) await require("../domain-access").writeLink(db, request, link, "links:update");
+    }
+    for (const link of current) require("../link-expiry-edit").check(link, expiryExpected);
+    for (const link of current) {
+      if (update.target !== undefined && update.target !== link.target) require("../destination-policy").requireAllowed(update.target);
+    }
+    for (const link of current) await history.beforeUpdate(db, link, update, actor);
+    await db("links").where(match).update({ ...update, updated_at: utils.dateToUTC(new Date()) });
+  });
 
   const updated_links = await knex("links")
     .select(selectable)

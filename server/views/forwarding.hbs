@@ -1,0 +1,30 @@
+{{> header}}
+<main class="link-archive forwarding-page" data-link-id="{{id}}">
+  <header class="archive-heading"><h1>{{t "ui.path_and_query_forwarding"}}</h1><a href="/settings/library">{{t "ui.library"}}</a><a href="/">{{t "ui.links"}}</a></header>
+  <p>{{short_url}}</p><h2>{{t "ui.default_destination"}}</h2><p>{{target}}</p>
+  <p id="forwarding-status" role="status" aria-live="polite">{{t "ui.loading"}}</p>
+  <form id="forwarding-form">
+    <div class="forwarding-lists">
+      <label>{{t "ui.allowed_query_keys"}}<textarea name="query_keys" rows="5" maxlength="1619" placeholder="utm_source&#10;campaign" disabled></textarea></label>
+      <label>{{t "ui.allowed_path_prefixes"}}<textarea name="path_prefixes" rows="5" maxlength="5139" placeholder="docs&#10;products/manuals" disabled></textarea></label>
+    </div>
+    <div class="forwarding-toolbar">
+      <button type="submit" id="forwarding-save" disabled>{{> icons/check}} {{t "ui.save_allowlists"}}</button>
+      <button type="button" id="forwarding-clear" disabled>{{> icons/x}} {{t "ui.clear_allowlists"}}</button>
+      <button type="button" id="forwarding-reload" title="{{t 'ui.reload_saved_allowlists'}}" aria-label="{{t 'ui.reload_saved_allowlists'}}">{{> icons/reload}}</button>
+    </div>
+  </form>
+  <section><h2>{{t "ui.test_redirect"}}</h2>
+    <form id="forwarding-preview">
+      <label>{{t "ui.path_suffix"}}<input name="path" maxlength="256" placeholder="docs/start" /></label>
+      <label>{{t "ui.query_string"}}<input name="query" maxlength="2048" placeholder="utm_source=newsletter" /></label>
+      <label>{{t "ui.device"}}<select name="device"><option value="desktop">{{t "ui.desktop"}}</option><option value="mobile">{{t "ui.mobile"}}</option><option value="tablet">{{t "ui.tablet"}}</option><option value="bot">{{t "ui.bot"}}</option><option value="other">{{t "ui.other"}}</option></select></label>
+      <label>{{t "ui.preferred_language"}}<input name="language" maxlength="35" placeholder="fr-FR" /></label>
+      <label>{{t "ui.country"}}<input name="country" maxlength="2" placeholder="FR" /></label>
+      <button type="submit" id="forwarding-test" disabled>{{t "ui.preview"}}</button>
+    </form>
+    <output id="forwarding-result" aria-live="polite"></output>
+  </section>
+</main>
+<script nonce="{{cspNonce}}" src="/scripts/forwarding.js" defer></script>
+{{> footer}}

@@ -1,11 +1,10 @@
 {{> header}}
 <section id="report" class="section-container">
   <h2>
-    Report abuse.
+    {{t "ui.report_abuse_3"}}
   </h2>
   <p>
-    Report abuses, malware and phishing links to the email address below{{#if mail_enabled}} or use the form{{/if}}.
-    We will review as soon as we can.
+    {{t "ui.report_abuses_malware_and_phishing_links_to_the_email_address_below"}}{{#if mail_enabled}} {{t "ui.or_use_the_form"}}{{/if}}{{t "ui.we_will_review_as_soon_as_we_can"}}
   </p>
   {{> report/email}}
   {{#if mail_enabled}}

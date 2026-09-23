@@ -1,13 +1,13 @@
 {{> header}}
 <section id="banned" class="section-container">
   <h2>
-    Link has been banned and removed because of 
-    <span class="bold underline">malware or scam</span>.
+    {{t "ui.link_has_been_banned_and_removed_because_of"}}
+    <span class="bold underline">{{t "ui.malware_or_scam"}}</span>.
   </h2>
   <h4>
-    If you noticed a malware/scam link shortened by {{default_domain}}, 
-    <a href="/report" title="Send report">
-      send us a report
+    {{t "ui.if_you_noticed_a_malware_scam_link_shortened_by_value" value1=default_domain}}
+    <a href="/report" title="{{t 'ui.send_report'}}">
+      {{t "ui.send_us_a_report"}}
     </a>.
   </h4>
 </section>

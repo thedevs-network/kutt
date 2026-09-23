@@ -1,0 +1,35 @@
+{{> header}}
+<main class="link-archive transfer">
+  <header class="archive-heading"><h1>{{t "ui.import_and_export"}}</h1><a href="/settings/library">{{t "ui.library"}}</a><a href="/">{{t "ui.links"}}</a></header>
+  <section class="transfer-export">
+    <h2>{{t "ui.export_links"}}</h2>
+    <form id="transfer-export" aria-label="{{t 'ui.export_links'}}" method="get" action="/api/v2/transfer/export">
+      <label>{{t "ui.format"}}<select name="format" aria-label="{{t 'ui.export_format'}}"><option value="json">JSON</option><option value="csv">CSV</option></select></label>
+      <label>{{t "ui.state"}}<select name="state" aria-label="{{t 'ui.export_state'}}"><option value="active">{{t "ui.not_trashed"}}</option><option value="trash">{{t "ui.trash"}}</option><option value="all">{{t "ui.all_links"}}</option></select></label>
+      <label>{{t "ui.alias_or_target"}}<input type="search" name="q" maxlength="200" /></label><button type="submit" class="primary">{{t "ui.download"}}</button>
+    </form>
+  </section>
+  <section class="transfer-import">
+    <h2>{{t "ui.import_links"}}</h2>
+    <nav class="transfer-templates" aria-label="{{t 'ui.import_templates'}}">
+      <a href="/api/v2/transfer/template?format=json" download>{{> icons/arrow_left}} {{t "ui.json_template"}}</a>
+      <a href="/api/v2/transfer/template?format=csv" download>{{> icons/arrow_left}} {{t "ui.csv_template"}}</a>
+    </nav>
+    <form id="transfer-import" aria-label="{{t 'ui.import_links'}}" method="post" action="/api/v2/transfer/preview">
+      <label>{{t "ui.file"}}<input type="file" id="transfer-file" accept=".csv,.json,text/csv,application/json" /></label>
+      <div class="transfer-options">
+        <label>{{t "ui.format"}}<select name="format" aria-label="{{t 'ui.import_format'}}"><option value="json">JSON</option><option value="csv">CSV</option></select></label>
+        <label>{{t "ui.alias_conflicts"}}<select name="conflict" aria-label="{{t 'ui.alias_conflicts'}}"><option value="abort">{{t "ui.abort_batch"}}</option><option value="skip">{{t "ui.skip_conflicting_rows"}}</option><option value="rename">{{t "ui.generate_new_aliases"}}</option></select></label>
+      </div>
+      <label>{{t "ui.content"}}<textarea name="content" rows="9" required spellcheck="false" maxlength="900000" aria-describedby="transfer-status"></textarea></label>
+      <button class="primary" type="submit" disabled>{{t "ui.dry_run"}}</button>
+    </form>
+    <p id="transfer-status" role="status" aria-live="polite" tabindex="-1"></p>
+    <div id="transfer-preview" hidden>
+      <div class="transfer-preview-heading"><h3>{{t "ui.preview"}}</h3><output id="transfer-counts"></output><button id="transfer-commit" class="primary" disabled>{{t "ui.confirm_import"}}</button></div>
+      <div class="transfer-table"><table><thead><tr><th>{{t "ui.row"}}</th><th>{{t "ui.alias"}}</th><th>{{t "ui.domain"}}</th><th>{{t "ui.action"}}</th><th>{{t "ui.issue"}}</th></tr></thead><tbody id="transfer-rows"></tbody></table></div>
+    </div>
+  </section>
+</main>
+<script nonce="{{cspNonce}}" src="/scripts/transfer.js" defer></script>
+{{> footer}}

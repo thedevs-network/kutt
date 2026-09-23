@@ -1,16 +1,17 @@
 <footer>
+  {{> theme_picker}}
   <p>
-    Powered by <a href="https://github.com/thedevs-network/kutt" title="The Devs" target="_blank" rel="noopener noreferrer">Kutt</a> <span>|</span> 
-    <a href="/terms" title="Terms of Service">Terms of Service</a>
+    {{t "ui.powered_by"}} <a href="https://github.com/thedevs-network/kutt" title="{{t 'ui.the_devs'}}" target="_blank" rel="noopener noreferrer">Kutt</a> <span>|</span>
+    <a href="/terms" title="{{t 'ui.terms_of_service'}}">{{t "ui.terms_of_service"}}</a>
     {{#if report_email}} 
      <span>|</span>
-     <a href="/report" title="Report abuse">Report Abuse</a>
+     <a href="/report" title="{{t 'ui.report_abuse'}}">{{t "ui.report_abuse_2"}}</a>
     {{/if}}
     {{#if contact_email}}
       <span>|</span> 
       <button class="link" hx-get="/get-support-email" hx-swap="outerHTML">
         <span>{{> icons/spinner}}</span>
-        Contact us
+        {{t "ui.contact_us"}}
       </button>
     {{/if}}
   </p>

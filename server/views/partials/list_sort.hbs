@@ -1,0 +1,27 @@
+<div class="list-sort-controls">
+  <label>{{t "sorting.field"}}
+    <select name="sort" class="list-sort-select table-input" aria-label="{{t 'sorting.field'}}">
+      <option value="id" {{#ifEquals state.sort 'id'}}selected{{/ifEquals}}>{{t "sorting.added"}}</option>
+      <option value="created_at" {{#ifEquals state.sort 'created_at'}}selected{{/ifEquals}}>{{t "sorting.created"}}</option>
+      {{#ifEquals profile 'users'}}
+        <option value="email" {{#ifEquals state.sort 'email'}}selected{{/ifEquals}}>{{t "ui.email"}}</option>
+        <option value="links_count" {{#ifEquals state.sort 'links_count'}}selected{{/ifEquals}}>{{t "ui.links"}}</option>
+      {{else}}
+        <option value="address" {{#ifEquals state.sort 'address'}}selected{{/ifEquals}}>{{#ifEquals profile 'domains'}}{{t "ui.domain"}}{{else}}{{t "ui.alias"}}{{/ifEquals}}</option>
+        {{#ifEquals profile 'domains'}}
+          <option value="homepage" {{#ifEquals state.sort 'homepage'}}selected{{/ifEquals}}>{{t "ui.homepage"}}</option>
+          <option value="links_count" {{#ifEquals state.sort 'links_count'}}selected{{/ifEquals}}>{{t "ui.links"}}</option>
+        {{else}}
+          <option value="target" {{#ifEquals state.sort 'target'}}selected{{/ifEquals}}>{{t "ui.destination"}}</option>
+          <option value="visit_count" {{#ifEquals state.sort 'visit_count'}}selected{{/ifEquals}}>{{t "ui.views"}}</option>
+        {{/ifEquals}}
+      {{/ifEquals}}
+    </select>
+  </label>
+  <label>{{t "sorting.direction"}}
+    <select name="direction" class="list-sort-select table-input" aria-label="{{t 'sorting.direction'}}">
+      <option value="desc" {{#ifEquals state.direction 'desc'}}selected{{/ifEquals}}>{{t "sorting.descending"}}</option>
+      <option value="asc" {{#ifEquals state.direction 'asc'}}selected{{/ifEquals}}>{{t "sorting.ascending"}}</option>
+    </select>
+  </label>
+</div>

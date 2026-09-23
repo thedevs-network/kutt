@@ -27,7 +27,9 @@ const precision = "hour";
 
 const truncatedCreatedAtHour =
   driverName === "sqlite3" || driverName === "better-sqlite3"
-    ? knex.raw(`strftime(?, ??)`, [formats.sqlite3[precision], column])
+    // This fixed literal must match the hourly expression index. Binding the
+    // format prevents SQLite from recognizing an equivalent indexed expression.
+    ? knex.raw(`strftime('%Y-%m-%d %H:00:00', ??)`, [column])
     : driverName === "mssql"
     ? knex.raw(`FORMAT(??, ?)`, [column, formats.mssql[precision]])
     : driverName === "pg" ||

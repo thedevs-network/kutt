@@ -1,0 +1,21 @@
+.schedule-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+.date-time-field { min-width: 0; }
+.date-time-field > label { padding: 0; }
+.date-time-field [data-date-time-value] { width: 100%; margin-top: .5rem; }
+.date-time-result { display: flex; align-items: center; gap: .5rem; margin-top: .5rem; }
+.date-time-result[hidden] { display: none; }
+.date-time-result input { min-width: 0; width: 100%; margin: 0; padding: .75rem 1rem; font-size: 16px; font-variant-numeric: tabular-nums; letter-spacing: 0; cursor: pointer; }
+.date-time-result button { flex: 0 0 44px; width: 44px; height: 44px; padding: 10px; border-radius: 6px; box-shadow: none; }
+.date-time-result svg { display: block; width: 24px; height: 24px; margin: 0; fill: none; stroke: currentColor; }
+.date-time-dialog { width: 420px; max-width: calc(100vw - 2rem); max-height: calc(100dvh - 2rem); margin: auto; padding: 1.25rem; border: 1px solid var(--table-head-tr-border-color); border-radius: 8px; color: var(--text-color); background: var(--bg-color); overflow: auto; }
+.date-time-dialog::backdrop { background: rgb(0 0 0 / 45%); }
+.date-time-dialog h2 { font-size: 20px; line-height: 1.4; margin: 0 0 1rem; font-weight: 600; }
+.date-time-dialog .date-time-parts { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+.date-time-dialog .date-time-parts label { padding: 0; margin: 0; min-width: 0; font-size: 16px; }
+.date-time-dialog .date-time-parts input { display: block; width: 100%; min-width: 0; min-height: 44px; margin: .5rem 0 0; padding: .75rem; font-size: 16px; letter-spacing: 0; border-radius: 6px; }
+.date-time-dialog .date-time-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; margin-top: 1.5rem; }
+.date-time-dialog .date-time-actions button { min-height: 44px; padding: .6rem .8rem; font-size: 14px; border-radius: 6px; }
+.date-time-dialog .error[hidden] { display: none; }
+@media (max-width: 600px) {
+  .schedule-fields { grid-template-columns: minmax(0, 1fr); }
+}

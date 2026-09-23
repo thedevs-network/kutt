@@ -1,0 +1,16 @@
+const { Router } = require("express");
+const auth = require("../handlers/auth.handler");
+const h = require("../handlers/webhooks.handler");
+const { rateLimit } = require("../handlers/helpers.handler");
+const wrap = require("../utils/asyncHandler");
+const router = Router();
+router.use(wrap(auth.apikey), wrap(auth.jwt), h.boundary);
+router.get("/", wrap(h.list));
+router.post("/", rateLimit({ window: 60, limit: 10 }), wrap(h.create));
+router.put("/:id", rateLimit({ window: 60, limit: 10 }), wrap(h.save));
+router.post("/:id/rotate", rateLimit({ window: 60, limit: 5 }), wrap(h.rotate));
+router.delete("/:id", rateLimit({ window: 60, limit: 10 }), wrap(h.remove));
+router.get("/:id/deliveries", wrap(h.deliveries));
+router.post("/:id/retry", rateLimit({ window: 60, limit: 4 }), wrap(h.retry));
+router.post("/:id/test", rateLimit({ window: 60, limit: 4 }), wrap(h.test));
+module.exports = router;

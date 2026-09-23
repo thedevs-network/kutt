@@ -1,0 +1,16 @@
+{{> header}}
+<main class="moderation-page">
+  <h1>{{t "moderation.remove"}}</h1>
+  <p>{{label}}</p>
+  {{#if banned}}
+    <p>{{t "moderation.confirm_notice"}}</p>
+    <form method="post" action="/admin/moderation/{{entity}}/{{id}}">
+      <button class="primary" type="submit">{{t "moderation.remove"}}</button>
+      <a href="/admin/moderation?entity={{entity}}">{{t "ui.cancel"}}</a>
+    </form>
+  {{else}}
+    <p>{{t "moderation.not_banned"}}</p>
+    <a href="/admin/moderation?entity={{entity}}">{{t "moderation.back"}}</a>
+  {{/if}}
+</main>
+{{> footer}}

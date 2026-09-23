@@ -1,15 +1,15 @@
 <th class="nav" >
   <div class="limit">
-    <button type="button" class="nav" onclick="setLinksLimit(event)" disabled="true">10</button>
-    <button type="button" class="nav" onclick="setLinksLimit(event)">20</button>
-    <button type="button" class="nav" onclick="setLinksLimit(event)">50</button>
+    <button type="button" class="nav" data-ui-limit aria-label="{{t 'ui.show_10_per_page'}}" aria-pressed="true">10</button>
+    <button type="button" class="nav" data-ui-limit aria-label="{{t 'ui.show_20_per_page'}}" aria-pressed="false">20</button>
+    <button type="button" class="nav" data-ui-limit aria-label="{{t 'ui.show_50_per_page'}}" aria-pressed="false">50</button>
   </div>
   <div class="nav-divider"></div>
-  <div id="pagination" class="pagination">
-    <button type="button" class="nav prev" onclick="setLinksSkip(event, 'prev')" disabled="true">
+  <div class="pagination">
+    <button type="button" class="nav prev" aria-label="{{t 'ui.previous_page'}}" title="{{t 'ui.previous_page'}}" data-ui-page="prev" disabled="true">
       {{> icons/chevron_left}}
     </button>
-    <button type="button" class="nav next" onclick="setLinksSkip(event, 'next')">
+    <button type="button" class="nav next" aria-label="{{t 'ui.next_page'}}" title="{{t 'ui.next_page'}}" data-ui-page="next" {{#unless (hasNextPage total limit skip)}}disabled{{/unless}}>
       {{> icons/chevron_right}}
     </button>
   </div>

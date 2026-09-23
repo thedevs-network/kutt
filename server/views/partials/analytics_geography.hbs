@@ -1,0 +1,17 @@
+<section id="analytics-geography" class="geography" aria-labelledby="geography-heading">
+  <header class="geography-heading"><h2 id="geography-heading">{{t "geography.title"}}</h2><a href="#analytics-country-table">{{t "geography.table"}}</a></header>
+  <p id="geography-basis" class="analytics-meta">{{t "geography.basis"}}</p>
+  <div class="geography-controls">
+    <label for="geography-country">{{t "geography.country_details"}}</label>
+    <select id="geography-country" aria-describedby="geography-basis"></select>
+  </div>
+  <p id="geography-details" class="geography-details" role="status" aria-live="polite" aria-atomic="true">{{t "geography.none_selected"}}</p>
+  <p id="geography-keyboard" class="geography-sr">{{t "geography.keyboard"}}</p>
+  <svg class="geography-map" viewBox="{{geography.viewBox}}" role="group" tabindex="-1" aria-labelledby="geography-heading" aria-describedby="geography-basis geography-keyboard">
+    {{#each geography.layers}}
+      <path data-country="{{id}}" d="{{d}}" role="button" tabindex="-1" aria-pressed="false"></path>
+    {{/each}}
+  </svg>
+  <ul class="geography-legend" aria-label="{{t 'geography.legend'}}"></ul>
+  <p class="analytics-meta" id="geography-unmapped"></p>
+</section>

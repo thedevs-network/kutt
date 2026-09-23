@@ -1,0 +1,135 @@
+const assert = require("node:assert/strict");
+const { randomUUID } = require("node:crypto");
+const { spawnSync } = require("node:child_process");
+const path = require("node:path");
+const Database = require("better-sqlite3");
+const { parse } = require("csv-parse/sync");
+
+module.exports = async ({ request, session, database, account, restart, root, directory, env }) => {
+  const db = new Database(database), owner = db.prepare("SELECT id FROM users WHERE email=?").get(account.email).id;
+  const ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1";
+  const suffix = randomUUID(), prefix = "analytics-" + suffix;
+  const create = async address => {
+    const response = await request("POST", "/api/links", { customurl: address, target: "https://192.0.2.1/default" }, session);
+    assert.equal(response.status, 201); return response.json();
+  };
+  const call = async (query, extra = {}, status = 200, cookie = session) => {
+    const response = await request("GET", "/api/v2/analytics?" + new URLSearchParams(query), undefined, cookie, extra);
+    assert.equal(response.status, status, await response.clone().text());
+    assert.match(response.headers.get("cache-control"), /no-store/);
+    return response;
+  };
+  try {
+    const a = await create(prefix + "-a"), b = await create(prefix + "-b");
+    const aid = db.prepare("SELECT id FROM links WHERE uuid=?").get(a.id).id, bid = db.prepare("SELECT id FROM links WHERE uuid=?").get(b.id).id;
+    const foreign = Number(db.prepare("INSERT INTO users(email,password,role,verified) SELECT ?,password,'ADMIN',1 FROM users WHERE id=?").run(prefix + "@example.invalid", owner).lastInsertRowid);
+    const otherSession = require("jsonwebtoken").sign({ iss: "ApiAuth", sub: foreign }, env.JWT_SECRET, { expiresIn: 600 });
+    const foreignUUID = randomUUID(), foreignID = Number(db.prepare("INSERT INTO links(uuid,address,target,user_id) VALUES(?,?,?,?)").run(foreignUUID, prefix + "-other", "https://192.0.2.1/secret", foreign).lastInsertRowid);
+    const visit = (id, user, date, total, referrer = "direct") => db.prepare("INSERT INTO visits(link_id,user_id,created_at,total,br_safari,os_ios,countries,referrers) VALUES(?,?,?,?,?,?,?,?)")
+      .run(id, user, date, total, total, total, JSON.stringify({ fr: total }), JSON.stringify({ [referrer]: total }));
+    visit(aid, owner, "2024-01-01 00:00:00", 7); visit(aid, owner, "2024-01-31 23:59:59", 5, "example[dot]com");
+    visit(aid, owner, "2024-02-01 00:00:00", 2); visit(bid, owner, "2024-01-15 12:00:00", 3);
+    visit(foreignID, foreign, "2024-01-01 00:00:00", 100);
+    // A inconsistent legacy ownership row must not leak into either report.
+    visit(foreignID, owner, "2024-01-01 00:00:00", 900);
+    const tag = await (await request("POST", "/api/library/labels", { kind: "tag", name: "=SUM(1,1)" }, session)).json();
+    const secondTag = await (await request("POST", "/api/library/labels", { kind: "tag", name: prefix }, session)).json();
+    assert.equal((await request("POST", "/api/library/bulk", { ids: [a.id, b.id], action: "add_label", label_id: tag.id }, session)).status, 200);
+    assert.equal((await request("POST", "/api/library/bulk", { ids: [a.id], action: "add_label", label_id: secondTag.id }, session)).status, 200);
+    const filter = { start: "2024-01-01", end: "2024-01-31", q: prefix };
+    let data = await (await call(filter)).json();
+    assert.equal(data.total, 15); assert.equal(data.matched_links, 2); assert.equal(data.visited_links, 2);
+    assert.equal(data.by_day.length, 31); assert.equal(data.by_day[0].visits, 7); assert.equal(data.by_day[30].visits, 5);
+    assert.equal(data.by_day[1].visits, 0); assert.deepEqual(data.stats.browser, [{ name: "safari", visits: 15 }]);
+    assert.equal(data.tags.find(row => row.id === tag.id).visits, 15); assert.equal(data.tags.find(row => row.id === secondTag.id).visits, 12);
+    assert(data.tags.reduce((n, row) => n + row.visits, 0) > data.total, "Multi-tag summaries intentionally overlap");
+    assert.equal((await (await call({ ...filter, link: a.id })).json()).total, 12);
+    assert.equal((await (await call({ ...filter, tag: secondTag.id })).json()).total, 12);
+    assert.equal((await (await call({ ...filter, q: "%" + prefix })).json()).total, 0, "Literal search wildcards");
+    assert.equal((await (await call({ ...filter, start: "2024-01-31", end: "2024-02-01" })).json()).total, 7);
+    assert.equal((await (await call({ ...filter, start: "2024-02-29", end: "2024-02-29" })).json()).by_day.length, 1);
+    assert.equal((await (await call({ ...filter, start: "9999-12-30", end: "9999-12-30" })).json()).total, 0);
+    await call({ ...filter, start: "9999-12-31", end: "9999-12-31" }, {}, 400);
+    await call({ ...filter, start: "0000-01-01", end: "0000-01-31" }, {}, 400);
+    const stored = db.prepare("SELECT id,countries,total FROM visits WHERE link_id=? ORDER BY id LIMIT 1").get(aid);
+    db.prepare("UPDATE visits SET countries=? WHERE id=?").run("not-json", stored.id);
+    await call(filter, {}, 503);
+    db.prepare("UPDATE visits SET countries=?,total=-1 WHERE id=?").run(stored.countries, stored.id);
+    await call(filter, {}, 503);
+    db.prepare("UPDATE visits SET total=? WHERE id=?").run(stored.total, stored.id);
+    const csv = await (await call({ ...filter, format: "csv" })).text(), rows = parse(csv, { columns: true });
+    assert(rows.some(row => row.section === "tag" && row.name === "'=SUM(1,1)"));
+    assert.equal(rows.find(row => row.section === "total").visits, "15");
+    for (const bad of [{ start: "2024-02-30" }, { start: "2024-02-01" }, { end: "2025-01-01" }, { format: "html" }, { q: "x".repeat(201) }, { link: "42" }, { tag: "foo" }, { domain: "evil.com" }, { timezone: "Europe/Paris" }]) await call({ ...filter, ...bad }, {}, 400);
+    assert.equal((await request("GET", "/api/analytics?start[x]=bad", undefined, session)).status, 400);
+    assert.equal((await request("GET", "/api/analytics")).status, 401);
+    await call({ ...filter, link: foreignUUID }, {}, 404);
+    await call({ ...filter, link: a.id }, {}, 404, otherSession);
+    await call({ ...filter, tag: tag.id }, {}, 404, otherSession);
+    assert.equal((await (await call(filter, {}, 200, otherSession)).json()).total, 100, "Admin is not an analytics ownership override");
+    const token = async (scopes, domain_scope = "all") => {
+      const response = await request("POST", "/api/tokens", { name: "Analytics", scopes, domain_scope }, session); assert.equal(response.status, 201); return response.json();
+    };
+    const read = await token(["stats:read"]), noStats = await token(["links:read"]), defaultOnly = await token(["stats:read"], "default");
+    assert.equal((await (await call(filter, { "X-API-Key": read.token }, 200, undefined)).json()).total, 15);
+    await call(filter, { "X-API-Key": noStats.token }, 403);
+    assert.equal((await request("GET", "/settings/analytics", undefined, session, { "X-API-Key": read.token })).status, 403);
+    const domainUUID = randomUUID(), domainID = Number(db.prepare("INSERT INTO domains(uuid,address,user_id) VALUES(?,?,?)").run(domainUUID, prefix + ".example.invalid", owner).lastInsertRowid);
+    db.prepare("UPDATE links SET domain_id=? WHERE id=?").run(domainID, bid);
+    data = await (await call(filter, { "X-API-Key": defaultOnly.token })).json(); assert.equal(data.total, 12);
+    assert.deepEqual(data.available_filters.domains.map(row => row.id), ["default"]);
+    await call({ ...filter, domain: domainUUID }, { "X-API-Key": defaultOnly.token }, 404);
+    await call({ ...filter, link: b.id }, { "X-API-Key": defaultOnly.token }, 404);
+    assert.equal((await (await call({ ...filter, domain: domainUUID })).json()).total, 3);
+    await request("DELETE", "/api/tokens/" + read.id, undefined, session);
+    assert.equal((await request("GET", "/api/analytics", undefined, session, { "X-API-Key": read.token })).status, 401);
+    const page = await request("GET", "/settings/analytics", undefined, session, { Accept: "text/html" });
+    assert.equal(page.status, 200, await page.text());
+    const old = await request("GET", "/api/links/" + a.id + "/stats", undefined, session);
+    assert.equal(old.status, 200); assert((await old.json()).lastDay.views.length === 24, "Legacy stats response preserved");
+
+    const current = await create(prefix + "-traffic"), cid = db.prepare("SELECT id FROM links WHERE uuid=?").get(current.id).id;
+    const worker = data => spawnSync(process.execPath, ["-e", `(async()=>{await require(${JSON.stringify(path.join(root, "server/queues/visit.js"))})({data:JSON.parse(process.argv[1])});await require(${JSON.stringify(path.join(root, "server/knex.js"))}).destroy()})().catch(e=>{console.error(e.message);process.exit(1)})`, JSON.stringify(data)], { cwd: directory, env, encoding: "utf8", timeout: 30000 });
+    const job = { link: { id: cid, user_id: owner }, ip: "127.0.0.1", country: "FR", userAgent: ua, referrer: "not a URL" };
+    for (const data of [{ ...job, userAgent: "Googlebot/2.1 (+http://www.google.com/bot.html)" }, { ...job, userAgent: undefined, headers: { "user-agent": "Googlebot/2.1 (+http://www.google.com/bot.html)" } }]) assert.equal(worker(data).status, 0);
+    assert.equal(db.prepare("SELECT visit_count FROM links WHERE id=?").get(cid).visit_count, 0);
+    assert.equal(worker(job).status, 0);
+    assert.equal(db.prepare("SELECT visit_count FROM links WHERE id=?").get(cid).visit_count, 1);
+    assert.deepEqual(JSON.parse(db.prepare("SELECT countries FROM visits WHERE link_id=?").get(cid).countries), { unknown: 1 }, "Queued country header is not trusted");
+    assert.equal((await request("GET", "/" + current.address, undefined, undefined, { "User-Agent": "Googlebot/2.1 (+http://www.google.com/bot.html)" })).status, 302);
+    assert.equal((await request("HEAD", "/" + current.address, undefined, undefined, { "User-Agent": ua })).status, 302);
+    await new Promise(resolve => setTimeout(resolve, 150));
+    assert.equal(db.prepare("SELECT visit_count FROM links WHERE id=?").get(cid).visit_count, 1);
+    assert.equal((await request("GET", "/" + current.address, undefined, undefined, { "User-Agent": ua, "CF-IPCountry": "FR" })).status, 302);
+    for (let i = 0; i < 50 && db.prepare("SELECT visit_count FROM links WHERE id=?").get(cid).visit_count < 2; i++) await new Promise(resolve => setTimeout(resolve, 50));
+    assert.equal(db.prepare("SELECT visit_count FROM links WHERE id=?").get(cid).visit_count, 2);
+    const concurrent = await create(prefix + "-concurrent"), concurrentId = db.prepare("SELECT id FROM links WHERE uuid=?").get(concurrent.id).id;
+    const responses = await Promise.all(Array.from({ length: 8 }, () => request("GET", "/" + concurrent.address, undefined, undefined, { "User-Agent": ua })));
+    assert(responses.every(response => response.status === 302));
+    for (let i = 0; i < 100 && db.prepare("SELECT visit_count FROM links WHERE id=?").get(concurrentId).visit_count < 8; i++) await new Promise(resolve => setTimeout(resolve, 50));
+    assert.equal(db.prepare("SELECT visit_count FROM links WHERE id=?").get(concurrentId).visit_count, 8);
+    assert.equal(db.prepare("SELECT SUM(total) n FROM visits WHERE link_id=?").get(concurrentId).n, 8, "Concurrent redirects retain all aggregate and counter increments");
+    const prototypeJob = { ...job, link: { id: concurrentId, user_id: owner }, referrer: "https://__proto__/" };
+    assert.equal(worker(prototypeJob).status, 0); assert.equal(worker(prototypeJob).status, 0);
+    const prototypeCounts = JSON.parse(db.prepare("SELECT referrers FROM visits WHERE link_id=? ORDER BY id DESC LIMIT 1").get(concurrentId).referrers);
+    assert.equal(prototypeCounts.__proto__, 2, "Referrer keys cannot inherit object properties");
+    const legacyPrototype = await (await request("GET", "/api/links/" + concurrent.id + "/stats", undefined, session)).json();
+    assert.equal(legacyPrototype.lastDay.stats.referrer.find(row => row.name === "__proto__").value, 2, "Legacy stats also treat dimension names as data");
+    db.exec("CREATE TRIGGER analytics_fail BEFORE UPDATE ON visits BEGIN SELECT RAISE(ABORT, 'forced analytics rollback'); END");
+    assert.notEqual(worker(job).status, 0); db.exec("DROP TRIGGER analytics_fail");
+    assert.equal(db.prepare("SELECT visit_count FROM links WHERE id=?").get(cid).visit_count, 2, "Aggregate failure rolls back displayed counter");
+    db.prepare("UPDATE links SET deleted_at=? WHERE id=?").run(Date.now(), cid); assert.equal(worker(job).status, 0);
+    assert.equal(db.prepare("SELECT visit_count FROM links WHERE id=?").get(cid).visit_count, 2);
+    const beforeVisits = db.prepare("SELECT COUNT(*) n FROM visits").get().n;
+    for (const args of [["migrate:down", "20260914040000_analytics_range_index.js"], ["migrate:latest"]]) {
+      const result = spawnSync(process.execPath, [path.join(root, "node_modules/knex/bin/cli.js"), "--knexfile", path.join(root, "knexfile.js"), ...args], { cwd: directory, env, encoding: "utf8", timeout: 30000 });
+      assert.equal(result.status, 0, result.stderr);
+    }
+    assert.equal(db.prepare("SELECT COUNT(*) n FROM visits").get().n, beforeVisits);
+    await restart(); assert.equal((await (await call({ ...filter, link: a.id })).json()).total, 12);
+    db.prepare("UPDATE users SET banned=1 WHERE id=?").run(owner);
+    assert.equal((await request("GET", "/api/analytics", undefined, session)).status, 403);
+    db.prepare("UPDATE users SET banned=0 WHERE id=?").run(owner);
+    console.log("PASS: analytics UTC boundaries/exports/tags, literal filters, owner/domain/scoped privacy, legacy API, worker/request bot filtering, untrusted country, atomic counters, restart and lossless index migration");
+  } finally { db.close(); }
+};

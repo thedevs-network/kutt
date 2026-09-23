@@ -1,3 +1,4 @@
+const i18n = require("../i18n");
 const { RedisStore: RateLimitRedisStore } = require("rate-limit-redis");
 const { rateLimit: expressRateLimit } = require("express-rate-limit");
 const { validationResult } = require("express-validator");
@@ -14,7 +15,7 @@ function error(error, req, res, _next) {
     console.error(error.message);
   }
 
-  const message = error instanceof CustomError ? error.message : "An error occurred.";
+  const message = error instanceof CustomError ? error.message : i18n.t("messages.an_error_occurred");
   const statusCode = error.statusCode ?? 500;
 
   if (req.isHTML && req.viewTemplate) {
@@ -25,7 +26,7 @@ function error(error, req, res, _next) {
 
   if (req.isHTML) {
     res.render("error", {
-      message: "An error occurred. Please try again later."
+      message: i18n.t("messages.an_error_occurred_please_try_again_later")
     });
     return;
   }
@@ -58,21 +59,21 @@ function parseQuery(req, res, next) {
     typeof req.query.limit !== "undefined" &&
     typeof req.query.limit !== "string"
   ) {
-    return res.status(400).json({ error: "limit query is not valid." });
+    return res.status(400).json({ error: i18n.t("messages.limit_query_is_not_valid") });
   }
 
   if (
     typeof req.query.skip !== "undefined" &&
     typeof req.query.skip !== "string"
   ) {
-    return res.status(400).json({ error: "skip query is not valid." });
+    return res.status(400).json({ error: i18n.t("messages.skip_query_is_not_valid") });
   }
 
   if (
     typeof req.query.search !== "undefined" &&
     typeof req.query.search !== "string"
   ) {
-    return res.status(400).json({ error: "search query is not valid." });
+    return res.status(400).json({ error: i18n.t("messages.search_query_is_not_valid") });
   }
 
   const limit = parseInt(req.query.limit) || 10;
@@ -86,7 +87,7 @@ function parseQuery(req, res, next) {
 };
 
 function rateLimit(params) {
-  if (!env.ENABLE_RATE_LIMIT) {
+  if (!env.ENABLE_RATE_LIMIT && !params.always) {
     return function(req, res, next) {
       return next();
     }
@@ -112,13 +113,18 @@ function rateLimit(params) {
       return params.limit;
     },
     keyGenerator: function(req, res) {
-      return "rl:" + req.method + req.baseUrl + req.path + ":" + req.ip;
+      // Express routes are case-insensitive and mounted at both API aliases.
+      // Use the matched operation, never attacker-controlled URL spelling.
+      const operation = (typeof params.key === "function" ? params.key(req) : params.key) ||
+        (req.method + req.baseUrl.replace(/^\/api(?:\/v2)?(?=\/|$)/i, "/api") + String(req.route?.path || "")).toLowerCase();
+      return "rl:" + operation + ":" + req.ip;
     },
     requestWasSuccessful: function(req, res) {
       return !res.locals.error && res.statusCode < 400;
     },
     handler: function (req, res, next, options) {
-      throw new CustomError(options.message, options.statusCode);
+      res.status(options.statusCode).set("Cache-Control", "no-store");
+      throw new CustomError(i18n.t("auth.rate_limit"), options.statusCode);
     },
   });
 }

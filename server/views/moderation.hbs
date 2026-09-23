@@ -1,0 +1,33 @@
+{{> header}}
+<main id="moderation" class="moderation-page">
+  <h1>{{t "moderation.title"}}</h1>
+  <nav><a href="/admin">{{t "ui.administration"}}</a></nav>
+  <form method="get" action="/admin/moderation">
+    <label for="moderation-entity">{{t "moderation.entries"}}</label>
+    <select id="moderation-entity" name="entity">
+      <option value="user" {{#ifEquals entity 'user'}}selected{{/ifEquals}}>{{t "ui.users"}}</option>
+      <option value="link" {{#ifEquals entity 'link'}}selected{{/ifEquals}}>{{t "ui.links"}}</option>
+      <option value="domain" {{#ifEquals entity 'domain'}}selected{{/ifEquals}}>{{t "ui.domains"}}</option>
+      <option value="host" {{#ifEquals entity 'host'}}selected{{/ifEquals}}>{{t "moderation.destination_ips"}}</option>
+    </select>
+    <button class="primary" type="submit">{{t "ui.filter"}}</button>
+  </form>
+  <h2>{{t "moderation.entries_count" count=total}}</h2>
+  <ul class="moderation-list">
+    {{#each bans}}
+      <li><span>{{label}}</span><a href="/admin/moderation/{{entity}}/{{id}}">{{t "moderation.remove"}}</a></li>
+    {{else}}<li>{{t "moderation.empty"}}</li>{{/each}}
+  </ul>
+  <h2>{{t "moderation.activity_count" count=event_total}}</h2>
+  <ul class="moderation-list">
+    {{#each events}}
+      <li><time datetime="{{created_at}}">{{date created_at}}</time><span>{{t "moderation.event" action=(localizedLabel "moderation_action" action) entity=(localizedLabel "moderation_entity" entity) id=entity_id}}</span><span>{{#if actor_id}}{{t "moderation.actor" id=actor_id}}{{else}}{{t "moderation.actor_deleted"}}{{/if}}</span></li>
+    {{else}}<li>{{t "moderation.no_events"}}</li>{{/each}}
+  </ul>
+  <nav aria-label="{{t 'moderation.pages'}}">
+    {{#if previous}}<a href="?entity={{entity}}&amp;page={{previous}}">{{t "ui.previous"}}</a>{{/if}}
+    <span>{{t "ui.page_value" value1=(number page)}}</span>
+    {{#if next}}<a href="?entity={{entity}}&amp;page={{next}}">{{t "ui.next"}}</a>{{/if}}
+  </nav>
+</main>
+{{> footer}}

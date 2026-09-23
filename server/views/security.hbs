@@ -1,0 +1,37 @@
+{{> header}}
+<main class="link-archive account-security">
+  <header class="archive-heading"><h1>{{t "ui.account_security"}}</h1><a href="/settings">{{t "ui.settings"}}</a></header>
+  <h2>{{t "ui.connected_identity"}}</h2>
+  {{#each identities}}
+    <p>{{issuer}}</p><p>{{t "ui.linked_value" value1=(date created_at)}}</p>
+  {{else}}<p>{{t "ui.no_oidc_identity_linked"}}</p>{{/each}}
+  <hr />
+  <h2>{{t "ui.browser_sessions"}}</h2>
+  <form hx-post="/api/auth/revoke-sessions" hx-swap="none" hx-confirm="{{t 'ui.sign_out_all_your_browser_sessions_including_this_one_api_tokens_remain_valid'}}">
+    <button class="primary" type="submit">{{t "ui.sign_out_all_sessions"}}</button>
+  </form>
+  {{#if provider}}
+    <hr /><h2>{{t "ui.authentication_diagnostics"}}</h2>
+    <dl>
+      <dt>{{t "ui.provider"}}</dt><dd>{{localizedLabel "code" provider.code}} ({{provider.code}})</dd>
+      <dt>{{t "ui.last_ready"}}</dt><dd>{{#if provider.last_ready_at}}{{date provider.last_ready_at}}{{else}}{{t "ui.not_recorded"}}{{/if}}</dd>
+      <dt>{{t "ui.last_provider_error"}}</dt><dd>{{#if provider.last_error_at}}{{date provider.last_error_at}}{{else}}{{t "ui.none_recorded"}}{{/if}}</dd>
+      <dt>{{t "ui.last_sign_in_error"}}</dt><dd>{{#if provider.last_auth_error}}{{localizedLabel "code" provider.last_auth_error}} ({{provider.last_auth_error}}){{else}}{{t "ui.none_recorded"}}{{/if}}</dd>
+      <dt>{{t "ui.error_time"}}</dt><dd>{{#if provider.last_auth_error_at}}{{date provider.last_auth_error_at}}{{else}}{{t "ui.not_recorded"}}{{/if}}</dd>
+      <dt>{{t "ui.oidc_session_limit_seconds"}}</dt><dd>{{number oidc_session_max_seconds}}</dd>
+    </dl>
+  {{/if}}
+  {{#if role_mapping}}
+    <hr /><h2>{{t "oidc_roles.title"}}</h2>
+    <dl>
+      <dt>{{t "oidc_roles.state"}}</dt><dd>{{#if role_mapping.enabled}}{{t "oidc_roles.enabled"}}{{else}}{{t "oidc_roles.disabled"}}{{/if}}</dd>
+      {{#if role_mapping.enabled}}
+        <dt>{{t "oidc_roles.claim"}}</dt><dd>{{role_mapping.claim}}</dd>
+        <dt>{{t "oidc_roles.values"}}</dt><dd>{{number role_mapping.value_count}}</dd>
+        <dt>{{t "oidc_roles.lease"}}</dt><dd>{{number role_mapping.max_age_seconds}}</dd>
+      {{/if}}
+      {{#if role_mapping.protected_user_id}}<dt>{{t "oidc_roles.recovery"}}</dt><dd>{{role_mapping.protected_user_id}}</dd>{{/if}}
+    </dl>
+  {{/if}}
+</main>
+{{> footer}}

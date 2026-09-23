@@ -1,7 +1,7 @@
 <table 
   hx-get="/api/links/admin"
   hx-target="tbody"
-  hx-swap="outerHTML" 
+  hx-swap="outerHTML settle:0ms"
   hx-select="tbody"
   hx-disinherit="*"
   hx-include=".links-controls"
@@ -11,21 +11,21 @@
   hx-trigger="
     {{#if onload}}load once,{{/if}}
     reloadMainTable from:body,
+    change from:.list-sort-select,
     click delay:100ms from:button.nav, 
     input changed delay:500ms from:[name='search'],
     input changed delay:500ms from:[name='user'],
     input changed delay:500ms from:[name='domain'],
     input changed from:[name='banned'],
     input changed from:[name='anonymous'],
-    input changed from:[name='has_domain'],
-  "
-  hx-on:htmx:after-on-load="updateLinksNav();"
-  hx-on:htmx:after-settle="onSearchInputLoad();"
+    input changed from:[name='has_domain']"
+  data-ui-table-nav
+  data-ui-table-search
 >
   {{> admin/links/thead}}
   {{> admin/links/tbody}}
   {{> admin/links/tfoot}}
 </table>
 <template>
-  <h2 id="admin-table-title" hx-swap-oob="true">Recent shortened links.</h2>
+  <h2 id="admin-table-title" hx-swap-oob="true">{{t "ui.recent_shortened_links"}}</h2>
 </template>

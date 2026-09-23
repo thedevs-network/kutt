@@ -80,8 +80,7 @@ function formatDateHour(selector) {
   if (!element) return;
   const dateString = element.dataset.date;
   if (!dateString) return;
-  const date = new Date(dateString);
-  element.textContent = date.getHours() + ":" + date.getMinutes();
+  element.textContent = window.KuttI18n.date(dateString, { timeStyle: "short" });
 }
 
 // show QR code
@@ -89,7 +88,7 @@ function handleQRCode(element, id) {
   const dialog = document.getElementById(id);
   const dialogContent = dialog.querySelector(".content-wrapper");
   if (!dialogContent) return;
-  openDialog(id, "qrcode");
+  openDialog(id, "qrcode", element);
   dialogContent.textContent = "";
   const qrcode = new QRCode(dialogContent, {
     text: element.dataset.url,
@@ -101,56 +100,15 @@ function handleQRCode(element, id) {
   });   
 }
 
-// copy the link to clipboard
-function handleCopyLink(element) {
-  navigator.clipboard.writeText(element.dataset.url);
-}
-
-// copy the link and toggle copy button style
-function handleShortURLCopyLink(element) {
-  handleCopyLink(element);
-  const clipboard = element.parentNode.querySelector(".clipboard") || closest(".clipboard", element);
-  if (!clipboard || clipboard.classList.contains("copied")) return;
-  clipboard.classList.add("copied");
-  setTimeout(function() {
-    clipboard.classList.remove("copied");
-  }, 1000);
-}
-
-// open and close dialog
-function openDialog(id, name) {
-  const dialog = document.getElementById(id);
-  if (!dialog) return;
-  dialog.classList.add("open");
-  if (name) {
-    dialog.classList.add(name);
-  }
-}
-
-function closeDialog() {
-  const dialog = document.querySelector(".dialog");
-  if (!dialog) return;
-  while (dialog.classList.length > 0) {
-    dialog.classList.remove(dialog.classList[0]);
-  }
-  dialog.classList.add("dialog");
-}
-
-window.addEventListener("click", function(event) {
-  const dialog = document.querySelector(".dialog");
-  if (dialog && event.target === dialog) {
-    closeDialog();
-  }
-});
-
 // handle navigation in the table of links
 function setLinksLimit(event) {
   const buttons = Array.from(document.querySelectorAll("table .nav .limit button"));
   const limitInput = document.querySelector("#limit");
   if (!limitInput || !buttons || !buttons.length) return;
-  limitInput.value = event.target.textContent;
+  limitInput.value = event.currentTarget.textContent.trim();
+  document.querySelector("#skip").value = 0;
   buttons.forEach(b => {
-    b.disabled = b.textContent === event.target.textContent;
+    b.setAttribute("aria-pressed", b.textContent.trim() === limitInput.value ? "true" : "false");
   });
 }
 
@@ -163,13 +121,8 @@ function setLinksSkip(event, action) {
   const skip = parseInt(skipElm.value);
   const limit = parseInt(limitElm.value);
   const total = parseInt(totalElm.value);
-  skipElm.value = action === "next" ? skip + limit : Math.max(skip - limit, 0);
-  document.querySelectorAll(".pagination .next").forEach(elm => {
-    elm.disabled = total <= parseInt(skipElm.value) + limit;
-  });
-  document.querySelectorAll(".pagination .prev").forEach(elm => {
-    elm.disabled = parseInt(skipElm.value) <= 0;
-  });
+  const lastPage = Math.max(0, Math.ceil(total / limit) - 1) * limit;
+  skipElm.value = Math.max(0, Math.min(lastPage, action === "next" ? skip + limit : skip - limit));
 }
 
 function updateLinksNav() {
@@ -180,12 +133,15 @@ function updateLinksNav() {
   const total = parseInt(totalElm.value);
   const skip = parseInt(skipElm.value);
   const limit = parseInt(limitElm.value);
+  const active = document.activeElement;
+  const navigation = active.closest?.(".pagination");
   document.querySelectorAll(".pagination .next").forEach(elm => {
     elm.disabled = total <= skip + limit;
   });
   document.querySelectorAll(".pagination .prev").forEach(elm => {
     elm.disabled = skip <= 0;
   });
+  if (navigation && active.disabled) navigation.querySelector("button:not(:disabled)")?.focus();
 }
 
 function resetTableNav() {
@@ -194,7 +150,6 @@ function resetTableNav() {
   const limitElm = document.querySelector("#limit");
   if (!totalElm || !skipElm || !limitElm) return;
   skipElm.value = 0;
-  limitElm.value = 10;
   const total = parseInt(totalElm.value);
   const skip = parseInt(skipElm.value);
   const limit = parseInt(limitElm.value);
@@ -205,22 +160,12 @@ function resetTableNav() {
     elm.disabled = skip <= 0;
   });
   document.querySelectorAll("table .nav .limit button").forEach(b => {
-    b.disabled = b.textContent === limit.toString();
+    b.setAttribute("aria-pressed", b.textContent.trim() === limit.toString() ? "true" : "false");
   });
 }
 
-// tab click
-function setTab(event, targetId) {
-  const tabs = Array.from(closest("nav", event.target).children);
-  tabs.forEach(function (tab) {
-    tab.classList.remove("active");
-  });
-  if (targetId) {
-    document.getElementById(targetId).classList.add("active");
-  } else {
-    event.target.classList.add("active");
-  }
-}
+// A tab replaces its table, including the old table's event listeners.
+document.body.addEventListener("htmx:afterSettle", updateLinksNav);
 
 // show clear search button
 function onSearchChange(event) {
@@ -235,6 +180,7 @@ function clearSeachInput(event) {
   const input = button.parentElement.querySelector("input");
   if (!input) return;
   input.value = "";
+  resetTableNav();
   button.style.display = "none";
   htmx.trigger("body", "reloadMainTable");
 }
@@ -244,17 +190,17 @@ function onSearchInputLoad() {
   const linkSearchInput = document.getElementById("search");
   if (!linkSearchInput) return;
   const linkClearButton = linkSearchInput.parentElement.querySelector("button.clear")
-  linkClearButton.style.display = linkSearchInput.value.length > 0 ? "block" : "none";
+  if (linkClearButton) linkClearButton.style.display = linkSearchInput.value.length > 0 ? "block" : "none";
 
   const userSearchInput = document.getElementById("search_user");
   if (!userSearchInput) return;
   const userClearButton = userSearchInput.parentElement.querySelector("button.clear")
-  userClearButton.style.display = userSearchInput.value.length > 0 ? "block" : "none";
+  if (userClearButton) userClearButton.style.display = userSearchInput.value.length > 0 ? "block" : "none";
 
   const domainSearchInput = document.getElementById("search_domain");
   if (!domainSearchInput) return;
   const domainClearButton = domainSearchInput.parentElement.querySelector("button.clear")
-  domainClearButton.style.display = domainSearchInput.value.length > 0 ? "block" : "none";
+  if (domainClearButton) domainClearButton.style.display = domainSearchInput.value.length > 0 ? "block" : "none";
 }
 
 onSearchInputLoad();

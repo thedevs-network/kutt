@@ -1,0 +1,23 @@
+.forwarding-page { max-width: 900px; }
+.forwarding-page * { box-sizing: border-box; min-width: 0; }
+.forwarding-page h1 { font-size: 1.65rem; }
+.forwarding-page .archive-heading { position: static; width: 100%; height: auto; min-height: 0; padding: 0; margin: 1rem 0; justify-content: flex-start; }
+.forwarding-page .archive-heading h1 { margin: 0 auto 0 0; }
+.forwarding-page h2 { font-size: 1.1rem; margin: 1.5rem 0 .75rem; }
+.forwarding-page p, .forwarding-page output { overflow-wrap: anywhere; line-height: 1.5; }
+.forwarding-page form { display: flex; flex-direction: column; align-items: stretch; gap: 1rem; }
+.forwarding-page label { display: flex; flex-direction: column; gap: .5rem; }
+.forwarding-lists { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.forwarding-page textarea, .forwarding-page input, .forwarding-page select { width: 100%; padding: .65rem; border: 1px solid #aebdc3; border-radius: 6px; background: white; color: var(--text-color); font: inherit; }
+.forwarding-page textarea { resize: vertical; min-height: 150px; }
+.forwarding-toolbar { display: flex; flex-wrap: wrap; gap: .75rem; }
+.forwarding-page button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 42px; padding: .6rem .9rem; border: 0; border-radius: 6px; background: #176ec0; color: white; box-shadow: none; transition: background-color .15s; transform: none; }
+.forwarding-page button svg { width: 18px; height: 18px; }
+.forwarding-page button:disabled { opacity: .5; }
+#forwarding-reload, #forwarding-clear { background: #e1e7e9; color: inherit; }
+#forwarding-status { min-height: 1.5rem; }
+.forwarding-page .error { color: #b32336; }
+.forwarding-page section { margin-top: 2rem; border-top: 1px solid #cbd5da; padding-top: 1rem; }
+#forwarding-preview { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#forwarding-result { display: block; min-height: 3rem; margin: 1rem 0; }
+@media (max-width: 640px) { .forwarding-page h1 { font-size: 1.4rem; } .forwarding-page .archive-heading h1 { flex-basis: 100%; } .forwarding-lists, #forwarding-preview { grid-template-columns: minmax(0, 1fr); } }

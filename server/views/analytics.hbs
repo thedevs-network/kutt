@@ -1,0 +1,42 @@
+{{> header}}
+<main class="link-archive analytics-page">
+  <header class="archive-heading"><h1>{{t "ui.analytics"}}</h1><a href="/settings/library">{{t "ui.library"}}</a><a href="/">{{t "ui.links"}}</a></header>
+  <form id="analytics-filters" aria-label="{{t 'ui.analytics_filters'}}">
+    <input type="hidden" name="link" value="{{filters.link}}" />
+    <label>{{t "ui.from_utc"}}<input type="date" name="start" value="{{filters.start}}" required /></label>
+    <label>{{t "ui.through_utc"}}<input type="date" name="end" value="{{filters.end}}" required /></label>
+    <label class="analytics-filter-search">{{t "ui.search_links"}}<input type="search" name="q" value="{{filters.q}}" maxlength="200" /></label>
+    <div class="analytics-filter-choice">
+      <label>{{t "ui.domain"}}<select name="domain" aria-label="{{t 'ui.domain'}}" aria-describedby="analytics-domain-value"><option value="{{filters.domain}}">{{#if filters.domain}}{{t "ui.selected_domain"}}{{else}}{{t "ui.all_domains"}}{{/if}}</option></select></label>
+      <p id="analytics-domain-value" class="analytics-selected-value" hidden></p>
+    </div>
+    <div class="analytics-filter-choice">
+      <label>{{t "ui.tag"}}<select name="tag" aria-label="{{t 'ui.tag'}}" aria-describedby="analytics-tag-value"><option value="{{filters.tag}}">{{#if filters.tag}}{{t "ui.selected_tag"}}{{else}}{{t "ui.all_tags"}}{{/if}}</option></select></label>
+      <p id="analytics-tag-value" class="analytics-selected-value" hidden></p>
+    </div>
+    <div class="analytics-filter-actions"><button type="submit" class="primary">{{t "ui.apply"}}</button><a href="/settings/analytics">{{t "ui.clear"}}</a></div>
+  </form>
+  <p id="analytics-status" role="status" aria-live="polite">{{t "ui.loading"}}</p>
+  <div id="analytics-report" hidden>
+    <div class="analytics-summary"><div><span>{{t "ui.tracked_visits"}}</span><strong id="analytics-total"></strong></div><div><span>{{t "ui.links_with_visits"}}</span><strong id="analytics-links"></strong></div>
+      <div class="analytics-exports"><a id="analytics-csv" class="button" download="kutt-analytics.csv" title="{{t 'ui.download_csv'}}"><span class="analytics-download">{{> icons/arrow_left}}</span> CSV</a><a id="analytics-json" class="button" download="kutt-analytics.json" title="{{t 'ui.download_json'}}"><span class="analytics-download">{{> icons/arrow_left}}</span> JSON</a></div>
+    </div>
+    <section class="analytics-chart"><h2>{{t "ui.daily_visits"}}</h2><div class="analytics-canvas"><canvas id="analytics-chart" role="img" aria-label="{{t 'ui.daily_tracked_visits_values_are_also_in_the_daily_totals_table'}}"></canvas></div></section>
+    {{> analytics_geography}}
+    <div class="analytics-tables">
+      <section><h2>{{t "ui.tags"}}</h2><p class="analytics-meta">{{t "ui.current_assignments_overlapping_totals"}}</p><div data-table="tags"></div></section>
+      <section><h2>{{t "ui.daily_totals_utc"}}</h2><div data-table="days"></div></section>
+      <section><h2>{{t "ui.browsers"}}</h2><div data-table="browser"></div></section>
+      <section><h2>{{t "ui.operating_systems"}}</h2><div data-table="os"></div></section>
+      <section id="analytics-country-table" tabindex="-1"><h2>{{t "ui.countries"}}</h2><div data-table="country"></div></section>
+      <section><h2>{{t "ui.referrers"}}</h2><div data-table="referrer"></div></section>
+    </div>
+    <p class="analytics-meta" id="analytics-updated"></p>
+    <p class="analytics-meta">{{t "ui.known_bots_excluded_at_ingestion_historical_aggregates_cannot_be_reclassified"}}</p>
+  </div>
+</main>
+<script nonce="{{cspNonce}}" src="/libs/chart.min.js" defer></script>
+<script nonce="{{cspNonce}}" src="/scripts/chart-theme.js" defer></script>
+<script nonce="{{cspNonce}}" src="/scripts/geography.js" defer></script>
+<script nonce="{{cspNonce}}" src="/scripts/analytics.js" defer></script>
+{{> footer}}

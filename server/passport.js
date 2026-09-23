@@ -1,3 +1,4 @@
+const i18n = require("./i18n");
 const { Strategy: LocalAPIKeyStrategy } = require("passport-localapikey-update");
 const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const { Strategy: LocalStrategy } = require("passport-local");
@@ -21,8 +22,10 @@ passport.use(
       if (typeof payload.sub === "string" || !payload.sub) {
         return done(null, false);
       }
-      const user = await query.user.find({ id: payload.sub });
+      // Authorization must not use the fifteen-minute user cache after revocation.
+      const user = await require("./oidc-roles").fresh(await require("./knex")("users").where({ id: payload.sub }).first());
       if (!user) return done(null, false);
+      if (!await require("./oidc-security").validSession(user, payload)) return done(null, false);
       return done(null, user, payload);
     } catch (err) {
       return done(err);
@@ -46,7 +49,9 @@ if (!env.DISALLOW_LOGIN_FORM) {
         if (!isMatch) {
           return done(null, false);
         }
-        return done(null, user);
+        const current = await require("./oidc-roles").fresh(await require("./knex")("users").where({ id: user.id }).first());
+        if (!current || current.password !== user.password || Number(current.auth_version) !== Number(user.auth_version)) return done(null, false);
+        return done(null, current);
       } catch (err) {
         return done(err);
       }
@@ -63,8 +68,9 @@ const localAPIKeyOptions = {
 passport.use(
   new LocalAPIKeyStrategy(localAPIKeyOptions, async (apikey, done) => {
     try {
-      const user = await query.user.find({ apikey });
-      if (!user) {
+      // Like browser sessions, API authentication must see current revocation state.
+      const user = await require("./oidc-roles").fresh(await require("./knex")("users").where({ apikey }).first());
+      if (!user || user.apikey !== apikey) {
         return done(null, false);
       }
       return done(null, user);
@@ -74,67 +80,27 @@ passport.use(
   })
 );
 
-if (env.OIDC_ENABLED) {
-  async function enableOIDC() {
-    const requiredKeys = ["OIDC_ISSUER", "OIDC_CLIENT_ID", "OIDC_CLIENT_SECRET", "OIDC_SCOPE", "OIDC_EMAIL_CLAIM"];
-    requiredKeys.forEach((key) => {
-      if (!env[key]) {
-        throw new Error(`Missing required env ${key}`);
-      }
-    });
-    const { Issuer, Strategy: OIDCStrategy, UserinfoResponse } = await import("openid-client");
-    const issuer = await Issuer.discover(env.OIDC_ISSUER).catch(function (error) {
-        error.info = "Failed connecting to OIDC issuer.";
-        throw error;
-      });
-    const client = new issuer.Client({
-      client_id: env.OIDC_CLIENT_ID,
-      client_secret: env.OIDC_CLIENT_SECRET,
-      redirect_uris: [utils.getSiteURL() + "/login/oidc"],
-      response_types: ["code"]
-    });
-  
-    passport.use(
-      "oidc",
-      new OIDCStrategy(
-        {
-          client,
-          params: {
-            scope: env.OIDC_SCOPE,
-            ...(env.OIDC_PROMPT ? { prompt: env.OIDC_PROMPT } : {})
-          },
-          passReqToCallback: true
-        },
-        async (req, tokenset, userinfo, done) => {
-          try {
-            const email = userinfo[env.OIDC_EMAIL_CLAIM];
-            const existingUser = await query.user.find({ email });
-  
-            // Existing user.
-            if (existingUser) return done(null, existingUser);
-  
-            // New user.
-            // Generate a random password which is not supposed to be used directly.
-            const salt = await bcrypt.genSalt(12);
-            const password = utils.generateRandomPassword();
-            const newUser = await query.user.add({
-              email,
-              password,
-            });
-            const updatedUser = await query.user.update(newUser, {
-              verified: true,
-              verification_token: null,
-              verification_expires: null,
-            });
-            return done(null, updatedUser);
-  
-          } catch (err) {
-            return done(err);
-          }
-        }
-      )
-    );
+// Lazy discovery lets the app recover from a temporary provider outage without
+// restarting, while login fails closed and public short links remain usable.
+async function prepareOIDC(req, res, next) {
+  try {
+    const client = await require("./oidc-client").client();
+    const { Strategy } = require("openid-client");
+    passport.use("oidc", new Strategy({ client, usePKCE: "S256", passReqToCallback: true,
+      params: { scope: env.OIDC_SCOPE, ...(env.OIDC_PROMPT ? { prompt: env.OIDC_PROMPT } : {}) }
+    }, async (request, tokenset, userinfo, done) => {
+      try {
+        const claims = tokenset.claims();
+        const result = await require("./oidc-security").identity(client.issuer.issuer, claims, userinfo, tokenset.id_token);
+        done(null, result.user, { oi: result.id, os: claims.sid || null, oa: Date.now() });
+      } catch (error) { done(error); }
+    }));
+    next();
+  } catch (error) {
+    require("./oidc-client").failure(error.message);
+    res.status(503).set("Cache-Control", "no-store");
+    next(new utils.CustomError(i18n.t("messages.oidc_provider_unavailable_try_signing_in_again_shortly"), 503));
   }
-
-  enableOIDC();
 }
+
+module.exports = { prepareOIDC };

@@ -1,3 +1,4 @@
+const i18n = require("../i18n");
 const bcrypt = require("bcryptjs");
 
 const query = require("../queries");
@@ -24,7 +25,7 @@ async function remove(req, res) {
     utils.deleteCurrentToken(res);
     res.setHeader("HX-Trigger-After-Swap", "redirectToHomepage");
     res.render("partials/settings/delete_account", {
-      success: "Account has been deleted. Logging out..."
+      success: i18n.t("messages.account_has_been_deleted_logging_out")
     });
     return;
   }
@@ -36,7 +37,7 @@ async function removeByAdmin(req, res) {
   const user = await query.user.find({ id: req.params.id });
 
   if (!user) {
-    const message = "Could not find the user.";
+    const message = i18n.t("messages.could_not_find_the_user");
     if (req.isHTML) {
       return res.render("partials/admin/dialog/message", {
         layout: false,
@@ -47,7 +48,7 @@ async function removeByAdmin(req, res) {
     }
   }
   
-  await query.user.remove(user);
+  await query.user.remove(user, req.user, true);
 
   if (req.isHTML) {
     res.setHeader("HX-Reswap", "outerHTML");
@@ -58,7 +59,7 @@ async function removeByAdmin(req, res) {
     return;
   }
   
-  return res.status(200).send({ message: "User has been deleted successfully." });
+  return res.status(200).send({ message: i18n.t("messages.user_has_been_deleted_successfully") });
 };
 
 async function getAdmin(req, res) {
@@ -77,7 +78,7 @@ async function getAdmin(req, res) {
   };
 
   const [data, total] = await Promise.all([
-    query.user.getAdmin(match, { limit, search, domains, links, skip }),
+    query.user.getAdmin(match, { limit, search, domains, links, skip, ...require("../list-sort").parse(req.query, "users") }),
     query.user.totalAdmin(match, { search, domains, links })
   ]);
 
@@ -86,7 +87,7 @@ async function getAdmin(req, res) {
   if (req.isHTML) {
     res.render("partials/admin/users/table", {
       total,
-      total_formatted: total.toLocaleString("en-US"),
+      total_formatted: i18n.number(total),
       limit,
       skip,
       users,
@@ -103,45 +104,10 @@ async function getAdmin(req, res) {
 };
 
 async function ban(req, res) {
-  const { id } = req.params;
+  const moderation = require("../moderation");
+  const user = await moderation.moderate("user", req.params.id, true, req.user, moderation.options(req));
 
-  const update = {
-    banned_by_id: req.user.id,
-    banned: true
-  };
-
-  // 1. check if user exists
-  const user = await query.user.find({ id });
-
-  if (!user) {
-    throw new CustomError("No user has been found.", 400);
-  }
-
-  if (user.banned) {
-    throw new CustomError("User has been banned already.", 400);
-  }
-
-  const tasks = [];
-
-  // 2. ban user
-  tasks.push(query.user.update({ id }, update));
-  
-  // 3. ban user links
-  if (req.body.links) {
-    tasks.push(query.link.update({ user_id: id }, update));
-  }
-  
-  // 4. ban user domains
-  if (req.body.domains) {
-    tasks.push(query.domain.update({ user_id: id }, update));
-  }
-
-  // 5. wait for all tasks to finish
-  await Promise.all(tasks).catch((err) => {
-    throw new CustomError("Couldn't ban entries.");
-  });
-
-  // 6. send response
+  // Send the response only after the complete transaction commits.
   if (req.isHTML) {
     res.setHeader("HX-Reswap", "outerHTML");
     res.setHeader("HX-Trigger", "reloadMainTable");
@@ -151,14 +117,14 @@ async function ban(req, res) {
     return;
   }
 
-  return res.status(200).send({ message: "Banned user successfully." });
+  return res.status(200).send({ message: i18n.t("messages.banned_user_successfully") });
 }
 
 async function create(req, res) {
   const salt = await bcrypt.genSalt(12);
   req.body.password = await bcrypt.hash(req.body.password, salt);
 
-  const user = await query.user.create(req.body);
+  const user = await query.user.create(req.body, req.user);
 
   if (req.body.verification_email && !user.banned && !user.verified) {
     await mail.verification(user);
@@ -172,7 +138,7 @@ async function create(req, res) {
     return;
   }
 
-  return res.status(201).send({ message: "The user has been created successfully." });
+  return res.status(201).send({ message: i18n.t("messages.the_user_has_been_created_successfully") });
 }
 
 module.exports = {

@@ -1,0 +1,14 @@
+{{> header}}
+<section class="section-container destination-policy">
+  <h1>{{t "destination_policy.title"}}</h1>
+  <p>{{#if enabled}}{{t "destination_policy.enabled"}}{{else}}{{t "destination_policy.disabled"}}{{/if}}</p>
+  {{#if enabled}}
+    {{#if hosts}}
+    <ul>{{#each hosts}}<li><code>{{this}}</code></li>{{/each}}</ul>
+    {{else}}<p>{{t "destination_policy.deny_all"}}</p>{{/if}}
+    <p>{{t "destination_policy.rules"}}</p>
+  {{/if}}
+  <p>{{t "destination_policy.operator"}}</p>
+  <a href="/settings">{{t "ui.settings"}}</a>
+</section>
+{{> footer}}

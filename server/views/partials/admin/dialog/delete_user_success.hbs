@@ -3,10 +3,9 @@
     {{> icons/check}}
   </div>
   <p>
-    The user <b>"{{email}}"</b> has been deleted.
+    {{t "ui.the_user"}} <b>"{{email}}"</b> {{t "ui.has_been_deleted"}}
   </p>
   <div class="buttons">
-    <button type="button" hx-on:click="closeDialog()">Close</button>
+    <button type="button" data-ui-close-dialog>{{t "ui.close"}}</button>
   </div>
 </div>
-

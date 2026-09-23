@@ -6,20 +6,8 @@ if (!process.env.JWT_SECRET) {
 
 const env = require("./server/env");
 
-const isSQLite = env.DB_CLIENT === "sqlite3" || env.DB_CLIENT === "better-sqlite3";
-
 module.exports = {
-  client: env.DB_CLIENT,
-  connection: {
-    ...(isSQLite && { filename: env.DB_FILENAME }),
-    host: env.DB_HOST,
-    database: env.DB_NAME,
-    user: env.DB_USER,
-    port: env.DB_PORT,
-    password: env.DB_PASSWORD,
-    ssl: env.DB_SSL,
-  },
-  useNullAsDefault: true,
+  ...require("./server/database-config")(env),
   migrations: {
     tableName: "knex_migrations",
     directory: "server/migrations",

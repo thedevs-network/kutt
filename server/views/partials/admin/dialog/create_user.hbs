@@ -1,5 +1,5 @@
 <div class="content create-user">
-  <h2>Create user</h2>
+  <h2>{{t "ui.create_user"}}</h2>
   <form
     id="create-user-form"
     hx-post="/api/users/admin" 
@@ -8,33 +8,33 @@
     hx-indicator="closest .content"
   >
     <label class="{{#if errors.email}}error{{/if}}">
-      Email address:
+      {{t "ui.email_address"}}
       <input
         name="email"
         id="create-user-email"
         type="email"
-        placeholder="Email address..."
+        placeholder="{{t 'ui.email_address_2'}}"
         hx-preserve="true"
       />
       {{#if errors.email}}<p class="error">{{errors.email}}</p>{{/if}}
     </label>
     <label class="{{#if errors.password}}error{{/if}}">
-      Password:
+      {{t "ui.password"}}
       <input
         name="password"
         id="create-user-password"
         type="password"
-        placeholder="Password..."
+        placeholder="{{t 'ui.password_2'}}"
         hx-preserve="true"
         autocomplete="new-password"
       />
       {{#if errors.password}}<p class="error">{{errors.password}}</p>{{/if}}
     </label>
     <label class="{{#if errors.role}}error{{/if}}">
-      Role:
+      {{t "ui.role"}}
       <select name="role" id="create-user-role" hx-preserve="true">
-        <option value="USER" selected>User</option>
-        <option value="ADMIN">Admin</option>
+        <option value="USER" selected>{{t "ui.user"}}</option>
+        {{#if canCreateLocalAdmin}}<option value="ADMIN">{{t "ui.admin"}}</option>{{/if}}
       </select>
       {{#if errors.role}}<p class="error">{{errors.role}}</p>{{/if}}
     </label>
@@ -44,32 +44,32 @@
           id="create-user-verified" 
           name="verified" 
           type="checkbox"
-          onchange="canSendVerificationEmail();" 
+          data-ui-verification-email
           hx-preserve="true"
           checked
         />
-        Verified
+        {{t "ui.verified"}}
       </label>
       <label class="checkbox">
         <input 
           id="create-user-banned" 
           name="banned"
           type="checkbox"
-          onchange="canSendVerificationEmail();" 
+          data-ui-verification-email
           hx-preserve="true"
         />
-        Banned
+        {{t "ui.banned"}}
       </label>
     </div>
     <label id="send-email-label" class="checkbox hidden" hx-preserve="true">
       <input id="create-user-send-email" name="verification_email" type="checkbox" />
-      Send verification email
+      {{t "ui.send_verification_email"}}
     </label>
     <div class="buttons">
-      <button type="button" hx-on:click="closeDialog()">Cancel</button>
+      <button type="button" data-ui-close-dialog>{{t "ui.cancel"}}</button>
       <button type="submit" class="primary">
         <span>{{> icons/new_user}}</span>
-        Create
+        {{t "ui.create"}}
       </button>
       {{> icons/spinner}}
     </div>
