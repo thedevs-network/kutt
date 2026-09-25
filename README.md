@@ -85,6 +85,12 @@ Various docker-compose configurations are available. Use `docker compose -f <fil
 
 Official Kutt Docker image is available on [Docker Hub](https://hub.docker.com/r/kutt/kutt).
 
+### Easypanel
+
+[Easypanel](https://easypanel.io) is a self-hosted Docker deployment platform, and it maintains a one-click deployment template for Kutt (Postgres and Redis included):
+
+[![Deploy on Easypanel](https://easypanel.io/img/deploy-on-easypanel-40.svg)](https://easypanel.io/templates/kutt)
+
 ## API
 
 [View API documentation →](https://docs.kutt.to)
