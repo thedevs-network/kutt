@@ -252,6 +252,7 @@ Download Kutt's extension for web browsers via below links.
 | BASH            | [GitHub Gist](https://gist.github.com/hashworks/6d6e4eae8984a5018f7692a796d570b4) | Simple BASH function to access the API               |
 | BASH            | [url-shortener](https://git.tim-peters.org/Tim/url-shortener)                     | Simple BASH script with GUI                          |
 | Kubernetes/Helm | [ArtifactHub](https://artifacthub.io/packages/helm/christianhuth/kutt)            | A Helm Chart to install Kutt on a Kubernetes cluster |
+| Ansible         | [MASH](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/kutt.md) | Ansible playbook to install Kutt (and 250+ other self-hosted services) as Docker containers |
 
 ## Contributing
 
