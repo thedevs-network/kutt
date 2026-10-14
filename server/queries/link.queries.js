@@ -176,25 +176,87 @@ async function getAdmin(match, params) {
   return query;
 }
 
+function whereAddress(query, address, caseInsensitive) {
+  if (caseInsensitive) {
+    query.whereRaw("lower(links.address) = ?", [String(address).toLowerCase()]);
+  } else {
+    query.where("links.address", address);
+  }
+  return query;
+}
+
 async function find(match) {
+  const caseInsensitive = !!(match.address && env.LINK_CASE_INSENSITIVE);
+
   if (match.address && match.domain_id !== undefined && env.REDIS_ENABLED) {
-    const key = redis.key.link(match.address, match.domain_id);
+    const key = redis.key.link(match.address, match.domain_id, caseInsensitive);
     const cachedLink = await redis.client.get(key);
     if (cachedLink) return JSON.parse(cachedLink);
   }
-  
-  const link = await knex("links")
+
+  const normalized = normalizeMatch(match);
+  const query = knex("links")
     .select(...selectable)
-    .where(normalizeMatch(match))
-    .leftJoin("domains", "links.domain_id", "domains.id")
-    .first();
-  
+    .leftJoin("domains", "links.domain_id", "domains.id");
+
+  if (caseInsensitive) {
+    const address = normalized["links.address"];
+    delete normalized["links.address"];
+    whereAddress(query, address, true);
+  }
+
+  if (Object.keys(normalized).length) {
+    query.where(normalized);
+  }
+
+  const link = await query.first();
+
   if (link && env.REDIS_ENABLED) {
-    const key = redis.key.link(link.address, link.domain_id);
+    const key = match.address && match.domain_id !== undefined
+      ? redis.key.link(match.address, match.domain_id, caseInsensitive)
+      : redis.key.link(link.address, link.domain_id, false);
     redis.client.set(key, JSON.stringify(link), "EX", 60 * 15);
   }
-  
+
   return link;
+}
+
+async function addressTaken({ address, domain_id, exclude_id }) {
+  const caseInsensitive = env.LINK_CASE_INSENSITIVE;
+  const query = knex("links").select("id");
+
+  if (domain_id === null || domain_id === undefined) {
+    query.whereNull("domain_id");
+  } else {
+    query.where("domain_id", domain_id);
+  }
+
+  if (exclude_id) {
+    query.whereNot("id", exclude_id);
+  }
+
+  whereAddress(query, address, caseInsensitive);
+
+  const row = await query.first();
+  return !!row;
+}
+
+async function findCaseCollisions(limit = 6) {
+  const addressesSql = knex.isPostgres
+    ? "string_agg(links.address, ', ')"
+    : knex.isMySQL
+      ? "group_concat(links.address SEPARATOR ', ')"
+      : "group_concat(links.address, ', ')";
+
+  return knex("links")
+    .leftJoin("domains", "links.domain_id", "domains.id")
+    .select(knex.raw(`${addressesSql} as addresses`))
+    .select(knex.raw("domains.address as domain"))
+    .groupByRaw("lower(links.address)")
+    .groupBy("links.domain_id")
+    .groupBy("domains.address")
+    .havingRaw("count(*) > 1")
+    .limit(limit);
 }
 
 async function create(params) {
@@ -297,9 +359,11 @@ function incrementVisit(match) {
 
 module.exports = {
   normalizeMatch,
+  addressTaken,
   batchRemove,
   create,
   find,
+  findCaseCollisions,
   get,
   getAdmin,
   incrementVisit,

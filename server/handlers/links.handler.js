@@ -110,7 +110,7 @@ async function create(req, res) {
         domain_id
       }),
     customurl &&
-      query.link.find({
+      query.link.addressTaken({
         address: customurl,
         domain_id
       }),
@@ -212,9 +212,10 @@ async function edit(req, res) {
 
   const tasks = await Promise.all([
     address &&
-      query.link.find({
+      query.link.addressTaken({
         address,
-        domain_id
+        domain_id,
+        exclude_id: link.id
       }),
     target && validators.bannedDomain(targetDomain),
     target && validators.bannedHost(targetDomain)
@@ -305,9 +306,10 @@ async function editAdmin(req, res) {
 
   const tasks = await Promise.all([
     address &&
-      query.link.find({
+      query.link.addressTaken({
         address,
-        domain_id
+        domain_id,
+        exclude_id: link.id
       }),
     target && validators.bannedDomain(targetDomain),
     target && validators.bannedHost(targetDomain)
