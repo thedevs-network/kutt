@@ -105,7 +105,7 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `DEFAULT_DOMAIN` |  The domain address that this app runs on | `localhost:3000` | `yoursite.com` |
 | `LINK_LENGTH` | The length of of shortened address | `6` | `5` |
 | `LINK_CUSTOM_ALPHABET` | Alphabet used to generate custom addresses. Default value omits o, O, 0, i, I, l, 1, and j to avoid confusion when reading the URL. | (abcd..789) | `abcABC^&*()@` |
-| `LINK_CASE_INSENSITIVE` | Match shortened addresses without regard to letter case. The app will not start when this is enabled if two links on the same domain differ only by case. | `false` | `true` |
+| `LINK_CASE_INSENSITIVE` | Match shortened addresses without regard to letter case. The app will not start when this is enabled if two links on the same domain differ only by case. When enabled and `LINK_CUSTOM_ALPHABET` is the default, capital letters are removed from that alphabet. | `false` | `true` |
 | `DISALLOW_REGISTRATION` | Disable registration. Note that if `MAIL_ENABLED` is set to false, then the registration would still be disabled since it relies on emails to sign up users. | `true` | `false` |
 | `DISALLOW_LOGIN_FORM` | Disable login with email and password. Only makes sense if OIDC is enabled. | `false` | `true` |
 | `DISALLOW_ANONYMOUS_LINKS` | Disable anonymous link creation | `true` | `false` |
