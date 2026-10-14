@@ -223,7 +223,7 @@ async function find(match) {
 
 async function addressTaken({ address, domain_id, exclude_id }) {
   const caseInsensitive = env.LINK_CASE_INSENSITIVE;
-  const query = knex("links").select("id");
+  const query = knex("links").select("address");
 
   if (domain_id === null || domain_id === undefined) {
     query.whereNull("domain_id");
@@ -238,7 +238,7 @@ async function addressTaken({ address, domain_id, exclude_id }) {
   whereAddress(query, address, caseInsensitive);
 
   const row = await query.first();
-  return !!row;
+  return row ? row.address : null;
 }
 
 async function findCaseCollisions(limit = 6) {
