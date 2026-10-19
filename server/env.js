@@ -11,6 +11,8 @@ const supportedDBClients = [
   "mysql2"
 ];
 
+const DEFAULT_LINK_ALPHABET = "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789";
+
 // make sure custom alphabet is not empty
 if (process.env.LINK_CUSTOM_ALPHABET === "") {
   delete process.env.LINK_CUSTOM_ALPHABET;
@@ -31,7 +33,8 @@ const spec = {
   SITE_NAME: str({ example: "Kutt", default: "Kutt" }),
   DEFAULT_DOMAIN: str({ example: "kutt.to", default: "localhost:3000" }),
   LINK_LENGTH: num({ default: 6 }),
-  LINK_CUSTOM_ALPHABET: str({ default: "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789" }),
+  LINK_CUSTOM_ALPHABET: str({ default: DEFAULT_LINK_ALPHABET }),
+  LINK_CASE_INSENSITIVE: bool({ default: false }),
   TRUST_PROXY: bool({ default: true }),
   DB_CLIENT: str({ choices: supportedDBClients, default: "better-sqlite3" }),
   DB_FILENAME: str({ default: "db/data" }),
@@ -84,6 +87,13 @@ for (const key in spec) {
   } catch {
     // on error, env_FILE just doesn't get applied.
   }
+}
+
+// Generated ids only need one case. Leave a custom alphabet unchanged.
+const caseInsensitive = ["true", "t", "1"].includes(process.env.LINK_CASE_INSENSITIVE.toLowerCase());
+const alphabet = process.env.LINK_CUSTOM_ALPHABET;
+if (caseInsensitive && (alphabet === undefined || alphabet === DEFAULT_LINK_ALPHABET)) {
+  process.env.LINK_CUSTOM_ALPHABET = DEFAULT_LINK_ALPHABET.replace(/[A-Z]/g, "");
 }
 
 const env = cleanEnv(process.env, spec);

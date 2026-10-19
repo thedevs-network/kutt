@@ -14,7 +14,13 @@ if (env.REDIS_ENABLED) {
 }
 
 const key = {
-  link: (address, domain_id) => `l:${address}:${domain_id || ""}`,
+  // Case-insensitive lookups use a separate key so a cached mixed-case hit
+  // is not reused after the mode is turned off.
+  link: (address, domain_id, caseInsensitive = false) => {
+    const normalized = caseInsensitive ? String(address).toLowerCase() : address;
+    const prefix = caseInsensitive ? "l:ci:" : "l:";
+    return `${prefix}${normalized}:${domain_id || ""}`;
+  },
   domain: (address) => `d:${address}`,
   stats: (link_id) => `s:${link_id}`,
   host: (address) => `h:${address}`,
@@ -32,7 +38,10 @@ const remove = {
   },
   link: (link) => {
     if (!link) return;
-    return client.del(key.link(link.address, link.domain_id));
+    return client.del(
+      key.link(link.address, link.domain_id, false),
+      key.link(link.address, link.domain_id, true),
+    );
   },
   user: (user) => {
     if (!user) return;

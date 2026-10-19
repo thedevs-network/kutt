@@ -14,6 +14,7 @@ const asyncHandler = require("./utils/asyncHandler");
 const locals = require("./handlers/locals.handler");
 const links = require("./handlers/links.handler");
 const routes = require("./routes");
+const query = require("./queries");
 const utils = require("./utils");
 
 
@@ -86,7 +87,33 @@ app.get("*", renders.notFound);
 
 // handle errors coming from above routes
 app.use(helpers.error);
-  
-app.listen(env.PORT, () => {
-  console.log(`> Ready on http://localhost:${env.PORT}`);
+
+function caseCollisionMessage(rows) {
+  const shown = rows.slice(0, 5);
+  const parts = shown.map(row => {
+    const where = row.domain || "the default domain";
+    return `${row.addresses} on ${where}`;
+  });
+  const more = rows.length > shown.length ? "; and more" : "";
+  return "Can't enable case-insensitive mode. These links would be indistinguishable: " +
+    `${parts.join("; ")}${more}.`;
+}
+
+async function start() {
+  if (env.LINK_CASE_INSENSITIVE) {
+    const collisions = await query.link.findCaseCollisions();
+    if (collisions.length) {
+      console.error(caseCollisionMessage(collisions));
+      process.exit(1);
+    }
+  }
+
+  app.listen(env.PORT, () => {
+    console.log(`> Ready on http://localhost:${env.PORT}`);
+  });
+}
+
+start().catch(error => {
+  console.error(error);
+  process.exit(1);
 });

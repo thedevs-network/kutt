@@ -16,6 +16,13 @@ const env = require("../env");
 const CustomError = utils.CustomError;
 const dnsLookup = promisify(dns.lookup);
 
+function customUrlTakenError(requested, existingAddress) {
+  if (env.LINK_CASE_INSENSITIVE && existingAddress !== requested) {
+    return `Custom URL "${requested}" overlaps with existing link "${existingAddress}" because case-insensitive mode is enabled.`;
+  }
+  return "Custom URL is already in use.";
+}
+
 async function get(req, res) {
   const { limit, skip } = req.context;
   const search = req.query.search;
@@ -110,7 +117,7 @@ async function create(req, res) {
         domain_id
       }),
     customurl &&
-      query.link.find({
+      query.link.addressTaken({
         address: customurl,
         domain_id
       }),
@@ -127,7 +134,7 @@ async function create(req, res) {
   
   // Check if custom link already exists
   if (tasks[1]) {
-    const error = "Custom URL is already in use.";
+    const error = customUrlTakenError(customurl, tasks[1]);
     res.locals.errors = { customurl: error };
     throw new CustomError(error);
   }
@@ -212,9 +219,10 @@ async function edit(req, res) {
 
   const tasks = await Promise.all([
     address &&
-      query.link.find({
+      query.link.addressTaken({
         address,
-        domain_id
+        domain_id,
+        exclude_id: link.id
       }),
     target && validators.bannedDomain(targetDomain),
     target && validators.bannedHost(targetDomain)
@@ -222,9 +230,9 @@ async function edit(req, res) {
 
   // Check if custom link already exists
   if (tasks[0]) {
-    const error = "Custom URL is already in use.";
+    const error = customUrlTakenError(address, tasks[0]);
     res.locals.errors = { address: error };
-    throw new CustomError("Custom URL is already in use.");
+    throw new CustomError(error);
   }
 
   // Update link
@@ -305,9 +313,10 @@ async function editAdmin(req, res) {
 
   const tasks = await Promise.all([
     address &&
-      query.link.find({
+      query.link.addressTaken({
         address,
-        domain_id
+        domain_id,
+        exclude_id: link.id
       }),
     target && validators.bannedDomain(targetDomain),
     target && validators.bannedHost(targetDomain)
@@ -315,9 +324,9 @@ async function editAdmin(req, res) {
 
   // Check if custom link already exists
   if (tasks[0]) {
-    const error = "Custom URL is already in use.";
+    const error = customUrlTakenError(address, tasks[0]);
     res.locals.errors = { address: error };
-    throw new CustomError("Custom URL is already in use.");
+    throw new CustomError(error);
   }
 
   // Update link
