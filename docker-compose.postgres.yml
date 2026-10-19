@@ -19,7 +19,7 @@ services:
       redis:
         condition: service_started
   postgres:
-    image: postgres
+    image: postgres:17
     restart: always
     user: ${DB_USER}
     volumes:
