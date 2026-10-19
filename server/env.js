@@ -67,6 +67,10 @@ const spec = {
   OIDC_PROMPT: str({ default: "" }),
   OIDC_CLIENT_ID: str({ default: "" }),
   OIDC_CLIENT_SECRET: str({ default: "" }),
+  OIDC_ID_TOKEN_SIGNED_RESPONSE_ALG: str({
+    default: "RS256",
+    choices: ["RS256", "RS384", "RS512", "PS256", "PS384", "PS512", "ES256", "ES384", "ES512", "EdDSA"]
+  }),
   OIDC_SCOPE: str({ default: "openid profile email" }),
   OIDC_EMAIL_CLAIM: str({ default: "email" }),
   OIDC_BUTTON_TEXT: str({ default: "Log in with OIDC" }),

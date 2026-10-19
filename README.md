@@ -140,6 +140,7 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `OIDC_POMPT` | OIDC prompt | - | `login` | 
 | `OIDC_CLIENT_ID` | OIDC client id | - | `example-app` | 
 | `OIDC_CLIENT_SECRET` | OIDC client secret | - | `some-secret` | 
+| `OIDC_ID_TOKEN_SIGNED_RESPONSE_ALG` | Expected ID-token signature algorithm, matching the identity provider. Only asymmetric signing algorithms are accepted. | `RS256` | `ES256` |
 | `OIDC_SCOPE` | OIDC Scope | `openid profile email` | `openid email` | 
 | `OIDC_EMAIL_CLAIM` | Name of the field to get user's email from | `email` | `userEmail` | 
 | `OIDC_BUTTON_TEXT` | OIDC login button text | `Log in with OIDC` | `Log in via Example` | 
@@ -258,4 +259,3 @@ Download Kutt's extension for web browsers via below links.
 Pull requests are welcome. Open a discussion for feedback, requesting features, or discussing ideas.
 
 Special thanks to [Thomas](https://github.com/trgwii) and [Muthu](https://github.com/MKRhere). Logo design by [Muthu](https://github.com/MKRhere).
-
