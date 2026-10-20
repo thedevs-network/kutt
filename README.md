@@ -104,6 +104,7 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `SITE_NAME` |  Name of the website | `Kutt` | `Your Site` |
 | `DEFAULT_DOMAIN` |  The domain address that this app runs on | `localhost:3000` | `yoursite.com` |
 | `LINK_LENGTH` | The length of of shortened address | `6` | `5` |
+| `TARGET_URL_MAX_LENGTH` | Maximum target URL length when creating or editing links. | `2040` | `10000` |
 | `LINK_CUSTOM_ALPHABET` | Alphabet used to generate custom addresses. Default value omits o, O, 0, i, I, l, 1, and j to avoid confusion when reading the URL. | (abcd..789) | `abcABC^&*()@` |
 | `DISALLOW_REGISTRATION` | Disable registration. Note that if `MAIL_ENABLED` is set to false, then the registration would still be disabled since it relies on emails to sign up users. | `true` | `false` |
 | `DISALLOW_LOGIN_FORM` | Disable login with email and password. Only makes sense if OIDC is enabled. | `false` | `true` |
