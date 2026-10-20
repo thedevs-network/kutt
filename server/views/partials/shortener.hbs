@@ -133,6 +133,35 @@
           {{#if errors.description}}<p class="error">{{errors.description}}</p>{{/if}}
         </label>
       </div>
+      <div class="advanced-input-wrapper">
+        <label class="{{#if errors.utm_source}}error{{/if}}">
+          UTM Source:
+          <input type="text" id="utm_source" name="utm_source" placeholder="e.g. google" hx-preserve="true" />
+          {{#if errors.utm_source}}<p class="error">{{errors.utm_source}}</p>{{/if}}
+        </label>
+        <label class="{{#if errors.utm_medium}}error{{/if}}">
+          UTM Medium:
+          <input type="text" id="utm_medium" name="utm_medium" placeholder="e.g. cpc" hx-preserve="true" />
+          {{#if errors.utm_medium}}<p class="error">{{errors.utm_medium}}</p>{{/if}}
+        </label>
+        <label class="{{#if errors.utm_campaign}}error{{/if}}">
+          UTM Campaign:
+          <input type="text" id="utm_campaign" name="utm_campaign" placeholder="e.g. spring_sale" hx-preserve="true" />
+          {{#if errors.utm_campaign}}<p class="error">{{errors.utm_campaign}}</p>{{/if}}
+        </label>
+      </div>
+      <div class="advanced-input-wrapper">
+        <label class="{{#if errors.utm_term}}error{{/if}}">
+          UTM Term:
+          <input type="text" id="utm_term" name="utm_term" placeholder="e.g. running+shoes" hx-preserve="true" />
+          {{#if errors.utm_term}}<p class="error">{{errors.utm_term}}</p>{{/if}}
+        </label>
+        <label class="{{#if errors.utm_content}}error{{/if}}">
+          UTM Content:
+          <input type="text" id="utm_content" name="utm_content" placeholder="e.g. logolink" hx-preserve="true" />
+          {{#if errors.utm_content}}<p class="error">{{errors.utm_content}}</p>{{/if}}
+        </label>
+      </div>
     </section>
   </form>
 </main>

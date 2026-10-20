@@ -21,6 +21,11 @@ const selectable = [
   "links.visit_count",
   "links.user_id",
   "links.uuid",
+  "links.utm_source",
+  "links.utm_medium",
+  "links.utm_campaign",
+  "links.utm_term",
+  "links.utm_content",
   "domains.address as domain"
 ];
 
@@ -215,7 +220,12 @@ async function create(params) {
       address: params.address,
       description: params.description || null,
       expire_in: params.expire_in || null,
-      target: params.target
+      target: params.target,
+      utm_source: params.utm_source || null,
+      utm_medium: params.utm_medium || null,
+      utm_campaign: params.utm_campaign || null,
+      utm_term: params.utm_term || null,
+      utm_content: params.utm_content || null,
     },
     "*"
   );
