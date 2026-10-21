@@ -1,5 +1,5 @@
 # specify node.js image
-FROM node:22-alpine
+FROM node:24-alpine
 
 # use production node environment by default
 ENV NODE_ENV=production
@@ -11,7 +11,9 @@ WORKDIR /kutt
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev
+    apk add --no-cache --virtual .build-deps python3 make g++ && \
+    npm ci --omit=dev && \
+    apk del .build-deps
 
 RUN mkdir -p /var/lib/kutt
 

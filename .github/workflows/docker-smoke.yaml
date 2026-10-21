@@ -1,0 +1,26 @@
+name: Docker smoke test
+
+on:
+  pull_request:
+    paths:
+      - "Dockerfile"
+      - "package*.json"
+      - "server/**"
+      - "knexfile.js"
+      - "tests/container-smoke.cjs"
+      - ".github/workflows/docker-smoke.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sqlite-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build production image
+        run: docker build -t kutt-smoke .
+      - name: Test isolated SQLite runtime without external network access
+        run: docker run --rm --network none --entrypoint node kutt-smoke tests/container-smoke.cjs

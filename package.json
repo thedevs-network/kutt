@@ -8,7 +8,8 @@
     "start": "node server/server.js --production",
     "migrate": "knex migrate:latest",
     "migrate:make": "knex migrate:make",
-    "docs:build": "cd docs/api && node generate && cd ../.."
+    "docs:build": "cd docs/api && node generate && cd ../..",
+    "test:smoke": "node tests/container-smoke.cjs"
   },
   "repository": {
     "type": "git",
@@ -25,7 +26,7 @@
   "homepage": "https://github.com/thedevs-network/kutt#readme",
   "dependencies": {
     "bcryptjs": "2.4.3",
-    "better-sqlite3": "11.8.1",
+    "better-sqlite3": "13.0.3",
     "bull": "4.16.5",
     "cookie-parser": "1.4.7",
     "cookie-session": "2.1.1",
@@ -45,9 +46,9 @@
     "jsonwebtoken": "9.0.2",
     "knex": "3.1.0",
     "ms": "2.1.3",
-    "mysql2": "3.12.0",
-    "nanoid": "3.3.8",
-    "nodemailer": "9.0.3",
+    "mysql2": "3.23.1",
+    "nanoid": "3.3.18",
+    "nodemailer": "9.1.1",
     "openid-client": "5.7.0",
     "passport": "0.7.0",
     "passport-jwt": "4.0.1",
@@ -56,6 +57,9 @@
     "pg": "8.13.1",
     "pg-query-stream": "4.7.1",
     "rate-limit-redis": "4.2.0"
+  },
+  "overrides": {
+    "ip-address": "10.3.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "2.4.2",
