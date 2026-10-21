@@ -230,7 +230,7 @@ async function create(params) {
 }
 
 async function remove(match) {
-  const link = await knex("links").where(match).first();
+  const link = await find(match);
   
   if (!link) {
     return { isRemoved: false, error: "Could not find the link.", link: null }
