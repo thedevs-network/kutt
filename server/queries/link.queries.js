@@ -63,20 +63,20 @@ function normalizeMatch(match) {
 async function total(match, params) {
   const normalizedMatch = normalizeMatch(match);
   const query = knex("links");
-  
+
   Object.entries(normalizedMatch).forEach(([key, value]) => {
     query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
   });
 
   if (params?.search) {
     query[knex.compatibleILIKE](
-      knex.raw("concat_ws(' ', description, links.address, target, domains.address)"), 
+      knex.raw("concat_ws(' ', description, links.address, target, domains.address)"),
       "%" + params.search + "%"
     );
   }
   query.leftJoin("domains", "links.domain_id", "domains.id");
   query.count("* as count");
-  
+
   const [{ count }] = await query;
 
   return typeof count === "number" ? count : parseInt(count);
@@ -88,13 +88,14 @@ async function totalAdmin(match, params) {
   Object.entries(normalizeMatch(match)).forEach(([key, value]) => {
     query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
   });
-  
+
   if (params?.user) {
-    const id = parseInt(params?.user);
-    if (Number.isNaN(id)) {
+    const isNumericId = /^\d+$/.test(params.user);
+
+    if (isNumericId) {
+      query.andWhere("links.user_id", Number(params.user));
+    } else {
       query[knex.compatibleILIKE]("users.email", "%" + params.user + "%");
-      } else {
-      query.andWhere("links.user_id", params.user);
     }
   }
 
@@ -108,7 +109,7 @@ async function totalAdmin(match, params) {
   if (params?.domain) {
     query[knex.compatibleILIKE]("domains.address", "%" + params.domain + "%");
   }
-  
+
   query.leftJoin("domains", "links.domain_id", "domains.id");
   query.leftJoin("users", "links.user_id", "users.id");
   query.count("* as count");
@@ -125,14 +126,14 @@ async function get(match, params) {
     .offset(params.skip)
     .limit(params.limit)
     .orderBy("links.id", "desc");
-  
+
   if (params?.search) {
     query[knex.compatibleILIKE](
-      knex.raw("concat_ws(' ', description, links.address, target, domains.address)"), 
+      knex.raw("concat_ws(' ', description, links.address, target, domains.address)"),
       "%" + params.search + "%"
     );
   }
-  
+
   query.leftJoin("domains", "links.domain_id", "domains.id");
 
   return query;
@@ -149,13 +150,14 @@ async function getAdmin(match, params) {
     .orderBy("links.id", "desc")
     .offset(params.skip)
     .limit(params.limit)
-  
+
   if (params?.user) {
-    const id = parseInt(params?.user);
-    if (Number.isNaN(id)) {
-      query[knex.compatibleILIKE]("users.email", "%" + params.user + "%");
+    const isNumericId = /^\d+$/.test(params.user);
+
+    if (isNumericId) {
+      query.andWhere("links.user_id", Number(params.user));
     } else {
-      query.andWhere("links.user_id", params.user);
+      query[knex.compatibleILIKE]("users.email", "%" + params.user + "%");
     }
   }
 
@@ -169,7 +171,7 @@ async function getAdmin(match, params) {
   if (params?.domain) {
     query[knex.compatibleILIKE]("domains.address", "%" + params.domain + "%");
   }
-  
+
   query.leftJoin("domains", "links.domain_id", "domains.id");
   query.leftJoin("users", "links.user_id", "users.id");
 
@@ -182,29 +184,29 @@ async function find(match) {
     const cachedLink = await redis.client.get(key);
     if (cachedLink) return JSON.parse(cachedLink);
   }
-  
+
   const link = await knex("links")
     .select(...selectable)
     .where(normalizeMatch(match))
     .leftJoin("domains", "links.domain_id", "domains.id")
     .first();
-  
+
   if (link && env.REDIS_ENABLED) {
     const key = redis.key.link(link.address, link.domain_id);
     redis.client.set(key, JSON.stringify(link), "EX", 60 * 15);
   }
-  
+
   return link;
 }
 
 async function create(params) {
   let encryptedPassword = null;
-  
+
   if (params.password) {
     const salt = await bcrypt.genSalt(12);
     encryptedPassword = await bcrypt.hash(params.password, salt);
   }
-  
+
   let [link] = await knex(
     "links"
   ).insert(
@@ -231,7 +233,7 @@ async function create(params) {
 
 async function remove(match) {
   const link = await knex("links").where(match).first();
-  
+
   if (!link) {
     return { isRemoved: false, error: "Could not find the link.", link: null }
   }
@@ -241,21 +243,21 @@ async function remove(match) {
   if (env.REDIS_ENABLED) {
     redis.remove.link(link);
   }
-  
+
   return { isRemoved: !!deletedLink, link };
 }
 
 async function batchRemove(match) {
   const query = knex("links");
-  
+
   Object.entries(match).forEach(([key, value]) => {
     query.andWhere(key, ...(Array.isArray(value) ? value : [value]));
   });
-  
+
   const links = await query.clone();
-  
+
   await query.delete();
-  
+
   if (env.REDIS_ENABLED) {
     links.forEach(redis.remove.link);
   }
@@ -273,7 +275,7 @@ async function update(match, update) {
   if (env.REDIS_ENABLED && (update.address || update.domain_id)) {
     links = await knex("links").select('*').where(match);
   }
-  
+
   await knex("links")
     .where(match)
     .update({ ...update, updated_at: utils.dateToUTC(new Date()) });
@@ -282,12 +284,12 @@ async function update(match, update) {
     .select(selectable)
     .where(normalizeMatch(match))
     .leftJoin("domains", "links.domain_id", "domains.id");
-    
+
   if (env.REDIS_ENABLED) {
     links.forEach(redis.remove.link);
     updated_links.forEach(redis.remove.link);
   }
-  
+
   return updated_links;
 }
 
