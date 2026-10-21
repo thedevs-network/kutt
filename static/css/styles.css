@@ -783,6 +783,29 @@ table .tab a:not(.active):hover {
   padding: 2rem;
 }
 
+.dialog.qrcode .content-wrapper {
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialog.qrcode .qr-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: auto;
+  max-width: 72px;
+  max-height: 72px;
+  object-fit: contain;
+  background: #fff;
+  padding: 6px;
+  border-radius: 6px;
+  box-sizing: content-box;
+  pointer-events: none;
+}
+
 .dialog .content-wrapper {
   display: flex;
   flex-direction: column;
