@@ -16,7 +16,7 @@ router.post(
   auth.featureAccess([!env.DISALLOW_LOGIN_FORM]),
   validators.login,
   asyncHandler(helpers.verify),
-  helpers.rateLimit({ window: 60, limit: 5 }),
+  helpers.rateLimit({ window: 60, limit: 5, skipSuccess: true }),
   asyncHandler(auth.local),
   asyncHandler(auth.login)
 );
@@ -87,7 +87,7 @@ router.post(
   locals.newPassword,
   validators.newPassword,
   asyncHandler(helpers.verify),
-  helpers.rateLimit({ window: 60, limit: 5 }),
+  helpers.rateLimit({ window: 60, limit: 5, skipSuccess: true }),
   asyncHandler(auth.newPassword)
 );
 
