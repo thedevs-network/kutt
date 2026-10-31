@@ -425,6 +425,13 @@ module.exports = {
             items: {
               $ref: "#/components/schemas/Domain"
             }
+          },
+          other_available_domains: {
+            type: "array",
+            description: "Domains from OTHER_AVAILABLE_DOMAINS that every user can create links on. Banned ones are left out.",
+            items: {
+              $ref: "#/components/schemas/Domain"
+            }
           }
         }
       },

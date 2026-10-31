@@ -24,6 +24,11 @@ if (env.NODE_APP_INSTANCE === 0) {
   require("./cron");
 }
 
+// give every domain in OTHER_AVAILABLE_DOMAINS its row before the first request reaches it
+const query = require("./queries");
+Promise.all(utils.getOtherAvailableDomains().map(query.domain.addAvailable))
+  .catch(error => console.error("Could not add OTHER_AVAILABLE_DOMAINS:", error));
+
 // intialize passport authentication library
 require("./passport");
 

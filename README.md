@@ -103,6 +103,7 @@ You can use files for each of the variables by appending `_FILE` to the name of 
 | `PORT` |  The port to start the app on | `3000` | `8888` |
 | `SITE_NAME` |  Name of the website | `Kutt` | `Your Site` |
 | `DEFAULT_DOMAIN` |  The domain address that this app runs on | `localhost:3000` | `yoursite.com` |
+| `OTHER_AVAILABLE_DOMAINS` | Comma-separated list of extra domains every user can create links on, in addition to the default domain and their own custom domains. Point them at this app like a custom domain; `CUSTOM_DOMAIN_USE_HTTPS` applies to them too. Nobody can add them as their own custom domain. `GET /api/v2/users` lists them as `other_available_domains`. | - | `kutt.it,s.yoursite.com` |
 | `LINK_LENGTH` | The length of of shortened address | `6` | `5` |
 | `LINK_CUSTOM_ALPHABET` | Alphabet used to generate custom addresses. Default value omits o, O, 0, i, I, l, 1, and j to avoid confusion when reading the URL. | (abcd..789) | `abcABC^&*()@` |
 | `DISALLOW_REGISTRATION` | Disable registration. Note that if `MAIL_ENABLED` is set to false, then the registration would still be disabled since it relies on emails to sign up users. | `true` | `false` |

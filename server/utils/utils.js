@@ -354,6 +354,18 @@ function removeWww(host) {
 };
 
 /**
+ * The domains every user can create links on, from OTHER_AVAILABLE_DOMAINS
+ * @returns {string[]}
+ */
+function getOtherAvailableDomains() {
+  const defaultDomain = env.DEFAULT_DOMAIN.toLowerCase();
+  return env.OTHER_AVAILABLE_DOMAINS
+    .split(",")
+    .map(domain => removeWww(domain.trim().toLowerCase()))
+    .filter(domain => domain && domain !== defaultDomain);
+};
+
+/**
  * @param { ReturnType<import("express-useragent").default["parse"]> } agent
  * @returns {string}
  */
@@ -457,6 +469,7 @@ module.exports = {
   getCustomCSSFileNames,
   getDifferenceFunction,
   getInitStats,
+  getOtherAvailableDomains,
   getShortURL,
   getSiteURL,
   getStatsPeriods,

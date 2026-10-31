@@ -29,7 +29,9 @@ const createLink = [
     .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
     .withMessage("URL is not valid.")
     .custom(value => utils.removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
-    .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
+    .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`)
+    .custom(value => !utils.getOtherAvailableDomains().includes(utils.removeWww(URL.parse(value).host)?.toLowerCase()))
+    .withMessage("URLs of this site's domains are not allowed."),
   body("password")
     .optional({ nullable: true, checkFalsy: true })
     .custom(checkUser)
@@ -86,10 +88,17 @@ const createLink = [
     .withMessage("Domain should be string.")
     .customSanitizer(value => value.toLowerCase())
     .custom(async (address, { req }) => {
-      const domain = await query.domain.find({
-        address,
-        user_id: req.user.id
-      });
+      // domains in OTHER_AVAILABLE_DOMAINS are open to every user unless banned, other domains only to their owner
+      let domain;
+      if (utils.getOtherAvailableDomains().includes(address)) {
+        const availableDomain = await query.domain.addAvailable(address);
+        domain = availableDomain.banned ? null : availableDomain;
+      } else {
+        domain = await query.domain.find({
+          address,
+          user_id: req.user.id
+        });
+      }
       req.body.fetched_domain = domain || null;
 
       if (!domain) return Promise.reject();
@@ -108,7 +117,9 @@ const editLink = [
     .custom(value => utils.urlRegex.test(value) || /^(?!https?|ftp)(\w+:|\/\/)/.test(value))
     .withMessage("URL is not valid.")
     .custom(value => utils.removeWww(URL.parse(value).host) !== env.DEFAULT_DOMAIN)
-    .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`),
+    .withMessage(`${env.DEFAULT_DOMAIN} URLs are not allowed.`)
+    .custom(value => !utils.getOtherAvailableDomains().includes(utils.removeWww(URL.parse(value).host)?.toLowerCase()))
+    .withMessage("URLs of this site's domains are not allowed."),
   body("password")
     .optional({ nullable: true, checkFalsy: true })
     .isString()
@@ -176,6 +187,8 @@ const addDomain = [
     })
     .custom(value => value !== env.DEFAULT_DOMAIN)
     .withMessage("You can't use the default domain.")
+    .custom(value => !utils.getOtherAvailableDomains().includes(value.toLowerCase()))
+    .withMessage("This domain is already available to everyone.")
     .custom(async value => {
       const domain = await query.domain.find({ address: value });
       if (domain?.user_id || domain?.banned) return Promise.reject();
@@ -202,6 +215,8 @@ const addDomainAdmin = [
     })
     .custom(value => value !== env.DEFAULT_DOMAIN)
     .withMessage("You can't add the default domain.")
+    .custom(value => !utils.getOtherAvailableDomains().includes(value.toLowerCase()))
+    .withMessage("This domain is already available to everyone through OTHER_AVAILABLE_DOMAINS.")
     .custom(async value => {
       const domain = await query.domain.find({ address: value });
       if (domain) return Promise.reject();

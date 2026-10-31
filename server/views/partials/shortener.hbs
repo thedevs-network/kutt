@@ -78,6 +78,9 @@
             "
           >
             <option value={{default_domain}}>{{default_domain}}</option>
+            {{#each other_available_domains}}
+              <option value={{this}}>{{this}}</option>
+            {{/each}}
             {{#each domains}}
               <option value={{address}}>{{address}}</option>
             {{/each}}

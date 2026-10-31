@@ -30,6 +30,7 @@ const spec = {
   PORT: num({ default: 3000 }),
   SITE_NAME: str({ example: "Kutt", default: "Kutt" }),
   DEFAULT_DOMAIN: str({ example: "kutt.to", default: "localhost:3000" }),
+  OTHER_AVAILABLE_DOMAINS: str({ example: "kutt.it,s.kutt.to", default: "" }),
   LINK_LENGTH: num({ default: 6 }),
   LINK_CUSTOM_ALPHABET: str({ default: "abcdefghkmnpqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ23456789" }),
   TRUST_PROXY: bool({ default: true }),
