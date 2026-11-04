@@ -24,6 +24,7 @@
 - [Donations and sponsors](#donations-and-sponsors)
 - [Setup](#setup)
 - [Docker](#docker)
+- [One-Click Deploy](#one-click-deploy)
 - [API](#api)
 - [Configuration](#configuration)
 - [Themes and customizations](#themes-and-customizations)
@@ -84,6 +85,11 @@ Various docker-compose configurations are available. Use `docker compose -f <fil
   - Required environment variables: `REDIS_ENABLED`, `DB_PASSWORD`, `DB_NAME`, `DB_USER`, `DB_PORT`
 
 Official Kutt Docker image is available on [Docker Hub](https://hub.docker.com/r/kutt/kutt).
+
+## One-Click Deploy
+
+<a href="https://repocloud.io/details/Kutt/"><img src="https://d16t0pc4846x52.cloudfront.net/deploylobe.svg" alt="Deploy on RepoCloud" height="42"></a>
+<a href="https://railway.com/deploy/kutt"><img src="https://railway.com/button.svg" alt="Deploy on Railway" height="42"></a>
 
 ## API
 
