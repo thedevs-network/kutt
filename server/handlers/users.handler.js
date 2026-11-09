@@ -4,6 +4,7 @@ const query = require("../queries");
 const utils = require("../utils");
 const mail = require("../mail");
 const env = require("../env");
+const CustomError = utils.CustomError;
 
 async function get(req, res) {
   const domains = await query.domain.get({ user_id: req.user.id });
