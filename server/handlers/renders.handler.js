@@ -288,6 +288,9 @@ async function linkEdit(req, res) {
     uuid: req.params.id,
     ...(!req.user.admin && { user_id: req.user.id })
   });
+  if (!link) {
+    throw new utils.CustomError("Link was not found.", 404);
+  }
   res.render("partials/links/edit", {
     ...(link && utils.sanitize.link_html(link)),
     domain: link.domain || env.DEFAULT_DOMAIN,
@@ -298,6 +301,9 @@ async function linkEditAdmin(req, res) {
   const link = await query.link.find({
     uuid: req.params.id,
   });
+  if (!link) {
+    throw new utils.CustomError("Link was not found.", 404);
+  }
   res.render("partials/admin/links/edit", {
     ...(link && utils.sanitize.link_html(link)),
     domain: link.domain || env.DEFAULT_DOMAIN,
